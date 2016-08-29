@@ -1,0 +1,236 @@
+<!DOCTYPE>
+<html>
+<head>
+<title>Drag and Drop Prototype</title>
+<style>
+    #canvasHolder {height:90vh;box-sizing:border-box;border:1px solid black;float:left;overflow:auto;}
+    #zoom {float:left;}
+    #zoom div {width:50px;height:50px;text-align:center;line-height:50px;}
+    #dnd {height:100%;}
+</style>
+
+</head>
+
+<body>
+
+<div id="canvasHolder">
+    <canvas height="3450" width="2400" id="dnd"></canvas>
+</div>
+<div id="zoom">
+    <div id="zoomIn">+</div>
+    <div id="zoomOut">-</div>
+    <div id="zoomAmt"></div>
+</div>
+
+<script type="text/javascript">
+
+    const FILL = 0;
+    const STROKE = 1;
+
+    class Shape {
+        draw(context){
+            context.save();
+            this._doDraw(context);
+            context.restore();
+        }
+
+        isPointInShape(x, y){
+            return this._isPointInShape(x, y);
+        }
+
+        move(relativeX, relativeY){
+            this._move(relativeX, relativeY)
+        }
+    }
+
+    class Box extends Shape {
+        constructor(x, y, width, height, fillType) {
+            super();
+
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.fill = fillType;
+        }
+
+        _doDraw(context){
+            context.beginPath();
+            context.strokeStyle = "#FF0000";
+            context.translate(this.x, this.y);
+            context.rect(0, 0, this.width, this.height);
+            context.closePath()
+
+            if(this.fill == FILL) context.fill();
+            else context.stroke();
+        }
+
+        _isPointInShape(x, y){
+            x = x - this.x;
+            y = y - this.y;
+
+            return x >= 0 && x <= this.width &&
+                   y >= 0 && y <= this.height;
+        }
+
+        _move(relativeX, relativeY){
+            this.x += relativeX;
+            this.y += relativeY;
+        }
+    }
+
+    class Circle extends Shape {
+        constructor(centerX, centerY, radius, fillType){
+            super();
+
+            this.centerX = centerX;
+            this.centerY = centerY;
+            this.radius = radius;
+            this.fill = fillType;
+        }
+
+        _doDraw(context){
+            context.beginPath();
+            context.translate(this.centerX, this.centerY);
+            context.arc(0, 0, this.radius, 0, 2 * Math.PI);
+            context.closePath()
+
+            if(this.fill == FILL) context.fill();
+            else context.stroke();
+        }
+
+        _isPointInShape(x, y){
+            return Math.pow((x - this.centerX), 2) + Math.pow((y - this.centerY), 2) <= Math.pow(this.radius, 2);
+        }
+
+        _move(relativeX, relativeY){
+            this.centerX += relativeX;
+            this.centerY += relativeY;
+        }
+    }
+
+    class Canvas {
+        constructor(canvasId) {
+            this.canvas = document.getElementById(canvasId);
+            this.context = this.canvas.getContext("2d");
+
+            this.shapes = [];
+
+            this.drawInt = setInterval(() => this._draw(), 10);
+
+            this.width = parseInt(this.canvas.width);
+            this.height = parseInt(this.canvas.height);
+
+            this._shapeToDrag = null;
+            this._scaleX = 1;
+            this._scaleY = 1;
+            this._startX = 0;
+            this._startY = 0;
+            this.canvas.addEventListener("mousedown", (e) => this._mouseDown(e));
+            this.canvas.addEventListener("mouseup", (e) => this._mouseUp(e));
+            this.canvas.addEventListener("mousemove", (e) => this._drag(e));
+        }
+
+        _draw(){
+            this.reset();
+            // Draw in reverse, that way recently added elements are on top
+            for(var idx = this.shapes.length - 1; idx >= 0; --idx){
+            // for(var shape of this.shapes){
+                this.shapes[idx].draw(this.context);
+            }
+        }
+
+        _mouseDown(e){
+            this._scaleX = this.canvas.width / this.canvas.clientWidth;
+            this._scaleY = this.canvas.height / this.canvas.clientHeight;
+
+            this._startX = e.pageX - this.canvas.offsetLeft;
+            this._startY = e.pageY - this.canvas.offsetTop;
+            var x = this._startX * this._scaleX;
+            var y = this._startY * this._scaleY;
+
+            for(var shape of this.shapes){
+                if(shape.isPointInShape(x, y)){
+                    this._shapeToDrag = shape;
+                    this.removeShape(this._shapeToDrag);
+                    this.addShape(this._shapeToDrag);
+                    break;
+                }
+            }
+        }
+
+        _mouseUp(){
+            this._shapeToDrag = null;
+        }
+
+        _drag(e){
+            if(this._shapeToDrag !== null) {
+                var mouseX = e.pageX - this.canvas.offsetLeft;
+                var mouseY = e.pageY - this.canvas.offsetTop;
+
+                var x = (mouseX - this._startX) * this._scaleX;
+                var y = (mouseY - this._startY) * this._scaleY;
+                this._shapeToDrag.move(x, y);
+
+                this._startX = mouseX;
+                this._startY = mouseY;
+            }
+        }
+
+        addShape(shape){
+            if(!(shape instanceof Shape)){
+                throw "Argument shape must be a Shape type";
+            }
+
+            this.shapes.unshift(shape);
+        }
+
+        removeShape(shape){
+            if(!(shape instanceof Shape)){
+                throw "Argument shape must be a Shape type";
+            }
+
+            var idx = this.shapes.indexOf(shape);
+            if(idx < 0){
+                throw "shape was not found in canvas";
+            }
+
+            this.shapes.splice(idx, 1);
+        }
+
+        reset(){
+            this.context.clearRect(0, 0, this.width, this.height);
+        }
+
+    }
+
+    var c = new Canvas("dnd");
+    c.addShape(new Circle(25, 25, 20, FILL));
+    c.addShape(new Box(50, 5, 40, 40, STROKE));
+
+    var ch = document.getElementById("canvasHolder");
+    ch.style.width = ch.offsetWidth + "px";
+
+    var zoomAmt = document.getElementById("zoomAmt");
+    zoomAmt.innerHTML = (c.canvas.clientWidth / c.canvas.width * 100).toFixed(2) + "%";
+
+    document.getElementById("zoomIn").addEventListener("click", () =>{
+        var newZoom = (c.canvas.clientWidth / c.canvas.width) * 100;
+        if(Math.ceil(newZoom / 10) * 10 == newZoom){
+            newZoom += 10;
+        }
+        else{
+            newZoom = Math.ceil(newZoom / 10) * 10;
+        }
+
+        c.canvas.style.height = "auto";
+        c.canvas.style.width = c.canvas.width * (newZoom / 100) + "px";
+
+        zoomAmt.innerHTML = (c.canvas.clientWidth / c.canvas.width * 100).toFixed(2) + "%";
+    });
+
+
+</script>
+
+</body>
+</html>
