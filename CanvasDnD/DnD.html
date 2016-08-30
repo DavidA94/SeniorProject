@@ -41,6 +41,11 @@
         move(relativeX, relativeY){
             this._move(relativeX, relativeY)
         }
+
+        get top() { return this._top; }
+        get left() { return this._left; }
+        get width() { return this._width; }
+        get height() { return this._height; }
     }
 
     class Box extends Shape {
@@ -49,8 +54,8 @@
 
             this.x = x;
             this.y = y;
-            this.width = width;
-            this.height = height;
+            this.boxWidth = width;
+            this.boxHeight = height;
             this.fill = fillType;
         }
 
@@ -58,8 +63,8 @@
             context.beginPath();
             context.strokeStyle = "#FF0000";
             context.translate(this.x, this.y);
-            context.rect(0, 0, this.width, this.height);
-            context.closePath()
+            context.rect(0, 0, this.boxWidth, this.boxHeight);
+            context.closePath();
 
             if(this.fill == FILL) context.fill();
             else context.stroke();
@@ -69,14 +74,19 @@
             x = x - this.x;
             y = y - this.y;
 
-            return x >= 0 && x <= this.width &&
-                   y >= 0 && y <= this.height;
+            return x >= 0 && x <= this.boxWidth &&
+                   y >= 0 && y <= this.boxHeight;
         }
 
         _move(relativeX, relativeY){
             this.x += relativeX;
             this.y += relativeY;
         }
+
+        get _top() { return this.y; }
+        get _left() { return this.x }
+        get _width() { return this.boxWidth; }
+        get _height() { return this.boxHeight; }
     }
 
     class Circle extends Shape {
@@ -93,7 +103,7 @@
             context.beginPath();
             context.translate(this.centerX, this.centerY);
             context.arc(0, 0, this.radius, 0, 2 * Math.PI);
-            context.closePath()
+            context.closePath();
 
             if(this.fill == FILL) context.fill();
             else context.stroke();
@@ -107,21 +117,29 @@
             this.centerX += relativeX;
             this.centerY += relativeY;
         }
+
+        get _top() { return this.centerY - this.radius; }
+        get _left() { return this.centerX - this.radius; }
+        get _width() { return this.radius * 2; }
+        get _height() { return this.radius * 2; }
     }
 
     class Canvas {
         constructor(canvasId) {
             this.canvas = document.getElementById(canvasId);
             this.context = this.canvas.getContext("2d");
+            this.context.lineWidth = 1;
+            this.context.translate(0.5, 0.5);
 
             this.shapes = [];
 
-            this.drawInt = setInterval(() => this._draw(), 10);
+            window.requestAnimationFrame(() => this._draw());
 
             this.width = parseInt(this.canvas.width);
             this.height = parseInt(this.canvas.height);
 
             this._shapeToDrag = null;
+            this._activeShape = null;
             this._scaleX = 1;
             this._scaleY = 1;
             this._startX = 0;
@@ -129,6 +147,7 @@
             this.canvas.addEventListener("mousedown", (e) => this._mouseDown(e));
             this.canvas.addEventListener("mouseup", (e) => this._mouseUp(e));
             this.canvas.addEventListener("mousemove", (e) => this._drag(e));
+
         }
 
         _draw(){
@@ -138,25 +157,66 @@
             // for(var shape of this.shapes){
                 this.shapes[idx].draw(this.context);
             }
+
+            this._drawSelection();
+
+            window.requestAnimationFrame(() => this._draw());
+        }
+
+        _drawSelection(){
+            // Draw the marquee for the active shape
+            if(this._activeShape){
+
+                var date = new Date();
+                var space = date.getMilliseconds() / (1000 / 28);
+
+                var c = this.context;
+                c.save();
+                c.setLineDash([8, 6]);
+                c.lineDashOffset = -space;
+
+                c.beginPath();
+                c.rect(this._activeShape.left, this._activeShape.top,
+                       this._activeShape.width, this._activeShape.height);
+                c.strokeStyle = "#000";
+                c.stroke();
+                c.closePath();
+
+                c.restore();
+                c.save();
+
+                c.beginPath();
+                c.lineWidth = 1;
+                c.rect(this._activeShape.left - 2, this._activeShape.top - 2, 5, 5);
+                c.rect(this._activeShape.left - 2, this._activeShape.top + this._activeShape.height - 3, 5, 5);
+                c.rect(this._activeShape.left + this._activeShape.width - 3, this._activeShape.top - 2, 5, 5);
+                c.rect(this._activeShape.left + this._activeShape.width - 3, this._activeShape.top + this._activeShape.height - 3, 5, 5);
+                c.stroke();
+                c.closePath();
+
+                c.restore();
+            }
         }
 
         _mouseDown(e){
             this._scaleX = this.canvas.width / this.canvas.clientWidth;
             this._scaleY = this.canvas.height / this.canvas.clientHeight;
 
-            this._startX = e.pageX - this.canvas.offsetLeft;
-            this._startY = e.pageY - this.canvas.offsetTop;
+            this._startX = e.pageX - this.canvas.offsetLeft + this._scrollX(this.canvas);
+            this._startY = e.pageY - this.canvas.offsetTop + this._scrollY(this.canvas);
             var x = this._startX * this._scaleX;
             var y = this._startY * this._scaleY;
 
             for(var shape of this.shapes){
                 if(shape.isPointInShape(x, y)){
-                    this._shapeToDrag = shape;
+                    this._shapeToDrag = this._activeShape = shape;
                     this.removeShape(this._shapeToDrag);
                     this.addShape(this._shapeToDrag);
-                    break;
+                    return;
                 }
             }
+
+            this._shapeToDrag = this._activeShape = null;
         }
 
         _mouseUp(){
@@ -165,8 +225,8 @@
 
         _drag(e){
             if(this._shapeToDrag !== null) {
-                var mouseX = e.pageX - this.canvas.offsetLeft;
-                var mouseY = e.pageY - this.canvas.offsetTop;
+                var mouseX = e.pageX - this.canvas.offsetLeft + this._scrollX(this.canvas);
+                var mouseY = e.pageY - this.canvas.offsetTop + this._scrollY(this.canvas);
 
                 var x = (mouseX - this._startX) * this._scaleX;
                 var y = (mouseY - this._startY) * this._scaleY;
@@ -175,6 +235,23 @@
                 this._startX = mouseX;
                 this._startY = mouseY;
             }
+        }
+
+        _scrollX(node){
+            if(node.parentNode){
+                return node.scrollLeft + this._scrollX(node.parentNode);
+            }
+
+            console.log();
+            return node.scrollLeft ? node.scrollLeft : 0;
+        }
+
+        _scrollY(node){
+            if(node.parentNode){
+                return node.scrollTop + this._scrollY(node.parentNode);
+            }
+
+            return node.scrollTop ? node.scrollTop : 0;
         }
 
         addShape(shape){
@@ -211,16 +288,35 @@
     var ch = document.getElementById("canvasHolder");
     ch.style.width = ch.offsetWidth + "px";
 
+    c.canvas.style.height = "auto";
+    c.canvas.style.width = c.canvas.width + "px";
+
     var zoomAmt = document.getElementById("zoomAmt");
     zoomAmt.innerHTML = (c.canvas.clientWidth / c.canvas.width * 100).toFixed(2) + "%";
 
     document.getElementById("zoomIn").addEventListener("click", () =>{
         var newZoom = (c.canvas.clientWidth / c.canvas.width) * 100;
-        if(Math.ceil(newZoom / 10) * 10 == newZoom){
+        if(Math.ceil(newZoom / 10) * 10 == parseFloat(newZoom.toFixed(3))){
             newZoom += 10;
         }
         else{
             newZoom = Math.ceil(newZoom / 10) * 10;
+        }
+
+        c.canvas.style.height = "auto";
+        c.canvas.style.width = c.canvas.width * (newZoom / 100) + "px";
+
+        zoomAmt.innerHTML = (c.canvas.clientWidth / c.canvas.width * 100).toFixed(2) + "%";
+    });
+
+
+    document.getElementById("zoomOut").addEventListener("click", () =>{
+        var newZoom = (c.canvas.clientWidth / c.canvas.width) * 100;
+        if(Math.floor(newZoom / 10) * 10 == parseFloat(newZoom.toFixed(3))){
+            newZoom -= 10;
+        }
+        else{
+            newZoom = Math.floor(newZoom / 10) * 10;
         }
 
         c.canvas.style.height = "auto";
