@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9b9e04d8-7628-4a9d-a8eb-737b707a7946" name="Default" comment="Adding &quot;marching ants&quot; and grab boxes to active shape.">
+    <list default="true" id="9b9e04d8-7628-4a9d-a8eb-737b707a7946" name="Default" comment="Added better scaling&#10;Made better colors for marching ants for visibility&#10;Started context menu">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DnD.html" afterPath="$PROJECT_DIR$/DnD.html" />
     </list>
@@ -29,21 +29,25 @@
       <file leaf-file-name="DnD.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/DnD.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="282" column="4" selection-start-line="282" selection-start-column="4" selection-end-line="282" selection-end-column="4" />
+            <state relative-caret-position="197">
+              <caret line="265" column="19" selection-start-line="265" selection-start-column="19" selection-end-line="265" selection-end-column="19" />
               <folding>
-                <element signature="e#1188#1375#0" expanded="false" />
-                <element signature="e#1956#2033#0" expanded="false" />
-                <element signature="e#2302#2475#0" expanded="false" />
-                <element signature="e#2814#2939#0" expanded="false" />
-                <element signature="e#2976#3065#0" expanded="false" />
-                <element signature="e#5951#6775#0" expanded="false" />
-                <element signature="e#6795#6844#0" expanded="false" />
-                <element signature="e#6862#7369#0" expanded="false" />
-                <element signature="e#7634#7821#0" expanded="false" />
-                <element signature="e#7846#8016#0" expanded="false" />
-                <element signature="e#8044#8359#0" expanded="false" />
-                <element signature="e#8376#8454#0" expanded="false" />
+                <element signature="e#786#1313#0" expanded="false" />
+                <element signature="e#1396#1583#0" expanded="false" />
+                <element signature="e#1616#2012#0" expanded="false" />
+                <element signature="e#2050#2301#0" expanded="false" />
+                <element signature="e#2600#3871#0" expanded="false" />
+                <element signature="e#2684#2857#0" expanded="false" />
+                <element signature="e#2890#3229#0" expanded="false" />
+                <element signature="e#3559#3648#0" expanded="false" />
+                <element signature="e#4946#5404#0" expanded="false" />
+                <element signature="e#5430#7778#0" expanded="false" />
+                <element signature="e#7801#8419#0" expanded="false" />
+                <element signature="e#8439#8488#0" expanded="false" />
+                <element signature="e#9852#10069#0" expanded="false" />
+                <element signature="e#10093#10280#0" expanded="false" />
+                <element signature="e#10305#10475#0" expanded="false" />
+                <element signature="e#10503#10818#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -84,7 +88,7 @@
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1">
+    <navigator proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -97,13 +101,7 @@
       <manualOrder />
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="Scratches" />
-      <pane id="ProjectPane">
-        <subPane />
-      </pane>
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
@@ -184,7 +182,8 @@
       <option name="presentableId" value="Default" />
       <updated>1472177806947</updated>
       <workItem from="1472177814843" duration="23533000" />
-      <workItem from="1472520743110" duration="8565000" />
+      <workItem from="1472520743110" duration="9176000" />
+      <workItem from="1473034425883" duration="16244000" />
     </task>
     <task id="LOCAL-00001" summary="Adding git to WebStorm">
       <created>1472446071083</created>
@@ -193,21 +192,27 @@
       <option name="project" value="LOCAL" />
       <updated>1472446071083</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Adding &quot;marching ants&quot; and grab boxes to active shape.">
+      <created>1472531689544</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1472531689544</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="32098000" />
+    <option name="totallyTimeSpent" value="48953000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1938" height="1048" extended-state="6" />
+    <frame x="-9" y="-9" width="1938" height="1048" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1427816" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3295583" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3295583" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295583" sideWeight="0.5021482" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295583" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16023268" sideWeight="0.49785176" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24973147" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -219,6 +224,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295583" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -254,11 +260,12 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Adding git to WebStorm" />
     <MESSAGE value="Adding &quot;marching ants&quot; and grab boxes to active shape." />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding &quot;marching ants&quot; and grab boxes to active shape." />
+    <MESSAGE value="Added better scaling&#10;Made better colors for marching ants for visibility&#10;Started context menu" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added better scaling&#10;Made better colors for marching ants for visibility&#10;Started context menu" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="4" />
+      <option name="time" value="8" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -268,39 +275,47 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#1188#1375#0" expanded="false" />
-            <element signature="e#1956#2033#0" expanded="false" />
-            <element signature="e#2302#2475#0" expanded="false" />
-            <element signature="e#2814#2939#0" expanded="false" />
-            <element signature="e#2976#3065#0" expanded="false" />
-            <element signature="e#5951#6775#0" expanded="false" />
-            <element signature="e#6795#6844#0" expanded="false" />
-            <element signature="e#6862#7369#0" expanded="false" />
-            <element signature="e#7634#7821#0" expanded="false" />
-            <element signature="e#7846#8016#0" expanded="false" />
-            <element signature="e#8044#8359#0" expanded="false" />
-            <element signature="e#8376#8454#0" expanded="false" />
+            <element signature="e#786#1313#0" expanded="false" />
+            <element signature="e#1396#1583#0" expanded="false" />
+            <element signature="e#1616#2012#0" expanded="false" />
+            <element signature="e#2050#2301#0" expanded="false" />
+            <element signature="e#2600#3871#0" expanded="false" />
+            <element signature="e#2684#2857#0" expanded="false" />
+            <element signature="e#2890#3229#0" expanded="false" />
+            <element signature="e#3559#3648#0" expanded="false" />
+            <element signature="e#4946#5404#0" expanded="false" />
+            <element signature="e#5430#7778#0" expanded="false" />
+            <element signature="e#7801#8419#0" expanded="false" />
+            <element signature="e#8439#8488#0" expanded="false" />
+            <element signature="e#9852#10069#0" expanded="false" />
+            <element signature="e#10093#10280#0" expanded="false" />
+            <element signature="e#10305#10475#0" expanded="false" />
+            <element signature="e#10503#10818#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/DnD.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="282" column="4" selection-start-line="282" selection-start-column="4" selection-end-line="282" selection-end-column="4" />
+        <state relative-caret-position="197">
+          <caret line="265" column="19" selection-start-line="265" selection-start-column="19" selection-end-line="265" selection-end-column="19" />
           <folding>
-            <element signature="e#1188#1375#0" expanded="false" />
-            <element signature="e#1956#2033#0" expanded="false" />
-            <element signature="e#2302#2475#0" expanded="false" />
-            <element signature="e#2814#2939#0" expanded="false" />
-            <element signature="e#2976#3065#0" expanded="false" />
-            <element signature="e#5951#6775#0" expanded="false" />
-            <element signature="e#6795#6844#0" expanded="false" />
-            <element signature="e#6862#7369#0" expanded="false" />
-            <element signature="e#7634#7821#0" expanded="false" />
-            <element signature="e#7846#8016#0" expanded="false" />
-            <element signature="e#8044#8359#0" expanded="false" />
-            <element signature="e#8376#8454#0" expanded="false" />
+            <element signature="e#786#1313#0" expanded="false" />
+            <element signature="e#1396#1583#0" expanded="false" />
+            <element signature="e#1616#2012#0" expanded="false" />
+            <element signature="e#2050#2301#0" expanded="false" />
+            <element signature="e#2600#3871#0" expanded="false" />
+            <element signature="e#2684#2857#0" expanded="false" />
+            <element signature="e#2890#3229#0" expanded="false" />
+            <element signature="e#3559#3648#0" expanded="false" />
+            <element signature="e#4946#5404#0" expanded="false" />
+            <element signature="e#5430#7778#0" expanded="false" />
+            <element signature="e#7801#8419#0" expanded="false" />
+            <element signature="e#8439#8488#0" expanded="false" />
+            <element signature="e#9852#10069#0" expanded="false" />
+            <element signature="e#10093#10280#0" expanded="false" />
+            <element signature="e#10305#10475#0" expanded="false" />
+            <element signature="e#10503#10818#0" expanded="false" />
           </folding>
         </state>
       </provider>

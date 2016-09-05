@@ -3,10 +3,11 @@
 <head>
 <title>Drag and Drop Prototype</title>
 <style>
-    #canvasHolder {height:90vh;box-sizing:border-box;border:1px solid black;float:left;overflow:auto;}
+    #canvasHolder {height:90vh;width:600px;box-sizing:border-box;border:1px solid black;float:left;overflow:auto;}
+    #canvasContext {position:absolute;left:-999px;z-index:999;}
     #zoom {float:left;}
     #zoom div {width:50px;height:50px;text-align:center;line-height:50px;}
-    #dnd {height:100%;}
+    /*#dnd {height:100%;}*/
 </style>
 
 </head>
@@ -15,6 +16,10 @@
 
 <div id="canvasHolder">
     <canvas height="3450" width="2400" id="dnd"></canvas>
+    <ul id="canvasContext">
+        <li>Bring to Front</li>
+        <li>Send to Back</li>
+    </ul>
 </div>
 <div id="zoom">
     <div id="zoomIn">+</div>
@@ -28,14 +33,14 @@
     const STROKE = 1;
 
     class Shape {
-        draw(context){
+        draw(context, scale){
             context.save();
-            this._doDraw(context);
+            this._doDraw(context, scale);
             context.restore();
         }
 
-        isPointInShape(x, y){
-            return this._isPointInShape(x, y);
+        isPointInShape(x, y, scale){
+            return this._isPointInShape(x, y, scale);
         }
 
         move(relativeX, relativeY){
@@ -59,23 +64,23 @@
             this.fill = fillType;
         }
 
-        _doDraw(context){
+        _doDraw(context, scale){
             context.beginPath();
             context.strokeStyle = "#FF0000";
-            context.translate(this.x, this.y);
-            context.rect(0, 0, this.boxWidth, this.boxHeight);
+            context.translate(Math.floor(this.x * scale), Math.floor(this.y * scale));
+            context.rect(0, 0, Math.ceil(this.boxWidth * scale), Math.ceil(this.boxHeight * scale));
             context.closePath();
 
             if(this.fill == FILL) context.fill();
             else context.stroke();
         }
 
-        _isPointInShape(x, y){
-            x = x - this.x;
-            y = y - this.y;
+        _isPointInShape(x, y, scale){
+            x = Math.floor(x - (this.x * scale));
+            y = Math.floor(y - (this.y * scale));
 
-            return x >= 0 && x <= this.boxWidth &&
-                   y >= 0 && y <= this.boxHeight;
+            return x >= 0 && x <= Math.ceil(this.boxWidth * scale) &&
+                   y >= 0 && y <= Math.ceil(this.boxHeight * scale);
         }
 
         _move(relativeX, relativeY){
@@ -99,18 +104,21 @@
             this.fill = fillType;
         }
 
-        _doDraw(context){
+        _doDraw(context, scale){
             context.beginPath();
-            context.translate(this.centerX, this.centerY);
-            context.arc(0, 0, this.radius, 0, 2 * Math.PI);
+            context.translate(Math.ceil(this.centerX * scale), Math.ceil(this.centerY * scale));
+            context.arc(0, 0, Math.ceil(this.radius * scale), 0, 2 * Math.PI);
             context.closePath();
 
             if(this.fill == FILL) context.fill();
             else context.stroke();
         }
 
-        _isPointInShape(x, y){
-            return Math.pow((x - this.centerX), 2) + Math.pow((y - this.centerY), 2) <= Math.pow(this.radius, 2);
+        _isPointInShape(x, y, scale){
+            var cX = Math.ceil(this.centerX * scale);
+            var cY = Math.ceil(this.centerY * scale);
+            var r = Math.ceil(this.radius * scale);
+            return Math.pow((x - cX), 2) + Math.pow((y - cY), 2) <= Math.pow(r, 2);
         }
 
         _move(relativeX, relativeY){
@@ -140,22 +148,28 @@
 
             this._shapeToDrag = null;
             this._activeShape = null;
-            this._scaleX = 1;
-            this._scaleY = 1;
             this._startX = 0;
             this._startY = 0;
+
+            this._scale = 1;
+
             this.canvas.addEventListener("mousedown", (e) => this._mouseDown(e));
             this.canvas.addEventListener("mouseup", (e) => this._mouseUp(e));
             this.canvas.addEventListener("mousemove", (e) => this._drag(e));
+            this.canvas.addEventListener("contextmenu", (e) => this._contextMenu(e));
 
         }
 
+        set scale(value) { this._scale = value; }
+        get scale() { return this._scale; }
+
         _draw(){
             this.reset();
+            this.context.lineWidth = 1 * this.scale;
             // Draw in reverse, that way recently added elements are on top
             for(var idx = this.shapes.length - 1; idx >= 0; --idx){
             // for(var shape of this.shapes){
-                this.shapes[idx].draw(this.context);
+                this.shapes[idx].draw(this.context, this.scale);
             }
 
             this._drawSelection();
@@ -167,30 +181,53 @@
             // Draw the marquee for the active shape
             if(this._activeShape){
 
+                // Get the size of a pixel
+                // var pxSize = 1 / (this.canvas.clientWidth / this.canvas.width);
+
                 var date = new Date();
                 var space = date.getMilliseconds() / (1000 / 28);
 
                 var c = this.context;
                 c.save();
-                c.setLineDash([8, 6]);
-                c.lineDashOffset = -space;
-
-                c.beginPath();
-                c.rect(this._activeShape.left, this._activeShape.top,
-                       this._activeShape.width, this._activeShape.height);
-                c.strokeStyle = "#000";
-                c.stroke();
-                c.closePath();
-
-                c.restore();
-                c.save();
-
-                c.beginPath();
                 c.lineWidth = 1;
-                c.rect(this._activeShape.left - 2, this._activeShape.top - 2, 5, 5);
-                c.rect(this._activeShape.left - 2, this._activeShape.top + this._activeShape.height - 3, 5, 5);
-                c.rect(this._activeShape.left + this._activeShape.width - 3, this._activeShape.top - 2, 5, 5);
-                c.rect(this._activeShape.left + this._activeShape.width - 3, this._activeShape.top + this._activeShape.height - 3, 5, 5);
+
+                for(var i = 0; i < 2; ++i){
+                    if(i == 0){
+                        c.setLineDash([8, 6]);
+                        c.lineDashOffset = -space;
+                    }
+                    else{
+                        c.setLineDash([6, 8]);
+                        c.lineDashOffset = -space + 8;
+                    }
+
+                    c.beginPath();
+                    c.rect(Math.floor(this._activeShape.left * this.scale), Math.floor(this._activeShape.top * this.scale),
+                            Math.ceil(this._activeShape.width * this.scale), Math.ceil(this._activeShape.height * this.scale));
+                    c.strokeStyle = i == 0 ? "#000" : "#FFF";
+                    c.stroke();
+                    c.closePath();
+                }
+
+                // Figure out the adjusted top, right, bottom, and left
+                var top = Math.floor(this._activeShape.top * this.scale);
+                var right = Math.ceil((this._activeShape.left + this._activeShape.width) * this.scale);
+                var bottom = Math.ceil((this._activeShape.top + this._activeShape.height) * this.scale);
+                var left = Math.floor(this._activeShape.left * this.scale);
+
+                var boxSize = 5;
+                var adjustment2 = 2;
+                var adjustment3 = 3;
+
+                c.strokeStyle = "#000";
+                c.globalCompositeOperation = "xor";
+                c.setLineDash([0]);
+
+                c.beginPath();
+                c.rect(left - adjustment2, top - adjustment2, boxSize, boxSize);
+                c.rect(left - adjustment2, bottom - adjustment3, boxSize, boxSize);
+                c.rect(right - adjustment3, top - adjustment2, boxSize, boxSize);
+                c.rect(right - adjustment3, bottom - adjustment3, boxSize, boxSize);
                 c.stroke();
                 c.closePath();
 
@@ -199,16 +236,12 @@
         }
 
         _mouseDown(e){
-            this._scaleX = this.canvas.width / this.canvas.clientWidth;
-            this._scaleY = this.canvas.height / this.canvas.clientHeight;
 
-            this._startX = e.pageX - this.canvas.offsetLeft + this._scrollX(this.canvas);
-            this._startY = e.pageY - this.canvas.offsetTop + this._scrollY(this.canvas);
-            var x = this._startX * this._scaleX;
-            var y = this._startY * this._scaleY;
+            this._startX = (e.pageX - this.canvas.offsetLeft + this._scrollX(this.canvas));
+            this._startY = (e.pageY - this.canvas.offsetTop + this._scrollY(this.canvas));
 
             for(var shape of this.shapes){
-                if(shape.isPointInShape(x, y)){
+                if(shape.isPointInShape(this._startX, this._startY, this.scale)){
                     this._shapeToDrag = this._activeShape = shape;
                     this.removeShape(this._shapeToDrag);
                     this.addShape(this._shapeToDrag);
@@ -224,16 +257,41 @@
         }
 
         _drag(e){
+            var x, y;
             if(this._shapeToDrag !== null) {
                 var mouseX = e.pageX - this.canvas.offsetLeft + this._scrollX(this.canvas);
                 var mouseY = e.pageY - this.canvas.offsetTop + this._scrollY(this.canvas);
 
-                var x = (mouseX - this._startX) * this._scaleX;
-                var y = (mouseY - this._startY) * this._scaleY;
+                 x = (mouseX - this._startX) / this.scale;
+                 y = (mouseY - this._startY) / this.scale;
                 this._shapeToDrag.move(x, y);
 
                 this._startX = mouseX;
                 this._startY = mouseY;
+            }
+            else{
+
+                x = (e.pageX - this.canvas.offsetLeft + this._scrollX(this.canvas));
+                y = (e.pageY - this.canvas.offsetTop + this._scrollY(this.canvas));
+
+                for(var shape of this.shapes){
+                    if(shape.isPointInShape(x, y, this.scale)){
+                        this.canvas.style.cursor = "pointer";
+                        return;
+                    }
+                }
+
+                this.canvas.style.cursor = "default";
+            }
+        }
+
+        _contextMenu(e){
+            if(this._activeShape) {
+                e.preventDefault();
+
+                var context = document.getElementById("canvasContext");
+                context.style.left = e.pageX + "px";
+                context.style.top = e.pageY + "px";
             }
         }
 
@@ -277,6 +335,7 @@
 
         reset(){
             this.context.clearRect(0, 0, this.width, this.height);
+            // this.overlayContext.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
         }
 
     }
@@ -285,44 +344,42 @@
     c.addShape(new Circle(25, 25, 20, FILL));
     c.addShape(new Box(50, 5, 40, 40, STROKE));
 
+    /*for(var x = 50; x < 2400; x += 60){
+        for(var y = 5; y < 3450; y += 60)
+        {
+            c.addShape(new Box(x, y, 40, 40, STROKE));
+        }
+    }*/
+
     var ch = document.getElementById("canvasHolder");
     ch.style.width = ch.offsetWidth + "px";
 
-    c.canvas.style.height = "auto";
-    c.canvas.style.width = c.canvas.width + "px";
-
     var zoomAmt = document.getElementById("zoomAmt");
-    zoomAmt.innerHTML = (c.canvas.clientWidth / c.canvas.width * 100).toFixed(2) + "%";
+
+    zoomAmt.innerHTML = (c.scale * 100).toFixed(2) + "%";
 
     document.getElementById("zoomIn").addEventListener("click", () =>{
-        var newZoom = (c.canvas.clientWidth / c.canvas.width) * 100;
-        if(Math.ceil(newZoom / 10) * 10 == parseFloat(newZoom.toFixed(3))){
-            newZoom += 10;
+        // var newZoom = (c.canvas.clientWidth / c.canvas.width) * 100;
+        if(Math.ceil(c.scale / .1) * .1 == c.scale){
+            c.scale += .1;
         }
         else{
-            newZoom = Math.ceil(newZoom / 10) * 10;
+            c.scale = Math.ceil(c.scale / .1) * .1;
         }
 
-        c.canvas.style.height = "auto";
-        c.canvas.style.width = c.canvas.width * (newZoom / 100) + "px";
-
-        zoomAmt.innerHTML = (c.canvas.clientWidth / c.canvas.width * 100).toFixed(2) + "%";
+        zoomAmt.innerHTML = (c.scale * 100).toFixed(2) + "%";
     });
 
 
     document.getElementById("zoomOut").addEventListener("click", () =>{
-        var newZoom = (c.canvas.clientWidth / c.canvas.width) * 100;
-        if(Math.floor(newZoom / 10) * 10 == parseFloat(newZoom.toFixed(3))){
-            newZoom -= 10;
+        if(Math.floor(c.scale / .1) * .1 == c.scale){
+            c.scale = Math.max(0.1, c.scale - 0.1);
         }
         else{
-            newZoom = Math.floor(newZoom / 10) * 10;
+            c.scale = Math.floor(c.scale / .1) * .1;
         }
 
-        c.canvas.style.height = "auto";
-        c.canvas.style.width = c.canvas.width * (newZoom / 100) + "px";
-
-        zoomAmt.innerHTML = (c.canvas.clientWidth / c.canvas.width * 100).toFixed(2) + "%";
+        zoomAmt.innerHTML = (c.scale * 100).toFixed(2) + "%";
     });
 
 
