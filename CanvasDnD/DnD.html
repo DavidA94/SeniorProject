@@ -86,6 +86,11 @@
     }
 
     class Shape {
+
+        constructor(x, y, width, height){
+            this.commitResize(x, y, width, height);
+        }
+
         draw(context, scale){
             context.save();
             this.__doDraw(context, scale);
@@ -98,6 +103,7 @@
 
         move(relativeX, relativeY){
             this.__move(relativeX, relativeY)
+            this.commitResize()
         }
 
         resize(resizeX, resizeY, anchor, preserveRatio = false, keepCenter = false){
@@ -105,11 +111,30 @@
                 throw "anchor must be ANCHOR_LEFT_TOP, ANCHOR_LEFT_BOTTOM, ANCHOR_RIGHT_TOP, or ANCHOR_RIGHT_BOTTOM";
             }
 
-            this.__resize(resizeX, resizeY, anchor, preserveRatio, keepCenter);
+            this.__resize(resizeX, resizeY, this._getResizeDirs(anchor), preserveRatio, keepCenter);
         }
 
         commitResize(){
-            this.__commitResize();
+            this.resizeBackupX = this.left;
+            this.resizeBackupY = this.top;
+            this.resizeBackupWidth = this.width;
+            this.resizeBackupHeight = this.height;
+        }
+
+
+        _getResizeDirs(anchor){
+            if(anchor === ANCHOR_LEFT_TOP){
+                return { x: -1, y: -1 };
+            }
+            else if(anchor === ANCHOR_LEFT_BOTTOM){
+                return { x: -1, y: 1 };
+            }
+            else if(anchor === ANCHOR_RIGHT_TOP){
+                return { x: 1, y: -1 };
+            }
+            else {
+                return { x: 1, y: 1 };
+            }
         }
 
         get top() { return this.__top; }
@@ -168,10 +193,6 @@
             this.centerY = centerY;
             this.radius = radius;
 
-            this.resizeCenterX = centerX;
-            this.resizeCenterY = centerY;
-            this.resizeRadius = radius;
-
             this.fill = fillType;
         }
 
@@ -195,45 +216,33 @@
         __move(relativeX, relativeY){
             this.centerX += relativeX;
             this.centerY += relativeY;
-
-            this.resizeCenterX = this.centerX;
-            this.resizeCenterY = this.centerY;
         }
 
-        __resize(resizeX, resizeY, anchor, preserveRatio, keepCenter){
+        __resize(resizeXAmt, resizeYAmt, dirs, preserveRatio, keepCenter){
             // preserveRatio not used
 
-            var xDir, yDir;
-            if(anchor === ANCHOR_LEFT_TOP){
-                xDir = yDir = -1;
-            }
-            else if(anchor === ANCHOR_LEFT_BOTTOM){
-                xDir = -1;
-                yDir = 1;
-            }
-            else if(anchor === ANCHOR_RIGHT_TOP){
-                xDir = 1;
-                yDir = -1;
-            }
-            else {
-                xDir = yDir = 1;
-            }
+            var adjAmt = Math.max(Math.abs(resizeXAmt), Math.abs(resizeYAmt));
 
-            var adjAmt = Math.max(resizeX, resizeY);
+
+
+            // Some directions make positive be negative, and negative be positive.
+            // We have to do the multiplication here, and then again below so that
+            // the center will move +/-, while the overall size will always be positive
+            resizeXAmt *= dirs.x;
+            resizeYAmt *= dirs.y;
+
+            var adjAmt = Math.max(resizeXAmt, resizeYAmt);
+            var resizeRadius = (this.resizeBackupWidth / 2);
+            var resizeXPos = this.resizeBackupX + resizeRadius;
+            var resizeYPos = this.resizeBackupY + resizeRadius;
 
             if(!keepCenter) {
                 adjAmt /= 2;
-                this.centerX = this.resizeCenterX + (adjAmt * xDir);
-                this.centerY = this.resizeCenterY + (adjAmt * yDir);
+                this.centerX = resizeXPos + (adjAmt * dirs.x);
+                this.centerY = resizeYPos + (adjAmt * dirs.y);
             }
 
-            this.radius = this.resizeRadius + adjAmt;
-        }
-
-        __commitResize(){
-            this.resizeCenterX = this.centerX;
-            this.resizeCenterY = this.centerY;
-            this.resizeRadius = this.radius;
+            this.radius = Math.abs(resizeRadius + adjAmt);
         }
 
         get __top() { return this.centerY - this.radius; }
