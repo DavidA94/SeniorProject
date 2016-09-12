@@ -54,6 +54,10 @@
     const ANCHOR_RIGHT_TOP = 3;
     const ANCHOR_RIGHT_BOTTOM = 4;
 
+    // ._  => Private
+    // .__ => Protected
+
+
     class Rectangle{
         constructor(x, y, width, height){
             this.x = x;
@@ -86,9 +90,17 @@
     }
 
     class Shape {
-
         constructor(x, y, width, height){
-            this.commitResize(x, y, width, height);
+            this.__x = x;
+            this.__y = y;
+            this.__width = width;
+            this.__height = height;
+
+            // Must be defined here, thus not calling commitResize
+            this.resizeOrigX = x;
+            this.resizeOrigY = y;
+            this.resizeOrigWidth = width;
+            this.resizeOrigHeight = height;
         }
 
         draw(context, scale){
@@ -98,27 +110,101 @@
         }
 
         isPointInShape(x, y, scale){
-            return this.__isPointInShape(x, y, scale);
+            x = Math.floor(x - (this.x * scale));
+            y = Math.floor(y - (this.y * scale));
+
+            return x >= 0 && x <= Math.ceil(this.width * scale) &&
+                    y >= 0 && y <= Math.ceil(this.height * scale);
         }
 
         move(relativeX, relativeY){
-            this.__move(relativeX, relativeY)
+            this.__x += relativeX;
+            this.__y += relativeY;
             this.commitResize()
         }
 
         resize(resizeX, resizeY, anchor, preserveRatio = false, keepCenter = false){
+
             if(anchor < ANCHOR_LEFT_TOP || anchor > ANCHOR_RIGHT_BOTTOM){
                 throw "anchor must be ANCHOR_LEFT_TOP, ANCHOR_LEFT_BOTTOM, ANCHOR_RIGHT_TOP, or ANCHOR_RIGHT_BOTTOM";
             }
 
-            this.__resize(resizeX, resizeY, this._getResizeDirs(anchor), preserveRatio, keepCenter);
+            // var resizeDirs = this._getResizeDirs(anchor);
+
+            var newX, newY, newW, newH;
+
+            if(preserveRatio){
+                console.log({resizeX, resizeY});
+
+                if(Math.abs(resizeX) > Math.abs(resizeY)){
+                    var adjAmt = 1 + (resizeX / this.resizeOrigWidth);
+                    resizeY = -1 * (this.resizeOrigHeight - (this.resizeOrigHeight * adjAmt));
+                }
+                else{
+                    var adjAmt = 1 + (resizeY / this.resizeOrigHeight);
+                    resizeX = -1 * (this.resizeOrigWidth - (this.resizeOrigWidth * adjAmt));
+                }
+
+                console.log({adjAmt, resizeX, resizeY});
+            }
+
+            // If we're on the left side
+            if(anchor === ANCHOR_LEFT_TOP || anchor === ANCHOR_LEFT_BOTTOM){
+                if(resizeX > this.resizeOrigWidth){
+                    newX = this.resizeOrigX + this.resizeOrigWidth;
+                    newW = resizeX - this.resizeOrigWidth;
+                }
+                else{
+                    newX = this.resizeOrigX + resizeX;
+                    newW = this.resizeOrigWidth - resizeX;
+                }
+            }
+            // Otherwise, it must be the right
+            else{
+                if(-resizeX > this.resizeOrigWidth){
+                    newX = this.resizeOrigX + resizeX + this.resizeOrigWidth;
+                    newW = Math.abs(this.resizeOrigX - newX);
+                }
+                else{
+                    newX = this.resizeOrigX;
+                    newW = this.resizeOrigWidth + resizeX;
+                }
+            }
+
+            // If we're on the top
+            if(anchor === ANCHOR_LEFT_TOP || anchor === ANCHOR_RIGHT_TOP){
+                if(resizeY > this.resizeOrigHeight){
+                    newY = this.resizeOrigY + this.resizeOrigHeight;
+                    newH = resizeY - this.resizeOrigHeight;
+                }
+                else {
+                    newY = this.resizeOrigY + resizeY;
+                    newH = this.resizeOrigHeight - resizeY;
+                }
+            }
+            // Otherwise, it must be the bottom
+            else{
+                if(-resizeY > this.resizeOrigHeight){
+                    newY = this.resizeOrigY + resizeY + this.resizeOrigHeight;
+                    newH = Math.abs(this.resizeOrigY - newY);
+                }
+                else{
+                    newY = this.resizeOrigY;
+                    newH = this.resizeOrigHeight + resizeY;
+                }
+            }
+
+            this.__x = newX;
+            this.__y = newY;
+            this.__width = newW;
+            this.__height = newH;
         }
 
         commitResize(){
-            this.resizeBackupX = this.left;
-            this.resizeBackupY = this.top;
-            this.resizeBackupWidth = this.width;
-            this.resizeBackupHeight = this.height;
+            this.resizeOrigX = this.x;
+            this.resizeOrigY = this.y;
+            this.resizeOrigWidth = this.width;
+            this.resizeOrigHeight = this.height;
         }
 
 
@@ -137,61 +223,34 @@
             }
         }
 
-        get top() { return this.__top; }
-        get left() { return this.__left; }
+        get x() { return this.__x; }
+        get y() { return this.__y; }
         get width() { return this.__width; }
         get height() { return this.__height; }
     }
 
     class Box extends Shape {
         constructor(x, y, width, height, fillType) {
-            super();
+            super(x, y, width, height);
 
-            this.rect = new Rectangle(x, y, width, height);
             this.fill = fillType;
         }
 
         __doDraw(context, scale){
             context.beginPath();
             context.strokeStyle = "#FF0000";
-            context.translate(Math.floor(this.left * scale), Math.floor(this.top * scale));
-            context.rect(0, 0, Math.ceil(this.width * scale), Math.ceil(this.height * scale));
+            context.translate(Math.floor(this.__x * scale), Math.floor(this.__y * scale));
+            context.rect(0, 0, Math.ceil(this.__width * scale), Math.ceil(this.__height * scale));
             context.closePath();
 
             if(this.fill == FILL) context.fill();
             else context.stroke();
         }
-
-        __isPointInShape(x, y, scale){
-            x = Math.floor(x - (this.left * scale));
-            y = Math.floor(y - (this.top * scale));
-
-            return x >= 0 && x <= Math.ceil(this.width * scale) &&
-                   y >= 0 && y <= Math.ceil(this.height * scale);
-        }
-
-        __move(relativeX, relativeY){
-            this.rect.X += relativeX;
-            this.rect.Y += relativeY;
-        }
-
-        __resize(resizeX, resizeY, anchor, preserveRatio, keepCenter){
-
-        }
-
-        get __top() { return this.rect.Top; }
-        get __left() { return this.rect.Left }
-        get __width() { return this.rect.Width; }
-        get __height() { return this.rect.Height; }
     }
 
     class Circle extends Shape {
         constructor(centerX, centerY, radius, fillType){
-            super();
-
-            this.centerX = centerX;
-            this.centerY = centerY;
-            this.radius = radius;
+            super(centerX - radius, centerY - radius, radius * 2, radius * 2);
 
             this.fill = fillType;
         }
@@ -206,49 +265,20 @@
             else context.stroke();
         }
 
-        __isPointInShape(x, y, scale){
+        isPointInShape(x, y, scale){
             var cX = Math.ceil(this.centerX * scale);
             var cY = Math.ceil(this.centerY * scale);
             var r = Math.ceil(this.radius * scale);
             return Math.pow((x - cX), 2) + Math.pow((y - cY), 2) <= Math.pow(r, 2);
         }
 
-        __move(relativeX, relativeY){
-            this.centerX += relativeX;
-            this.centerY += relativeY;
+        resize(resizeX, resizeY, anchor, preserveRatio = false, keepCenter = false){
+            super.resize(resizeX, resizeY, anchor, true, keepCenter);
         }
 
-        __resize(resizeXAmt, resizeYAmt, dirs, preserveRatio, keepCenter){
-            // preserveRatio not used
-
-            var adjAmt = Math.max(Math.abs(resizeXAmt), Math.abs(resizeYAmt));
-
-
-
-            // Some directions make positive be negative, and negative be positive.
-            // We have to do the multiplication here, and then again below so that
-            // the center will move +/-, while the overall size will always be positive
-            resizeXAmt *= dirs.x;
-            resizeYAmt *= dirs.y;
-
-            var adjAmt = Math.max(resizeXAmt, resizeYAmt);
-            var resizeRadius = (this.resizeBackupWidth / 2);
-            var resizeXPos = this.resizeBackupX + resizeRadius;
-            var resizeYPos = this.resizeBackupY + resizeRadius;
-
-            if(!keepCenter) {
-                adjAmt /= 2;
-                this.centerX = resizeXPos + (adjAmt * dirs.x);
-                this.centerY = resizeYPos + (adjAmt * dirs.y);
-            }
-
-            this.radius = Math.abs(resizeRadius + adjAmt);
-        }
-
-        get __top() { return this.centerY - this.radius; }
-        get __left() { return this.centerX - this.radius; }
-        get __width() { return this.radius * 2; }
-        get __height() { return this.radius * 2; }
+        get centerX() { return this.x + (this.width / 2.0); }
+        get centerY() { return this.y + (this.height / 2.0); }
+        get radius() { return (this.width / 2.0); }
     }
 
     class Canvas {
@@ -320,7 +350,7 @@
                     }
 
                     c.beginPath();
-                    c.rect(Math.floor(this._activeShape.left * this.scale), Math.floor(this._activeShape.top * this.scale),
+                    c.rect(Math.floor(this._activeShape.x * this.scale), Math.floor(this._activeShape.y * this.scale),
                             Math.ceil(this._activeShape.width * this.scale), Math.ceil(this._activeShape.height * this.scale));
                     c.strokeStyle = i == 0 ? "#000" : "#FFF";
                     c.stroke();
@@ -383,7 +413,7 @@
             if(this._resizeAnchor && this._shapeToDrag){
                 x = (mouseX - this._startX) / this.scale;
                 y = (mouseY - this._startY) / this.scale;
-                this._shapeToDrag.resize(x, y, this._resizeAnchor);
+                this._shapeToDrag.resize(x, y, this._resizeAnchor, true);
 
                 /*this._startX = mouseX;
                 this._startY = mouseY;*/
@@ -444,10 +474,10 @@
                 return null;
             }
 
-            var top = Math.floor(this._activeShape.top * this.scale);
-            var right = Math.ceil((this._activeShape.left + this._activeShape.width) * this.scale);
-            var bottom = Math.ceil((this._activeShape.top + this._activeShape.height) * this.scale);
-            var left = Math.floor(this._activeShape.left * this.scale);
+            var top = Math.floor(this._activeShape.y * this.scale);
+            var right = Math.ceil((this._activeShape.x + this._activeShape.width) * this.scale);
+            var bottom = Math.ceil((this._activeShape.y + this._activeShape.height) * this.scale);
+            var left = Math.floor(this._activeShape.x * this.scale);
 
             var boxSize = 5;
             var adjustment2 = 2;
@@ -587,7 +617,7 @@
             this.canvas = new Canvas(CANVAS_ID);
             this.canvas.scale = 1;
             this.canvas.addShape(new Circle(25, 25, 20, FILL));
-            this.canvas.addShape(new Box(50, 5, 40, 40, STROKE));
+            this.canvas.addShape(new Box(50, 5, 48, 27, STROKE));
         }
 
         _initializeCanvasContext(){
