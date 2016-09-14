@@ -11,7 +11,7 @@
     #canvasContext li:hover {color:white;background:#0066aa;}
     #zoom {float:left;}
     #zoom div {width:50px;height:50px;text-align:center;line-height:50px;}
-    /*#dnd {height:100%;}*/
+    #dnd {border:1px solid black;}
 </style>
 
 </head>
@@ -64,12 +64,13 @@
 
 
     class Property{
-        constructor(category, type, defaultValue, values = null){
+        constructor(category, type, defaultValue, values = null, unit = null){
 
             this._category = category;
             this._type = Property.Type[type];
             this._value = defaultValue;
             this._values = values;
+            this._unit = unit;
 
             if(!this.type){
                 throw "Invalid type. Must use type found in Property.Type";
@@ -87,6 +88,9 @@
 
         get values() { return this._values; }
         set values(value) { this._values = value; }
+
+        get unit() { return this._unit; }
+        set unit(value) { this._unit = value; }
 
         static get Type(){
             return {
@@ -159,8 +163,8 @@
         }
 
         move(relativeX, relativeY){
-            this.__x += relativeX;
-            this.__y += relativeY;
+            this.__x = this.resizeOrigX + relativeX;
+            this.__y = this.resizeOrigY + relativeY;
         }
 
         resize(resizeX, resizeY, anchor, preserveRatio = false, keepCenter = false) {
@@ -301,12 +305,12 @@
             this.context.lineWidth = 1;
             this.context.translate(0.5, 0.5);
 
+            this._snap = false;
+            this._showGrid = true;
+
             this.shapes = [];
 
             window.requestAnimationFrame(() => this._draw());
-
-            this.width = parseInt(this.canvas.width);
-            this.height = parseInt(this.canvas.height);
 
             this._shapeToDrag = null;
             this._activeShape = null;
@@ -325,8 +329,20 @@
         set scale(value) { this._scale = value; }
         get scale() { return this._scale; }
 
+        get width() { return parseInt(this.canvas.width); }
+        get height() { return parseInt(this.canvas.height); }
+
+        get gridSize() { return (.025 * 300) * this.scale; }
+
+        get snapToGrid() { return this._snap; }
+        set snapToGrid(value) { this._snap = value; }
+
+        get showGrid() { return this._showGrid; }
+        set showGrid(value) { this._showGrid = value; }
+
         _draw(){
             this.reset();
+            this._drawPage();
             this.context.lineWidth = 1 * this.scale;
 
             // Draw in reverse, that way recently added elements are on top
@@ -386,6 +402,40 @@
 
                 c.restore();
             }
+        }
+
+        _drawPage(){
+
+            var margin = (.25 * 300) * this.scale;
+
+            this.context.save();
+            this.context.strokeStyle = "#777";
+            this.context.lineWidth = 1;
+            this.context.strokeRect(margin, margin, this.width - (2 * margin), this.height - (2 * margin));
+
+            if(this.scale <= .51 || !this.showGrid) {
+                this.context.restore();
+                return;
+            }
+
+            this.context.beginPath();
+            this.context.strokeStyle = "#ddd";
+            this.context.lineWidth = .5;
+            this.context.moveTo(0, 0);
+
+            for(var xPos = this.gridSize; xPos < this.width; xPos += this.gridSize){
+                this.context.moveTo(xPos, 0);
+                this.context.lineTo(xPos, this.height);
+            }
+            for(var yPos = this.gridSize; yPos < this.height; yPos += this.gridSize){
+                this.context.moveTo(0, yPos);
+                this.context.lineTo(this.width, yPos);
+            }
+
+            this.context.stroke();
+            this.context.closePath();
+
+            this.context.restore();
         }
 
         _keyUp(e){
@@ -451,10 +501,40 @@
             else if(this._shapeToDrag) {
                  x = (mouseX - this._startX) / this.scale;
                  y = (mouseY - this._startY) / this.scale;
-                this._shapeToDrag.move(x, y);
 
-                this._startX = mouseX;
-                this._startY = mouseY;
+                if(e.shiftKey){
+                    var absX = Math.abs(x);
+                    var absY = Math.abs(y);
+
+                    var big = Math.max(absX, absY);
+                    var small = Math.min(absX, absY);
+
+                    // Straight if we've moved < 5, or if they're not within 90% of each other
+                    if((absX < 5 && absY < 5) || (small / big) < .7){
+                        if(absX > absY){
+                            y = 0;
+                        }
+                        else{
+                            x = 0;
+                        }
+                    }
+                    else{
+                        if(absX > absY){
+                            y = absX * (absY == y ? 1 : -1);
+                        }
+                        else{
+                            x = absY * (absX == x ? 1 : -1);;
+                        }
+                    }
+                }
+
+                // snap to grid
+                if(this.snapToGrid){
+                    x = Math.round(x / this.gridSize) * this.gridSize;
+                    y = Math.round(y / this.gridSize) * this.gridSize;
+                }
+
+                this._shapeToDrag.move(x, y);
 
                 return
             }
@@ -535,7 +615,6 @@
                 return node.scrollLeft + this._scrollX(node.parentNode);
             }
 
-            console.log();
             return node.scrollLeft ? node.scrollLeft : 0;
         }
 
@@ -602,7 +681,6 @@
 
         reset(){
             this.context.clearRect(0, 0, this.width, this.height);
-            // this.overlayContext.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
         }
 
     }
@@ -713,6 +791,9 @@
 
         _updateZoomAmt(){
             this.zoomAmt.innerHTML = (this.canvas.scale * 100).toFixed(2) + "%";
+
+            this.canvas.canvas.width = (this.pageMode == PAGE_MODE_P ? PAGE_WIDTH : PAGE_HEIGHT) * this.canvas.scale;
+            this.canvas.canvas.height = (this.pageMode == PAGE_MODE_L ? PAGE_WIDTH : PAGE_HEIGHT) * this.canvas.scale;
         }
     }
 
