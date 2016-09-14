@@ -49,14 +49,55 @@
     const CANVAS_HOLDER_ID = "canvasHolder";
     const FORM_BUILDER_ID = "formBuilder";
 
-    const ANCHOR_LEFT_TOP = 1;
-    const ANCHOR_LEFT_BOTTOM = 2;
-    const ANCHOR_RIGHT_TOP = 3;
-    const ANCHOR_RIGHT_BOTTOM = 4;
+    const Anchor = {
+        LeftTop: 1,
+        LeftBottom: 2,
+        RightTop: 3,
+        RightBottom: 4
+    };
+
+
+    const ESCAPE_KEY = 27;
 
     // ._  => Private
     // .__ => Protected
 
+
+    class Property{
+        constructor(category, type, defaultValue, values = null){
+
+            this._category = category;
+            this._type = Property.Type[type];
+            this._value = defaultValue;
+            this._values = values;
+
+            if(!this.type){
+                throw "Invalid type. Must use type found in Property.Type";
+            }
+        }
+
+        get category() { return this._category; }
+        set category(value) { this._category = value; }
+
+        get type() { return this._type; }
+        set type(value) { this._type = value; }
+
+        get value() { return this._value; }
+        set value(value) { this._value = value; }
+
+        get values() { return this._values; }
+        set values(value) { this._values = value; }
+
+        static get Type(){
+            return {
+                INT: "INT",
+                STRING: "STRING",
+                DOUBLE: "DOUBLE",
+                DROP_DOWN: "DROP_DOWN",
+                COLOR: "COLOR",
+            };
+        }
+    }
 
     class Rectangle{
         constructor(x, y, width, height){
@@ -120,78 +161,60 @@
         move(relativeX, relativeY){
             this.__x += relativeX;
             this.__y += relativeY;
-            this.commitResize()
         }
 
-        resize(resizeX, resizeY, anchor, preserveRatio = false, keepCenter = false){
+        resize(resizeX, resizeY, anchor, preserveRatio = false, keepCenter = false) {
 
-            if(anchor < ANCHOR_LEFT_TOP || anchor > ANCHOR_RIGHT_BOTTOM){
+            if (anchor < Anchor.LeftTop || anchor > Anchor.RightBottom) {
                 throw "anchor must be ANCHOR_LEFT_TOP, ANCHOR_LEFT_BOTTOM, ANCHOR_RIGHT_TOP, or ANCHOR_RIGHT_BOTTOM";
             }
 
-            // var resizeDirs = this._getResizeDirs(anchor);
-
             var newX, newY, newW, newH;
 
-            if(preserveRatio){
-                console.log({resizeX, resizeY});
-
-                if(Math.abs(resizeX) > Math.abs(resizeY)){
+            if (preserveRatio) {
+                // If X is bigger
+                if (Math.abs(resizeX) > Math.abs(resizeY)) {
                     var adjAmt = 1 + (resizeX / this.resizeOrigWidth);
                     resizeY = -1 * (this.resizeOrigHeight - (this.resizeOrigHeight * adjAmt));
                 }
-                else{
+                // Else Y is bigger
+                else {
                     var adjAmt = 1 + (resizeY / this.resizeOrigHeight);
                     resizeX = -1 * (this.resizeOrigWidth - (this.resizeOrigWidth * adjAmt));
                 }
-
-                console.log({adjAmt, resizeX, resizeY});
             }
+
+            var adjScale = keepCenter ? 2 : 1;
 
             // If we're on the left side
-            if(anchor === ANCHOR_LEFT_TOP || anchor === ANCHOR_LEFT_BOTTOM){
-                if(resizeX > this.resizeOrigWidth){
-                    newX = this.resizeOrigX + this.resizeOrigWidth;
-                    newW = resizeX - this.resizeOrigWidth;
-                }
-                else{
-                    newX = this.resizeOrigX + resizeX;
-                    newW = this.resizeOrigWidth - resizeX;
-                }
+            if (anchor === Anchor.LeftTop || anchor === Anchor.LeftBottom) {
+                newX = this.resizeOrigX + resizeX;
+                newW = this.resizeOrigWidth - (resizeX * adjScale);
             }
             // Otherwise, it must be the right
-            else{
-                if(-resizeX > this.resizeOrigWidth){
-                    newX = this.resizeOrigX + resizeX + this.resizeOrigWidth;
-                    newW = Math.abs(this.resizeOrigX - newX);
-                }
-                else{
-                    newX = this.resizeOrigX;
-                    newW = this.resizeOrigWidth + resizeX;
-                }
+            else {
+                newX = this.resizeOrigX - (keepCenter ? resizeX : 0);
+                newW = this.resizeOrigWidth + (resizeX * adjScale);
             }
 
             // If we're on the top
-            if(anchor === ANCHOR_LEFT_TOP || anchor === ANCHOR_RIGHT_TOP){
-                if(resizeY > this.resizeOrigHeight){
-                    newY = this.resizeOrigY + this.resizeOrigHeight;
-                    newH = resizeY - this.resizeOrigHeight;
-                }
-                else {
-                    newY = this.resizeOrigY + resizeY;
-                    newH = this.resizeOrigHeight - resizeY;
-                }
+            if (anchor === Anchor.LeftTop || anchor === Anchor.RightTop) {
+                newY = this.resizeOrigY + resizeY;
+                newH = this.resizeOrigHeight - (resizeY * adjScale);
             }
             // Otherwise, it must be the bottom
-            else{
-                if(-resizeY > this.resizeOrigHeight){
-                    newY = this.resizeOrigY + resizeY + this.resizeOrigHeight;
-                    newH = Math.abs(this.resizeOrigY - newY);
-                }
-                else{
-                    newY = this.resizeOrigY;
-                    newH = this.resizeOrigHeight + resizeY;
-                }
+            else {
+                newY = this.resizeOrigY - (keepCenter ? resizeY : 0);
+                newH = this.resizeOrigHeight + (resizeY * adjScale);
+            }
+
+            if(newW < 0){
+                newX += newW;
+                newW = Math.abs(newW);
+            }
+            if(newH < 0){
+                newY += newH;
+                newH = Math.abs(newH);
             }
 
             this.__x = newX;
@@ -207,20 +230,11 @@
             this.resizeOrigHeight = this.height;
         }
 
-
-        _getResizeDirs(anchor){
-            if(anchor === ANCHOR_LEFT_TOP){
-                return { x: -1, y: -1 };
-            }
-            else if(anchor === ANCHOR_LEFT_BOTTOM){
-                return { x: -1, y: 1 };
-            }
-            else if(anchor === ANCHOR_RIGHT_TOP){
-                return { x: 1, y: -1 };
-            }
-            else {
-                return { x: 1, y: 1 };
-            }
+        cancelResize(){
+            this.__x = this.resizeOrigX;
+            this.__y = this.resizeOrigY;
+            this.__width = this.resizeOrigWidth;
+            this.__height = this.resizeOrigHeight;
         }
 
         get x() { return this.__x; }
@@ -258,7 +272,8 @@
         __doDraw(context, scale){
             context.beginPath();
             context.translate(Math.ceil(this.centerX * scale), Math.ceil(this.centerY * scale));
-            context.arc(0, 0, Math.ceil(this.radius * scale), 0, 2 * Math.PI);
+            // context.arc(0, 0, Math.ceil(this.radius * scale), 0, 2 * Math.PI);
+            context.ellipse(0, 0, Math.ceil(this.radiusX * scale), Math.ceil(this.radiusY * scale), 0, 0, 2 * Math.PI);
             context.closePath();
 
             if(this.fill == FILL) context.fill();
@@ -268,17 +283,15 @@
         isPointInShape(x, y, scale){
             var cX = Math.ceil(this.centerX * scale);
             var cY = Math.ceil(this.centerY * scale);
-            var r = Math.ceil(this.radius * scale);
-            return Math.pow((x - cX), 2) + Math.pow((y - cY), 2) <= Math.pow(r, 2);
-        }
-
-        resize(resizeX, resizeY, anchor, preserveRatio = false, keepCenter = false){
-            super.resize(resizeX, resizeY, anchor, true, keepCenter);
+            var rX = Math.ceil(this.radiusX * scale);
+            var rY = Math.ceil(this.radiusY * scale);
+            return (Math.pow((x - cX), 2) / Math.pow(rX, 2)) + (Math.pow((y - cY), 2) / Math.pow(rY, 2)) <= 1;
         }
 
         get centerX() { return this.x + (this.width / 2.0); }
         get centerY() { return this.y + (this.height / 2.0); }
-        get radius() { return (this.width / 2.0); }
+        get radiusX() { return (this.width / 2.0); }
+        get radiusY() { return (this.height / 2.0); }
     }
 
     class Canvas {
@@ -306,6 +319,7 @@
             this.canvas.addEventListener("mousedown", (e) => this._mouseDown(e));
             this.canvas.addEventListener("mouseup", (e) => this._mouseUp(e));
             this.canvas.addEventListener("mousemove", (e) => this._mouseMove(e));
+            window.addEventListener("keyup", (e) => this._keyUp(e));
         }
 
         set scale(value) { this._scale = value; }
@@ -314,6 +328,7 @@
         _draw(){
             this.reset();
             this.context.lineWidth = 1 * this.scale;
+
             // Draw in reverse, that way recently added elements are on top
             for(var idx = this.shapes.length - 1; idx >= 0; --idx){
             // for(var shape of this.shapes){
@@ -362,7 +377,7 @@
                 c.setLineDash([0]);
 
                 c.beginPath();
-                for(var anchor = ANCHOR_LEFT_TOP; anchor <= ANCHOR_RIGHT_BOTTOM; ++anchor){
+                for(var anchor = Anchor.LeftTop; anchor <= Anchor.RightBottom; ++anchor){
                     var box = this._getAnchorRect(anchor);
                     c.rect(box.Left, box.Top, box.Width, box.Height);
                 }
@@ -373,7 +388,22 @@
             }
         }
 
+        _keyUp(e){
+            e.preventDefault();
+
+            if(e.keyCode === ESCAPE_KEY){
+                if(this._shapeToDrag){
+                    this._shapeToDrag.cancelResize();
+                    this._shapeToDrag = null;
+                    this._resizeAnchor = null;
+
+                    this.canvas.style.cursor = "default";
+                }
+            }
+        }
+
         _mouseDown(e){
+            e.preventDefault();
 
             this._startX = (e.pageX - this.canvas.offsetLeft + this._scrollX(this.canvas));
             this._startY = (e.pageY - this.canvas.offsetTop + this._scrollY(this.canvas));
@@ -394,18 +424,21 @@
             this._shapeToDrag = this._activeShape = null;
         }
 
-        _mouseUp(){
-            if(this._shapeToDrag && this._resizeAnchor){
-                this._shapeToDrag.commitResize();
-            }
+        _mouseUp(e){
+            e.preventDefault();
 
-            this._shapeToDrag = null;
+            if(this._shapeToDrag){
+                this._shapeToDrag.commitResize();
+                this._shapeToDrag = null;
+            }
 
             var context = document.getElementById("canvasContext");
             context.style.left = "-999px";
         }
 
         _mouseMove(e){
+            e.preventDefault();
+
             var x, y;
             var mouseX = e.pageX - this.canvas.offsetLeft + this._scrollX(this.canvas);
             var mouseY = e.pageY - this.canvas.offsetTop + this._scrollY(this.canvas);
@@ -413,10 +446,7 @@
             if(this._resizeAnchor && this._shapeToDrag){
                 x = (mouseX - this._startX) / this.scale;
                 y = (mouseY - this._startY) / this.scale;
-                this._shapeToDrag.resize(x, y, this._resizeAnchor, true);
-
-                /*this._startX = mouseX;
-                this._startY = mouseY;*/
+                this._shapeToDrag.resize(x, y, this._resizeAnchor, e.shiftKey, e.altKey);
             }
             else if(this._shapeToDrag) {
                  x = (mouseX - this._startX) / this.scale;
@@ -431,27 +461,27 @@
             else if(this._activeShape){
                 var allowedDist = 5;
                 // Try to see if we're within 5px of any of the borders of an anchor
-                if (this._getAnchorRect(ANCHOR_LEFT_TOP).isPointInShape(mouseX, mouseY, allowedDist)){
+                if (this._getAnchorRect(Anchor.LeftTop).isPointInShape(mouseX, mouseY, allowedDist)){
                     this.canvas.style.cursor = "nwse-resize";
-                    this._resizeAnchor = ANCHOR_LEFT_TOP;
+                    this._resizeAnchor = Anchor.LeftTop;
 
                     return;
                 }
-                else if(this._getAnchorRect(ANCHOR_RIGHT_BOTTOM).isPointInShape(mouseX, mouseY, allowedDist)){
+                else if(this._getAnchorRect(Anchor.RightBottom).isPointInShape(mouseX, mouseY, allowedDist)){
                     this.canvas.style.cursor = "nwse-resize";
-                    this._resizeAnchor = ANCHOR_RIGHT_BOTTOM;
+                    this._resizeAnchor = Anchor.RightBottom;
 
                     return;
                 }
-                else if(this._getAnchorRect(ANCHOR_RIGHT_TOP).isPointInShape(mouseX, mouseY, allowedDist)){
+                else if(this._getAnchorRect(Anchor.RightTop).isPointInShape(mouseX, mouseY, allowedDist)){
                     this.canvas.style.cursor = "nesw-resize";
-                    this._resizeAnchor = ANCHOR_RIGHT_TOP;
+                    this._resizeAnchor = Anchor.RightTop;
 
                     return;
                 }
-                else if(this._getAnchorRect(ANCHOR_LEFT_BOTTOM).isPointInShape(mouseX, mouseY, allowedDist)) {
+                else if(this._getAnchorRect(Anchor.LeftBottom).isPointInShape(mouseX, mouseY, allowedDist)) {
                     this.canvas.style.cursor = "nesw-resize";
-                    this._resizeAnchor = ANCHOR_LEFT_BOTTOM;
+                    this._resizeAnchor = Anchor.LeftBottom;
 
                     return;
                 }
@@ -483,16 +513,16 @@
             var adjustment2 = 2;
             var adjustment3 = 3;
 
-            if(anchorCorner === ANCHOR_LEFT_TOP){
+            if(anchorCorner === Anchor.LeftTop){
                 return new Rectangle(left - adjustment2, top - adjustment2, boxSize, boxSize);
             }
-            else if(anchorCorner === ANCHOR_LEFT_BOTTOM){
+            else if(anchorCorner === Anchor.LeftBottom){
                 return new Rectangle(left - adjustment2, bottom - adjustment3, boxSize, boxSize);
             }
-            else if(anchorCorner === ANCHOR_RIGHT_TOP){
+            else if(anchorCorner === Anchor.RightTop){
                 return new Rectangle(right - adjustment3, top - adjustment2, boxSize, boxSize);
             }
-            else if(anchorCorner === ANCHOR_RIGHT_BOTTOM){
+            else if(anchorCorner === Anchor.RightBottom){
                 return new Rectangle(right - adjustment3, bottom - adjustment3, boxSize, boxSize);
             }
             else{
