@@ -12,6 +12,7 @@
     #zoom {float:left;}
     #zoom div {width:50px;height:50px;text-align:center;line-height:50px;}
     #dnd {border:1px solid black;}
+    #properties {float:left;}
 </style>
 
 </head>
@@ -31,7 +32,14 @@
     <div id="zoomAmt"></div>
 </div>-->
 
-<div id="formBuilder"></div>
+<div id="formBuilder">
+    <div id="canvasHolder">
+        <canvas id="dnd"></canvas>
+    </div>
+    <ul id="canvasContext"></ul>
+    <div id="zoom"></div>
+    <div id="properties"></div>
+</div>
 
 <script type="text/javascript">
 
@@ -46,8 +54,8 @@
     const CANVAS_ID = "dnd";
     const CANVAS_CONTEXT_MENU_ID = "canvasContext";
     const ZOOM_ID = "zoom";
-    const CANVAS_HOLDER_ID = "canvasHolder";
     const FORM_BUILDER_ID = "formBuilder";
+    const PROPERTIES = "properties";
 
     const Anchor = {
         LeftTop: 1,
@@ -59,17 +67,55 @@
 
     const ESCAPE_KEY = 27;
 
+    const Categories = {
+        C_SIZE_LOC: "Size / Location",
+        C_APPEARANCE: "Appearance"
+    };
+
+
     // ._  => Private
     // .__ => Protected
 
 
-    class Property{
-        constructor(category, type, defaultValue, values = null, unit = null){
+    class Event {
+        constructor(){
+            this._subscribers = {};
+        }
 
-            this._category = category;
+        __addEvent(eventName){
+            this._subscribers[eventName] = [];
+        }
+
+        __dispatchEvent(eventName, eventData){
+            if(this._subscribers[eventName]){
+                for(var func of this._subscribers[eventName]){
+                    // setTimeout = run in new thread
+                    setTimeout(() => func(eventData), 0);
+                }
+            }
+        }
+
+        subscribe(eventName, func){
+            if(this._subscribers[eventName]){
+                this._subscribers[eventName].push(func);
+            }
+        }
+
+        unsubscribe(eventName, func){
+            if(this._subscribers[eventName]){
+                this._subscribers[eventName].splice(this._subscribers.indexOf(func));
+            }
+        }
+    }
+
+    class Property{
+        constructor(name, type, getValueFunc, setValueFunc, unit = null, DDvalues = null){
+
+            this._name = name;
             this._type = Property.Type[type];
-            this._value = defaultValue;
-            this._values = values;
+            this._getValueFunc = getValueFunc;
+            this._setValueFunc = setValueFunc;
+            this._DDvalues = DDvalues;
             this._unit = unit;
 
             if(!this.type){
@@ -77,17 +123,17 @@
             }
         }
 
-        get category() { return this._category; }
-        set category(value) { this._category = value; }
+        get name() { return this._name; }
+        set name(value) { this._name = value; }
 
         get type() { return this._type; }
         set type(value) { this._type = value; }
 
-        get value() { return this._value; }
-        set value(value) { this._value = value; }
+        get value() { return this._getValueFunc(); }
+        set value(value) { this._setValueFunc(value); }
 
-        get values() { return this._values; }
-        set values(value) { this._values = value; }
+        get DDvalues() { return this._DDvalues; }
+        set DDvalues(value) { this._DDvalues = value; }
 
         get unit() { return this._unit; }
         set unit(value) { this._unit = value; }
@@ -146,6 +192,15 @@
             this.resizeOrigY = y;
             this.resizeOrigWidth = width;
             this.resizeOrigHeight = height;
+
+            this.__properties = {
+                C_SIZE_LOC: [
+                        new Property("X Position", Property.Type.DOUBLE, () => this.x, (v) => { this.__x = v }, "in"),
+                        new Property("Y Position", Property.Type.DOUBLE, () => this.y, (v) => { this.__y = v }, "in"),
+                        new Property("Width", Property.Type.DOUBLE, () => this.width, (v) => { this.__width = v }, "in"),
+                        new Property("Height", Property.Type.DOUBLE, () => this.height, (v) => { this.__height = v }, "in")
+                ]
+            };
         }
 
         draw(context, scale){
@@ -241,6 +296,10 @@
             this.__height = this.resizeOrigHeight;
         }
 
+        get properties(){
+            return this.__properties;
+        }
+
         get x() { return this.__x; }
         get y() { return this.__y; }
         get width() { return this.__width; }
@@ -252,6 +311,11 @@
             super(x, y, width, height);
 
             this.fill = fillType;
+
+            if(!this.__properties.C_APPEARANCE) this.__properties.C_APPEARANCE = [];
+
+            this.__properties.C_APPEARANCE.push(new Property("Fill Type", Property.Type.DROP_DOWN,
+                    () => this.fill, (v) => { this.fill = v; }, [FILL, STROKE]));
         }
 
         __doDraw(context, scale){
@@ -271,6 +335,10 @@
             super(centerX - radius, centerY - radius, radius * 2, radius * 2);
 
             this.fill = fillType;
+
+            if(!this.__properties.C_APPEARANCE) this.__properties.C_APPEARANCE = [];
+            this.__properties.C_APPEARANCE.push(new Property("Fill Type", Property.Type.DROP_DOWN,
+                    () => this.fill, (v) => { this.fill = v; }, [FILL, STROKE]));
         }
 
         __doDraw(context, scale){
@@ -298,8 +366,9 @@
         get radiusY() { return (this.height / 2.0); }
     }
 
-    class Canvas {
+    class Canvas extends Event {
         constructor(canvasId) {
+            super();
             this.canvas = document.getElementById(canvasId);
             this.context = this.canvas.getContext("2d");
             this.context.lineWidth = 1;
@@ -324,6 +393,9 @@
             this.canvas.addEventListener("mouseup", (e) => this._mouseUp(e));
             this.canvas.addEventListener("mousemove", (e) => this._mouseMove(e));
             window.addEventListener("keyup", (e) => this._keyUp(e));
+
+            this.__addEvent("shapechange");
+            this.__dispatchEvent("shapechange", { 'activeShape': this._activeShape });
         }
 
         set scale(value) { this._scale = value; }
@@ -467,11 +539,13 @@
             for(var shape of this.shapes){
                 if(shape.isPointInShape(this._startX, this._startY, this.scale)){
                     this._shapeToDrag = this._activeShape = shape;
+                    this.__dispatchEvent("shapechange", { 'activeShape': this._activeShape });
                     return;
                 }
             }
 
             this._shapeToDrag = this._activeShape = null;
+            this.__dispatchEvent("shapechange", { 'activeShape': this._activeShape });
         }
 
         _mouseUp(e){
@@ -647,6 +721,11 @@
             this.addShape(this._activeShape);
         }
 
+        deleteActive(){
+            this.removeShape(this._activeShape);
+            this._activeShape = null;
+        }
+
         hideContextMenu(){
             document.getElementById("canvasContext").removeAttribute("style");
         }
@@ -707,20 +786,15 @@
             this._initializeZoom();
 
             document.getElementsByTagName("html")[0].addEventListener("click", () => this.canvas.hideContextMenu());
+
+            this.canvas.subscribe("shapechange", this._canvas_shapechange);
         }
 
         _initializeCanvas(){
-            var canvasHolder = document.createElement("div");
-            canvasHolder.id = CANVAS_HOLDER_ID;
-
-            var canvas = document.createElement("canvas");
-            canvas.id = CANVAS_ID;
+            var canvas = document.getElementById(CANVAS_ID);
             canvas.width = this.pageMode == PAGE_MODE_P ? PAGE_WIDTH : PAGE_HEIGHT;
             canvas.height = this.pageMode == PAGE_MODE_L ? PAGE_WIDTH : PAGE_HEIGHT;
             canvas.addEventListener("contextmenu", (e) => this.canvas.showContextMenu(e));
-
-            canvasHolder.appendChild(canvas);
-            this.builder.appendChild(canvasHolder);
 
             this.canvas = new Canvas(CANVAS_ID);
             this.canvas.scale = 1;
@@ -729,8 +803,7 @@
         }
 
         _initializeCanvasContext(){
-            this.canvasContext = document.createElement("ul");
-            this.canvasContext.id = CANVAS_CONTEXT_MENU_ID;
+            this.canvasContext = document.getElementById(CANVAS_CONTEXT_MENU_ID);
 
             var btf = document.createElement("li");
             btf.innerHTML = "Bring to Front";
@@ -742,16 +815,17 @@
             stb.addEventListener("mouseup", () => {this.canvas.sendActiveToBack(); this.canvas.hideContextMenu(); });
             this.canvasContext.appendChild(stb);
 
-            this.builder.appendChild(this.canvasContext);
+            var del = document.createElement("li");
+            del.innerHTML = "Delete";
+            del.addEventListener("mouseup", () => {this.canvas.deleteActive(); this.canvas.hideContextMenu(); });
+            this.canvasContext.appendChild(del);
         }
 
         _initializeZoom(){
-            var zoom = document.createElement("div");
+            var zoom = document.getElementById(ZOOM_ID);
             var zoomIn = document.createElement("div");
             var zoomOut = document.createElement("div");
             this.zoomAmt = document.createElement("div");
-
-            zoom.id = ZOOM_ID;
 
             zoomIn.addEventListener("click", () => this._zoomIn());
             zoomIn.innerHTML = "+";
@@ -763,7 +837,6 @@
 
             zoom.appendChild(this.zoomAmt);
 
-            this.builder.appendChild(zoom);
             this._updateZoomAmt();
         }
 
@@ -794,6 +867,33 @@
 
             this.canvas.canvas.width = (this.pageMode == PAGE_MODE_P ? PAGE_WIDTH : PAGE_HEIGHT) * this.canvas.scale;
             this.canvas.canvas.height = (this.pageMode == PAGE_MODE_L ? PAGE_WIDTH : PAGE_HEIGHT) * this.canvas.scale;
+        }
+
+        _canvas_shapechange(e){
+            var propBox = document.getElementById(PROPERTIES);
+            while(propBox.firstChild) propBox.removeChild(propBox.firstChild);
+
+            // Gets back the property categories
+            for(var propCat in e.activeShape.properties){
+                switch(Categories[propCat]){
+                    case Categories.C_APPEARANCE:
+                        console.log("A" + propCat);
+                        break;
+                    case Categories.C_SIZE_LOC:
+                        console.log("B" + propCat);
+                        break;
+                }
+            }
+        }
+
+        _loadAppearanceProperties(props){
+            var div = document.createElement("div");
+            div.className = "property";
+
+        }
+
+        _loadSizeLocationProperties(props){
+
         }
     }
 
