@@ -15,6 +15,16 @@
     #properties {float:left;}
 </style>
 
+    <script type="text/javascript" src="Appearance.js"></script>
+    <script type="text/javascript" src="Border.js"></script>
+    <script type="text/javascript" src="Font.js"></script>
+    <script type="text/javascript" src="Caption.js"></script>
+    <script type="text/javascript" src="Layout.js"></script>
+    <script type="text/javascript" src="TRBL.js"></script>
+    <script type="text/javascript" src="FBObjects/FBObject.js"></script>
+    <script type="text/javascript" src="FBObjects/Box.js"></script>
+    <script type="text/javascript" src="FBObjects/Circle.js"></script>
+
 </head>
 
 <body>
@@ -42,10 +52,6 @@
 </div>
 
 <script type="text/javascript">
-
-    const FILL = 0;
-    const STROKE = 1;
-
 
     const PAGE_HEIGHT = 300 * 11;
     const PAGE_WIDTH  = 300 * 8.5;
@@ -90,7 +96,7 @@
             if(this._subscribers[eventName]){
                 for(var func of this._subscribers[eventName]){
                     // setTimeout = run in new thread
-                    setTimeout(() => func(eventData), 0);
+                    ((f) => setTimeout(() => f(eventData), 0))(func);
                 }
             }
         }
@@ -141,6 +147,7 @@
         static get Type(){
             return {
                 INT: "INT",
+                BOOL: "BOOL",
                 STRING: "STRING",
                 DOUBLE: "DOUBLE",
                 DROP_DOWN: "DROP_DOWN",
@@ -306,7 +313,7 @@
         get height() { return this.__height; }
     }
 
-    class Box extends Shape {
+    /*class Box extends Shape {
         constructor(x, y, width, height, fillType) {
             super(x, y, width, height);
 
@@ -328,9 +335,9 @@
             if(this.fill == FILL) context.fill();
             else context.stroke();
         }
-    }
+    }*/
 
-    class Circle extends Shape {
+    /*class Circle extends Shape {
         constructor(centerX, centerY, radius, fillType){
             super(centerX - radius, centerY - radius, radius * 2, radius * 2);
 
@@ -364,7 +371,7 @@
         get centerY() { return this.y + (this.height / 2.0); }
         get radiusX() { return (this.width / 2.0); }
         get radiusY() { return (this.height / 2.0); }
-    }
+    }*/
 
     class Canvas extends Event {
         constructor(canvasId) {
@@ -597,7 +604,7 @@
                             y = absX * (absY == y ? 1 : -1);
                         }
                         else{
-                            x = absY * (absX == x ? 1 : -1);;
+                            x = absY * (absX == x ? 1 : -1);
                         }
                     }
                 }
@@ -701,7 +708,7 @@
         }
 
         addShape(shape){
-            if(!(shape instanceof Shape)){
+            if(!(shape instanceof Shape) && !(shape instanceof FBObject)){
                 throw "Argument shape must be a Shape type";
             }
 
@@ -798,8 +805,8 @@
 
             this.canvas = new Canvas(CANVAS_ID);
             this.canvas.scale = 1;
-            this.canvas.addShape(new Circle(25, 25, 20, FILL));
-            this.canvas.addShape(new Box(50, 5, 48, 27, STROKE));
+            this.canvas.addShape(new Circle(25, 25, 20));
+            this.canvas.addShape(new Box(50, 5, 48, 27));
         }
 
         _initializeCanvasContext(){
@@ -875,13 +882,15 @@
 
             // Gets back the property categories
             for(var propCat in e.activeShape.properties){
-                switch(Categories[propCat]){
-                    case Categories.C_APPEARANCE:
-                        console.log("A" + propCat);
-                        break;
-                    case Categories.C_SIZE_LOC:
-                        console.log("B" + propCat);
-                        break;
+                if(e.activeShape.properties.hasOwnProperty(propCat)) {
+                    switch (Categories[propCat]) {
+                        case Categories.C_APPEARANCE:
+                            console.log("A" + propCat);
+                            break;
+                        case Categories.C_SIZE_LOC:
+                            console.log("B" + propCat);
+                            break;
+                    }
                 }
             }
         }
