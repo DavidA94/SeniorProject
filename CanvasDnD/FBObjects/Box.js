@@ -19,11 +19,13 @@ class Box extends FBObject {
         this.__caption.location = CaptionLocation.Bottom;
 
         this.__border.color = "green";
-        this.__border.thickness = 10;
-        this.__border.right = true;
-        this.__border.bottom = true;
-        this.__border.left = true;
-        this.__border.top = true;
+        this.__border.right = 7;
+        this.__border.bottom = 7;
+        this.__border.left = 10;
+        this.__border.top = 10;
+
+        this.__layout.margin.top = 10;
+        this.__layout.margin.right = 10;
     }
 
     __doDraw(context, scale){

@@ -96,7 +96,7 @@
             if(this._subscribers[eventName]){
                 for(var func of this._subscribers[eventName]){
                     // setTimeout = run in new thread
-                    ((f) => setTimeout(() => f(eventData), 0))(func);
+                    // ((f) => setTimeout(() => f(eventData), 0))(func);
                 }
             }
         }
@@ -460,8 +460,8 @@
                     }
 
                     c.beginPath();
-                    c.rect(Math.floor(this._activeShape.x * this.scale), Math.floor(this._activeShape.y * this.scale),
-                            Math.ceil(this._activeShape.width * this.scale), Math.ceil(this._activeShape.height * this.scale));
+                    c.rect(Math.floor(this._activeShape.visualX * this.scale), Math.floor(this._activeShape.visualY * this.scale),
+                            Math.ceil(this._activeShape.visualWidth * this.scale), Math.ceil(this._activeShape.visualHeight * this.scale));
                     c.strokeStyle = i == 0 ? "#000" : "#FFF";
                     c.stroke();
                     c.closePath();
@@ -665,10 +665,10 @@
                 return null;
             }
 
-            var top = Math.floor(this._activeShape.y * this.scale);
-            var right = Math.ceil((this._activeShape.x + this._activeShape.width) * this.scale);
-            var bottom = Math.ceil((this._activeShape.y + this._activeShape.height) * this.scale);
-            var left = Math.floor(this._activeShape.x * this.scale);
+            var top = Math.floor(this._activeShape.visualY * this.scale);
+            var right = Math.ceil((this._activeShape.visualX + this._activeShape.visualWidth) * this.scale);
+            var bottom = Math.ceil((this._activeShape.visualY + this._activeShape.visualHeight) * this.scale);
+            var left = Math.floor(this._activeShape.visualX * this.scale);
 
             var boxSize = 5;
             var adjustment2 = 2;
@@ -708,7 +708,7 @@
         }
 
         addShape(shape){
-            if(!(shape instanceof Shape) && !(shape instanceof FBObject)){
+            if(!(shape instanceof FBObject)){
                 throw "Argument shape must be a Shape type";
             }
 
@@ -716,7 +716,7 @@
         }
 
         appendShape(shape){
-            if(!(shape instanceof Shape)){
+            if(!(shape instanceof FBObject)){
                 throw "Argument shape must be a Shape type";
             }
 
@@ -738,7 +738,7 @@
         }
 
         removeShape(shape){
-            if(!(shape instanceof Shape)){
+            if(!(shape instanceof FBObject)){
                 throw "Argument shape must be a Shape type";
             }
 

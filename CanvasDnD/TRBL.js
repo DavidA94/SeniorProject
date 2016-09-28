@@ -21,4 +21,14 @@ class TRBL {
 
     get left() { return this._left; }
     set left(value) { this._left = value; }
+
+    clone(){
+        var newTRBL = new TRBL();
+        newTRBL.top = this.top;
+        newTRBL.right = this.right;
+        newTRBL.bottom = this.bottom;
+        newTRBL.left = this.left;
+
+        return newTRBL;
+    }
 }

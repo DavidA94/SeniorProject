@@ -31,4 +31,16 @@ class Layout {
 
     get padding() { return this._padding; }
     set padding(value) { this._padding = value; }
+
+    clone(){
+        var newLayout = new Layout();
+        newLayout.x = this.x;
+        newLayout.y = this.y;
+        newLayout.width = this.width;
+        newLayout.height = this.height;
+        newLayout.margin = this.margin.clone();
+        newLayout.padding = this.padding.clone();
+
+        return newLayout;
+    }
 }
