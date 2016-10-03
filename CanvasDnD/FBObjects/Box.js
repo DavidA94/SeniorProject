@@ -8,15 +8,18 @@ class Box extends FBObject {
     constructor(x, y, width, height) {
         super(x, y, width, height);
 
-        this.__appearance.strokeThickness = 4;
+        this.__appearance.strokeThickness = 0;
         this.__appearance.strokeColor = "blue";
         this.__appearance.background = "red";
 
-        this.__caption.text = "Well, whadaya know? It's a BOX!";
+        this.__caption.text = "Well, wha-da-ya know? It's a BOX!";
         this.__caption.font.fontFamily = FontFamilies.Tahoma;
         this.__caption.font.fontSize = 16;
-        this.__caption.font.color = "white";
-        this.__caption.location = CaptionLocation.Bottom;
+        this.__caption.font.color = "blue";
+        this.__caption.font.bold = true;
+        this.__caption.font.italic = true;
+        this.__caption.location = CaptionLocation.Right;
+        this.__caption.reserve = 100;
 
         this.__border.color = "green";
         this.__border.right = 7;

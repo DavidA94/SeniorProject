@@ -40,6 +40,12 @@ class FBObject {
     get layout() { return this.__layout; }
     set layout(value) { this.__layout = value; }
 
+    get margin() { return this.__layout.margin; }
+    set margin(value) { this.__layout.margin = value; }
+
+    get padding() { return this.__layout.padding; }
+    set padding(value) { this.__layout.padding = value; }
+
     // endregion
 
     // region Public Methods
@@ -62,7 +68,7 @@ class FBObject {
         context.restore();
 
         context.save();
-        this._drawCaption(context, scale);
+        if(this.__caption.text && this.__caption.text !== "") this._drawCaption(context, scale);
         context.restore();
     }
 
@@ -196,7 +202,7 @@ class FBObject {
 
             context.beginPath();
             context.moveTo(bX, bY);
-            context.rect(bX, bY, bW, topThickness);
+            context.rect(bX, bY, bW, scale * topThickness);
             context.fill();
             context.closePath();
         }
@@ -208,7 +214,7 @@ class FBObject {
 
             context.beginPath();
             context.moveTo(bX, bY);
-            context.rect(bX, bY, rightThickness, bH);
+            context.rect(bX, bY, scale * rightThickness, bH);
             context.fill();
             context.closePath();
         }
@@ -220,7 +226,7 @@ class FBObject {
 
             context.beginPath();
             context.moveTo(bX, bY);
-            context.rect(bX, bY, bW, bottomThickness);
+            context.rect(bX, bY, bW, scale * bottomThickness);
             context.fill();
             context.closePath();
         }
@@ -232,7 +238,7 @@ class FBObject {
 
             context.beginPath();
             context.moveTo(bX, bY);
-            context.rect(bX, bY, leftThickness, bH);
+            context.rect(bX, bY, scale * leftThickness, bH);
             context.fill();
             context.closePath();
         }
@@ -240,6 +246,158 @@ class FBObject {
 
     _drawCaption(context, scale){
 
+        const CAPTION_PADDING = 5 * scale;
+
+        var capLoc = this.__caption.location;
+        var capText = this.__caption.text;
+        var reserve = this.caption.reserve === null ? null : scale * this.caption.reserve;
+        var capAlign = this.__caption.font.alignment;
+
+        // Italic must be first
+        var fontProps = this.__caption.font.italic ? "italic" : "";
+        fontProps += this.__caption.font.bold ? " bold" : "";
+        fontProps = fontProps.trim();
+
+        // Convert to pixels
+        var fontSize = Math.ceil(scale * this.__caption.font.size);
+        context.font = fontProps + " " + fontSize + "px " + this.__caption.font.fontFamily;
+        context.fillStyle = this.__caption.font.color;
+        context.textAlign = this.__caption.font.alignment;
+        context.textBaseline = "top"; // Y value is where the top of the text will be
+
+        var captionData = null;
+
+        if(capLoc == CaptionLocation.Left || capLoc == CaptionLocation.Right) {
+            captionData = this._getTextProperties(context, capText, reserve, this.height * scale, fontSize);
+            reserve = reserve === null ? captionData.width : reserve;
+        }
+        else if(capLoc == CaptionLocation.Top || capLoc == CaptionLocation.Bottom){
+            captionData = this._getTextProperties(context, capText, this.width * scale, reserve, fontSize);
+            reserve = reserve === null ? captionData.height : reserve;
+        }
+
+        if(captionData === null) return;
+
+        // I HATE CANVAS TEXT!
+        context.save();
+        var left = scale * this.x;
+        var top = scale * this.y;
+        var width = scale * this.width;
+        var height = scale * this.height;
+        var xShift = 0;
+        var yShift = 0;
+
+        switch(capLoc){
+            case CaptionLocation.Top:
+                xShift = left;
+
+                if(capAlign == FontAlignment.Center) xShift += (width / 2);
+                else if(capAlign == FontAlignment.Right) xShift += width;
+
+                yShift = top - (scale * this.border.top) - CAPTION_PADDING - captionData.height;
+
+                break;
+            case CaptionLocation.Right:
+                xShift = left + width + (scale * this.border.right) + CAPTION_PADDING;
+
+                if(capAlign == FontAlignment.Center) xShift += (reserve / 2);
+                else if(capAlign == FontAlignment.Right) xShift += reserve;
+
+                yShift = top + ((height - captionData.height) / 2);
+
+                break;
+            case CaptionLocation.Bottom:
+                xShift = left;
+
+                if(capAlign == FontAlignment.Center) xShift += (width / 2);
+                else if(capAlign == FontAlignment.Right) xShift += width;
+
+                yShift = top + height + (scale * this.border.bottom) + CAPTION_PADDING;
+
+                break;
+            case CaptionLocation.Left:
+                xShift = left - (scale * this.border.left) - CAPTION_PADDING;
+
+                if(capAlign == FontAlignment.Center) xShift -= (reserve / 2);
+                else if(capAlign == FontAlignment.Left) xShift -= reserve;
+
+                yShift = top + ((height - captionData.height) / 2);
+
+                break;
+        }
+
+        context.translate(xShift, yShift);
+
+        for(var lineIdx = 0; lineIdx < captionData.textLines.length; ++lineIdx){
+            var line = captionData.textLines[lineIdx];
+
+            context.fillText(line, 0, lineIdx * (fontSize * FLH_RATIO));
+        }
+
+        context.restore();
+    }
+
+    _getTextProperties(context, text, width, height, fontSize){
+        var calcWidth = 0;
+        var calcHeight = 0;
+        var maxWidth = 0;
+
+        var outputText = [];
+        var tempLine = "";
+
+        // If we don't have enough height for one line
+        if(height !== null && fontSize > height){
+            return null;
+        }
+
+        // Replace - with [255], and split by [space] and [255] to preserve -'s.
+        var words = text.replace("-", "- ").split(/[  ]/);
+
+        var wordStartIdx = 0;
+        while(height === null || (fontSize + ((fontSize * FLH_RATIO) * outputText.length)) < height) {
+            calcWidth = 0;
+            tempLine = "";
+            var wordEndIdx = wordStartIdx;
+
+            // If no width restriction
+            if(width === null){
+                // Use the original text
+                tempLine = text;
+                wordEndIdx = words.length;
+            }
+            else{
+                while(wordEndIdx <= words.length) {
+                    var wordConcat = words.slice(wordStartIdx, ++wordEndIdx).join(" ").replace("- ", "-");
+                    calcWidth = context.measureText(wordConcat).width;
+
+                    if(calcWidth <= width){
+                        tempLine = wordConcat;
+                    }
+                    else{
+                        --wordEndIdx;
+                        break;
+                    }
+                }
+            }
+
+            if(tempLine === "") break;
+
+            maxWidth = Math.max(maxWidth, context.measureText(tempLine).width);
+            outputText.push(tempLine);
+
+            wordStartIdx = wordEndIdx;
+            calcHeight = fontSize + ((fontSize * FLH_RATIO) * (outputText.length - 1));
+
+            if(wordEndIdx == words.length){
+                break;
+            }
+        }
+
+        return {
+            width: maxWidth,
+            height: calcHeight,
+            textLines: outputText
+        };
     }
 
     // endregion
