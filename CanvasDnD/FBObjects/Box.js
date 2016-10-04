@@ -8,8 +8,8 @@ class Box extends FBObject {
     constructor(x, y, width, height) {
         super(x, y, width, height);
 
-        this.__appearance.strokeThickness = 0;
-        this.__appearance.strokeColor = "blue";
+        this.__appearance.strokeThickness = 20;
+        this.__appearance.strokeColor = "cyan";
         this.__appearance.background = "red";
 
         this.__caption.text = "Well, wha-da-ya know? It's a BOX!";
@@ -18,17 +18,17 @@ class Box extends FBObject {
         this.__caption.font.color = "blue";
         this.__caption.font.bold = true;
         this.__caption.font.italic = true;
-        this.__caption.location = CaptionLocation.Right;
+        this.__caption.location = CaptionLocation.Center;
         this.__caption.reserve = 100;
 
         this.__border.color = "green";
         this.__border.right = 7;
         this.__border.bottom = 7;
-        this.__border.left = 10;
-        this.__border.top = 10;
+        this.__border.left = 7;
+        this.__border.top = 7;
 
-        this.__layout.margin.top = 10;
-        this.__layout.margin.right = 10;
+        this.__layout.margin.top = 0;
+        this.__layout.margin.right = 0;
     }
 
     __doDraw(context, scale){
@@ -50,4 +50,7 @@ class Box extends FBObject {
         context.fill();
         context.stroke();
     }
+
+    get minWidth() { return null; }
+    get minHeight() { return null; }
 }

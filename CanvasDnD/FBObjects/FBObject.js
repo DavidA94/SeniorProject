@@ -21,9 +21,7 @@ class FBObject {
 
         this._backupLayout = this.__layout.clone();
 
-        this.__properties = [
-            // TODO
-        ];
+        this.__captionData = null;
     }
 
     // region Public Properties
@@ -39,12 +37,6 @@ class FBObject {
 
     get layout() { return this.__layout; }
     set layout(value) { this.__layout = value; }
-
-    get margin() { return this.__layout.margin; }
-    set margin(value) { this.__layout.margin = value; }
-
-    get padding() { return this.__layout.padding; }
-    set padding(value) { this.__layout.padding = value; }
 
     // endregion
 
@@ -73,20 +65,16 @@ class FBObject {
     }
 
     isPointInShape(x, y, scale){
-        x = Math.floor(x - (this.__layout.x * scale));
-        y = Math.floor(y - (this.__layout.y * scale));
+        x = Math.floor(x - (this.visualX * scale));
+        y = Math.floor(y - (this.visualY * scale));
 
-        return x >= 0 && x <= Math.ceil(this.__layout.width * scale) &&
-            y >= 0 && y <= Math.ceil(this.__layout.height * scale);
+        return x >= 0 && x <= Math.ceil(this.visualWidth * scale) &&
+            y >= 0 && y <= Math.ceil(this.visualHeight * scale);
     }
 
     move(relativeX, relativeY){
         this.__layout.x = this._backupLayout.x + relativeX;
         this.__layout.y = this._backupLayout.y + relativeY;
-    }
-
-    get properties(){
-        return this.__properties;
     }
 
     resize(resizeX, resizeY, anchor, preserveRatio = false, keepCenter = false) {
@@ -134,11 +122,28 @@ class FBObject {
             newH = this._backupLayout.height + (resizeY * adjScale);
         }
 
-        if(newW < 0){
+        // If we have a minimum width, and it has been exceeded, then make it the minimum
+        if (this.minWidth && newW < scale * this.minWidth) {
+            newW = this.minWidth;
+        }
+        // Otherwise, if we have a minimum visual, make it no smaller than zero
+        else if (newW < 0 && this._getMinVisualWidth() > 0) {
+            newW = 0;
+        }
+
+        // DITTO for height
+        if (this.minHeight && newH < scale * this.minHeight) {
+            newH = this.minHeight;
+        }
+        else if (newH < 0 && this._getMinVisualHeight() > 0) {
+            newH = 0;
+        }
+
+        if (newW < 0) {
             newX += newW;
             newW = Math.abs(newW);
         }
-        if(newH < 0){
+        if (newH < 0) {
             newY += newH;
             newH = Math.abs(newH);
         }
@@ -158,30 +163,74 @@ class FBObject {
         var x = this.x;
         var border = this.__border.left;
         var margin = this.__layout.margin.left;
-        return x - border - margin;
+        var caption = 0;
+
+        if(this.caption.location == CaptionLocation.Left) {
+            caption = this.caption.reserve === null ? this.__captionData.width : this.caption.reserve;
+        }
+
+        return x - border - caption - margin;
     }
     get visualY() {
         var y = this.y;
         var border = this.__border.top;
         var margin = this.__layout.margin.top;
-        return y - border - margin;
+        var caption = 0;
+
+        if(this.caption.location == CaptionLocation.Top) {
+            caption = this.caption.reserve === null ? this.__captionData.height : this.caption.reserve;
+        }
+
+        return y - border - caption - margin;
     }
     get visualWidth() {
         var width = this.width;
         var border = this.__border.left + this.__border.right;
         var margin = this.__layout.margin.left + this.__layout.margin.right;
-        return width + border + margin;
+        var caption = 0;
+
+        if(this.caption.location == CaptionLocation.Left || this.caption.location == CaptionLocation.Right) {
+            caption = (this.caption.reserve === null ? this.__captionData.width : this.caption.reserve);
+        }
+
+        return width + border + caption + margin;
     }
     get visualHeight() {
         var height = this.height;
         var border = this.__border.top + this.__border.bottom;
         var margin = this.__layout.margin.top + this.__layout.margin.bottom;
-        return height + border + margin;
+        var caption = 0;
+
+        if(this.caption.location == CaptionLocation.Top || this.caption.location == CaptionLocation.Bottom) {
+            caption = this.caption.reserve === null ? this.__captionData.height : this.caption.reserve;
+        }
+
+        return height + border + caption + margin;
     }
 
     // endregion
 
     // region Private Methods
+
+    _getMinVisualHeight(){
+        var minHeight = this.minHeight + this.border.top + this.border.bottom+ this.layout.margin.top+ this.layout.margin.bottom;
+
+        if(this.caption.location === CaptionLocation.Top || this.caption.location === CaptionLocation.Bottom){
+            minHeight += this.caption.reserve === null ? this.__captionData.width : this.caption.reserve;
+        }
+
+        return minHeight;
+    }
+
+    _getMinVisualWidth(){
+        var minWidth = this.minWidth + this.border.left + this.border.right + this.layout.margin.left + this.layout.margin.right;
+
+        if(this.caption.location === CaptionLocation.Left || this.caption.location === CaptionLocation.Right){
+            minWidth += this.caption.reserve === null ? this.__captionData.width : this.caption.reserve;
+        }
+
+        return minWidth;
+    }
 
     _drawBorder(context, scale){
         var topThickness = this.__border.top;
@@ -244,13 +293,13 @@ class FBObject {
         }
     }
 
-    _drawCaption(context, scale){
+    _drawCaption(context, scale) {
 
         const CAPTION_PADDING = 5 * scale;
 
         var capLoc = this.__caption.location;
         var capText = this.__caption.text;
-        var reserve = this.caption.reserve === null ? null : scale * this.caption.reserve;
+        var reserve = this.caption.reserve === null ? null : (scale * this.caption.reserve) - CAPTION_PADDING;
         var capAlign = this.__caption.font.alignment;
 
         // Italic must be first
@@ -265,18 +314,28 @@ class FBObject {
         context.textAlign = this.__caption.font.alignment;
         context.textBaseline = "top"; // Y value is where the top of the text will be
 
-        var captionData = null;
-
-        if(capLoc == CaptionLocation.Left || capLoc == CaptionLocation.Right) {
-            captionData = this._getTextProperties(context, capText, reserve, this.height * scale, fontSize);
+        var captionData;
+        if (capLoc == CaptionLocation.Left || capLoc == CaptionLocation.Right) {
+            captionData = this.__getTextProperties(context, capText, reserve, this.height * scale, fontSize);
             reserve = reserve === null ? captionData.width : reserve;
         }
-        else if(capLoc == CaptionLocation.Top || capLoc == CaptionLocation.Bottom){
-            captionData = this._getTextProperties(context, capText, this.width * scale, reserve, fontSize);
+        else if (capLoc == CaptionLocation.Top || capLoc == CaptionLocation.Bottom) {
+            captionData = this.__getTextProperties(context, capText, this.width * scale, reserve, fontSize);
             reserve = reserve === null ? captionData.height : reserve;
         }
+        else if (capLoc == CaptionLocation.Center) {
+            var width = scale * (this.width - this.layout.padding.left - this.layout.padding.right) - (CAPTION_PADDING * 2);
+            var height = scale * (this.height - this.layout.padding.top - this.layout.padding.bottom) - (CAPTION_PADDING * 2);
+            captionData = this.__getTextProperties(context, capText, width, height, fontSize);
+        }
+        // None
+        else {
+            return;
+        }
 
-        if(captionData === null) return;
+        if (captionData === null) return;
+
+        this.__captionData = captionData;
 
         // I HATE CANVAS TEXT!
         context.save();
@@ -287,12 +346,12 @@ class FBObject {
         var xShift = 0;
         var yShift = 0;
 
-        switch(capLoc){
+        switch (capLoc) {
             case CaptionLocation.Top:
                 xShift = left;
 
-                if(capAlign == FontAlignment.Center) xShift += (width / 2);
-                else if(capAlign == FontAlignment.Right) xShift += width;
+                if (capAlign == FontAlignment.Center) xShift += (width / 2);
+                else if (capAlign == FontAlignment.Right) xShift += width;
 
                 yShift = top - (scale * this.border.top) - CAPTION_PADDING - captionData.height;
 
@@ -300,8 +359,8 @@ class FBObject {
             case CaptionLocation.Right:
                 xShift = left + width + (scale * this.border.right) + CAPTION_PADDING;
 
-                if(capAlign == FontAlignment.Center) xShift += (reserve / 2);
-                else if(capAlign == FontAlignment.Right) xShift += reserve;
+                if (capAlign == FontAlignment.Center) xShift += (reserve / 2);
+                else if (capAlign == FontAlignment.Right) xShift += reserve;
 
                 yShift = top + ((height - captionData.height) / 2);
 
@@ -309,8 +368,8 @@ class FBObject {
             case CaptionLocation.Bottom:
                 xShift = left;
 
-                if(capAlign == FontAlignment.Center) xShift += (width / 2);
-                else if(capAlign == FontAlignment.Right) xShift += width;
+                if (capAlign == FontAlignment.Center) xShift += (width / 2);
+                else if (capAlign == FontAlignment.Right) xShift += width;
 
                 yShift = top + height + (scale * this.border.bottom) + CAPTION_PADDING;
 
@@ -318,17 +377,24 @@ class FBObject {
             case CaptionLocation.Left:
                 xShift = left - (scale * this.border.left) - CAPTION_PADDING;
 
-                if(capAlign == FontAlignment.Center) xShift -= (reserve / 2);
-                else if(capAlign == FontAlignment.Left) xShift -= reserve;
+                if (capAlign == FontAlignment.Center) xShift -= (reserve / 2);
+                else if (capAlign == FontAlignment.Left) xShift -= reserve;
 
                 yShift = top + ((height - captionData.height) / 2);
 
                 break;
+            case CaptionLocation.Center:
+                xShift = left + this.layout.padding.left + CAPTION_PADDING;
+
+                if (capAlign == FontAlignment.Center) xShift += ((width - this.layout.padding.right) / 2) - CAPTION_PADDING;
+                if (capAlign == FontAlignment.Right) xShift = left + (width - this.layout.padding.left - this.layout.padding.right);
+
+                yShift = top + ((height - this.layout.padding.top - this.layout.padding.bottom - captionData.height) / 2);
         }
 
         context.translate(xShift, yShift);
 
-        for(var lineIdx = 0; lineIdx < captionData.textLines.length; ++lineIdx){
+        for (var lineIdx = 0; lineIdx < captionData.textLines.length; ++lineIdx) {
             var line = captionData.textLines[lineIdx];
 
             context.fillText(line, 0, lineIdx * (fontSize * FLH_RATIO));
@@ -337,7 +403,7 @@ class FBObject {
         context.restore();
     }
 
-    _getTextProperties(context, text, width, height, fontSize){
+    __getTextProperties(context, text, width, height, fontSize){
         var calcWidth = 0;
         var calcHeight = 0;
         var maxWidth = 0;
@@ -351,7 +417,10 @@ class FBObject {
         }
 
         // Replace - with [255], and split by [space] and [255] to preserve -'s.
-        var words = text.replace("-", "- ").split(/[  ]/);
+        var dash255 = "-" + String.fromCharCode(255);
+        var space255reg = new RegExp("[ " + String.fromCharCode(255) + "]", "g");
+
+        var words = text.replace(/-/g, dash255).split(space255reg);
 
         var wordStartIdx = 0;
         while(height === null || (fontSize + ((fontSize * FLH_RATIO) * outputText.length)) < height) {
@@ -367,7 +436,7 @@ class FBObject {
             }
             else{
                 while(wordEndIdx <= words.length) {
-                    var wordConcat = words.slice(wordStartIdx, ++wordEndIdx).join(" ").replace("- ", "-");
+                    var wordConcat = words.slice(wordStartIdx, ++wordEndIdx).join(" ").replace(/- /g, "-");
                     calcWidth = context.measureText(wordConcat).width;
 
                     if(calcWidth <= width){

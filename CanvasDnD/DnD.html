@@ -73,12 +73,6 @@
 
     const ESCAPE_KEY = 27;
 
-    const Categories = {
-        C_SIZE_LOC: "Size / Location",
-        C_APPEARANCE: "Appearance"
-    };
-
-
     // ._  => Private
     // .__ => Protected
 
@@ -187,192 +181,6 @@
         }
     }
 
-    class Shape {
-        constructor(x, y, width, height){
-            this.__x = x;
-            this.__y = y;
-            this.__width = width;
-            this.__height = height;
-
-            // Must be defined here, thus not calling commitResize
-            this.resizeOrigX = x;
-            this.resizeOrigY = y;
-            this.resizeOrigWidth = width;
-            this.resizeOrigHeight = height;
-
-            this.__properties = {
-                C_SIZE_LOC: [
-                        new Property("X Position", Property.Type.DOUBLE, () => this.x, (v) => { this.__x = v }, "in"),
-                        new Property("Y Position", Property.Type.DOUBLE, () => this.y, (v) => { this.__y = v }, "in"),
-                        new Property("Width", Property.Type.DOUBLE, () => this.width, (v) => { this.__width = v }, "in"),
-                        new Property("Height", Property.Type.DOUBLE, () => this.height, (v) => { this.__height = v }, "in")
-                ]
-            };
-        }
-
-        draw(context, scale){
-            context.save();
-            this.__doDraw(context, scale);
-            context.restore();
-        }
-
-        isPointInShape(x, y, scale){
-            x = Math.floor(x - (this.x * scale));
-            y = Math.floor(y - (this.y * scale));
-
-            return x >= 0 && x <= Math.ceil(this.width * scale) &&
-                    y >= 0 && y <= Math.ceil(this.height * scale);
-        }
-
-        move(relativeX, relativeY){
-            this.__x = this.resizeOrigX + relativeX;
-            this.__y = this.resizeOrigY + relativeY;
-        }
-
-        resize(resizeX, resizeY, anchor, preserveRatio = false, keepCenter = false) {
-
-            if (anchor < Anchor.LeftTop || anchor > Anchor.RightBottom) {
-                throw "anchor must be ANCHOR_LEFT_TOP, ANCHOR_LEFT_BOTTOM, ANCHOR_RIGHT_TOP, or ANCHOR_RIGHT_BOTTOM";
-            }
-
-            var newX, newY, newW, newH;
-
-            if (preserveRatio) {
-                // If X is bigger
-                if (Math.abs(resizeX) > Math.abs(resizeY)) {
-                    var adjAmt = 1 + (resizeX / this.resizeOrigWidth);
-                    resizeY = -1 * (this.resizeOrigHeight - (this.resizeOrigHeight * adjAmt));
-                }
-                // Else Y is bigger
-                else {
-                    var adjAmt = 1 + (resizeY / this.resizeOrigHeight);
-                    resizeX = -1 * (this.resizeOrigWidth - (this.resizeOrigWidth * adjAmt));
-                }
-            }
-
-            var adjScale = keepCenter ? 2 : 1;
-
-            // If we're on the left side
-            if (anchor === Anchor.LeftTop || anchor === Anchor.LeftBottom) {
-                newX = this.resizeOrigX + resizeX;
-                newW = this.resizeOrigWidth - (resizeX * adjScale);
-            }
-            // Otherwise, it must be the right
-            else {
-                newX = this.resizeOrigX - (keepCenter ? resizeX : 0);
-                newW = this.resizeOrigWidth + (resizeX * adjScale);
-            }
-
-            // If we're on the top
-            if (anchor === Anchor.LeftTop || anchor === Anchor.RightTop) {
-                newY = this.resizeOrigY + resizeY;
-                newH = this.resizeOrigHeight - (resizeY * adjScale);
-            }
-            // Otherwise, it must be the bottom
-            else {
-                newY = this.resizeOrigY - (keepCenter ? resizeY : 0);
-                newH = this.resizeOrigHeight + (resizeY * adjScale);
-            }
-
-            if(newW < 0){
-                newX += newW;
-                newW = Math.abs(newW);
-            }
-            if(newH < 0){
-                newY += newH;
-                newH = Math.abs(newH);
-            }
-
-            this.__x = newX;
-            this.__y = newY;
-            this.__width = newW;
-            this.__height = newH;
-        }
-
-        commitResize(){
-            this.resizeOrigX = this.x;
-            this.resizeOrigY = this.y;
-            this.resizeOrigWidth = this.width;
-            this.resizeOrigHeight = this.height;
-        }
-
-        cancelResize(){
-            this.__x = this.resizeOrigX;
-            this.__y = this.resizeOrigY;
-            this.__width = this.resizeOrigWidth;
-            this.__height = this.resizeOrigHeight;
-        }
-
-        get properties(){
-            return this.__properties;
-        }
-
-        get x() { return this.__x; }
-        get y() { return this.__y; }
-        get width() { return this.__width; }
-        get height() { return this.__height; }
-    }
-
-    /*class Box extends Shape {
-        constructor(x, y, width, height, fillType) {
-            super(x, y, width, height);
-
-            this.fill = fillType;
-
-            if(!this.__properties.C_APPEARANCE) this.__properties.C_APPEARANCE = [];
-
-            this.__properties.C_APPEARANCE.push(new Property("Fill Type", Property.Type.DROP_DOWN,
-                    () => this.fill, (v) => { this.fill = v; }, [FILL, STROKE]));
-        }
-
-        __doDraw(context, scale){
-            context.beginPath();
-            context.strokeStyle = "#FF0000";
-            context.translate(Math.floor(this.__x * scale), Math.floor(this.__y * scale));
-            context.rect(0, 0, Math.ceil(this.__width * scale), Math.ceil(this.__height * scale));
-            context.closePath();
-
-            if(this.fill == FILL) context.fill();
-            else context.stroke();
-        }
-    }*/
-
-    /*class Circle extends Shape {
-        constructor(centerX, centerY, radius, fillType){
-            super(centerX - radius, centerY - radius, radius * 2, radius * 2);
-
-            this.fill = fillType;
-
-            if(!this.__properties.C_APPEARANCE) this.__properties.C_APPEARANCE = [];
-            this.__properties.C_APPEARANCE.push(new Property("Fill Type", Property.Type.DROP_DOWN,
-                    () => this.fill, (v) => { this.fill = v; }, [FILL, STROKE]));
-        }
-
-        __doDraw(context, scale){
-            context.beginPath();
-            context.translate(Math.ceil(this.centerX * scale), Math.ceil(this.centerY * scale));
-            // context.arc(0, 0, Math.ceil(this.radius * scale), 0, 2 * Math.PI);
-            context.ellipse(0, 0, Math.ceil(this.radiusX * scale), Math.ceil(this.radiusY * scale), 0, 0, 2 * Math.PI);
-            context.closePath();
-
-            if(this.fill == FILL) context.fill();
-            else context.stroke();
-        }
-
-        isPointInShape(x, y, scale){
-            var cX = Math.ceil(this.centerX * scale);
-            var cY = Math.ceil(this.centerY * scale);
-            var rX = Math.ceil(this.radiusX * scale);
-            var rY = Math.ceil(this.radiusY * scale);
-            return (Math.pow((x - cX), 2) / Math.pow(rX, 2)) + (Math.pow((y - cY), 2) / Math.pow(rY, 2)) <= 1;
-        }
-
-        get centerX() { return this.x + (this.width / 2.0); }
-        get centerY() { return this.y + (this.height / 2.0); }
-        get radiusX() { return (this.width / 2.0); }
-        get radiusY() { return (this.height / 2.0); }
-    }*/
-
     class Canvas extends Event {
         constructor(canvasId) {
             super();
@@ -460,8 +268,8 @@
                     }
 
                     c.beginPath();
-                    c.rect(Math.floor(this._activeShape.x * this.scale), Math.floor(this._activeShape.y * this.scale),
-                            Math.ceil(this._activeShape.width * this.scale), Math.ceil(this._activeShape.height * this.scale));
+                    c.rect(Math.floor(this._activeShape.visualX * this.scale), Math.floor(this._activeShape.visualY * this.scale),
+                            Math.ceil(this._activeShape.visualWidth * this.scale), Math.ceil(this._activeShape.visualHeight * this.scale));
                     c.strokeStyle = i == 0 ? "#000" : "#FFF";
                     c.stroke();
                     c.closePath();
@@ -665,10 +473,10 @@
                 return null;
             }
 
-            var top = Math.floor(this._activeShape.y * this.scale);
-            var right = Math.ceil((this._activeShape.x + this._activeShape.width) * this.scale);
-            var bottom = Math.ceil((this._activeShape.y + this._activeShape.height) * this.scale);
-            var left = Math.floor(this._activeShape.x * this.scale);
+            var top = Math.floor(this._activeShape.visualY * this.scale);
+            var right = Math.ceil((this._activeShape.visualX + this._activeShape.visualWidth) * this.scale);
+            var bottom = Math.ceil((this._activeShape.visualY + this._activeShape.visualHeight) * this.scale);
+            var left = Math.floor(this._activeShape.visualX * this.scale);
 
             var boxSize = 5;
             var adjustment2 = 2;
@@ -881,18 +689,7 @@
             while(propBox.firstChild) propBox.removeChild(propBox.firstChild);
 
             // Gets back the property categories
-            for(var propCat in e.activeShape.properties){
-                if(e.activeShape.properties.hasOwnProperty(propCat)) {
-                    switch (Categories[propCat]) {
-                        case Categories.C_APPEARANCE:
-                            console.log("A" + propCat);
-                            break;
-                        case Categories.C_SIZE_LOC:
-                            console.log("B" + propCat);
-                            break;
-                    }
-                }
-            }
+
         }
 
         _loadAppearanceProperties(props){
