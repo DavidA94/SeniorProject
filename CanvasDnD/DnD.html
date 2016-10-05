@@ -15,9 +15,15 @@
     #properties {float:left;}
 </style>
 
+
+    <script type="text/javascript" src="Property.js"></script>
+    <script type="text/javascript" src="Event.js"></script>
+    <script type="text/javascript" src="Constants.js"></script>
+    <script type="text/javascript" src="AnchorHandle.js"></script>
     <script type="text/javascript" src="Appearance.js"></script>
     <script type="text/javascript" src="Border.js"></script>
     <script type="text/javascript" src="Font.js"></script>
+    <script type="text/javascript" src="Canvas.js"></script>
     <script type="text/javascript" src="Caption.js"></script>
     <script type="text/javascript" src="Layout.js"></script>
     <script type="text/javascript" src="TRBL.js"></script>
@@ -28,19 +34,6 @@
 </head>
 
 <body>
-
-<!--<div id="canvasHolder">
-    <canvas height="3450" width="2400" id="dnd"></canvas>
-    <ul id="canvasContext">
-        <li>Bring to Front</li>
-        <li>Send to Back</li>
-    </ul>
-</div>
-<div id="zoom">
-    <div id="zoomIn">+</div>
-    <div id="zoomOut">-</div>
-    <div id="zoomAmt"></div>
-</div>-->
 
 <div id="formBuilder">
     <div id="canvasHolder">
@@ -53,531 +46,7 @@
 
 <script type="text/javascript">
 
-    const PAGE_HEIGHT = 300 * 11;
-    const PAGE_WIDTH  = 300 * 8.5;
-    const PAGE_MODE_L = "landscape";
-    const PAGE_MODE_P = "portrait";
-    const CANVAS_ID = "dnd";
-    const CANVAS_CONTEXT_MENU_ID = "canvasContext";
-    const ZOOM_ID = "zoom";
-    const FORM_BUILDER_ID = "formBuilder";
-    const PROPERTIES = "properties";
 
-    const Anchor = {
-        LeftTop: 1,
-        LeftBottom: 2,
-        RightTop: 3,
-        RightBottom: 4
-    };
-
-
-    const ESCAPE_KEY = 27;
-
-    // ._  => Private
-    // .__ => Protected
-
-
-    class Event {
-        constructor(){
-            this._subscribers = {};
-        }
-
-        __addEvent(eventName){
-            this._subscribers[eventName] = [];
-        }
-
-        __dispatchEvent(eventName, eventData){
-            if(this._subscribers[eventName]){
-                for(var func of this._subscribers[eventName]){
-                    // setTimeout = run in new thread
-                    // ((f) => setTimeout(() => f(eventData), 0))(func);
-                }
-            }
-        }
-
-        subscribe(eventName, func){
-            if(this._subscribers[eventName]){
-                this._subscribers[eventName].push(func);
-            }
-        }
-
-        unsubscribe(eventName, func){
-            if(this._subscribers[eventName]){
-                this._subscribers[eventName].splice(this._subscribers.indexOf(func));
-            }
-        }
-    }
-
-    class Property{
-        constructor(name, type, getValueFunc, setValueFunc, unit = null, DDvalues = null){
-
-            this._name = name;
-            this._type = Property.Type[type];
-            this._getValueFunc = getValueFunc;
-            this._setValueFunc = setValueFunc;
-            this._DDvalues = DDvalues;
-            this._unit = unit;
-
-            if(!this.type){
-                throw "Invalid type. Must use type found in Property.Type";
-            }
-        }
-
-        get name() { return this._name; }
-        set name(value) { this._name = value; }
-
-        get type() { return this._type; }
-        set type(value) { this._type = value; }
-
-        get value() { return this._getValueFunc(); }
-        set value(value) { this._setValueFunc(value); }
-
-        get DDvalues() { return this._DDvalues; }
-        set DDvalues(value) { this._DDvalues = value; }
-
-        get unit() { return this._unit; }
-        set unit(value) { this._unit = value; }
-
-        static get Type(){
-            return {
-                INT: "INT",
-                BOOL: "BOOL",
-                STRING: "STRING",
-                DOUBLE: "DOUBLE",
-                DROP_DOWN: "DROP_DOWN",
-                COLOR: "COLOR",
-            };
-        }
-    }
-
-    class Rectangle{
-        constructor(x, y, width, height){
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-        }
-
-        get X() { return this.x; }
-        set X(value) { this.x = value; }
-
-        get Y() { return this.y; }
-        set Y(value) { this.y = value; }
-
-        get Top() { return this.y; }
-        get Right() { return this.x + this.width; }
-        get Bottom() { return this.y + this.height; }
-        get Left () { return this.x; }
-
-        get Width() { return this.width; }
-        set Width(value) { this.width = value; }
-
-        get Height() { return this.height; }
-        set Height(value) { this.height = value; }
-
-        isPointInShape(x, y, padding = 0){
-            return x - this.Left > -padding && x - this.Left <= this.Width + padding &&
-                   y - this.Top  > -padding && y - this.Top  <= this.Height + padding;
-        }
-    }
-
-    class Canvas extends Event {
-        constructor(canvasId) {
-            super();
-            this.canvas = document.getElementById(canvasId);
-            this.context = this.canvas.getContext("2d");
-            this.context.lineWidth = 1;
-            this.context.translate(0.5, 0.5);
-
-            this._snap = false;
-            this._showGrid = true;
-
-            this.shapes = [];
-
-            window.requestAnimationFrame(() => this._draw());
-
-            this._shapeToDrag = null;
-            this._activeShape = null;
-            this._resizeAnchor = null;
-            this._startX = 0;
-            this._startY = 0;
-
-            this._scale = 1;
-
-            this.canvas.addEventListener("mousedown", (e) => this._mouseDown(e));
-            this.canvas.addEventListener("mouseup", (e) => this._mouseUp(e));
-            this.canvas.addEventListener("mousemove", (e) => this._mouseMove(e));
-            window.addEventListener("keyup", (e) => this._keyUp(e));
-
-            this.__addEvent("shapechange");
-            this.__dispatchEvent("shapechange", { 'activeShape': this._activeShape });
-        }
-
-        set scale(value) { this._scale = value; }
-        get scale() { return this._scale; }
-
-        get width() { return parseInt(this.canvas.width); }
-        get height() { return parseInt(this.canvas.height); }
-
-        get gridSize() { return (.025 * 300) * this.scale; }
-
-        get snapToGrid() { return this._snap; }
-        set snapToGrid(value) { this._snap = value; }
-
-        get showGrid() { return this._showGrid; }
-        set showGrid(value) { this._showGrid = value; }
-
-        _draw(){
-            this.reset();
-            this._drawPage();
-            this.context.lineWidth = 1 * this.scale;
-
-            // Draw in reverse, that way recently added elements are on top
-            for(var idx = this.shapes.length - 1; idx >= 0; --idx){
-            // for(var shape of this.shapes){
-                this.shapes[idx].draw(this.context, this.scale);
-            }
-
-            this._drawSelection();
-
-            window.requestAnimationFrame(() => this._draw());
-        }
-
-        _drawSelection(){
-            // Draw the marquee for the active shape
-            if(this._activeShape){
-
-                // Get the size of a pixel
-                // var pxSize = 1 / (this.canvas.clientWidth / this.canvas.width);
-
-                var date = new Date();
-                var space = date.getMilliseconds() / (1000 / 14);
-
-                var c = this.context;
-                c.save();
-                c.lineWidth = 1;
-
-                for(var i = 0; i < 2; ++i){
-                    if(i == 0){
-                        c.setLineDash([8, 6]);
-                        c.lineDashOffset = -space;
-                    }
-                    else{
-                        c.setLineDash([6, 8]);
-                        c.lineDashOffset = -space + 8;
-                    }
-
-                    c.beginPath();
-                    c.rect(Math.floor(this._activeShape.visualX * this.scale), Math.floor(this._activeShape.visualY * this.scale),
-                            Math.ceil(this._activeShape.visualWidth * this.scale), Math.ceil(this._activeShape.visualHeight * this.scale));
-                    c.strokeStyle = i == 0 ? "#000" : "#FFF";
-                    c.stroke();
-                    c.closePath();
-                }
-
-                c.strokeStyle = "#000";
-                c.globalCompositeOperation = "xor";
-                c.setLineDash([0]);
-
-                c.beginPath();
-                for(var anchor = Anchor.LeftTop; anchor <= Anchor.RightBottom; ++anchor){
-                    var box = this._getAnchorRect(anchor);
-                    c.rect(box.Left, box.Top, box.Width, box.Height);
-                }
-                c.stroke();
-                c.closePath();
-
-                c.restore();
-            }
-        }
-
-        _drawPage(){
-
-            var margin = (.25 * 300) * this.scale;
-
-            this.context.save();
-            this.context.strokeStyle = "#777";
-            this.context.lineWidth = 1;
-            this.context.strokeRect(margin, margin, this.width - (2 * margin), this.height - (2 * margin));
-
-            if(this.scale <= .51 || !this.showGrid) {
-                this.context.restore();
-                return;
-            }
-
-            this.context.beginPath();
-            this.context.strokeStyle = "#ddd";
-            this.context.lineWidth = .5;
-            this.context.moveTo(0, 0);
-
-            for(var xPos = this.gridSize; xPos < this.width; xPos += this.gridSize){
-                this.context.moveTo(xPos, 0);
-                this.context.lineTo(xPos, this.height);
-            }
-            for(var yPos = this.gridSize; yPos < this.height; yPos += this.gridSize){
-                this.context.moveTo(0, yPos);
-                this.context.lineTo(this.width, yPos);
-            }
-
-            this.context.stroke();
-            this.context.closePath();
-
-            this.context.restore();
-        }
-
-        _keyUp(e){
-            e.preventDefault();
-
-            if(e.keyCode === ESCAPE_KEY){
-                if(this._shapeToDrag){
-                    this._shapeToDrag.cancelResize();
-                    this._shapeToDrag = null;
-                    this._resizeAnchor = null;
-
-                    this.canvas.style.cursor = "default";
-                }
-            }
-        }
-
-        _mouseDown(e){
-            e.preventDefault();
-
-            this._startX = (e.pageX - this.canvas.offsetLeft + this._scrollX(this.canvas));
-            this._startY = (e.pageY - this.canvas.offsetTop + this._scrollY(this.canvas));
-
-            // Anchors may not be on the shape, so just allow it
-            if(this._resizeAnchor){
-                this._shapeToDrag = this._activeShape;
-                return;
-            }
-
-            for(var shape of this.shapes){
-                if(shape.isPointInShape(this._startX, this._startY, this.scale)){
-                    this._shapeToDrag = this._activeShape = shape;
-                    this.__dispatchEvent("shapechange", { 'activeShape': this._activeShape });
-                    return;
-                }
-            }
-
-            this._shapeToDrag = this._activeShape = null;
-            this.__dispatchEvent("shapechange", { 'activeShape': this._activeShape });
-        }
-
-        _mouseUp(e){
-            e.preventDefault();
-
-            if(this._shapeToDrag){
-                this._shapeToDrag.commitResize();
-                this._shapeToDrag = null;
-            }
-
-            var context = document.getElementById("canvasContext");
-            context.style.left = "-999px";
-        }
-
-        _mouseMove(e){
-            e.preventDefault();
-
-            var x, y;
-            var mouseX = e.pageX - this.canvas.offsetLeft + this._scrollX(this.canvas);
-            var mouseY = e.pageY - this.canvas.offsetTop + this._scrollY(this.canvas);
-
-            if(this._resizeAnchor && this._shapeToDrag){
-                x = (mouseX - this._startX) / this.scale;
-                y = (mouseY - this._startY) / this.scale;
-                this._shapeToDrag.resize(x, y, this._resizeAnchor, e.shiftKey, e.altKey);
-            }
-            else if(this._shapeToDrag) {
-                 x = (mouseX - this._startX) / this.scale;
-                 y = (mouseY - this._startY) / this.scale;
-
-                if(e.shiftKey){
-                    var absX = Math.abs(x);
-                    var absY = Math.abs(y);
-
-                    var big = Math.max(absX, absY);
-                    var small = Math.min(absX, absY);
-
-                    // Straight if we've moved < 5, or if they're not within 90% of each other
-                    if((absX < 5 && absY < 5) || (small / big) < .7){
-                        if(absX > absY){
-                            y = 0;
-                        }
-                        else{
-                            x = 0;
-                        }
-                    }
-                    else{
-                        if(absX > absY){
-                            y = absX * (absY == y ? 1 : -1);
-                        }
-                        else{
-                            x = absY * (absX == x ? 1 : -1);
-                        }
-                    }
-                }
-
-                // snap to grid
-                if(this.snapToGrid){
-                    x = Math.round(x / this.gridSize) * this.gridSize;
-                    y = Math.round(y / this.gridSize) * this.gridSize;
-                }
-
-                this._shapeToDrag.move(x, y);
-
-                return
-            }
-            else if(this._activeShape){
-                var allowedDist = 5;
-                // Try to see if we're within 5px of any of the borders of an anchor
-                if (this._getAnchorRect(Anchor.LeftTop).isPointInShape(mouseX, mouseY, allowedDist)){
-                    this.canvas.style.cursor = "nwse-resize";
-                    this._resizeAnchor = Anchor.LeftTop;
-
-                    return;
-                }
-                else if(this._getAnchorRect(Anchor.RightBottom).isPointInShape(mouseX, mouseY, allowedDist)){
-                    this.canvas.style.cursor = "nwse-resize";
-                    this._resizeAnchor = Anchor.RightBottom;
-
-                    return;
-                }
-                else if(this._getAnchorRect(Anchor.RightTop).isPointInShape(mouseX, mouseY, allowedDist)){
-                    this.canvas.style.cursor = "nesw-resize";
-                    this._resizeAnchor = Anchor.RightTop;
-
-                    return;
-                }
-                else if(this._getAnchorRect(Anchor.LeftBottom).isPointInShape(mouseX, mouseY, allowedDist)) {
-                    this.canvas.style.cursor = "nesw-resize";
-                    this._resizeAnchor = Anchor.LeftBottom;
-
-                    return;
-                }
-
-                this._resizeAnchor = null;
-            }
-
-            for(var shape of this.shapes){
-                if(shape.isPointInShape(mouseX, mouseY, this.scale)){
-                    this.canvas.style.cursor = "pointer";
-                    return;
-                }
-            }
-
-            this.canvas.style.cursor = "default";
-        }
-
-        _getAnchorRect(anchorCorner){
-            if(!this._activeShape){
-                return null;
-            }
-
-            var top = Math.floor(this._activeShape.visualY * this.scale);
-            var right = Math.ceil((this._activeShape.visualX + this._activeShape.visualWidth) * this.scale);
-            var bottom = Math.ceil((this._activeShape.visualY + this._activeShape.visualHeight) * this.scale);
-            var left = Math.floor(this._activeShape.visualX * this.scale);
-
-            var boxSize = 5;
-            var adjustment2 = 2;
-            var adjustment3 = 3;
-
-            if(anchorCorner === Anchor.LeftTop){
-                return new Rectangle(left - adjustment2, top - adjustment2, boxSize, boxSize);
-            }
-            else if(anchorCorner === Anchor.LeftBottom){
-                return new Rectangle(left - adjustment2, bottom - adjustment3, boxSize, boxSize);
-            }
-            else if(anchorCorner === Anchor.RightTop){
-                return new Rectangle(right - adjustment3, top - adjustment2, boxSize, boxSize);
-            }
-            else if(anchorCorner === Anchor.RightBottom){
-                return new Rectangle(right - adjustment3, bottom - adjustment3, boxSize, boxSize);
-            }
-            else{
-                throw "anchorCorner must be ANCHOR_LEFT_TOP, ANCHOR_LEFT_BOTTOM, ANCHOR_RIGHT_TOP, or ANCHOR_RIGHT_BOTTOM";
-            }
-        }
-
-        _scrollX(node){
-            if(node.parentNode){
-                return node.scrollLeft + this._scrollX(node.parentNode);
-            }
-
-            return node.scrollLeft ? node.scrollLeft : 0;
-        }
-
-        _scrollY(node){
-            if(node.parentNode){
-                return node.scrollTop + this._scrollY(node.parentNode);
-            }
-
-            return node.scrollTop ? node.scrollTop : 0;
-        }
-
-        addShape(shape){
-            if(!(shape instanceof FBObject)){
-                throw "Argument shape must be a Shape type";
-            }
-
-            this.shapes.unshift(shape);
-        }
-
-        appendShape(shape){
-            if(!(shape instanceof FBObject)){
-                throw "Argument shape must be a Shape type";
-            }
-
-            this.shapes.push(shape);
-        }
-
-        bringActiveToFront(){
-            this.removeShape(this._activeShape);
-            this.addShape(this._activeShape);
-        }
-
-        deleteActive(){
-            this.removeShape(this._activeShape);
-            this._activeShape = null;
-        }
-
-        hideContextMenu(){
-            document.getElementById("canvasContext").removeAttribute("style");
-        }
-
-        removeShape(shape){
-            if(!(shape instanceof FBObject)){
-                throw "Argument shape must be a Shape type";
-            }
-
-            var idx = this.shapes.indexOf(shape);
-            if(idx < 0){
-                throw "shape was not found in canvas";
-            }
-
-            this.shapes.splice(idx, 1);
-        }
-
-        sendActiveToBack(){
-            this.removeShape(this._activeShape);
-            this.appendShape(this._activeShape);
-        }
-
-        showContextMenu(e){
-            if(this._activeShape) {
-                e.preventDefault();
-
-                var context = document.getElementById("canvasContext");
-                context.style.left = e.pageX + "px";
-                context.style.top = e.pageY + "px";
-            }
-        }
-
-        reset(){
-            this.context.clearRect(0, 0, this.width, this.height);
-        }
-
-    }
 
 
 
@@ -588,7 +57,7 @@
             this.builder = document.getElementById(FORM_BUILDER_ID);
 
             // Filled in by initializers
-            this.canvas = null;
+            this._canvas = null;
             this.canvasContext = null;
             this.zoomAmt = null;
 
@@ -600,21 +69,21 @@
             this._initializeCanvasContext();
             this._initializeZoom();
 
-            document.getElementsByTagName("html")[0].addEventListener("click", () => this.canvas.hideContextMenu());
+            document.getElementsByTagName("html")[0].addEventListener("click", () => this._canvas.hideContextMenu());
 
-            this.canvas.subscribe("shapechange", this._canvas_shapechange);
+            this._canvas.subscribe("shapechange", this._canvas_shapechange);
         }
 
         _initializeCanvas(){
-            var canvas = document.getElementById(CANVAS_ID);
-            canvas.width = this.pageMode == PAGE_MODE_P ? PAGE_WIDTH : PAGE_HEIGHT;
-            canvas.height = this.pageMode == PAGE_MODE_L ? PAGE_WIDTH : PAGE_HEIGHT;
-            canvas.addEventListener("contextmenu", (e) => this.canvas.showContextMenu(e));
+            var _canvas = document.getElementById(CANVAS_ID);
+            _canvas.width = this.pageMode == PAGE_MODE_P ? PAGE_WIDTH : PAGE_HEIGHT;
+            _canvas.height = this.pageMode == PAGE_MODE_L ? PAGE_WIDTH : PAGE_HEIGHT;
+            _canvas.addEventListener("contextmenu", (e) => this._canvas.showContextMenu(e));
 
-            this.canvas = new Canvas(CANVAS_ID);
-            this.canvas.scale = 1;
-            this.canvas.addShape(new Circle(25, 25, 20));
-            this.canvas.addShape(new Box(50, 200, 40, 20));
+            this._canvas = new Canvas(CANVAS_ID);
+            this._canvas.scale = 1;
+            this._canvas.addObject(new Circle(25, 25, 20));
+            this._canvas.addObject(new Box(50, 200, 40, 20));
         }
 
         _initializeCanvasContext(){
@@ -622,17 +91,17 @@
 
             var btf = document.createElement("li");
             btf.innerHTML = "Bring to Front";
-            btf.addEventListener("mouseup", () => {this.canvas.bringActiveToFront(); this.canvas.hideContextMenu(); });
+            btf.addEventListener("mouseup", () => {this._canvas.bringActiveToFront(); this._canvas.hideContextMenu(); });
             this.canvasContext.appendChild(btf);
 
             var stb = document.createElement("li");
             stb.innerHTML = "Send to Back";
-            stb.addEventListener("mouseup", () => {this.canvas.sendActiveToBack(); this.canvas.hideContextMenu(); });
+            stb.addEventListener("mouseup", () => {this._canvas.sendActiveToBack(); this._canvas.hideContextMenu(); });
             this.canvasContext.appendChild(stb);
 
             var del = document.createElement("li");
             del.innerHTML = "Delete";
-            del.addEventListener("mouseup", () => {this.canvas.deleteActive(); this.canvas.hideContextMenu(); });
+            del.addEventListener("mouseup", () => {this._canvas.deleteActive(); this._canvas.hideContextMenu(); });
             this.canvasContext.appendChild(del);
         }
 
@@ -656,32 +125,32 @@
         }
 
         _zoomIn(){
-            if(Math.ceil(this.canvas.scale / .1) * .1 == this.canvas.scale){
-                this.canvas.scale += .1;
+            if(Math.ceil(this._canvas.scale / .1) * .1 == this._canvas.scale){
+                this._canvas.scale += .1;
             }
             else{
-                this.canvas.scale = Math.ceil(this.canvas.scale / .1) * .1;
+                this._canvas.scale = Math.ceil(this._canvas.scale / .1) * .1;
             }
 
             this._updateZoomAmt();
         }
 
         _zoomOut(){
-            if(Math.floor(this.canvas.scale / .1) * .1 == this.canvas.scale){
-                this.canvas.scale = Math.max(0.1, this.canvas.scale - 0.1);
+            if(Math.floor(this._canvas.scale / .1) * .1 == this._canvas.scale){
+                this._canvas.scale = Math.max(0.1, this._canvas.scale - 0.1);
             }
             else{
-                this.canvas.scale = Math.floor(this.canvas.scale / .1) * .1;
+                this._canvas.scale = Math.floor(this._canvas.scale / .1) * .1;
             }
 
             this._updateZoomAmt();
         }
 
         _updateZoomAmt(){
-            this.zoomAmt.innerHTML = (this.canvas.scale * 100).toFixed(2) + "%";
+            this.zoomAmt.innerHTML = (this._canvas.scale * 100).toFixed(2) + "%";
 
-            this.canvas.canvas.width = (this.pageMode == PAGE_MODE_P ? PAGE_WIDTH : PAGE_HEIGHT) * this.canvas.scale;
-            this.canvas.canvas.height = (this.pageMode == PAGE_MODE_L ? PAGE_WIDTH : PAGE_HEIGHT) * this.canvas.scale;
+            this._canvas._canvas.width = (this.pageMode == PAGE_MODE_P ? PAGE_WIDTH : PAGE_HEIGHT) * this._canvas.scale;
+            this._canvas._canvas.height = (this.pageMode == PAGE_MODE_L ? PAGE_WIDTH : PAGE_HEIGHT) * this._canvas.scale;
         }
 
         _canvas_shapechange(e){

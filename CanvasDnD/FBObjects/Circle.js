@@ -24,7 +24,7 @@ class Circle extends FBObject {
         context.stroke();
     }
 
-    isPointInShape(x, y, scale){
+    isPointInObject(x, y, scale){
         var cX = Math.ceil(this._centerX * scale);
         var cY = Math.ceil(this._centerY * scale);
         var rX = Math.ceil(this._radiusX * scale);
@@ -32,8 +32,8 @@ class Circle extends FBObject {
         return (Math.pow((x - cX), 2) / Math.pow(rX, 2)) + (Math.pow((y - cY), 2) / Math.pow(rY, 2)) <= 1;
     }
 
-    get _centerX() { return this.__layout.x + (this.__layout.width / 2.0); }
-    get _centerY() { return this.__layout.y + (this.__layout.height / 2.0); }
+    get _centerX() { return this.__layout._x + (this.__layout.width / 2.0); }
+    get _centerY() { return this.__layout._y + (this.__layout.height / 2.0); }
     get _radiusX() { return (this.__layout.width / 2.0); }
     get _radiusY() { return (this.__layout.height / 2.0); }
 

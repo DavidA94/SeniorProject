@@ -34,8 +34,8 @@ class Layout {
 
     clone(){
         var newLayout = new Layout();
-        newLayout.x = this.x;
-        newLayout.y = this.y;
+        newLayout._x = this._x;
+        newLayout._y = this._y;
         newLayout.width = this.width;
         newLayout.height = this.height;
         newLayout.margin = this.margin.clone();

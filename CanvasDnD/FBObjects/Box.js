@@ -34,8 +34,8 @@ class Box extends FBObject {
     __doDraw(context, scale){
 
         // Figure out where the box is going
-        var boxX = scale * this.__layout.x;
-        var boxY = scale * this.__layout.y;
+        var boxX = scale * this.__layout._x;
+        var boxY = scale * this.__layout._y;
         var boxH = scale * this.__layout.height;
         var boxW = scale * this.__layout.width;
 

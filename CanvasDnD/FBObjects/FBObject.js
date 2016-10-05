@@ -14,8 +14,8 @@ class FBObject {
         this.__caption = new Caption();
         this.__layout = new Layout();
 
-        this.__layout.x = x;
-        this.__layout.y = y;
+        this.__layout._x = x;
+        this.__layout._y = y;
         this.__layout.width = width;
         this.__layout.height = height;
 
@@ -64,7 +64,7 @@ class FBObject {
         context.restore();
     }
 
-    isPointInShape(x, y, scale){
+    isPointInObject(x, y, scale){
         x = Math.floor(x - (this.visualX * scale));
         y = Math.floor(y - (this.visualY * scale));
 
@@ -73,8 +73,8 @@ class FBObject {
     }
 
     move(relativeX, relativeY){
-        this.__layout.x = this._backupLayout.x + relativeX;
-        this.__layout.y = this._backupLayout.y + relativeY;
+        this.__layout._x = this._backupLayout._x + relativeX;
+        this.__layout._y = this._backupLayout._y + relativeY;
     }
 
     resize(resizeX, resizeY, anchor, preserveRatio = false, keepCenter = false) {
@@ -102,23 +102,23 @@ class FBObject {
 
         // If we're on the left side
         if (anchor === Anchor.LeftTop || anchor === Anchor.LeftBottom) {
-            newX = this._backupLayout.x + resizeX;
+            newX = this._backupLayout._x + resizeX;
             newW = this._backupLayout.width - (resizeX * adjScale);
         }
         // Otherwise, it must be the right
         else {
-            newX = this._backupLayout.x - (keepCenter ? resizeX : 0);
+            newX = this._backupLayout._x - (keepCenter ? resizeX : 0);
             newW = this._backupLayout.width + (resizeX * adjScale);
         }
 
         // If we're on the top
         if (anchor === Anchor.LeftTop || anchor === Anchor.RightTop) {
-            newY = this._backupLayout.y + resizeY;
+            newY = this._backupLayout._y + resizeY;
             newH = this._backupLayout.height - (resizeY * adjScale);
         }
         // Otherwise, it must be the bottom
         else {
-            newY = this._backupLayout.y - (keepCenter ? resizeY : 0);
+            newY = this._backupLayout._y - (keepCenter ? resizeY : 0);
             newH = this._backupLayout.height + (resizeY * adjScale);
         }
 
@@ -148,21 +148,21 @@ class FBObject {
             newH = Math.abs(newH);
         }
 
-        this.__layout.x = newX;
-        this.__layout.y = newY;
+        this.__layout._x = newX;
+        this.__layout._y = newY;
         this.__layout.width = newW;
         this.__layout.height = newH;
     }
 
-    get x() { return this.__layout.x; }
-    get y() { return this.__layout.y; }
-    get width() { return this.__layout.width; }
-    get height() { return this.__layout.height; }
+    get x() { return this.layout.x; }
+    get y() { return this.layout.y; }
+    get width() { return this.layout.width; }
+    get height() { return this.layout.height; }
 
     get visualX() {
         var x = this.x;
-        var border = this.__border.left;
-        var margin = this.__layout.margin.left;
+        var border = this.border.left;
+        var margin = this.layout.margin.left;
         var caption = 0;
 
         if(this.caption.location == CaptionLocation.Left) {
@@ -173,8 +173,8 @@ class FBObject {
     }
     get visualY() {
         var y = this.y;
-        var border = this.__border.top;
-        var margin = this.__layout.margin.top;
+        var border = this.border.top;
+        var margin = this.layout.margin.top;
         var caption = 0;
 
         if(this.caption.location == CaptionLocation.Top) {
@@ -237,8 +237,8 @@ class FBObject {
         var rightThickness = this.__border.right;
         var bottomThickness = this.__border.bottom;
         var leftThickness = this.__border.left;
-        var x = this.__layout.x;
-        var y = this.__layout.y;
+        var x = this.__layout._x;
+        var y = this.__layout._y;
         var height = this.__layout.height;
         var width = this.__layout.width;
 
