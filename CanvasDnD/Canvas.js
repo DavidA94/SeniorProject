@@ -21,7 +21,7 @@ class Canvas extends Event {
 
         /**
          * @private
-         * @type {Element}
+         * @type {HTMLCanvasElement}
          */
         this._canvas = document.getElementById(canvasId);
 
@@ -117,8 +117,8 @@ class Canvas extends Event {
         window.addEventListener("keyup", (e) => this._keyUp(e));
 
         // Setup and dispatch custom events
-        this.__addEvent("shapechange");
-        this.__dispatchEvent("shapechange", { 'activeShape': this.activeObject });
+        this.__addEvent(EVENT_SHAPE_CHANGE);
+        this.__dispatchEvent(EVENT_SHAPE_CHANGE, { 'activeShape': this.activeObject });
 
         // Request callback when the canvas is drawn (one-time -- must be re-done after each call)
         window.requestAnimationFrame(() => this._draw());
@@ -171,10 +171,23 @@ class Canvas extends Event {
     get width() { return parseInt(this._canvas.width); }
 
     /**
+     * The width of the HTML canvas
+     * @param {number} value
+     */
+    set width(value) { this._canvas.width = value; }
+
+
+    /**
      * The height of the HTML canvas
      * @returns {number}
      */
     get height() { return parseInt(this._canvas.height); }
+
+    /**
+     * The height of the HTML canvas
+     * @param {number} value
+     */
+    set height(value) { this._canvas.height = value; }
 
 
     /**
@@ -264,6 +277,7 @@ class Canvas extends Event {
         // Hide the context menu if it's open
         if(this._isContextShown) {
             document.getElementById(CANVAS_CONTEXT_MENU_ID).removeAttribute("style");
+            this._isContextShown = false;
         }
     }
 
@@ -316,6 +330,8 @@ class Canvas extends Event {
             // And bring it into view, where the mouse was clicked
             context.style.left = e.pageX + "px";
             context.style.top = e.pageY + "px";
+
+            this._isContextShown = true;
         }
     }
 

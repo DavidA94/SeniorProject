@@ -2,68 +2,246 @@
  * Created by David on 09/26/16.
  */
 
-// import "../Appearance"
-// import "Border"
-// import "Caption"
-// import "Layout"
+/**
+ * @typedef {{width:number, height: number, textLines: string[]}} TextProperties
+ */
 
+/**
+ * Represents a form-builder object
+ */
 class FBObject {
+
+    // region Constructor
+
+    /**
+     * Creates a new FBObject
+     * @param {number} x - The initial X position of the object
+     * @param {number} y - The initial Y position of the object
+     * @param {number} width - The initial width of the object
+     * @param {number} height - The initial height of the object
+     */
     constructor(x, y, width, height){
-        this.__appearance = new Appearance();
-        this.__border = new Border();
-        this.__caption = new Caption();
-        this.__layout = new Layout();
+        /**
+         * Holds the appearance properties for the object
+         * @type {Appearance}
+         * @private
+         */
+        this._appearance = new Appearance();
 
-        this.__layout._x = x;
-        this.__layout._y = y;
-        this.__layout.width = width;
-        this.__layout.height = height;
+        /**
+         * Holds the border properties for the object
+         * @type {Border}
+         * @private
+         */
+        this._border = new Border();
 
-        this._backupLayout = this.__layout.clone();
+        /**
+         * Holds the caption properties for the object
+         * @type {Caption}
+         * @private
+         */
+        this._caption = new Caption();
 
-        this.__captionData = null;
+        /**
+         * Holds the layout properties for the object
+         * @type {Layout}
+         * @private
+         */
+        this._layout = new Layout();
+
+        /**
+         * Holds the caption size data for an object
+         * @type {TextProperties}
+         * @private
+         */
+        this._captionData = null;
+
+        // Initialize the layout properties with what was passed in
+        this._layout.x = x;
+        this._layout.y = y;
+        this._layout.width = width;
+        this._layout.height = height;
+
+        /**
+         * Holds a copy of layout properties so that things can be reverted if a move or resize is cancelled
+         * @type {Layout}
+         * @private
+         */
+        this._backupLayout = this._layout.clone();
     }
+
+    // endregion
 
     // region Public Properties
 
-    get appearance() { return this.__appearance; }
-    set appearance(value) { this.__appearance = value; }
+    /**
+     * Gets the appearance properties of the object
+     * @returns {Appearance}
+     */
+    get appearance() { return this._appearance; }
 
-    get border() { return this.__border; }
-    set border(value) { this.__border = value; }
+    /**
+     * Gets the border properties of the object
+     * @returns {Border}
+     */
+    get border() { return this._border; }
 
-    get caption() { return this.__caption; }
-    set caption(value) { this.__caption = value; }
+    /**
+     * Gets the caption properties of the object
+     * @returns {Caption}
+     */
+    get caption() { return this._caption; }
 
-    get layout() { return this.__layout; }
-    set layout(value) { this.__layout = value; }
+    /**
+     * Gets the layout properties of the object
+     * @returns {Layout|*}
+     */
+    get layout() { return this._layout; }
+
+
+
+    /**
+     * Gets the x position of the base object
+     * @returns {number}
+     */
+    get x() { return this.layout.x; }
+
+    /**
+     * Gets the y position of the base object
+     * @returns {number}
+     */
+    get y() { return this.layout.y; }
+
+    /**
+     * Gets the width of the base object
+     * @returns {number}
+     */
+    get width() { return this.layout.width; }
+
+    /**
+     * Gets the height of the base object
+     * @returns {number}
+     */
+    get height() { return this.layout.height; }
+
+
+    /**
+     * Gets the x position of the entire object, including the border, margin, and caption
+     * @returns {number}
+     */
+    get visualX() {
+        var x = this.x;
+        var border = this.border.left;
+        var margin = this.layout.margin.left;
+        var caption = 0;
+
+        if(this.caption.location == CaptionLocation.Left) {
+            caption = this.caption.reserve === null ? this._captionData.width : this.caption.reserve;
+        }
+
+        return x - border - caption - margin;
+    }
+
+    /**
+     * Gets the y position of the entire object, including the border, margin, and caption
+     * @returns {number}
+     */
+    get visualY() {
+        var y = this.y;
+        var border = this.border.top;
+        var margin = this.layout.margin.top;
+        var caption = 0;
+
+        if(this.caption.location == CaptionLocation.Top) {
+            caption = this.caption.reserve === null ? this._captionData.height : this.caption.reserve;
+        }
+
+        return y - border - caption - margin;
+    }
+
+    /**
+     * Gets the width of the entire object, including the border, margin, and caption
+     * @returns {*}
+     */
+    get visualWidth() {
+        var width = this.width;
+        var border = this._border.left + this._border.right;
+        var margin = this._layout.margin.left + this._layout.margin.right;
+        var caption = 0;
+
+        if(this.caption.location == CaptionLocation.Left || this.caption.location == CaptionLocation.Right) {
+            caption = (this.caption.reserve === null ? this._captionData.width : this.caption.reserve);
+        }
+
+        return width + border + caption + margin;
+    }
+
+    /**
+     * Gets the height of the entire object, including the border, margin, and caption
+     * @returns {*}
+     */
+    get visualHeight() {
+        var height = this.height;
+        var border = this._border.top + this._border.bottom;
+        var margin = this._layout.margin.top + this._layout.margin.bottom;
+        var caption = 0;
+
+        if(this.caption.location == CaptionLocation.Top || this.caption.location == CaptionLocation.Bottom) {
+            caption = this.caption.reserve === null ? this._captionData.height : this.caption.reserve;
+        }
+
+        return height + border + caption + margin;
+    }
 
     // endregion
 
     // region Public Methods
 
+    /**
+     * Cancels the current resize or move operation
+     */
     cancelResize(){
-        this.__layout = this._backupLayout.clone();
+        this._layout = this._backupLayout.clone();
     }
 
+    /**
+     * Commits or saves the current resize or move operation
+     */
     commitResize(){
-        this._backupLayout = this.__layout.clone();
+        this._backupLayout = this._layout.clone();
     }
 
+    /**
+     * Draws the object
+     * @param {CanvasRenderingContext2D} context
+     * @param {number} scale
+     */
     draw(context, scale){
+        // Save the context, an draw the main shape
         context.save();
-        this.__doDraw(context, scale);
+        this._doDraw(context, scale);
         context.restore();
 
+        // Save the context, and draw the border
         context.save();
         this._drawBorder(context, scale);
         context.restore();
 
-        context.save();
-        if(this.__caption.text && this.__caption.text !== "") this._drawCaption(context, scale);
-        context.restore();
+        // If there is a caption to draw, save the context and draw it
+        if(this.caption.text && this.caption.text !== "") {
+            context.save();
+            this._drawCaption(context, scale);
+            context.restore();
+        }
     }
 
+    /**
+     * Indicates if the given coordinates are in the object
+     * @param {number} x - The x coordinate
+     * @param {number} y - The y coordinate
+     * @param {number} scale - The scale of the object
+     * @returns {boolean}
+     */
     isPointInObject(x, y, scale){
         x = Math.floor(x - (this.visualX * scale));
         y = Math.floor(y - (this.visualY * scale));
@@ -72,53 +250,78 @@ class FBObject {
             y >= 0 && y <= Math.ceil(this.visualHeight * scale);
     }
 
+    /**
+     * Moves the object
+     * @param {number} relativeX - The relative X distance to move the object
+     * @param {number} relativeY - The relative Y distance to move the object
+     */
     move(relativeX, relativeY){
-        this.__layout._x = this._backupLayout._x + relativeX;
-        this.__layout._y = this._backupLayout._y + relativeY;
+        this._layout._x = this._backupLayout._x + relativeX;
+        this._layout._y = this._backupLayout._y + relativeY;
     }
 
+    /**
+     * Resizes the object
+     * @param {number} resizeX - The amount to resize the object on the X axis
+     * @param {number} resizeY - The amount to resize the object on the Y axis
+     * @param {Anchor} anchor - The anchor being dragged
+     * @param {boolean} preserveRatio - Indicates if the ratio of the shape should be preserved
+     * @param {boolean} keepCenter - Indicates if the shape should resize on both side, therefore keep its center
+     */
     resize(resizeX, resizeY, anchor, preserveRatio = false, keepCenter = false) {
 
+        // If we didn't get a valid anchor, throw out
         if (anchor < Anchor.LeftTop || anchor > Anchor.RightBottom) {
             throw "anchor must be ANCHOR_LEFT_TOP, ANCHOR_LEFT_BOTTOM, ANCHOR_RIGHT_TOP, or ANCHOR_RIGHT_BOTTOM";
         }
 
+        // Hold the new values to be set
         var newX, newY, newW, newH;
 
+        // If we're going to preserve the ratio, we have to do some math
         if (preserveRatio) {
+            /* Basically, we figure out where the X/Y value should be (the smaller one gets adjusted)
+            ** and then "put" the value where it would be if the user was extremely skilled at moving
+            ** their mouse perfect to keep the ratio.
+            */
+
+            var adjAmt = 0;
+
             // If X is bigger
             if (Math.abs(resizeX) > Math.abs(resizeY)) {
-                var adjAmt = 1 + (resizeX / this._backupLayout.width);
+                adjAmt = 1 + (resizeX / this._backupLayout.width);
                 resizeY = -1 * (this._backupLayout.height - (this._backupLayout.height * adjAmt));
             }
             // Else Y is bigger
             else {
-                var adjAmt = 1 + (resizeY / this._backupLayout.height);
+                adjAmt = 1 + (resizeY / this._backupLayout.height);
                 resizeX = -1 * (this._backupLayout.width - (this._backupLayout.width * adjAmt));
             }
         }
 
+        // The adjustment scale needs to be twice as much if we're keeping the center
         var adjScale = keepCenter ? 2 : 1;
 
         // If we're on the left side
         if (anchor === Anchor.LeftTop || anchor === Anchor.LeftBottom) {
-            newX = this._backupLayout._x + resizeX;
+            newX = this._backupLayout.x + resizeX;
             newW = this._backupLayout.width - (resizeX * adjScale);
         }
         // Otherwise, it must be the right
         else {
-            newX = this._backupLayout._x - (keepCenter ? resizeX : 0);
+            newX = this._backupLayout.x - (keepCenter ? resizeX : 0);
             newW = this._backupLayout.width + (resizeX * adjScale);
         }
 
+
         // If we're on the top
         if (anchor === Anchor.LeftTop || anchor === Anchor.RightTop) {
-            newY = this._backupLayout._y + resizeY;
+            newY = this._backupLayout.y + resizeY;
             newH = this._backupLayout.height - (resizeY * adjScale);
         }
         // Otherwise, it must be the bottom
         else {
-            newY = this._backupLayout._y - (keepCenter ? resizeY : 0);
+            newY = this._backupLayout.y - (keepCenter ? resizeY : 0);
             newH = this._backupLayout.height + (resizeY * adjScale);
         }
 
@@ -127,7 +330,7 @@ class FBObject {
             newW = this.minWidth;
         }
         // Otherwise, if we have a minimum visual, make it no smaller than zero
-        else if (newW < 0 && this._getMinVisualWidth() > 0) {
+        else if (newW < 0 && this.__getMinVisualWidth() > 0) {
             newW = 0;
         }
 
@@ -135,7 +338,7 @@ class FBObject {
         if (this.minHeight && newH < scale * this.minHeight) {
             newH = this.minHeight;
         }
-        else if (newH < 0 && this._getMinVisualHeight() > 0) {
+        else if (newH < 0 && this.__getMinVisualHeight() > 0) {
             newH = 0;
         }
 
@@ -148,101 +351,83 @@ class FBObject {
             newH = Math.abs(newH);
         }
 
-        this.__layout._x = newX;
-        this.__layout._y = newY;
-        this.__layout.width = newW;
-        this.__layout.height = newH;
-    }
-
-    get x() { return this.layout.x; }
-    get y() { return this.layout.y; }
-    get width() { return this.layout.width; }
-    get height() { return this.layout.height; }
-
-    get visualX() {
-        var x = this.x;
-        var border = this.border.left;
-        var margin = this.layout.margin.left;
-        var caption = 0;
-
-        if(this.caption.location == CaptionLocation.Left) {
-            caption = this.caption.reserve === null ? this.__captionData.width : this.caption.reserve;
-        }
-
-        return x - border - caption - margin;
-    }
-    get visualY() {
-        var y = this.y;
-        var border = this.border.top;
-        var margin = this.layout.margin.top;
-        var caption = 0;
-
-        if(this.caption.location == CaptionLocation.Top) {
-            caption = this.caption.reserve === null ? this.__captionData.height : this.caption.reserve;
-        }
-
-        return y - border - caption - margin;
-    }
-    get visualWidth() {
-        var width = this.width;
-        var border = this.__border.left + this.__border.right;
-        var margin = this.__layout.margin.left + this.__layout.margin.right;
-        var caption = 0;
-
-        if(this.caption.location == CaptionLocation.Left || this.caption.location == CaptionLocation.Right) {
-            caption = (this.caption.reserve === null ? this.__captionData.width : this.caption.reserve);
-        }
-
-        return width + border + caption + margin;
-    }
-    get visualHeight() {
-        var height = this.height;
-        var border = this.__border.top + this.__border.bottom;
-        var margin = this.__layout.margin.top + this.__layout.margin.bottom;
-        var caption = 0;
-
-        if(this.caption.location == CaptionLocation.Top || this.caption.location == CaptionLocation.Bottom) {
-            caption = this.caption.reserve === null ? this.__captionData.height : this.caption.reserve;
-        }
-
-        return height + border + caption + margin;
+        this.layout.x = newX;
+        this.layout.y = newY;
+        this.layout.width = newW;
+        this.layout.height = newH;
     }
 
     // endregion
 
     // region Private Methods
 
-    _getMinVisualHeight(){
+    /**
+     * Gets the minimum visual height this object can be
+     * @returns {number}
+     * @protected
+     */
+    __getMinVisualHeight(){
+        // Get the parts that contribute to the height
         var minHeight = this.minHeight + this.border.top + this.border.bottom+ this.layout.margin.top+ this.layout.margin.bottom;
 
+        // If the caption is at the top or bottom, add it in
         if(this.caption.location === CaptionLocation.Top || this.caption.location === CaptionLocation.Bottom){
-            minHeight += this.caption.reserve === null ? this.__captionData.width : this.caption.reserve;
+            minHeight += this.caption.reserve === null ? this._captionData.width : this.caption.reserve;
         }
 
         return minHeight;
     }
 
-    _getMinVisualWidth(){
+    /**
+     * Gets the minimum visual width this object can be
+     * @returns {number}
+     * @protected
+     */
+    __getMinVisualWidth(){
+        // Get everything that contributes to the width
         var minWidth = this.minWidth + this.border.left + this.border.right + this.layout.margin.left + this.layout.margin.right;
 
+        // If the caption is on the left or right, add that in
         if(this.caption.location === CaptionLocation.Left || this.caption.location === CaptionLocation.Right){
-            minWidth += this.caption.reserve === null ? this.__captionData.width : this.caption.reserve;
+            minWidth += this.caption.reserve === null ? this._captionData.width : this.caption.reserve;
         }
 
         return minWidth;
     }
 
+    /**
+     * Draws the border on this object
+     * @param {CanvasRenderingContext2D} context - The context to draw with
+     * @param {number} scale - The scale to draw at
+     * @private
+     */
     _drawBorder(context, scale){
-        var topThickness = this.__border.top;
-        var rightThickness = this.__border.right;
-        var bottomThickness = this.__border.bottom;
-        var leftThickness = this.__border.left;
-        var x = this.__layout._x;
-        var y = this.__layout._y;
-        var height = this.__layout.height;
-        var width = this.__layout.width;
+        // Store the needed properties in local variables for easy access
+        var topThickness = this.border.top;
+        var rightThickness = this.border.right;
+        var bottomThickness = this.border.bottom;
+        var leftThickness = this.border.left;
+        var x = this.layout._x;
+        var y = this.layout._y;
+        var height = this.layout.height;
+        var width = this.layout.width;
 
-        context.fillStyle = this.__border.color;
+        // Set the context's fill style, so the border is the right color
+        context.fillStyle = this.border.color;
+
+
+        /**
+        ** The following four if statements work with the following logic:
+        ** If the border has a size, figure out the size it should be
+        ** The size includes the size of neighboring border. Such that,
+        ** if there is a top and right border, the top's width will be
+        ** extended so that it goes all the way to the right of the right
+        ** border, and the right's height and y position will be adjusted
+        ** so that the right border will go to the top of the top border.
+        ** This is a little redundant, But it keeps all the logic the same.
+        ** Might change it someday.
+        ** Then a rectangle is drawn to represent the border
+        */
 
         if(topThickness > 0){
             var bY = scale * (y - topThickness);
@@ -293,37 +478,58 @@ class FBObject {
         }
     }
 
+    /**
+     * Draws the caption for this object
+     * @param {CanvasRenderingContext2D} context - The context to draw with
+     * @param {number} scale - The scale to draw at
+     * @private
+     */
     _drawCaption(context, scale) {
 
+        // Have a constant padding away from the shape so that the caption
+        // will not butt up against it -- five seems like a nice number.
         const CAPTION_PADDING = 5 * scale;
 
-        var capLoc = this.__caption.location;
-        var capText = this.__caption.text;
+        // Get some of the caption properties for easier use later
+        var capLoc = this.caption.location;
+        var capText = this.caption.text;
+        var capAlign = this.caption.font.alignment;
+
+        // If the reserve is null, then it is auto sized, but if it's set,
+        // then scale it, and remove the padding from it
         var reserve = this.caption.reserve === null ? null : (scale * this.caption.reserve) - CAPTION_PADDING;
-        var capAlign = this.__caption.font.alignment;
 
-        // Italic must be first
-        var fontProps = this.__caption.font.italic ? "italic" : "";
-        fontProps += this.__caption.font.bold ? " bold" : "";
-        fontProps = fontProps.trim();
+        // Italic must be first because that's how they designed it
+        var fontProps = this._caption.font.italic ? "italic" : "";
+        fontProps += this._caption.font.bold ? " bold" : "";
+        fontProps = fontProps.trim(); // ensure there's no excess spaces from one not being set
 
-        // Convert to pixels
-        var fontSize = Math.ceil(scale * this.__caption.font.size);
-        context.font = fontProps + " " + fontSize + "px " + this.__caption.font.fontFamily;
-        context.fillStyle = this.__caption.font.color;
-        context.textAlign = this.__caption.font.alignment;
+        // TODO - Do I need to scale?
+        var fontSize = Math.ceil(scale * this._caption.font.size);
+
+        // Setup the context properties
+        context.font = fontProps + " " + fontSize + "px " + this._caption.font.fontFamily;
+        context.fillStyle = this._caption.font.color;
+        context.textAlign = this._caption.font.alignment;
         context.textBaseline = "top"; // Y value is where the top of the text will be
 
+        // Holds the data we get back
         var captionData;
+
+        // If we're on the left or right, the the reserve is the width
         if (capLoc == CaptionLocation.Left || capLoc == CaptionLocation.Right) {
             captionData = this.__getTextProperties(context, capText, reserve, this.height * scale, fontSize);
             reserve = reserve === null ? captionData.width : reserve;
         }
+        // Otherwise if we're on the top or bottom, the reserve is the height
         else if (capLoc == CaptionLocation.Top || capLoc == CaptionLocation.Bottom) {
             captionData = this.__getTextProperties(context, capText, this.width * scale, reserve, fontSize);
             reserve = reserve === null ? captionData.height : reserve;
         }
+        // Otherwise if we're in the center, the width and height are specified by the shape's width
         else if (capLoc == CaptionLocation.Center) {
+            // Remove the padding from the width/height, and then twice the CAPTION_PADDING since it has to apply to
+            // both sides.
             var width = scale * (this.width - this.layout.padding.left - this.layout.padding.right) - (CAPTION_PADDING * 2);
             var height = scale * (this.height - this.layout.padding.top - this.layout.padding.bottom) - (CAPTION_PADDING * 2);
             captionData = this.__getTextProperties(context, capText, width, height, fontSize);
@@ -333,12 +539,17 @@ class FBObject {
             return;
         }
 
-        if (captionData === null) return;
+        // Remember the caption data we got back
+        this._captionData = captionData;
 
-        this.__captionData = captionData;
+        // If we didn't get any caption data back, then stop here
+        if (captionData === null) {
+            return;
+        }
 
         // I HATE CANVAS TEXT!
-        context.save();
+
+        // Figure out the position of the shape
         var left = scale * this.x;
         var top = scale * this.y;
         var width = scale * this.width;
@@ -346,17 +557,23 @@ class FBObject {
         var xShift = 0;
         var yShift = 0;
 
+        // And based on the caption's location, shift the caption accordingly
         switch (capLoc) {
             case CaptionLocation.Top:
+                // Start at the left side
                 xShift = left;
 
+                // If we're in the center, move it to half a width to the right, otherwise move it the entire width
                 if (capAlign == FontAlignment.Center) xShift += (width / 2);
                 else if (capAlign == FontAlignment.Right) xShift += width;
 
+                // Then pull it up so that it's above the border and CAPTION_PADDING
                 yShift = top - (scale * this.border.top) - CAPTION_PADDING - captionData.height;
 
                 break;
             case CaptionLocation.Right:
+                // Ditto, just different math for different sides
+
                 xShift = left + width + (scale * this.border.right) + CAPTION_PADDING;
 
                 if (capAlign == FontAlignment.Center) xShift += (reserve / 2);
@@ -366,6 +583,8 @@ class FBObject {
 
                 break;
             case CaptionLocation.Bottom:
+                // Ditto, just different math for different sides
+
                 xShift = left;
 
                 if (capAlign == FontAlignment.Center) xShift += (width / 2);
@@ -375,6 +594,8 @@ class FBObject {
 
                 break;
             case CaptionLocation.Left:
+                // Ditto, just different math for different sides
+
                 xShift = left - (scale * this.border.left) - CAPTION_PADDING;
 
                 if (capAlign == FontAlignment.Center) xShift -= (reserve / 2);
@@ -384,6 +605,8 @@ class FBObject {
 
                 break;
             case CaptionLocation.Center:
+                // Ditto, just different math for different sides
+
                 xShift = left + this.layout.padding.left + CAPTION_PADDING;
 
                 if (capAlign == FontAlignment.Center) xShift += ((width - this.layout.padding.right) / 2) - CAPTION_PADDING;
@@ -392,41 +615,61 @@ class FBObject {
                 yShift = top + ((height - this.layout.padding.top - this.layout.padding.bottom - captionData.height) / 2);
         }
 
+        // Translate to that location so we can just draw at 0, 0
         context.translate(xShift, yShift);
 
+        // Draw each line
         for (var lineIdx = 0; lineIdx < captionData.textLines.length; ++lineIdx) {
             var line = captionData.textLines[lineIdx];
 
+            // The y position is based on the line number, where FLH_RATIO is the line height to font size ratio
+            // e.g. If a font size of 20, then with FLH_RATIO=1.5 the line height will be 30.
             context.fillText(line, 0, lineIdx * (fontSize * FLH_RATIO));
         }
-
-        context.restore();
     }
 
+    /**
+     * Gets the text properties based on the size it must fit in
+     * @param {CanvasRenderingContext2D} context
+     * @param {string} text - The text to be analyzed
+     * @param {number|null} width - The width the text must fit in
+     * @param {number|null} height - The height the text must fit in
+     * @param {number} fontSize - The size of the font / height of a line of text
+     * @returns {TextProperties|null}
+     * @protected
+     */
     __getTextProperties(context, text, width, height, fontSize){
-        var calcWidth = 0;
-        var calcHeight = 0;
-        var maxWidth = 0;
+        var calcWidth = 0;  // Holds what we calculated the width to be for a given line
+        var calcHeight = 0; // Holds what we calculated the height to be
+        var maxWidth = 0;   // Holds the maximum line width we find
 
-        var outputText = [];
-        var tempLine = "";
+        var outputText = []; // Holds the lines of text to be returned
+        var tempLine = "";   // Holds the line being measured
 
         // If we don't have enough height for one line
         if(height !== null && fontSize > height){
             return null;
         }
 
-        // Replace - with [255], and split by [space] and [255] to preserve -'s.
+        // Hold a dash and a [255] character
         var dash255 = "-" + String.fromCharCode(255);
+
+        // Hold the regex to find either a [space] or [255] character, globally
         var space255reg = new RegExp("[ " + String.fromCharCode(255) + "]", "g");
 
+        // Replace - with [255], and split by [space] and [space] and [255] to preserve -'s.
+        // This makes us be able to keep words together, and break on the dashes.
         var words = text.replace(/-/g, dash255).split(space255reg);
 
+        // The current word we're on
         var wordStartIdx = 0;
-        while(height === null || (fontSize + ((fontSize * FLH_RATIO) * outputText.length)) < height) {
-            calcWidth = 0;
-            tempLine = "";
-            var wordEndIdx = wordStartIdx;
+
+        // While we either don't have a height, or while the number of lines we have has not exceeded the height
+        while(height === null || calcHeight < height) {
+
+            calcWidth = 0; // Start width a width of zero
+            tempLine = ""; // And no text in the line
+            var wordEndIdx = wordStartIdx; // Adjust the end index so when we ++ it will be the word after the start
 
             // If no width restriction
             if(width === null){
@@ -435,13 +678,22 @@ class FBObject {
                 wordEndIdx = words.length;
             }
             else{
+                // While we haven't reached the end of the words
                 while(wordEndIdx <= words.length) {
+
+                    // Get the [startWord] to [endWord], and join them with spaces, then
+                    // remove spaces after hyphens, since the hyphen is what we originally
+                    // split on
                     var wordConcat = words.slice(wordStartIdx, ++wordEndIdx).join(" ").replace(/- /g, "-");
+
+                    // Measure how long the string of words is
                     calcWidth = context.measureText(wordConcat).width;
 
+                    // If we didn't exceed the width, then, remember what we have so far
                     if(calcWidth <= width){
                         tempLine = wordConcat;
                     }
+                    // Otherwise, back up the last word (so it will be the starting word next time) and stop processing
                     else{
                         --wordEndIdx;
                         break;
@@ -449,19 +701,29 @@ class FBObject {
                 }
             }
 
+            // If we didn't get any text back, then there wasn't enough width for one word, so stop processing
             if(tempLine === "") break;
 
+            // Determine if this line is longer than the last max
             maxWidth = Math.max(maxWidth, context.measureText(tempLine).width);
+
+            // Add the line to the array of lines
             outputText.push(tempLine);
 
+            // Set the starting word for next time to be the word after the one we ended width
+            // (No, it shouldn't have a +1, it's how the slice method works)
             wordStartIdx = wordEndIdx;
+
+            // Calculate how high we are now
             calcHeight = fontSize + ((fontSize * FLH_RATIO) * (outputText.length - 1));
 
+            // If we've reached the end, the stop processing
             if(wordEndIdx == words.length){
                 break;
             }
         }
 
+        // Return what we got
         return {
             width: maxWidth,
             height: calcHeight,
