@@ -3,19 +3,6 @@
  */
 
 /**
- * Represents valid locations for a caption
- * @enum {string}
- */
-var CaptionLocation = {
-    Top: "Top",
-    Right: "Right",
-    Bottom: "Bottom",
-    Left: "Left",
-    Center: "Center",
-    None: "none"
-};
-
-/**
  * Holds data about a caption
  */
 class Caption {

@@ -9,7 +9,7 @@
 /**
  * Represents a form-builder object
  */
-class FBObject {
+class FBObject extends EventPropagator {
 
     // region Constructor
 
@@ -236,6 +236,47 @@ class FBObject {
     }
 
     /**
+     *
+     * @param {number} x - The x coordinate
+     * @param {number} y - The y coordinate
+     * @param {number} scale - The scale of the object
+     * @returns {Cursor}
+     */
+    getHoverCursor(x, y, scale){
+        // No-op if we're not over the object
+        if(!this.isPointInObject(x, y, scale)) return null;
+
+        // Check the actual object The part without the caption or margin...
+        var childCursor = this._getHoverCursor(x, y, scale);
+        if(childCursor){
+            return childCursor;
+        }
+
+        // Check how close we are to the caption, if we have one
+        if(this._captionData){
+            var top = this.y * scale;
+            var left = this.x * scale;
+            var right = left + (this.width * scale);
+            var bottom = top + (this.height * scale);
+            var padding = CAPTION_PADDING * scale;
+
+            if(((this.caption.location === CaptionLocation.Top && y >= top - padding && y <= top) ||
+                (this.caption.location === CaptionLocation.Bottom && y >= bottom && y <= bottom + padding)) &&
+                (x >= left && x <= right)) {
+                // ------- \\
+                return Cursor.UpDown
+            }
+            else if(((this.caption.location === CaptionLocation.Left && x <= left && x >= left - padding) ||
+                     (this.caption.location === CaptionLocation.Right && x >= right && x <= right + padding)) &&
+                     (y >= top && y <= bottom)) {
+                // ------- \\
+                return Cursor.LeftRight
+            }
+        }
+
+    }
+
+    /**
      * Indicates if the given coordinates are in the object
      * @param {number} x - The x coordinate
      * @param {number} y - The y coordinate
@@ -271,7 +312,7 @@ class FBObject {
     resize(resizeX, resizeY, anchor, preserveRatio = false, keepCenter = false) {
 
         // If we didn't get a valid anchor, throw out
-        if (anchor < Anchor.LeftTop || anchor > Anchor.RightBottom) {
+        if (anchor < Anchor.TopLeft || anchor > Anchor.BottomRight) {
             throw "anchor must be ANCHOR_LEFT_TOP, ANCHOR_LEFT_BOTTOM, ANCHOR_RIGHT_TOP, or ANCHOR_RIGHT_BOTTOM";
         }
 
@@ -303,7 +344,7 @@ class FBObject {
         var adjScale = keepCenter ? 2 : 1;
 
         // If we're on the left side
-        if (anchor === Anchor.LeftTop || anchor === Anchor.LeftBottom) {
+        if (anchor === Anchor.TopLeft || anchor === Anchor.BottomLeft) {
             newX = this._backupLayout.x + resizeX;
             newW = this._backupLayout.width - (resizeX * adjScale);
         }
@@ -315,7 +356,7 @@ class FBObject {
 
 
         // If we're on the top
-        if (anchor === Anchor.LeftTop || anchor === Anchor.RightTop) {
+        if (anchor === Anchor.TopLeft || anchor === Anchor.TopRight) {
             newY = this._backupLayout.y + resizeY;
             newH = this._backupLayout.height - (resizeY * adjScale);
         }
@@ -486,18 +527,15 @@ class FBObject {
      */
     _drawCaption(context, scale) {
 
-        // Have a constant padding away from the shape so that the caption
-        // will not butt up against it -- five seems like a nice number.
-        const CAPTION_PADDING = 5 * scale;
-
         // Get some of the caption properties for easier use later
         var capLoc = this.caption.location;
         var capText = this.caption.text;
         var capAlign = this.caption.font.alignment;
+        var capPadding = CAPTION_PADDING * scale;
 
         // If the reserve is null, then it is auto sized, but if it's set,
         // then scale it, and remove the padding from it
-        var reserve = this.caption.reserve === null ? null : (scale * this.caption.reserve) - CAPTION_PADDING;
+        var reserve = this.caption.reserve === null ? null : (scale * this.caption.reserve) - capPadding;
 
         // Italic must be first because that's how they designed it
         var fontProps = this._caption.font.italic ? "italic" : "";
@@ -528,10 +566,10 @@ class FBObject {
         }
         // Otherwise if we're in the center, the width and height are specified by the shape's width
         else if (capLoc == CaptionLocation.Center) {
-            // Remove the padding from the width/height, and then twice the CAPTION_PADDING since it has to apply to
+            // Remove the padding from the width/height, and then twice the capPadding since it has to apply to
             // both sides.
-            var width = scale * (this.width - this.layout.padding.left - this.layout.padding.right) - (CAPTION_PADDING * 2);
-            var height = scale * (this.height - this.layout.padding.top - this.layout.padding.bottom) - (CAPTION_PADDING * 2);
+            var width = scale * (this.width - this.layout.padding.left - this.layout.padding.right) - (capPadding * 2);
+            var height = scale * (this.height - this.layout.padding.top - this.layout.padding.bottom) - (capPadding * 2);
             captionData = this.__getTextProperties(context, capText, width, height, fontSize);
         }
         // None
@@ -567,14 +605,14 @@ class FBObject {
                 if (capAlign == FontAlignment.Center) xShift += (width / 2);
                 else if (capAlign == FontAlignment.Right) xShift += width;
 
-                // Then pull it up so that it's above the border and CAPTION_PADDING
-                yShift = top - (scale * this.border.top) - CAPTION_PADDING - captionData.height;
+                // Then pull it up so that it's above the border and capPadding
+                yShift = top - (scale * this.border.top) - capPadding - captionData.height;
 
                 break;
             case CaptionLocation.Right:
                 // Ditto, just different math for different sides
 
-                xShift = left + width + (scale * this.border.right) + CAPTION_PADDING;
+                xShift = left + width + (scale * this.border.right) + capPadding;
 
                 if (capAlign == FontAlignment.Center) xShift += (reserve / 2);
                 else if (capAlign == FontAlignment.Right) xShift += reserve;
@@ -590,13 +628,13 @@ class FBObject {
                 if (capAlign == FontAlignment.Center) xShift += (width / 2);
                 else if (capAlign == FontAlignment.Right) xShift += width;
 
-                yShift = top + height + (scale * this.border.bottom) + CAPTION_PADDING;
+                yShift = top + height + (scale * this.border.bottom) + capPadding;
 
                 break;
             case CaptionLocation.Left:
                 // Ditto, just different math for different sides
 
-                xShift = left - (scale * this.border.left) - CAPTION_PADDING;
+                xShift = left - (scale * this.border.left) - capPadding;
 
                 if (capAlign == FontAlignment.Center) xShift -= (reserve / 2);
                 else if (capAlign == FontAlignment.Left) xShift -= reserve;
@@ -607,9 +645,9 @@ class FBObject {
             case CaptionLocation.Center:
                 // Ditto, just different math for different sides
 
-                xShift = left + this.layout.padding.left + CAPTION_PADDING;
+                xShift = left + this.layout.padding.left + capPadding;
 
-                if (capAlign == FontAlignment.Center) xShift += ((width - this.layout.padding.right) / 2) - CAPTION_PADDING;
+                if (capAlign == FontAlignment.Center) xShift += ((width - this.layout.padding.right) / 2) - capPadding;
                 if (capAlign == FontAlignment.Right) xShift = left + (width - this.layout.padding.left - this.layout.padding.right);
 
                 yShift = top + ((height - this.layout.padding.top - this.layout.padding.bottom - captionData.height) / 2);
@@ -729,6 +767,18 @@ class FBObject {
             height: calcHeight,
             textLines: outputText
         };
+    }
+
+    // endregion
+
+    // region Overridden Methods
+
+    _propogateUp(eventName, eventData){
+        return null;
+    }
+
+    propogateDown(eventName, eventData){
+        return null;
     }
 
     // endregion

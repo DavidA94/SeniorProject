@@ -3,36 +3,6 @@
  */
 
 /**
- * Valid web-safe font-families
- * @enum {string}
- */
-const FontFamilies = {
-    "Arial" : "Arial",
-    "Arial Black" : "Arial Black",
-    "Courier New" : "Courier New",
-    "Georgia": "Georgia",
-    "Tahoma" : "Tahoma",
-    "Times New Roman" : "Times New Roman",
-    "Verdana" : "Verdana",
-};
-
-/**
- * Font alignment options
- * @enum {string}
- */
-const FontAlignment = {
-    Left: "left",
-    Right: "right",
-    Center: "center"
-};
-
-/**
- * Font Line Height ratio
- * @type {number}
- */
-const FLH_RATIO = 1.4;
-
-/**
  * Represents the different aspects text can take
  */
 class Font {

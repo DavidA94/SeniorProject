@@ -3,17 +3,6 @@
  */
 
 /**
- * Used to specify which anchor handle to get -- acts like an enum
- * @enum {number}
- */
-const Anchor = {
-    LeftTop: 1,
-    LeftBottom: 2,
-    RightTop: 3,
-    RightBottom: 4
-};
-
-/**
  * Represents and Anchor handle for a shape
  */
 class AnchorHandle{

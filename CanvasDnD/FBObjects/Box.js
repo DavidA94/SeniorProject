@@ -30,7 +30,7 @@ class Box extends FBObject {
         this.caption.font.color = "blue";
         this.caption.font.bold = true;
         this.caption.font.italic = true;
-        this.caption.location = CaptionLocation.Center;
+        this.caption.location = CaptionLocation.Right;
         this.caption.reserve = 100;
 
         this.border.color = "green";
@@ -87,6 +87,33 @@ class Box extends FBObject {
         context.closePath();
         context.fill();
         context.stroke();
+    }
+
+    /**
+     * Gets the cursor for the given coordinates, if they are within the shape
+     * @param {number} x - The x coordinate
+     * @param {number} y - The y coordinate
+     * @param {number} scale - The scale of the object
+     * @returns {Cursor}
+     */
+    _getHoverCursor(x, y, scale){
+        if(!this._isPointInRealObject(x, y, scale)) return null;
+        return Cursor.Hand;
+    }
+
+    /**
+     * Indicates if the given coordinates are in the object
+     * @param {number} x - The x coordinate
+     * @param {number} y - The y coordinate
+     * @param {number} scale - The scale of the object
+     * @returns {boolean}
+     */
+    _isPointInRealObject(x, y, scale){
+        x = x - (this.x * scale);
+        y = y - (this.y * scale);
+
+        return x >= 0 && x <= this.width * scale &&
+            y >= 0 && y <= this.height * scale;
     }
 
     // endregion

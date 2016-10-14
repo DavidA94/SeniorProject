@@ -10,19 +10,24 @@
 /**
  * Creates a class which allows for Javascript-like event subscription
  */
-class Event {
+class Subscribable {
 
     // region Constructor
 
     /**
-     * Creates a new Event class
+     * Creates a new Subscribable class
      */
     constructor(){
         /**
          * @private
-         * @type {Object<string, EventHandler[]>}
+         * @type {Object<string, Object<boolean, EventHandler[]>>}
          */
         this._subscribers = {};
+        this.__addEvent(MouseEventType.MouseDown);
+        this.__addEvent(MouseEventType.MouseEnter);
+        this.__addEvent(MouseEventType.MouseLeave);
+        this.__addEvent(MouseEventType.MouseMove);
+        this.__addEvent(MouseEventType.MouseUp);
     }
 
     // endregion
@@ -35,18 +40,21 @@ class Event {
      * @protected
      */
     __addEvent(eventName) {
-        this._subscribers[eventName] = [];
+        if(!this._subscribers[eventName]) {
+            this._subscribers[eventName] = {};
+        }
     }
 
     /**
      * Dispatches an event
      * @param {string} eventName - The name of the event to dispatch
      * @param {*} eventData - The data to send with the event
+     * @param {boolean} isCapture - Indicates if the capture event is to be dispatched
      * @protected
      */
-    __dispatchEvent(eventName, eventData){
-        if(this._subscribers[eventName]){
-            for(var func of this._subscribers[eventName]){
+    __dispatchEvent(eventName, eventData, isCapture = false){
+        if(this._subscribers[eventName] && this._subscribers[eventName][isCapture]){
+            for(var func of this._subscribers[eventName][isCapture]){
                 // setTimeout = run in new thread
                 // Really weird syntax so things are kept in scope correctly
                 // -- func is passed into an anonymous method, which then calls that function with the event data
@@ -63,12 +71,13 @@ class Event {
      * Subscribes to a given event, if it exists
      * @param {string} eventName - The name of the vent to subscribe to
      * @param {EventHandler} func - The callback function to be called
+     * @param {boolean} useCapture - Indicates if the callback should be called on capture
      * @throws {string} Thrown if the eventName does not exist
      */
-    subscribe(eventName, func){
+    subscribe(eventName, func, useCapture = false){
         // If the event exists, add the method, otherwise, throw an exception
         if(this._subscribers[eventName]){
-            this._subscribers[eventName].push(func);
+            this._subscribers[eventName].push({useCapture, func});
         }
         else{
             throw eventName + " is not a valid event";

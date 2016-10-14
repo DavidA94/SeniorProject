@@ -5,7 +5,7 @@
 /**
  * Represents an HTML5 Canvas object
  */
-class Canvas extends Event {
+class Canvas extends EventPropagator {
 
     // region Constructor
 
@@ -14,7 +14,7 @@ class Canvas extends Event {
      * @param {string} canvasId - The ID of the HTML _canvas to attach to
      */
     constructor(canvasId) {
-        // Initialize the Event class
+        // Initialize the Subscribable class
         super();
 
         /* Setup what variables we will have */
@@ -492,7 +492,7 @@ class Canvas extends Event {
 
             // Get all the anchors, and draw them accordingly
             c.beginPath();
-            for(var anchor = Anchor.LeftTop; anchor <= Anchor.RightBottom; ++anchor){
+            for(var anchor = Anchor.TopLeft; anchor <= Anchor.BottomRight; ++anchor){
                 var box = this._getAnchorRect(anchor);
                 c.rect(box.Left, box.Top, box.Width, box.Height);
             }
@@ -531,16 +531,16 @@ class Canvas extends Event {
 
         // Return correctly based on which anchor was given
         // Some spots need adjusted by 3 because math.
-        if(anchorCorner === Anchor.LeftTop){
+        if(anchorCorner === Anchor.TopLeft){
             return new AnchorHandle(left - adjustment2, top - adjustment2, boxSize, boxSize);
         }
-        else if(anchorCorner === Anchor.LeftBottom){
+        else if(anchorCorner === Anchor.BottomLeft){
             return new AnchorHandle(left - adjustment2, bottom - adjustment3, boxSize, boxSize);
         }
-        else if(anchorCorner === Anchor.RightTop){
+        else if(anchorCorner === Anchor.TopRight){
             return new AnchorHandle(right - adjustment3, top - adjustment2, boxSize, boxSize);
         }
-        else if(anchorCorner === Anchor.RightBottom){
+        else if(anchorCorner === Anchor.BottomRight){
             return new AnchorHandle(right - adjustment3, bottom - adjustment3, boxSize, boxSize);
         }
         else{
@@ -630,6 +630,8 @@ class Canvas extends Event {
             y = (mouseY - this._dragStartY) / this.scale;
 
             this._objectToDrag.resize(x, y, this._resizeAnchor, e.shiftKey, e.altKey);
+
+            this._objectToDrag._propagateUp(null, null)
         }
         // Otherwise, if we just have an object to drag
         else if(this._objectToDrag) {
@@ -686,27 +688,27 @@ class Canvas extends Event {
 
             // Try to see if we're within 5px of any of the anchors
             var allowedDist = 5;
-            if (this._getAnchorRect(Anchor.LeftTop).isPointInShape(mouseX, mouseY, allowedDist)){
+            if (this._getAnchorRect(Anchor.TopLeft).isPointInShape(mouseX, mouseY, allowedDist)){
                 this._canvas.style.cursor = "nwse-resize";
-                this._resizeAnchor = Anchor.LeftTop;
+                this._resizeAnchor = Anchor.TopLeft;
 
                 return;
             }
-            else if(this._getAnchorRect(Anchor.RightBottom).isPointInShape(mouseX, mouseY, allowedDist)){
+            else if(this._getAnchorRect(Anchor.BottomRight).isPointInShape(mouseX, mouseY, allowedDist)){
                 this._canvas.style.cursor = "nwse-resize";
-                this._resizeAnchor = Anchor.RightBottom;
+                this._resizeAnchor = Anchor.BottomRight;
 
                 return;
             }
-            else if(this._getAnchorRect(Anchor.RightTop).isPointInShape(mouseX, mouseY, allowedDist)){
+            else if(this._getAnchorRect(Anchor.TopRight).isPointInShape(mouseX, mouseY, allowedDist)){
                 this._canvas.style.cursor = "nesw-resize";
-                this._resizeAnchor = Anchor.RightTop;
+                this._resizeAnchor = Anchor.TopRight;
 
                 return;
             }
-            else if(this._getAnchorRect(Anchor.LeftBottom).isPointInShape(mouseX, mouseY, allowedDist)) {
+            else if(this._getAnchorRect(Anchor.BottomLeft).isPointInShape(mouseX, mouseY, allowedDist)) {
                 this._canvas.style.cursor = "nesw-resize";
-                this._resizeAnchor = Anchor.LeftBottom;
+                this._resizeAnchor = Anchor.BottomLeft;
 
                 return;
             }
@@ -780,4 +782,56 @@ class Canvas extends Event {
 
     // endregion
 
+    // region Overwritten Methods
+
+    /**
+     * Sends and event down the chain
+     * @param {BaseEventType} eventType - The name of the event to propagate
+     * @param {EventArgs} eventData - The event data
+     * @abstract
+     */
+    _propagateDown(eventType, eventData){
+
+        // If a mouse event, figure out if the data is over any child
+        var childTarget = this._canvas;
+        if(eventData instanceof MouseEventArgs){
+            // Adjust the mouse data so no further levels need to scale
+            var adjustedMouseData = new MouseEventArgs(eventData.x / this.scale, eventData.y / this.scale, eventData.button);
+
+            // Find the child target
+            for(var child of this._shapeObjects){
+                if(child.isPointInObject(eventData.x, eventData.y, 1)){
+                    childTarget = child;
+                    break;
+                }
+            }
+
+            // If we have a move event
+            if(eventType.event == MouseEventType.MouseMove){
+                // If the last mouse element is not the same as the target, then the target needs a mouseEntered event
+                if(this.__lastMouseElement != childTarget){
+                    this.__lastMouseElement._propagateDown(MouseEventType.MouseLeave, null);
+                    childTarget._propagateDown(MouseEventType.MouseEnter, eventData);
+
+                    this.__lastMouseElement = childTarget;
+                }
+            }
+        }
+
+        // If we have a move event, we may need to send a mouse enter event first
+        if(eventType.event === MouseEventType.MouseMove){
+            this.__dispatchEvent(MouseEventType.MouseMove, eventData);
+        }
+
+        // Send the event to any subscribers of this class
+        this.__dispatchEvent(eventType.event, eventData, true);
+
+        switch(eventType){
+            case MouseEventType.MouseDown
+        }
+
+        this.__dispatchEvent(eventType.event, eventData, false);
+    }
+
+    // endregion
 }

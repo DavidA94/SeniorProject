@@ -31,32 +31,6 @@ class Ellipse extends FBObject {
 
     // endregion
 
-    // region Public Functions
-
-    /**
-     * Checks if the given coordinates are within the shape
-     * @param {number} x - The x coordinate
-     * @param {number} y - The y coordinate
-     * @param {number} scale - The scale of the object
-     * @returns {boolean}
-     */
-    isPointInObject(x, y, scale){
-
-        // If we have things like a border or a caption, then use the base's implementation
-        if(super.__getMinVisualHeight() > 0 || super.__getMinVisualWidth() > 0){
-            return super.isPointInObject(x, y, scale);
-        }
-
-        // Otherwise, scale all the parameters, and then do the math for just the circle
-        var cX = this._centerX * scale;
-        var cY = this._centerY * scale;
-        var rX = this._radiusX * scale;
-        var rY = this._radiusY * scale;
-        return (Math.pow((x - cX), 2) / Math.pow(rX, 2)) + (Math.pow((y - cY), 2) / Math.pow(rY, 2)) <= 1;
-    }
-
-    // endregion
-
     // region Private Properties
 
     /**
@@ -114,6 +88,34 @@ class Ellipse extends FBObject {
 
         context.fill();
         context.stroke();
+    }
+
+    /**
+     * Gets the cursor for the given coordinates, if they are within the shape
+     * @param {number} x - The x coordinate
+     * @param {number} y - The y coordinate
+     * @param {number} scale - The scale of the object
+     * @returns {Cursor}
+     */
+    _getHoverCursor(x, y, scale){
+        if(!this._isPointInRealObject(x, y, scale)) return null;
+        return Cursor.Hand;
+    }
+
+    /**
+     * Checks if the given coordinates are within the shape
+     * @param {number} x - The x coordinate
+     * @param {number} y - The y coordinate
+     * @param {number} scale - The scale of the object
+     * @returns {boolean}
+     */
+    _isPointInRealObject(x, y, scale){
+        // Scale all the parameters, and then do the math for just the circle
+        var cX = this._centerX * scale;
+        var cY = this._centerY * scale;
+        var rX = this._radiusX * scale;
+        var rY = this._radiusY * scale;
+        return (Math.pow((x - cX), 2) / Math.pow(rX, 2)) + (Math.pow((y - cY), 2) / Math.pow(rY, 2)) <= 1;
     }
 
     // endregion
