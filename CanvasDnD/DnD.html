@@ -2,6 +2,7 @@
 <html>
 <head>
 <title>Drag and Drop Prototype</title>
+    <meta charset="utf-8" />
 <style>
     #canvasHolder {height:90vh;width:600px;box-sizing:border-box;border:1px solid black;float:left;overflow:auto;}
     #canvasContextMenu {position:absolute;left:-999px;z-index:999;list-style:none;font-family:Arial,sans-serif;
@@ -17,8 +18,14 @@
 </style>
 
 
-    <script type="text/javascript" src="Property.js"></script>
+    <script type="text/javascript" src="Events/EventTypes/BaseEventType.js"></script>
+    <script type="text/javascript" src="Events/EventTypes/MouseEvent.js"></script>
+    <script type="text/javascript" src="Events/EventTypes/EventArgs.js"></script>
+    <script type="text/javascript" src="Events/EventTypes/MouseEventArgs.js"></script>
     <script type="text/javascript" src="Events/Subscribable.js"></script>
+    <script type="text/javascript" src="Events/EventPropagator.js"></script>
+    <script type="text/javascript" src="FBObjects/bases/Shape.js"></script>
+    <script type="text/javascript" src="Property.js"></script>
     <script type="text/javascript" src="Constants.js"></script>
     <script type="text/javascript" src="AnchorHandle.js"></script>
     <script type="text/javascript" src="Appearance.js"></script>
@@ -29,6 +36,7 @@
     <script type="text/javascript" src="Layout.js"></script>
     <script type="text/javascript" src="TRBL.js"></script>
     <script type="text/javascript" src="FBObjects/bases/FBObject.js"></script>
+    <script type="text/javascript" src="FBObjects/BasicShape.js"></script>
     <script type="text/javascript" src="FBObjects/Box.js"></script>
     <script type="text/javascript" src="FBObjects/Ellipse.js"></script>
     <script type="text/javascript" src="FormBuilder.js"></script>

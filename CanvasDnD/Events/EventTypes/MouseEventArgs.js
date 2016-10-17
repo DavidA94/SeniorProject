@@ -3,12 +3,15 @@
  */
 
 /**
- * @enum {string}
+ * @enum {number}
  */
 const MouseButton = {
-    Left: "Left",
-    Middle: "Middle",
-    Right: "Right"
+    None: 0,
+    Left: 1,
+    Right: 2,
+    Middle: 4,
+    Back: 8,
+    Forward: 16
 };
 
 /**
@@ -19,7 +22,7 @@ class MouseEventArgs extends EventArgs {
      * Creates a new MouseEventArgs object
      * @param {number} x - The X position the event happened at
      * @param {number} y - The y position the event happened at
-     * @param {MouseButton} eventType
+     * @param {MouseButton} mouseButton
      */
     constructor(x, y, mouseButton){
         super();

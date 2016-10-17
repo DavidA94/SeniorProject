@@ -19,7 +19,7 @@ class MouseEvent extends BaseEventType {
      * @param {MouseEventType} event - The mouse event that occurred
      */
     constructor(event){
-
+        super();
         /**
          * @private
          * @type {MouseEventType}

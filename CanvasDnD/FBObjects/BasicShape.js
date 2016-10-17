@@ -3,27 +3,37 @@
  */
 
 class BasicShape extends FBObject {
-    constructor(shape){
+    constructor(shape) {
 
-        if(!(shape instanceof Shape)){
+        if (!(shape instanceof Shape)) {
             throw TypeError("shape parameter must be an instance of Shape");
         }
 
         super();
+        super.setLayout(shape.layout);
 
         /**
          * @private
          * @type {Shape}
          */
         this._shape = shape;
-    }
 
-    _propagateDown(eventName, eventData){
+        this.caption.text = "Well, wha-da-ya know? It's a BOX!";
+        this.caption.font.fontFamily = FontFamilies.Tahoma;
+        this.caption.font.fontSize = 16;
+        this.caption.font.color = "blue";
+        this.caption.font.bold = true;
+        this.caption.font.italic = true;
+        this.caption.location = CaptionLocation.Right;
+        this.caption.reserve = 100;
 
-    }
+        this.border.color = "green";
+        this.border.right = 7;
+        this.border.bottom = 7;
+        this.border.left = 7;
+        this.border.top = 7;
 
-    _propagateUp(eventName, eventData){
-
+        super._layout = this._layout
     }
 
     /**

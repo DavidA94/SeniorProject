@@ -5,7 +5,7 @@
 /**
  * Represents a box form builder object
  */
-class Box extends FBObject {
+class Box extends Shape {
     // region Constructor
 
     /**
@@ -20,24 +20,9 @@ class Box extends FBObject {
         super(x, y, width, height);
 
         // Initialize some defaults for testing purposes
-        this.appearance.strokeThickness = 20;
+        this.appearance.strokeThickness = 0;
         this.appearance.strokeColor = "cyan";
         this.appearance.background = "red";
-
-        this.caption.text = "Well, wha-da-ya know? It's a BOX!";
-        this.caption.font.fontFamily = FontFamilies.Tahoma;
-        this.caption.font.fontSize = 16;
-        this.caption.font.color = "blue";
-        this.caption.font.bold = true;
-        this.caption.font.italic = true;
-        this.caption.location = CaptionLocation.Right;
-        this.caption.reserve = 100;
-
-        this.border.color = "green";
-        this.border.right = 7;
-        this.border.bottom = 7;
-        this.border.left = 7;
-        this.border.top = 7;
 
         this.layout.margin.top = 0;
         this.layout.margin.right = 0;
@@ -61,21 +46,35 @@ class Box extends FBObject {
 
     // endregion
 
-    // region Private Methods
+    // region Public Functions
+
+    /**
+     * Indicates if the given coordinates are in the object
+     * @param {number} x - The x coordinate
+     * @param {number} y - The y coordinate
+     * @param {number} scale - The scale of the object
+     * @returns {boolean}
+     */
+    isPointInObject(x, y){
+        x = x - this.visualX;
+        y = y - this.visualY;
+
+        return x >= 0 && x <= this.visualWidth &&
+            y >= 0 && y <= this.visualHeight;
+    }
 
     /**
      * Draws the Box
      * @param {CanvasRenderingContext2D} context - The context to draw with
-     * @param {number} scale - The scale to draw at
      * @private
      */
-    _doDraw(context, scale){
+    draw(context){
 
         // Figure out where the box is going
-        var boxX = scale * this.layout.x;
-        var boxY = scale * this.layout.y;
-        var boxH = scale * this.layout.height;
-        var boxW = scale * this.layout.width;
+        var boxX = this.layout.x;
+        var boxY = this.layout.y;
+        var boxH = this.layout.height;
+        var boxW = this.layout.width;
 
         // First draw the box with its stroke
         context.beginPath();
@@ -87,33 +86,6 @@ class Box extends FBObject {
         context.closePath();
         context.fill();
         context.stroke();
-    }
-
-    /**
-     * Gets the cursor for the given coordinates, if they are within the shape
-     * @param {number} x - The x coordinate
-     * @param {number} y - The y coordinate
-     * @param {number} scale - The scale of the object
-     * @returns {Cursor}
-     */
-    _getHoverCursor(x, y, scale){
-        if(!this._isPointInRealObject(x, y, scale)) return null;
-        return Cursor.Hand;
-    }
-
-    /**
-     * Indicates if the given coordinates are in the object
-     * @param {number} x - The x coordinate
-     * @param {number} y - The y coordinate
-     * @param {number} scale - The scale of the object
-     * @returns {boolean}
-     */
-    _isPointInRealObject(x, y, scale){
-        x = x - (this.x * scale);
-        y = y - (this.y * scale);
-
-        return x >= 0 && x <= this.width * scale &&
-            y >= 0 && y <= this.height * scale;
     }
 
     // endregion

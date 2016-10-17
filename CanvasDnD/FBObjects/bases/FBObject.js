@@ -21,6 +21,8 @@ class FBObject extends EventPropagator {
      * @param {number} height - The initial height of the object
      */
     constructor(x, y, width, height){
+        super();
+
         /**
          * Holds the appearance properties for the object
          * @type {Appearance}
@@ -68,6 +70,17 @@ class FBObject extends EventPropagator {
          * @private
          */
         this._backupLayout = this._layout.clone();
+
+        this._captionResizer = new Box(0, 0, 0, 0);
+        this.__children.push(this._captionResizer);
+    }
+
+    /**
+     * Set the layout
+     * @param {Layout} layout
+     */
+    setLayout(layout){
+        this._layout = layout;
     }
 
     // endregion
@@ -98,6 +111,9 @@ class FBObject extends EventPropagator {
      */
     get layout() { return this._layout; }
 
+    get margin() { return this._layout.margin; }
+
+    get padding() { return this._layout.padding; }
 
 
     /**
@@ -232,48 +248,24 @@ class FBObject extends EventPropagator {
             context.save();
             this._drawCaption(context, scale);
             context.restore();
-        }
-    }
 
-    /**
-     *
-     * @param {number} x - The x coordinate
-     * @param {number} y - The y coordinate
-     * @param {number} scale - The scale of the object
-     * @returns {Cursor}
-     */
-    getHoverCursor(x, y, scale){
-        // No-op if we're not over the object
-        if(!this.isPointInObject(x, y, scale)) return null;
+            if(this._captionData) {
 
-        // Check the actual object The part without the caption or margin...
-        var childCursor = this._getHoverCursor(x, y, scale);
-        if(childCursor){
-            return childCursor;
-        }
-
-        // Check how close we are to the caption, if we have one
-        if(this._captionData){
-            var top = this.y * scale;
-            var left = this.x * scale;
-            var right = left + (this.width * scale);
-            var bottom = top + (this.height * scale);
-            var padding = CAPTION_PADDING * scale;
-
-            if(((this.caption.location === CaptionLocation.Top && y >= top - padding && y <= top) ||
-                (this.caption.location === CaptionLocation.Bottom && y >= bottom && y <= bottom + padding)) &&
-                (x >= left && x <= right)) {
-                // ------- \\
-                return Cursor.UpDown
-            }
-            else if(((this.caption.location === CaptionLocation.Left && x <= left && x >= left - padding) ||
-                     (this.caption.location === CaptionLocation.Right && x >= right && x <= right + padding)) &&
-                     (y >= top && y <= bottom)) {
-                // ------- \\
-                return Cursor.LeftRight
+                var capLoc = this.caption.location;
+                if (capLoc === CaptionLocation.Top) {
+                    this._captionResizer.layout.x = this.left;
+                    this._captionResizer.layout.y = this.top - this.border.top - this.margin.top - (CAPTION_PADDING * 0.2);
+                    this._captionResizer.layout.width = this.width;
+                    this._captionResizer.layout.height = (CAPTION_PADDING * 0.6);
+                }
+                else if (capLoc === CaptionLocation.Right) {
+                    this._captionResizer.layout.x = this.left + this.width + this.border.right + this.margin.right + (CAPTION_PADDING * 0.2);
+                    this._captionResizer.layout.y = this.top;
+                    this._captionResizer.layout.width = (CAPTION_PADDING * 0.6);
+                    this._captionResizer.layout.height = this.height;
+                }
             }
         }
-
     }
 
     /**
@@ -283,12 +275,12 @@ class FBObject extends EventPropagator {
      * @param {number} scale - The scale of the object
      * @returns {boolean}
      */
-    isPointInObject(x, y, scale){
-        x = Math.floor(x - (this.visualX * scale));
-        y = Math.floor(y - (this.visualY * scale));
+    isPointInObject(x, y){
+        x = x - this.visualX;
+        y = y - this.visualY;
 
-        return x >= 0 && x <= Math.ceil(this.visualWidth * scale) &&
-            y >= 0 && y <= Math.ceil(this.visualHeight * scale);
+        return x >= 0 && x <= this.visualWidth &&
+            y >= 0 && y <= this.visualHeight;
     }
 
     /**
@@ -769,15 +761,33 @@ class FBObject extends EventPropagator {
         };
     }
 
-    // endregion
+    _getCaptionResizerCoords(scale){
+        if(this.caption.text && this.caption.text !== "") {
+            var xPos, yPos, width, height;
+            var capLoc = this.caption.location;
+            var capPad = CAPTION_PADDING * scale;
 
-    // region Overridden Methods
+            var top = this.y;
+            var right = this.x + this.width;
+            var bottom = this.y + this.height;
+            var left = this.x;
 
-    _propogateUp(eventName, eventData){
-        return null;
-    }
+            if(capLoc === CaptionLocation.Top){
+                xPos = left;
+                yPos = top - capPad + (capPad * 0.2);
+                width = right - left;
+                height = capPad * 0.6;
+            }
+            else if(capLoc === CaptionLocation.Right){
+                xPos = right + (capPad * 0.2);
+                yPos = top;
+                width = capPad * 0.6;
+                height = bottom - top;
+            }
 
-    propogateDown(eventName, eventData){
+            return {xPos, yPos, width, height};
+        }
+
         return null;
     }
 

@@ -55,13 +55,6 @@ class Canvas extends EventPropagator {
         this._showGrid = true;
 
         /**
-         * The shapes on the canvas
-         * @private
-         * @type {FBObject[]}
-         */
-        this._shapeObjects = [];
-
-        /**
          * The shape that is currently being dragged
          * @private
          * @type {FBObject}
@@ -111,10 +104,15 @@ class Canvas extends EventPropagator {
         this._isContextShown = false;
 
         // Subscribe to the events we need for the canvas
-        this._canvas.addEventListener("mousedown", (e) => this._mouseDown(e));
-        this._canvas.addEventListener("mouseup", (e) => this._mouseUp(e));
-        this._canvas.addEventListener("mousemove", (e) => this._mouseMove(e));
+        this._canvas.addEventListener("mousedown", (e) => this._canvasMouseDown(e));
+        this._canvas.addEventListener("mouseup", (e) => this._canvasMouseUp(e));
+        this._canvas.addEventListener("mousemove", (e) => this._canvasMouseMove(e));
         window.addEventListener("keyup", (e) => this._keyUp(e));
+
+        // Subscribe for when the events get called on our custom propagator
+        this.subscribe(MouseEventType.MouseDown, (e) => this._mouseDown(e));
+        this.subscribe(MouseEventType.MouseMove, (e) => this._mouseMove(e));
+        this.subscribe(MouseEventType.MouseUp, (e) => this._mouseUp(e));
 
         // Setup and dispatch custom events
         this.__addEvent(EVENT_SHAPE_CHANGE);
@@ -243,7 +241,7 @@ class Canvas extends EventPropagator {
             throw "Argument shape must be a Shape type";
         }
 
-        this._shapeObjects.unshift(object);
+        this.__children.unshift(object);
     }
 
     /**
@@ -293,13 +291,13 @@ class Canvas extends EventPropagator {
         }
 
         // Try to find the shape -- If we can't find it, throw an exception
-        var idx = this._shapeObjects.indexOf(object);
+        var idx = this.__children.indexOf(object);
         if(idx < 0){
             throw "shape was not found in _canvas";
         }
 
         // Otherwise, remove it from the array
-        this._shapeObjects.splice(idx, 1);
+        this.__children.splice(idx, 1);
     }
 
     /**
@@ -359,7 +357,7 @@ class Canvas extends EventPropagator {
         }
 
         // Otherwise add it to the end of the array
-        this._shapeObjects.push(object);
+        this.__children.push(object);
     }
 
     /**
@@ -377,9 +375,9 @@ class Canvas extends EventPropagator {
         this._context.lineWidth = this.scale;
 
         // Draw all objects in reverse, that way recently added elements are on top
-        for(var idx = this._shapeObjects.length - 1; idx >= 0; --idx){
-            // for(var shape of this._shapeObjects){
-            this._shapeObjects[idx].draw(this._context, this.scale);
+        for(var idx = this.__children.length - 1; idx >= 0; --idx){
+            // for(var shape of this.__children){
+            this.__children[idx].draw(this._context, this.scale);
         }
 
         // Draw the selection, if there is one
@@ -583,13 +581,91 @@ class Canvas extends EventPropagator {
      * @param e - The mouse data
      * @private
      */
-    _mouseDown(e){
+    _canvasMouseDown(e){
         // Don't do the default
         e.preventDefault();
 
-        // Figure out where the mouse was pressed down relative to the canvas
-        this._dragStartX = (e.pageX - this._canvas.offsetLeft + this._scrollX(this._canvas));
-        this._dragStartY = (e.pageY - this._canvas.offsetTop + this._scrollY(this._canvas));
+        // Figure out where the mouse was pressed down relative to the canvas, when not scaled
+        var virtualX = (e.pageX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
+        var virtualY = (e.pageY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
+
+        this._propagate(new MouseEvent(MouseEventType.MouseDown), new MouseEventArgs(virtualX, virtualY, e.button))
+    }
+
+    /**
+     * Called when the mouse is moved on the canvas
+     * @param e - The mouse data
+     * @private
+     */
+    _canvasMouseMove(e){
+        // Don't do the default
+        e.preventDefault();
+
+        // Figure out where the mouse is at relative to the canvas
+        // Figure out where the mouse was pressed down relative to the canvas, when not scaled
+        var virtualX = (e.pageX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
+        var virtualY = (e.pageY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
+
+        this._propagate(new MouseEvent(MouseEventType.MouseMove), new MouseEventArgs(virtualX, virtualY, e.button));
+    }
+
+    /**
+     * Called when the mouse is released on the canvas
+     * @param e - The mouse data
+     * @private
+     */
+    _canvasMouseUp(e){
+        // Stop the default
+        e.preventDefault();
+
+        // Figure out where the mouse was pressed down relative to the canvas, when not scaled
+        var virtualX = (e.pageX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
+        var virtualY = (e.pageY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
+
+        this._propagate(new MouseEvent(MouseEventType.MouseUp), new MouseEventArgs(virtualX, virtualY, e.button))
+    }
+
+    /**
+     * Gets the amount the canvas has been scrolled on the X axis
+     * @param node - The node to get the scroll amount of
+     * @returns {number}
+     * @private
+     */
+    _scrollX(node){
+        // If we have a parent node, return the scroll amount plus the parents scroll amount (recursive)
+        if(node.parentNode){
+            return (node.scrollLeft ? this.scrollLeft : 0) + this._scrollX(node.parentNode);
+        }
+
+        // Otherwise, return the current element's scroll amount
+        return node.scrollLeft ? this.scrollLeft : 0;
+    }
+
+    /**
+     * Gets the amount the canvas has been scrolled on the Y axis
+     * @param node - The node to get the scroll amount of
+     * @returns {number}
+     * @private
+     */
+    _scrollY(node){
+        // If we have a parent node, return the scroll amount plus the parents scroll amount (recursive)
+        if(node.parentNode){
+            return (node.scrollTop ? node.scrollTop : 0) + this._scrollY(node.parentNode);
+        }
+
+        // Otherwise, return the current element's scroll amount
+        return node.scrollTop ? node.scrollTop : 0;
+    }
+
+    // endregion
+
+    // region Event Handlers
+
+    _mouseDown(e){
+
+        // Set this every time the mouse is clicked -- needed for proper dragging
+        this._dragStartX = e.x;
+        this._dragStartY = e.y;
 
         // If we're on a resize anchor already (set in _mouseMove), then set the shape to drag and leave
         if(this._resizeAnchor){
@@ -598,8 +674,8 @@ class Canvas extends EventPropagator {
         }
 
         // Otherwise, check if we're over any of the objects, and if so, set it as the active object
-        for(var object of this._shapeObjects){
-            if(object.isPointInObject(this._dragStartX, this._dragStartY, this.scale)){
+        for(var object of this.__children){
+            if(object.isPointInObject(e.x, e.y)){
                 this._objectToDrag = this.activeObject = object;
                 return;
             }
@@ -609,35 +685,21 @@ class Canvas extends EventPropagator {
         this._objectToDrag = this.activeObject = null;
     }
 
-    /**
-     * Called when the mouse is moved on the canvas
-     * @param e - The mouse data
-     * @private
-     */
     _mouseMove(e){
-        // Don't do the default
-        e.preventDefault();
 
-        // Figure out where the mouse is at relative to the canvas
-        var x, y;
-        var mouseX = e.pageX - this._canvas.offsetLeft + this._scrollX(this._canvas);
-        var mouseY = e.pageY - this._canvas.offsetTop + this._scrollY(this._canvas);
+        // Figure out how far we've moved
+        var x = e.x - this._dragStartX;
+        var y = e.y - this._dragStartY;
 
         // If we have a resize anchor, and an object that can be dragged
         if(this._resizeAnchor && this._objectToDrag){
-            // Figure out how far we've moved, and tell the shape to resize
-            x = (mouseX - this._dragStartX) / this.scale;
-            y = (mouseY - this._dragStartY) / this.scale;
-
             this._objectToDrag.resize(x, y, this._resizeAnchor, e.shiftKey, e.altKey);
-
-            this._objectToDrag._propagateUp(null, null)
         }
         // Otherwise, if we just have an object to drag
         else if(this._objectToDrag) {
             // Figure out how far we've moved
-            x = (mouseX - this._dragStartX) / this.scale;
-            y = (mouseY - this._dragStartY) / this.scale;
+            x = e.x - this._dragStartX;
+            y = e.y - this._dragStartY;
 
             // If shift is pressed, then we want to move in a straight or diagonal line
             if(e.shiftKey){
@@ -688,25 +750,25 @@ class Canvas extends EventPropagator {
 
             // Try to see if we're within 5px of any of the anchors
             var allowedDist = 5;
-            if (this._getAnchorRect(Anchor.TopLeft).isPointInShape(mouseX, mouseY, allowedDist)){
+            if (this._getAnchorRect(Anchor.TopLeft).isPointInShape(e.x, e.y, allowedDist)){
                 this._canvas.style.cursor = "nwse-resize";
                 this._resizeAnchor = Anchor.TopLeft;
 
                 return;
             }
-            else if(this._getAnchorRect(Anchor.BottomRight).isPointInShape(mouseX, mouseY, allowedDist)){
+            else if(this._getAnchorRect(Anchor.BottomRight).isPointInShape(e.x, e.y, allowedDist)){
                 this._canvas.style.cursor = "nwse-resize";
                 this._resizeAnchor = Anchor.BottomRight;
 
                 return;
             }
-            else if(this._getAnchorRect(Anchor.TopRight).isPointInShape(mouseX, mouseY, allowedDist)){
+            else if(this._getAnchorRect(Anchor.TopRight).isPointInShape(e.x, e.y, allowedDist)){
                 this._canvas.style.cursor = "nesw-resize";
                 this._resizeAnchor = Anchor.TopRight;
 
                 return;
             }
-            else if(this._getAnchorRect(Anchor.BottomLeft).isPointInShape(mouseX, mouseY, allowedDist)) {
+            else if(this._getAnchorRect(Anchor.BottomLeft).isPointInShape(e.x, e.y, allowedDist)) {
                 this._canvas.style.cursor = "nesw-resize";
                 this._resizeAnchor = Anchor.BottomLeft;
 
@@ -718,8 +780,8 @@ class Canvas extends EventPropagator {
         }
 
         // If we make it this far, see if we're hovering over any of the objects
-        for(var object of this._shapeObjects){
-            if(object.isPointInObject(mouseX, mouseY, this.scale)){
+        for(var object of this.__children){
+            if(object.isPointInObject(e.x, e.y)){
                 this._canvas.style.cursor = "pointer";
                 return;
             }
@@ -729,15 +791,7 @@ class Canvas extends EventPropagator {
         this._canvas.style.cursor = "default";
     }
 
-    /**
-     * Called when the mouse is released on the canvas
-     * @param e - The mouse data
-     * @private
-     */
     _mouseUp(e){
-        // Stop the default
-        e.preventDefault();
-
         // If we're dragging or resizing, then save the commit state
         if(this._objectToDrag){
             this._objectToDrag.commitResize();
@@ -746,91 +800,6 @@ class Canvas extends EventPropagator {
 
         // Ensure the context menu is hidden
         this.hideContextMenu();
-    }
-
-    /**
-     * Gets the amount the canvas has been scrolled on the X axis
-     * @param node - The node to get the scroll amount of
-     * @returns {number}
-     * @private
-     */
-    _scrollX(node){
-        // If we have a parent node, return the scroll amount plus the parents scroll amount (recursive)
-        if(node.parentNode){
-            return (node.scrollLeft ? this.scrollLeft : 0) + this._scrollX(node.parentNode);
-        }
-
-        // Otherwise, return the current element's scroll amount
-        return node.scrollLeft ? this.scrollLeft : 0;
-    }
-
-    /**
-     * Gets the amount the canvas has been scrolled on the Y axis
-     * @param node - The node to get the scroll amount of
-     * @returns {number}
-     * @private
-     */
-    _scrollY(node){
-        // If we have a parent node, return the scroll amount plus the parents scroll amount (recursive)
-        if(node.parentNode){
-            return (node.scrollTop ? node.scrollTop : 0) + this._scrollY(node.parentNode);
-        }
-
-        // Otherwise, return the current element's scroll amount
-        return node.scrollTop ? node.scrollTop : 0;
-    }
-
-    // endregion
-
-    // region Overwritten Methods
-
-    /**
-     * Sends and event down the chain
-     * @param {BaseEventType} eventType - The name of the event to propagate
-     * @param {EventArgs} eventData - The event data
-     * @abstract
-     */
-    _propagateDown(eventType, eventData){
-
-        // If a mouse event, figure out if the data is over any child
-        var childTarget = this._canvas;
-        if(eventData instanceof MouseEventArgs){
-            // Adjust the mouse data so no further levels need to scale
-            var adjustedMouseData = new MouseEventArgs(eventData.x / this.scale, eventData.y / this.scale, eventData.button);
-
-            // Find the child target
-            for(var child of this._shapeObjects){
-                if(child.isPointInObject(eventData.x, eventData.y, 1)){
-                    childTarget = child;
-                    break;
-                }
-            }
-
-            // If we have a move event
-            if(eventType.event == MouseEventType.MouseMove){
-                // If the last mouse element is not the same as the target, then the target needs a mouseEntered event
-                if(this.__lastMouseElement != childTarget){
-                    this.__lastMouseElement._propagateDown(MouseEventType.MouseLeave, null);
-                    childTarget._propagateDown(MouseEventType.MouseEnter, eventData);
-
-                    this.__lastMouseElement = childTarget;
-                }
-            }
-        }
-
-        // If we have a move event, we may need to send a mouse enter event first
-        if(eventType.event === MouseEventType.MouseMove){
-            this.__dispatchEvent(MouseEventType.MouseMove, eventData);
-        }
-
-        // Send the event to any subscribers of this class
-        this.__dispatchEvent(eventType.event, eventData, true);
-
-        switch(eventType){
-            case MouseEventType.MouseDown
-        }
-
-        this.__dispatchEvent(eventType.event, eventData, false);
     }
 
     // endregion

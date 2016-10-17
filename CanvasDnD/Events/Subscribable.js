@@ -41,7 +41,10 @@ class Subscribable {
      */
     __addEvent(eventName) {
         if(!this._subscribers[eventName]) {
-            this._subscribers[eventName] = {};
+            this._subscribers[eventName] = {
+                true: [],
+                false: []
+            };
         }
     }
 
@@ -77,7 +80,7 @@ class Subscribable {
     subscribe(eventName, func, useCapture = false){
         // If the event exists, add the method, otherwise, throw an exception
         if(this._subscribers[eventName]){
-            this._subscribers[eventName].push({useCapture, func});
+            this._subscribers[eventName][useCapture].push(func);
         }
         else{
             throw eventName + " is not a valid event";
