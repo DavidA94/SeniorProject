@@ -371,14 +371,17 @@ class Canvas extends EventPropagator {
         // Draw the page (margin border, and possibly the grid)
         this._drawPage();
 
-        // Set the line width to be that of the scale (1 * this.scale)
-        this._context.lineWidth = this.scale;
+        this._context.save();
+        this._context.scale(this.scale, this.scale);
 
         // Draw all objects in reverse, that way recently added elements are on top
         for(var idx = this.__children.length - 1; idx >= 0; --idx){
             // for(var shape of this.__children){
-            this.__children[idx].draw(this._context, this.scale);
+            this.__children[idx].draw(this._context);
         }
+
+        // Restore so there's no zooming on the selection
+        this._context.restore();
 
         // Draw the selection, if there is one
         this._drawSelection();
@@ -517,10 +520,10 @@ class Canvas extends EventPropagator {
         }
 
         // Figure out where the sides of the object are
-        var top = Math.floor(this.activeObject.visualY * this.scale);
-        var right = Math.ceil((this.activeObject.visualX + this.activeObject.visualWidth) * this.scale);
-        var bottom = Math.ceil((this.activeObject.visualY + this.activeObject.visualHeight) * this.scale);
-        var left = Math.floor(this.activeObject.visualX * this.scale);
+        var top = this.scale * (this.activeObject.visualY);
+        var right = this.scale * (this.activeObject.visualX + this.activeObject.visualWidth);
+        var bottom = this.scale * (this.activeObject.visualY + this.activeObject.visualHeight);
+        var left = this.scale * (this.activeObject.visualX);
 
         // Constants
         const boxSize = 5;
@@ -589,7 +592,7 @@ class Canvas extends EventPropagator {
         var virtualX = (e.pageX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
         var virtualY = (e.pageY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
 
-        this._propagate(new MouseEvent(MouseEventType.MouseDown), new MouseEventArgs(virtualX, virtualY, e.button))
+        this._propagate(new MouseEvent(MouseEventType.MouseDown), new MouseEventArgs(this, virtualX, virtualY, e.button))
     }
 
     /**
@@ -606,7 +609,7 @@ class Canvas extends EventPropagator {
         var virtualX = (e.pageX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
         var virtualY = (e.pageY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
 
-        this._propagate(new MouseEvent(MouseEventType.MouseMove), new MouseEventArgs(virtualX, virtualY, e.button));
+        this._propagate(new MouseEvent(MouseEventType.MouseMove), new MouseEventArgs(this, virtualX, virtualY, e.button));
     }
 
     /**
@@ -622,7 +625,7 @@ class Canvas extends EventPropagator {
         var virtualX = (e.pageX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
         var virtualY = (e.pageY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
 
-        this._propagate(new MouseEvent(MouseEventType.MouseUp), new MouseEventArgs(virtualX, virtualY, e.button))
+        this._propagate(new MouseEvent(MouseEventType.MouseUp), new MouseEventArgs(this, virtualX, virtualY, e.button))
     }
 
     /**
@@ -782,7 +785,7 @@ class Canvas extends EventPropagator {
         // If we make it this far, see if we're hovering over any of the objects
         for(var object of this.__children){
             if(object.isPointInObject(e.x, e.y)){
-                this._canvas.style.cursor = "pointer";
+                // this._canvas.style.cursor = "pointer";
                 return;
             }
         }

@@ -32,13 +32,14 @@ class Shape extends EventPropagator {
     get appearance() { return this._appearance; }
     get layout() { return this._layout; }
 
+    toString() { return "Shape"; }
+
     /**
      * Draws the shape
      * @abstract
      * @param {CanvasRenderingContext2D} context
-     * @param {number} scale
      */
-    draw(context, scale){
+    draw(context){
         throw Error("draw function not implemented");
     }
 
@@ -47,7 +48,6 @@ class Shape extends EventPropagator {
      * @abstract
      * @param {number} x - The x position
      * @param {number} y - The y position
-     * @param {number} scale - The scaling of the shape
      */
     isPointInShape(x, y){
         throw Error("isPointInShape function not implemented");

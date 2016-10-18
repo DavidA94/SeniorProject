@@ -11,20 +11,35 @@ class Mouse {
      * Initializes the Mouse class
      * @param {HTMLElement} htmlElementWindow - The element that should have the mouse properties changed
      */
-    initialize(htmlElementWindow){
+    static initialize(htmlElementWindow){
         /**
          * @private
          */
         Mouse._htmlElementWindow = htmlElementWindow;
+
+        Mouse._cursorStack = [];
     }
 
     /**
      * Sets the current mouse cursor
      * @param {Cursor} mouseCursor - The cursor to be set
      */
-    setCursor(mouseCursor){
+    static setCursor(mouseCursor){
+        if(Mouse._htmlElementWindow.style.cursor && Mouse._htmlElementWindow.style.cursor != ""){
+            Mouse._cursorStack.push(Mouse._htmlElementWindow.style.cursor);
+        }
+
         if(Mouse._htmlElementWindow){
             Mouse._htmlElementWindow.style.cursor = mouseCursor;
+        }
+    }
+
+    static restoreCursor(){
+        if(Mouse._cursorStack.length > 0){
+            Mouse._htmlElementWindow.style.cursor = Mouse._cursorStack.pop();
+        }
+        else{
+            Mouse._htmlElementWindow.style.cursor = Cursor.Default;
         }
     }
 }

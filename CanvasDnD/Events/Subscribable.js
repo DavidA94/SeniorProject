@@ -72,7 +72,7 @@ class Subscribable {
 
     /**
      * Subscribes to a given event, if it exists
-     * @param {string} eventName - The name of the vent to subscribe to
+     * @param {string} eventName - The name of the event to subscribe to
      * @param {EventHandler} func - The callback function to be called
      * @param {boolean} useCapture - Indicates if the callback should be called on capture
      * @throws {string} Thrown if the eventName does not exist

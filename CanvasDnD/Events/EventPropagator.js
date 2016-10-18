@@ -16,7 +16,7 @@ class EventPropagator extends Subscribable {
 
         /**
          * The children in this object
-         * @type {FBObject[]}
+         * @type {EventPropagator[]}
          * @protected
          */
         this.__children = [];
@@ -38,56 +38,76 @@ class EventPropagator extends Subscribable {
      * @protected
      */
     _propagate(eventType, eventData){
+
         // If a mouse event, figure out if the data is over any child
         var childTarget = null;
-        if(eventData instanceof MouseEventArgs){
+        if(eventData instanceof MouseEventArgs) {
             // Find the child target
-            for(var child of this.__children){
-                if(child.isPointInObject(eventData.x, eventData.y, 1)){
+            for (var child of this.__children) {
+                // If we can get the location of the shape, and it's in it, then remember it, and stop the loop
+                if (typeof child.isPointInObject === 'function' && child.isPointInObject(eventData.x, eventData.y)) {
                     childTarget = child;
                     break;
                 }
             }
 
             // If we have a move event
-            if(eventType.event == MouseEventType.MouseMove){
+            if (eventType.event == MouseEventType.MouseMove) {
                 // Check if the last mouse element is different from the child we're over.
                 // If it is, then we need to send a leave (if not null) and enter event,
                 // Assuming we found a child
 
-                if(childTarget && this.__lastMouseElement != childTarget){
+                if (this.__lastMouseElement != childTarget) {
+
                     // Send the leave event to the old element, if necessary
-                    if(this.__lastMouseElement){
+                    if (this.__lastMouseElement) {
+
+                        console.log("Sending MouseLeave to " + this.__lastMouseElement.toString());
+
                         var leaveEvent = new MouseEvent(MouseEventType.MouseLeave);
-                        this.__lastMouseElement._propagate(leaveEvent, null);
+                        this.__lastMouseElement._propagate(leaveEvent, eventData);
                     }
 
-                    // Send the enter event to the new element
-                    var enterEvent = new MouseEvent(MouseEventType.MouseEnter);
-                    childTarget._propagate(enterEvent, eventData);
+                    if(childTarget) {
+
+                        // Send the enter event to the new element
+                        var enterEvent = new MouseEvent(MouseEventType.MouseEnter);
+                        childTarget._propagate(enterEvent, eventData);
+
+                    }
 
                     // Update the last mouse element
                     this.__lastMouseElement = childTarget;
                 }
             }
-            else if(eventType.event == MouseEventType.MouseDown){
+            else if (eventType.event == MouseEventType.MouseDown) {
                 this._focusedElement = (childTarget ? childTarget : null);
             }
         }
 
         // Send the event to ourselves (as tunnel), then to the child, then to ourselves (as non-tunnel)
+
+        // Start with outselves as tunnel
         this.__dispatchEvent(eventType.event, eventData, true);
+
+
 
         // If our capture didn't handle it...
         if(!eventData.handled) {
 
-            // Send it to the child if there is one
-            if (childTarget) childTarget._propagate(eventType, eventData);
+            // If there is a child
+            if (childTarget){
+                // Keep sending the data down
+                childTarget._propagate(eventType, eventData);
+            }
+            // Otherwise, it's time to flip the sender, since we will be bubbling from this point on
+            else{
+                eventData.sender = this;
+            }
 
             // And if that child didn't handle it...
             if(!eventData.handled){
-
-                // Then send it to ourselves again as non-bubbling
+                // Then send it to ourselves again as non-capture
                 this.__dispatchEvent(eventType.event, eventData, false);
             }
         }

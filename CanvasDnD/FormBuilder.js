@@ -68,6 +68,9 @@ class FormBuilder{
         this._canvas = new Canvas(CANVAS_ID);
         this._canvas.scale = 1;
 
+        // Initialize the static Mouse class
+        Mouse.initialize(this._canvas._canvas);
+
         // Add a couple shapes for testing
         this._canvas.addObject(new Ellipse(25, 25, 20));
         this._canvas.addObject(new BasicShape(new Box(50, 200, 40, 20)));

@@ -72,7 +72,8 @@ const Cursor = {
     UpDown: "ns-resize",
     LeftRight: "ew-resize",
     ColumnResize: "col-resize",
-    RowResize: "row-resize"
+    RowResize: "row-resize",
+    Default: "default"
 };
 
 /**

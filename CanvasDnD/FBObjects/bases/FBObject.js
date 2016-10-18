@@ -72,7 +72,11 @@ class FBObject extends EventPropagator {
         this._backupLayout = this._layout.clone();
 
         this._captionResizer = new Box(0, 0, 0, 0);
-        this.__children.push(this._captionResizer);
+        this.__children.unshift(this._captionResizer);
+
+        this._captionResizer.subscribe(MouseEventType.MouseMove, (e) => console.log(e));
+        this._captionResizer.subscribe(MouseEventType.MouseEnter, (e) => { e.Handled = true; Mouse.setCursor(Cursor.LeftRight); });
+        this._captionResizer.subscribe(MouseEventType.MouseLeave, (e) => { e.Handled = true; Mouse.restoreCursor(); });
     }
 
     /**
@@ -230,23 +234,22 @@ class FBObject extends EventPropagator {
     /**
      * Draws the object
      * @param {CanvasRenderingContext2D} context
-     * @param {number} scale
      */
-    draw(context, scale){
+    draw(context){
         // Save the context, an draw the main shape
         context.save();
-        this._doDraw(context, scale);
+        this._doDraw(context);
         context.restore();
 
         // Save the context, and draw the border
         context.save();
-        this._drawBorder(context, scale);
+        this._drawBorder(context);
         context.restore();
 
         // If there is a caption to draw, save the context and draw it
         if(this.caption.text && this.caption.text !== "") {
             context.save();
-            this._drawCaption(context, scale);
+            this._drawCaption(context);
             context.restore();
 
             if(this._captionData) {
@@ -259,20 +262,23 @@ class FBObject extends EventPropagator {
                     this._captionResizer.layout.height = (CAPTION_PADDING * 0.6);
                 }
                 else if (capLoc === CaptionLocation.Right) {
-                    this._captionResizer.layout.x = this.left + this.width + this.border.right + this.margin.right + (CAPTION_PADDING * 0.2);
-                    this._captionResizer.layout.y = this.top;
+                    this._captionResizer.layout.x = this.x + this.width + this.border.right + this.margin.right + (CAPTION_PADDING * 0.2);
+                    this._captionResizer.layout.y = this.y;
                     this._captionResizer.layout.width = (CAPTION_PADDING * 0.6);
                     this._captionResizer.layout.height = this.height;
+
+                    this._captionResizer.draw(context);
                 }
             }
         }
     }
 
+    toString() { return "FBObject"; }
+
     /**
      * Indicates if the given coordinates are in the object
      * @param {number} x - The x coordinate
      * @param {number} y - The y coordinate
-     * @param {number} scale - The scale of the object
      * @returns {boolean}
      */
     isPointInObject(x, y){
@@ -359,7 +365,7 @@ class FBObject extends EventPropagator {
         }
 
         // If we have a minimum width, and it has been exceeded, then make it the minimum
-        if (this.minWidth && newW < scale * this.minWidth) {
+        if (this.minWidth && newW < this.minWidth) {
             newW = this.minWidth;
         }
         // Otherwise, if we have a minimum visual, make it no smaller than zero
@@ -368,7 +374,7 @@ class FBObject extends EventPropagator {
         }
 
         // DITTO for height
-        if (this.minHeight && newH < scale * this.minHeight) {
+        if (this.minHeight && newH < this.minHeight) {
             newH = this.minHeight;
         }
         else if (newH < 0 && this.__getMinVisualHeight() > 0) {
@@ -431,10 +437,9 @@ class FBObject extends EventPropagator {
     /**
      * Draws the border on this object
      * @param {CanvasRenderingContext2D} context - The context to draw with
-     * @param {number} scale - The scale to draw at
      * @private
      */
-    _drawBorder(context, scale){
+    _drawBorder(context){
         // Store the needed properties in local variables for easy access
         var topThickness = this.border.top;
         var rightThickness = this.border.right;
@@ -463,49 +468,49 @@ class FBObject extends EventPropagator {
         */
 
         if(topThickness > 0){
-            var bY = scale * (y - topThickness);
-            var bX = scale * (x - leftThickness);
-            var bW = scale * (width + leftThickness + rightThickness);
+            var bY = (y - topThickness);
+            var bX = (x - leftThickness);
+            var bW = (width + leftThickness + rightThickness);
 
             context.beginPath();
             context.moveTo(bX, bY);
-            context.rect(bX, bY, bW, scale * topThickness);
+            context.rect(bX, bY, bW, topThickness);
             context.fill();
             context.closePath();
         }
 
         if(rightThickness > 0){
-            var bX = scale * (x + width);
-            var bY = scale * (y - topThickness);
-            var bH = scale * (height + topThickness + bottomThickness);
+            var bX = (x + width);
+            var bY = (y - topThickness);
+            var bH = (height + topThickness + bottomThickness);
 
             context.beginPath();
             context.moveTo(bX, bY);
-            context.rect(bX, bY, scale * rightThickness, bH);
+            context.rect(bX, bY, rightThickness, bH);
             context.fill();
             context.closePath();
         }
 
         if(bottomThickness > 0){
-            var bY = scale * (y + height);
-            var bX = scale * (x - leftThickness);
-            var bW = scale * (width + leftThickness + rightThickness);
+            var bY = (y + height);
+            var bX = (x - leftThickness);
+            var bW = (width + leftThickness + rightThickness);
 
             context.beginPath();
             context.moveTo(bX, bY);
-            context.rect(bX, bY, bW, scale * bottomThickness);
+            context.rect(bX, bY, bW, bottomThickness);
             context.fill();
             context.closePath();
         }
 
         if(leftThickness > 0){
-            var bX = scale * (x - leftThickness);
-            var bY = scale * (y - topThickness);
-            var bH = scale * (height + topThickness + bottomThickness);
+            var bX = (x - leftThickness);
+            var bY = (y - topThickness);
+            var bH = (height + topThickness + bottomThickness);
 
             context.beginPath();
             context.moveTo(bX, bY);
-            context.rect(bX, bY, scale * leftThickness, bH);
+            context.rect(bX, bY, leftThickness, bH);
             context.fill();
             context.closePath();
         }
@@ -514,28 +519,26 @@ class FBObject extends EventPropagator {
     /**
      * Draws the caption for this object
      * @param {CanvasRenderingContext2D} context - The context to draw with
-     * @param {number} scale - The scale to draw at
      * @private
      */
-    _drawCaption(context, scale) {
+    _drawCaption(context) {
 
         // Get some of the caption properties for easier use later
         var capLoc = this.caption.location;
         var capText = this.caption.text;
         var capAlign = this.caption.font.alignment;
-        var capPadding = CAPTION_PADDING * scale;
+        var capPadding = CAPTION_PADDING;
 
         // If the reserve is null, then it is auto sized, but if it's set,
         // then scale it, and remove the padding from it
-        var reserve = this.caption.reserve === null ? null : (scale * this.caption.reserve) - capPadding;
+        var reserve = this.caption.reserve === null ? null : this.caption.reserve - capPadding;
 
         // Italic must be first because that's how they designed it
         var fontProps = this._caption.font.italic ? "italic" : "";
         fontProps += this._caption.font.bold ? " bold" : "";
         fontProps = fontProps.trim(); // ensure there's no excess spaces from one not being set
 
-        // TODO - Do I need to scale?
-        var fontSize = Math.ceil(scale * this._caption.font.size);
+        var fontSize = this._caption.font.size;
 
         // Setup the context properties
         context.font = fontProps + " " + fontSize + "px " + this._caption.font.fontFamily;
@@ -548,21 +551,21 @@ class FBObject extends EventPropagator {
 
         // If we're on the left or right, the the reserve is the width
         if (capLoc == CaptionLocation.Left || capLoc == CaptionLocation.Right) {
-            captionData = this.__getTextProperties(context, capText, reserve, this.height * scale, fontSize);
+            captionData = this.__getTextProperties(context, capText, reserve, this.height, fontSize);
             reserve = reserve === null ? captionData.width : reserve;
         }
         // Otherwise if we're on the top or bottom, the reserve is the height
         else if (capLoc == CaptionLocation.Top || capLoc == CaptionLocation.Bottom) {
-            captionData = this.__getTextProperties(context, capText, this.width * scale, reserve, fontSize);
+            captionData = this.__getTextProperties(context, capText, this.width, reserve, fontSize);
             reserve = reserve === null ? captionData.height : reserve;
         }
         // Otherwise if we're in the center, the width and height are specified by the shape's width
         else if (capLoc == CaptionLocation.Center) {
             // Remove the padding from the width/height, and then twice the capPadding since it has to apply to
             // both sides.
-            var width = scale * (this.width - this.layout.padding.left - this.layout.padding.right) - (capPadding * 2);
-            var height = scale * (this.height - this.layout.padding.top - this.layout.padding.bottom) - (capPadding * 2);
-            captionData = this.__getTextProperties(context, capText, width, height, fontSize);
+            var resWidth = (this.width - this.layout.padding.left - this.layout.padding.right) - (capPadding * 2);
+            var resHeight = (this.height - this.layout.padding.top - this.layout.padding.bottom) - (capPadding * 2);
+            captionData = this.__getTextProperties(context, capText, resWidth, resHeight, fontSize);
         }
         // None
         else {
@@ -580,10 +583,10 @@ class FBObject extends EventPropagator {
         // I HATE CANVAS TEXT!
 
         // Figure out the position of the shape
-        var left = scale * this.x;
-        var top = scale * this.y;
-        var width = scale * this.width;
-        var height = scale * this.height;
+        var left = this.x;
+        var top = this.y;
+        var width = this.width;
+        var height = this.height;
         var xShift = 0;
         var yShift = 0;
 
@@ -598,13 +601,13 @@ class FBObject extends EventPropagator {
                 else if (capAlign == FontAlignment.Right) xShift += width;
 
                 // Then pull it up so that it's above the border and capPadding
-                yShift = top - (scale * this.border.top) - capPadding - captionData.height;
+                yShift = top - this.border.top - capPadding - captionData.height;
 
                 break;
             case CaptionLocation.Right:
                 // Ditto, just different math for different sides
 
-                xShift = left + width + (scale * this.border.right) + capPadding;
+                xShift = left + width + this.border.right + capPadding;
 
                 if (capAlign == FontAlignment.Center) xShift += (reserve / 2);
                 else if (capAlign == FontAlignment.Right) xShift += reserve;
@@ -620,13 +623,13 @@ class FBObject extends EventPropagator {
                 if (capAlign == FontAlignment.Center) xShift += (width / 2);
                 else if (capAlign == FontAlignment.Right) xShift += width;
 
-                yShift = top + height + (scale * this.border.bottom) + capPadding;
+                yShift = top + height + this.border.bottom + capPadding;
 
                 break;
             case CaptionLocation.Left:
                 // Ditto, just different math for different sides
 
-                xShift = left - (scale * this.border.left) - capPadding;
+                xShift = left - this.border.left - capPadding;
 
                 if (capAlign == FontAlignment.Center) xShift -= (reserve / 2);
                 else if (capAlign == FontAlignment.Left) xShift -= reserve;
@@ -761,11 +764,11 @@ class FBObject extends EventPropagator {
         };
     }
 
-    _getCaptionResizerCoords(scale){
+    _getCaptionResizerCoords(){
         if(this.caption.text && this.caption.text !== "") {
             var xPos, yPos, width, height;
             var capLoc = this.caption.location;
-            var capPad = CAPTION_PADDING * scale;
+            var capPad = CAPTION_PADDING;
 
             var top = this.y;
             var right = this.x + this.width;

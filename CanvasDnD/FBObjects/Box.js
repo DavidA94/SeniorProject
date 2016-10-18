@@ -52,15 +52,14 @@ class Box extends Shape {
      * Indicates if the given coordinates are in the object
      * @param {number} x - The x coordinate
      * @param {number} y - The y coordinate
-     * @param {number} scale - The scale of the object
      * @returns {boolean}
      */
     isPointInObject(x, y){
-        x = x - this.visualX;
-        y = y - this.visualY;
+        x = x - this.layout.x;
+        y = y - this.layout.y;
 
-        return x >= 0 && x <= this.visualWidth &&
-            y >= 0 && y <= this.visualHeight;
+        return x >= 0 && x <= this.layout.width &&
+            y >= 0 && y <= this.layout.height;
     }
 
     /**
@@ -87,6 +86,8 @@ class Box extends Shape {
         context.fill();
         context.stroke();
     }
+
+    toString() { return "Box"; }
 
     // endregion
 }

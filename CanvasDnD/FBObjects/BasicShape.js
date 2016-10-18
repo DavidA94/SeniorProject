@@ -17,6 +17,7 @@ class BasicShape extends FBObject {
          * @type {Shape}
          */
         this._shape = shape;
+        this.__children.push(this._shape);
 
         this.caption.text = "Well, wha-da-ya know? It's a BOX!";
         this.caption.font.fontFamily = FontFamilies.Tahoma;
@@ -39,10 +40,14 @@ class BasicShape extends FBObject {
     /**
      * Draws the shape and its dependencies
      * @param {CanvasRenderingContext2D} context
-     * @param {number} scale
      * @private
      */
-    _doDraw(context, scale){
-        this._shape.draw(context, scale);
+    _doDraw(context){
+        this._shape.draw(context);
     }
+
+    toString() { return "BasicShape"; }
+
+    get minWidth() { return this._shape.minWidth; }
+    get minHeight() { return this._shape.minHeight; }
 }

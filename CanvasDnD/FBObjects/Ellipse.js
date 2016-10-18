@@ -68,10 +68,9 @@ class Ellipse extends FBObject {
     /**
      * Draws the Ellipse
      * @param {CanvasRenderingContext2D} context - The context to draw with
-     * @param {number} scale - The scale to draw at
      * @private
      */
-    _doDraw(context, scale){
+    _doDraw(context){
 
         // Begin the path, and setup the context properties from the shape properties
         context.beginPath();
@@ -80,8 +79,8 @@ class Ellipse extends FBObject {
         context.lineWidth = this._appearance.strokeThickness;
 
         // Translate to the center of the circle, and draw the ellipse
-        context.translate(Math.ceil(this._centerX * scale), Math.ceil(this._centerY * scale));
-        context.ellipse(0, 0, Math.ceil(this._radiusX * scale), Math.ceil(this._radiusY * scale), 0, 0, 2 * Math.PI);
+        context.translate(this._centerX, this._centerY);
+        context.ellipse(0, 0, this._radiusX, this._radiusY, 0, 0, 2 * Math.PI);
 
         // Close the path, then fill and stroke it
         context.closePath();
@@ -91,30 +90,17 @@ class Ellipse extends FBObject {
     }
 
     /**
-     * Gets the cursor for the given coordinates, if they are within the shape
-     * @param {number} x - The x coordinate
-     * @param {number} y - The y coordinate
-     * @param {number} scale - The scale of the object
-     * @returns {Cursor}
-     */
-    _getHoverCursor(x, y, scale){
-        if(!this._isPointInRealObject(x, y, scale)) return null;
-        return Cursor.Hand;
-    }
-
-    /**
      * Checks if the given coordinates are within the shape
      * @param {number} x - The x coordinate
      * @param {number} y - The y coordinate
-     * @param {number} scale - The scale of the object
      * @returns {boolean}
      */
-    _isPointInRealObject(x, y, scale){
+    _isPointInRealObject(x, y){
         // Scale all the parameters, and then do the math for just the circle
-        var cX = this._centerX * scale;
-        var cY = this._centerY * scale;
-        var rX = this._radiusX * scale;
-        var rY = this._radiusY * scale;
+        var cX = this._centerX;
+        var cY = this._centerY;
+        var rX = this._radiusX;
+        var rY = this._radiusY;
         return (Math.pow((x - cX), 2) / Math.pow(rX, 2)) + (Math.pow((y - cY), 2) / Math.pow(rY, 2)) <= 1;
     }
 

@@ -24,8 +24,8 @@ class MouseEventArgs extends EventArgs {
      * @param {number} y - The y position the event happened at
      * @param {MouseButton} mouseButton
      */
-    constructor(x, y, mouseButton){
-        super();
+    constructor(sender, x, y, mouseButton){
+        super(sender);
 
         /**
          * @private
