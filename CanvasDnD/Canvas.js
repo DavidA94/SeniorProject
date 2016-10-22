@@ -62,13 +62,6 @@ class Canvas extends EventPropagator {
         this._objectToDrag = null;
 
         /**
-         * The shape that is currently active (has the selection around it)
-         * @private
-         * @type {FBObject}
-         */
-        this._activeShape = null;
-
-        /**
          * The anchor that is currently being hovered/dragged
          * @private
          * @type {AnchorHandle}
@@ -110,13 +103,13 @@ class Canvas extends EventPropagator {
         window.addEventListener("keyup", (e) => this._keyUp(e));
 
         // Subscribe for when the events get called on our custom propagator
-        this.subscribe(MouseEventType.MouseDown, (e) => this._mouseDown(e));
+        // this.subscribe(MouseEventType.MouseDown, (e) => this._mouseDown(e));
         this.subscribe(MouseEventType.MouseMove, (e) => this._mouseMove(e));
         this.subscribe(MouseEventType.MouseUp, (e) => this._mouseUp(e));
 
         // Setup and dispatch custom events
         this.__addEvent(EVENT_SHAPE_CHANGE);
-        this.__dispatchEvent(EVENT_SHAPE_CHANGE, { 'activeShape': this.activeObject });
+        this.__dispatchEvent(EVENT_SHAPE_CHANGE, { 'activeShape': Keyboard.focusedElement });
 
         // Request callback when the canvas is drawn (one-time -- must be re-done after each call)
         window.requestAnimationFrame(() => this._draw());
@@ -127,13 +120,6 @@ class Canvas extends EventPropagator {
     // region Private Properties
 
     /**
-     * Gets the currently active shape
-     * @returns {FBObject}
-     * @private
-     */
-    get activeObject() { return this._activeShape; }
-
-    /**
      * Sets the currently active shape
      * @param {FBObject} value - The new active shape
      * @private
@@ -142,7 +128,7 @@ class Canvas extends EventPropagator {
         this._activeShape = value;
 
         // Dispatch the event that it's changed
-        this.__dispatchEvent("shapechange", { 'activeShape': this.activeObject });
+        this.__dispatchEvent("shapechange", { 'activeShape': Keyboard.focusedElement });
     }
 
     // endregion
@@ -230,6 +216,11 @@ class Canvas extends EventPropagator {
 
     // region Public Functions
 
+    abcde(e){
+        console.log(e.sender.toString());
+        Keyboard.focusedElement = e.sender;
+    }
+
     /**
      * Adds an object to the canvas on top of everything else
      * @param {FBObject} object - The object to add
@@ -242,6 +233,9 @@ class Canvas extends EventPropagator {
         }
 
         this.__children.unshift(object);
+        
+        console.log("Susbscribing to " + object.toString());
+        object.subscribe(MouseEventType.MouseDown, this.abcde);
     }
 
     /**
@@ -249,11 +243,11 @@ class Canvas extends EventPropagator {
      */
     bringActiveToFront(){
         // If we don't have an active shape, do nothing
-        if(!this.activeObject) return;
+        if(!Keyboard.focusedElement) return;
 
         // Otherwise, remove it, and then add it to the top
-        this.removeObject(this.activeObject);
-        this.addObject(this.activeObject);
+        this.removeObject(Keyboard.focusedElement);
+        this.addObject(Keyboard.focusedElement);
     }
 
     /**
@@ -261,11 +255,11 @@ class Canvas extends EventPropagator {
      */
     deleteActive(){
         // If we don't have an active shape, do nothing
-        if(!this.activeObject) return;
+        if(!Keyboard.focusedElement) return;
 
         // Otherwise remove it, and update the active shape
-        this.removeObject(this.activeObject);
-        this.activeObject = null;
+        this.removeObject(Keyboard.focusedElement);
+        Keyboard.focusedElement = null;
     }
 
     /**
@@ -305,11 +299,11 @@ class Canvas extends EventPropagator {
      */
     sendActiveToBack(){
         // If there is no active shape, do nothing
-        if(!this.activeObject) return;
+        if(!Keyboard.focusedElement) return;
 
         // Otherwise, remove it and re-add it
-        this.removeObject(this.activeObject);
-        this._appendObject(this.activeObject);
+        this.removeObject(Keyboard.focusedElement);
+        this._appendObject(Keyboard.focusedElement);
     }
 
     /**
@@ -318,7 +312,7 @@ class Canvas extends EventPropagator {
      */
     showContextMenu(e){
         // If we have an active shape
-        if(this.activeObject) {
+        if(Keyboard.focusedElement) {
             // Stop whatever it would normally do
             e.preventDefault();
 
@@ -339,6 +333,8 @@ class Canvas extends EventPropagator {
     reset(){
         this._context.clearRect(0, 0, this.width, this.height);
     }
+
+    toString() { return "Canvas"; }
 
     // endregion
 
@@ -446,7 +442,7 @@ class Canvas extends EventPropagator {
      */
     _drawSelection(){
         // If we have an active shape
-        if(this.activeObject){
+        if(Keyboard.focusedElement){
 
             // Use the current number of milliseconds to make the "ants" move consistently
             var date = new Date();
@@ -477,8 +473,8 @@ class Canvas extends EventPropagator {
                 c.beginPath();
 
                 // Draw with floor/ceil so that there's no blurriness to the line
-                c.rect(Math.floor(this.activeObject.visualX * this.scale), Math.floor(this.activeObject.visualY * this.scale),
-                    Math.ceil(this.activeObject.visualWidth * this.scale), Math.ceil(this.activeObject.visualHeight * this.scale));
+                c.rect(Math.floor(Keyboard.focusedElement.visualX * this.scale), Math.floor(Keyboard.focusedElement.visualY * this.scale),
+                    Math.ceil(Keyboard.focusedElement.visualWidth * this.scale), Math.ceil(Keyboard.focusedElement.visualHeight * this.scale));
 
                 // Stroke color depends which run we're on
                 c.strokeStyle = i == 0 ? "#000" : "#FFF";
@@ -515,15 +511,17 @@ class Canvas extends EventPropagator {
     _getAnchorRect(anchorCorner){
 
         // As long as there is an active shape
-        if(!this.activeObject){
+        if(!Keyboard.focusedElement){
             return null;
         }
 
+        var active = Keyboard.focusedElement;
+
         // Figure out where the sides of the object are
-        var top = this.scale * (this.activeObject.visualY);
-        var right = this.scale * (this.activeObject.visualX + this.activeObject.visualWidth);
-        var bottom = this.scale * (this.activeObject.visualY + this.activeObject.visualHeight);
-        var left = this.scale * (this.activeObject.visualX);
+        var top = this.scale * (active.visualY);
+        var right = this.scale * (active.visualX + active.visualWidth);
+        var bottom = this.scale * (active.visualY + active.visualHeight);
+        var left = this.scale * (active.visualX);
 
         // Constants
         const boxSize = 5;
@@ -672,7 +670,7 @@ class Canvas extends EventPropagator {
 
         // If we're on a resize anchor already (set in _mouseMove), then set the shape to drag and leave
         if(this._resizeAnchor){
-            this._objectToDrag = this.activeObject;
+            this._objectToDrag = Keyboard.focusedElement;
             return;
         }
 
@@ -749,7 +747,7 @@ class Canvas extends EventPropagator {
             return
         }
         // If we just have an active object
-        else if(this.activeObject){
+        else if(Keyboard.focusedElement){
 
             // Try to see if we're within 5px of any of the anchors
             var allowedDist = 5;
@@ -782,7 +780,7 @@ class Canvas extends EventPropagator {
             this._resizeAnchor = null;
         }
 
-        // If we make it this far, see if we're hovering over any of the objects
+        /*// If we make it this far, see if we're hovering over any of the objects
         for(var object of this.__children){
             if(object.isPointInObject(e.x, e.y)){
                 // this._canvas.style.cursor = "pointer";
@@ -791,7 +789,7 @@ class Canvas extends EventPropagator {
         }
 
         // Default the cursor if we make it this far
-        this._canvas.style.cursor = "default";
+        this._canvas.style.cursor = "default";*/
     }
 
     _mouseUp(e){

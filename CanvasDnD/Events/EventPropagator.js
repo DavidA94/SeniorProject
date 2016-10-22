@@ -62,18 +62,20 @@ class EventPropagator extends Subscribable {
                     // Send the leave event to the old element, if necessary
                     if (this.__lastMouseElement) {
 
-                        console.log("Sending MouseLeave to " + this.__lastMouseElement.toString());
-
                         var leaveEvent = new MouseEvent(MouseEventType.MouseLeave);
                         this.__lastMouseElement._propagate(leaveEvent, eventData);
                     }
 
+                    // If we found a child, send the enter event to them, otherwise send it to ourself
+                    var enterEvent = new MouseEvent(MouseEventType.MouseEnter);
                     if(childTarget) {
 
                         // Send the enter event to the new element
-                        var enterEvent = new MouseEvent(MouseEventType.MouseEnter);
                         childTarget._propagate(enterEvent, eventData);
 
+                    }
+                    else{
+                        this._propagate(enterEvent, eventData);
                     }
 
                     // Update the last mouse element
@@ -87,6 +89,8 @@ class EventPropagator extends Subscribable {
 
         // Send the event to ourselves (as tunnel), then to the child, then to ourselves (as non-tunnel)
 
+        // ----- Going DOWN
+
         // Start with outselves as tunnel
         this.__dispatchEvent(eventType.event, eventData, true);
 
@@ -99,14 +103,22 @@ class EventPropagator extends Subscribable {
             if (childTarget){
                 // Keep sending the data down
                 childTarget._propagate(eventType, eventData);
+
+                // FLIP POINT
+
+                // If the child has a focused element, make the child be this level's focus
+                if(childTarget._focusedElement) this._focusedElement = childTarget;
             }
-            // Otherwise, it's time to flip the sender, since we will be bubbling from this point on
-            else{
-                eventData.sender = this;
+            // Otherwise, it's time to flip the originalTarget, since we will be bubbling from this point on
+            else if(eventData.originalTarget !== this){
+                eventData.originalTarget = this;
             }
 
             // And if that child didn't handle it...
             if(!eventData.handled){
+
+                // ----- Going UP
+
                 // Then send it to ourselves again as non-capture
                 this.__dispatchEvent(eventType.event, eventData, false);
             }

@@ -106,11 +106,5 @@ class Ellipse extends FBObject {
 
     // endregion
 
-
-
-
-
-
-
-
+    toString() { return "Ellipse"; }
 }

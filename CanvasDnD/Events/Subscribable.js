@@ -28,6 +28,8 @@ class Subscribable {
         this.__addEvent(MouseEventType.MouseLeave);
         this.__addEvent(MouseEventType.MouseMove);
         this.__addEvent(MouseEventType.MouseUp);
+
+        this._sender = null;
     }
 
     // endregion
@@ -51,17 +53,26 @@ class Subscribable {
     /**
      * Dispatches an event
      * @param {string} eventName - The name of the event to dispatch
-     * @param {*} eventData - The data to send with the event
+     * @param {EventArgs} eventData - The data to send with the event
      * @param {boolean} isCapture - Indicates if the capture event is to be dispatched
      * @protected
      */
     __dispatchEvent(eventName, eventData, isCapture = false){
         if(this._subscribers[eventName] && this._subscribers[eventName][isCapture]){
             for(var func of this._subscribers[eventName][isCapture]){
+
                 // setTimeout = run in new thread
                 // Really weird syntax so things are kept in scope correctly
                 // -- func is passed into an anonymous method, which then calls that function with the event data
-                ((f) => setTimeout(() => f(eventData), 0))(func);
+                ((f) => {
+                    setTimeout(() => {
+                        // Set the sender to `this`
+                        console.log("Sending " + eventName + " event from " + this.toString());
+                        eventData.sender = this._sender;
+
+                        f(eventData)
+                    }, 0)
+                })(func);
             }
         }
     }
@@ -81,6 +92,8 @@ class Subscribable {
         // If the event exists, add the method, otherwise, throw an exception
         if(this._subscribers[eventName]){
             this._subscribers[eventName][useCapture].push(func);
+            this._sender = this;
+            console.log(this._sender.toString() + " has had somebody subscribe to " + eventName);
         }
         else{
             throw eventName + " is not a valid event";

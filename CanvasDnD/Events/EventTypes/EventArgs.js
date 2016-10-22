@@ -6,11 +6,11 @@ class EventArgs {
 
     /**
      * Creates a new EventArgs
-     * @param {EventPropagator} sender - The originator of the event
+     * @param {EventPropagator} originalTarget - The originator of the event
      */
-    constructor(sender){
-        if(!sender || !(sender instanceof EventPropagator)){
-            throw Error("EventArgs must be constructed with an EventPropagator sender");
+    constructor(originalTarget){
+        if(!originalTarget || !(originalTarget instanceof EventPropagator)){
+            throw Error("EventArgs must be constructed with an EventPropagator originalTarget");
         }
 
         /**
@@ -25,7 +25,14 @@ class EventArgs {
          * @type {EventPropagator}
          * @private
          */
-        this._sender = sender;
+        this._originalTarget = originalTarget;
+
+        /**
+         * The object which is subscribed to
+         * @type {Subscribable}
+         * @private
+         */
+        this._sender = null;
     }
 
     /**
@@ -44,11 +51,23 @@ class EventArgs {
      * The object that originated the event
      * @returns {EventPropagator}
      */
+    get originalTarget() { return this._originalTarget; }
+
+    /**
+     * The object that originated the event
+     * @param {EventPropagator} value - The originalTarget
+     */
+    set originalTarget(value) { this._originalTarget = value; }
+
+    /**
+     * The object which is subscribed to
+     * @returns {Subscribable}
+     */
     get sender() { return this._sender; }
 
     /**
      * The object that originated the event
-     * @param {EventPropagator} value - The sender
+     * @param {Subscribable} value - The originalTarget
      */
     set sender(value) { this._sender = value; }
 }
