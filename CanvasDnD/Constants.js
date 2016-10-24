@@ -30,6 +30,8 @@ const PAGE_MODE_P = "portrait";
 // region Custom Subscribable Names
 
 const EVENT_SHAPE_CHANGE = "shapechange";
+const EVENT_BEGIN_CAPTION_RESIZE = "beginCaptionResize";
+const EVENT_END_CAPTION_RESIZE = "endCaptionResize";
 
 // endregion
 
@@ -48,23 +50,26 @@ const Anchor = {
 
 /**
  * Represents valid locations for a caption
- * @enum {string}
+ * @enum {int}
  */
 var CaptionLocation = {
-    Top: "Top",
-    Right: "Right",
-    Bottom: "Bottom",
-    Left: "Left",
-    Center: "Center",
-    None: "none"
+    Top: 1,
+    Right: 4,
+    Bottom: 2,
+    Left: 8,
+    Center: 16,
+    None: 0
 };
+
+CAPTION_TOP_BOTTOM = 3;  // Used for binary operations with CaptionLocation
+CAPTION_LEFT_RIGHT = 12; // Ditto
 
 /**
  * Represents the types of cursors that can be returned
  * @enum {string}
  */
 const Cursor = {
-    Hand: "hand",
+    Pointer: "pointer",
     TopLeft: "nwse-resize",
     TopRight: "nesw-resize",
     BottomLeft: "nesw-resize",

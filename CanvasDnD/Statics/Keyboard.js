@@ -17,6 +17,6 @@ class Keyboard {
      * The currently focused element
      * @param {FBObject} el - The element which is to be given the focus
      */
-    static set focusedElement(el){ Keyboard._focusedEl = el; console.log("The focused element has been set to " + el.toString()); }
+    static set focusedElement(el){ Keyboard._focusedEl = el; }
 
 }

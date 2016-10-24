@@ -28,8 +28,6 @@ class Subscribable {
         this.__addEvent(MouseEventType.MouseLeave);
         this.__addEvent(MouseEventType.MouseMove);
         this.__addEvent(MouseEventType.MouseUp);
-
-        this._sender = null;
     }
 
     // endregion
@@ -61,18 +59,13 @@ class Subscribable {
         if(this._subscribers[eventName] && this._subscribers[eventName][isCapture]){
             for(var func of this._subscribers[eventName][isCapture]){
 
-                // setTimeout = run in new thread
-                // Really weird syntax so things are kept in scope correctly
-                // -- func is passed into an anonymous method, which then calls that function with the event data
-                ((f) => {
-                    setTimeout(() => {
-                        // Set the sender to `this`
-                        console.log("Sending " + eventName + " event from " + this.toString());
-                        eventData.sender = this._sender;
+                // Don't use setTimeout here, or if a method Handles an event, one that would get called following it
+                // might still get called. If something takes too long, they should use setTimeout in that method.
+                eventData.sender = this;
+                func(eventData);
 
-                        f(eventData)
-                    }, 0)
-                })(func);
+                // If a method handled the event, stop sending.
+                if(eventData.handled) return;
             }
         }
     }
@@ -92,8 +85,6 @@ class Subscribable {
         // If the event exists, add the method, otherwise, throw an exception
         if(this._subscribers[eventName]){
             this._subscribers[eventName][useCapture].push(func);
-            this._sender = this;
-            console.log(this._sender.toString() + " has had somebody subscribe to " + eventName);
         }
         else{
             throw eventName + " is not a valid event";

@@ -42,48 +42,70 @@ class EventPropagator extends Subscribable {
         // If a mouse event, figure out if the data is over any child
         var childTarget = null;
         if(eventData instanceof MouseEventArgs) {
-            // Find the child target
-            for (var child of this.__children) {
-                // If we can get the location of the shape, and it's in it, then remember it, and stop the loop
-                if (typeof child.isPointInObject === 'function' && child.isPointInObject(eventData.x, eventData.y)) {
-                    childTarget = child;
-                    break;
+
+            // If somebody is capturing mouse data, send it directly to them.
+            if(EventPropagator.captureObj && EventPropagator.captureObj !== this){
+
+                console.log("Redirecting " + eventType.event + " to " + EventPropagator.captureObj);
+
+                // Update the initial target, then start propagation
+                eventData.originalTarget = EventPropagator.captureObj;
+                EventPropagator.captureObj._propagate(eventType, eventData);
+
+                // If the event was the mouse being released, then stop capturing
+                if(eventType.event === MouseEventType.MouseUp) {
+                    console.log("Got MouseUp event from " + this.toString());
+                    this.releaseCapture();
                 }
+
+                return;
             }
-
-            // If we have a move event
-            if (eventType.event == MouseEventType.MouseMove) {
-                // Check if the last mouse element is different from the child we're over.
-                // If it is, then we need to send a leave (if not null) and enter event,
-                // Assuming we found a child
-
-                if (this.__lastMouseElement != childTarget) {
-
-                    // Send the leave event to the old element, if necessary
-                    if (this.__lastMouseElement) {
-
-                        var leaveEvent = new MouseEvent(MouseEventType.MouseLeave);
-                        this.__lastMouseElement._propagate(leaveEvent, eventData);
+            // Only bother to look for children if we're not capturing. This prevents infinite recursion.
+            else if(!EventPropagator.captureObj) {
+                // Find the child target
+                for (var child of this.__children) {
+                    // If we can get the location of the shape, and it's in it, then remember it, and stop the loop
+                    if (typeof child.isPointInObject === 'function' && child.isPointInObject(eventData.x, eventData.y)) {
+                        childTarget = child;
+                        break;
                     }
-
-                    // If we found a child, send the enter event to them, otherwise send it to ourself
-                    var enterEvent = new MouseEvent(MouseEventType.MouseEnter);
-                    if(childTarget) {
-
-                        // Send the enter event to the new element
-                        childTarget._propagate(enterEvent, eventData);
-
-                    }
-                    else{
-                        this._propagate(enterEvent, eventData);
-                    }
-
-                    // Update the last mouse element
-                    this.__lastMouseElement = childTarget;
                 }
-            }
-            else if (eventType.event == MouseEventType.MouseDown) {
-                this._focusedElement = (childTarget ? childTarget : null);
+
+                // If we have a move event
+                if (eventType.event == MouseEventType.MouseMove) {
+                    // Check if the last mouse element is different from the child we're over.
+                    // If it is, then we need to send a leave (if not null) and enter event,
+                    // Assuming we found a child
+
+                    if (this.__lastMouseElement != childTarget) {
+
+                        // Send the leave event to the old element, if necessary
+                        if (this.__lastMouseElement) {
+
+                            var leaveEvent = new MouseEvent(MouseEventType.MouseLeave);
+                            this.__lastMouseElement._propagate(leaveEvent, eventData);
+                        }
+
+                        // If we found a child, send the enter event to them, otherwise send it to ourself
+                        var enterEvent = new MouseEvent(MouseEventType.MouseEnter);
+                        if (childTarget) {
+
+                            // Send the enter event to the new element
+                            childTarget._propagate(enterEvent, eventData);
+
+                        }
+                        else {
+                            this._propagate(enterEvent, eventData);
+                        }
+
+                        // Update the last mouse element
+                        this.__lastMouseElement = childTarget;
+                    }
+                }
+                else if (eventType.event == MouseEventType.MouseDown) {
+                    this._focusedElement = (childTarget ? childTarget : null);
+                }
+
             }
         }
 
@@ -123,5 +145,22 @@ class EventPropagator extends Subscribable {
                 this.__dispatchEvent(eventType.event, eventData, false);
             }
         }
+    }
+
+    /**
+     * Causes all mouse events to be sent to this object until the mouse is released, or until
+     * @see {@link releaseCapture} is called.
+     */
+    setCapture(){
+        EventPropagator.captureObj = this;
+        console.log("Mouse capture is bound to " + this.toString());
+    }
+
+    /**
+     * Releases the mouse capture, if it's currently enabled.
+     */
+    releaseCapture(){
+        console.log("Releasing capture");
+        EventPropagator.captureObj = null;
     }
 }

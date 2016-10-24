@@ -96,16 +96,22 @@ class Canvas extends EventPropagator {
          */
         this._isContextShown = false;
 
+        /**
+         * @type {object<function, function>}
+         * @private
+         */
+        this._boundMethods = {};
+
         // Subscribe to the events we need for the canvas
-        this._canvas.addEventListener("mousedown", (e) => this._canvasMouseDown(e));
-        this._canvas.addEventListener("mouseup", (e) => this._canvasMouseUp(e));
-        this._canvas.addEventListener("mousemove", (e) => this._canvasMouseMove(e));
+        this._canvas.addEventListener("mousedown", this._getBoundFunc(this._canvasMouseDown));
+        this._canvas.addEventListener("mouseup", this._getBoundFunc(this._canvasMouseUp));
+        this._canvas.addEventListener("mousemove", this._getBoundFunc(this._canvasMouseMove));
         window.addEventListener("keyup", (e) => this._keyUp(e));
 
         // Subscribe for when the events get called on our custom propagator
-        // this.subscribe(MouseEventType.MouseDown, (e) => this._mouseDown(e));
-        this.subscribe(MouseEventType.MouseMove, (e) => this._mouseMove(e));
-        this.subscribe(MouseEventType.MouseUp, (e) => this._mouseUp(e));
+        this.subscribe(MouseEventType.MouseDown, this._getBoundFunc(this._mouseDown));
+        this.subscribe(MouseEventType.MouseMove, this._getBoundFunc(this._mouseMove));
+        this.subscribe(MouseEventType.MouseUp, this._getBoundFunc(this._mouseUp));
 
         // Setup and dispatch custom events
         this.__addEvent(EVENT_SHAPE_CHANGE);
@@ -113,22 +119,6 @@ class Canvas extends EventPropagator {
 
         // Request callback when the canvas is drawn (one-time -- must be re-done after each call)
         window.requestAnimationFrame(() => this._draw());
-    }
-
-    // endregion
-
-    // region Private Properties
-
-    /**
-     * Sets the currently active shape
-     * @param {FBObject} value - The new active shape
-     * @private
-     */
-    set activeObject(value) {
-        this._activeShape = value;
-
-        // Dispatch the event that it's changed
-        this.__dispatchEvent("shapechange", { 'activeShape': Keyboard.focusedElement });
     }
 
     // endregion
@@ -216,11 +206,6 @@ class Canvas extends EventPropagator {
 
     // region Public Functions
 
-    abcde(e){
-        console.log(e.sender.toString());
-        Keyboard.focusedElement = e.sender;
-    }
-
     /**
      * Adds an object to the canvas on top of everything else
      * @param {FBObject} object - The object to add
@@ -233,9 +218,14 @@ class Canvas extends EventPropagator {
         }
 
         this.__children.unshift(object);
-        
-        console.log("Susbscribing to " + object.toString());
-        object.subscribe(MouseEventType.MouseDown, this.abcde);
+
+        object.subscribe(MouseEventType.MouseDown, this._getBoundFunc(this._shapeMouseDown));
+        object.subscribe(MouseEventType.MouseEnter, this._getBoundFunc(this._shapeMouseEnter));
+        object.subscribe(MouseEventType.MouseLeave, this._getBoundFunc(this._shapeMouseLeave));
+        object.subscribe(MouseEventType.MouseMove, this._getBoundFunc(this._shapeMouseMove));
+        object.subscribe(MouseEventType.MouseUp, this._getBoundFunc(this._shapeMouseUp));
+        // object.subscribe(EVENT_BEGIN_CAPTION_RESIZE, this._getBoundFunc(this._shapeBeginCapResize));
+        // object.subscribe(EVENT_END_CAPTION_RESIZE, this._getBoundFunc(this._shapeEndCapResize));
     }
 
     /**
@@ -289,6 +279,14 @@ class Canvas extends EventPropagator {
         if(idx < 0){
             throw "shape was not found in _canvas";
         }
+
+        object.unsubscribe(MouseEventType.MouseDown, this._getBoundFunc(this._shapeMouseDown));
+        object.unsubscribe(MouseEventType.MouseEnter, this._getBoundFunc(this._shapeMouseEnter));
+        object.unsubscribe(MouseEventType.MouseLeave, this._getBoundFunc(this._shapeMouseLeave));
+        object.unsubscribe(MouseEventType.MouseMove, this._getBoundFunc(this._shapeMouseMove));
+        object.unsubscribe(MouseEventType.MouseUp, this._getBoundFunc(this._shapeMouseUp));
+        // object.unsubscribe(EVENT_BEGIN_CAPTION_RESIZE, this._getBoundFunc(this._shapeBeginCapResize));
+        // object.unsubscribe(EVENT_END_CAPTION_RESIZE, this._getBoundFunc(this._shapeEndCapResize));
 
         // Otherwise, remove it from the array
         this.__children.splice(idx, 1);
@@ -548,6 +546,19 @@ class Canvas extends EventPropagator {
     }
 
     /**
+     * Gets a method which has `this` bound to it so it can be used for events
+     * Creates the bound method if it does not exist.
+     * @param {function} func - The original function that needed `this` bound to it
+     * @returns {function}
+     * @private
+     */
+    _getBoundFunc(func){
+        if(!this._boundMethods[func]) this._boundMethods[func] = func.bind(this);
+
+        return this._boundMethods[func];
+    }
+
+    /**
      * Called when a key is released
      * @param e - The key data
      * @private
@@ -564,7 +575,7 @@ class Canvas extends EventPropagator {
                 this._objectToDrag = null;
                 this._resizeAnchor = null;
 
-                this._canvas.style.cursor = "default";
+                Mouse.restoreCursor();
             }
 
             // Otherwise, if the context menu is open, close it
@@ -663,27 +674,14 @@ class Canvas extends EventPropagator {
     // region Event Handlers
 
     _mouseDown(e){
-
-        // Set this every time the mouse is clicked -- needed for proper dragging
-        this._dragStartX = e.x;
-        this._dragStartY = e.y;
-
         // If we're on a resize anchor already (set in _mouseMove), then set the shape to drag and leave
         if(this._resizeAnchor){
             this._objectToDrag = Keyboard.focusedElement;
-            return;
         }
-
-        // Otherwise, check if we're over any of the objects, and if so, set it as the active object
-        for(var object of this.__children){
-            if(object.isPointInObject(e.x, e.y)){
-                this._objectToDrag = this.activeObject = object;
-                return;
-            }
+        // Otherwise, ensure nothing is focused, since we must have clicked somewhere on the canvas' "whitespace"
+        else{
+            Keyboard.focusedElement = this._objectToDrag = null;
         }
-
-        // Otherwise, null out anything that's active
-        this._objectToDrag = this.activeObject = null;
     }
 
     _mouseMove(e){
@@ -692,18 +690,88 @@ class Canvas extends EventPropagator {
         var x = e.x - this._dragStartX;
         var y = e.y - this._dragStartY;
 
-        // If we have a resize anchor, and an object that can be dragged
+        // If we have a resize anchor, and an object that can be dragged, then we must be resizing
         if(this._resizeAnchor && this._objectToDrag){
             this._objectToDrag.resize(x, y, this._resizeAnchor, e.shiftKey, e.altKey);
         }
-        // Otherwise, if we just have an object to drag
-        else if(this._objectToDrag) {
+        // Otherwise, if there is something focused, figure out if we're over an anchor
+        else if(Keyboard.focusedElement){
+
+            // Try to see if we're within 5px of any of the anchors
+            var allowedDist = 5;
+            if (this._getAnchorRect(Anchor.TopLeft).isPointInShape(e.x, e.y, allowedDist)){
+                Mouse.setCursor(Cursor.TopLeft, true);
+                this._resizeAnchor = Anchor.TopLeft;
+            }
+            else if(this._getAnchorRect(Anchor.BottomRight).isPointInShape(e.x, e.y, allowedDist)){
+                Mouse.setCursor(Cursor.BottomRight, true);
+                this._resizeAnchor = Anchor.BottomRight;
+            }
+            else if(this._getAnchorRect(Anchor.TopRight).isPointInShape(e.x, e.y, allowedDist)){
+                Mouse.setCursor(Cursor.TopRight, true);
+                this._resizeAnchor = Anchor.TopRight;
+            }
+            else if(this._getAnchorRect(Anchor.BottomLeft).isPointInShape(e.x, e.y, allowedDist)) {
+                Mouse.setCursor(Cursor.BottomLeft, true);
+                this._resizeAnchor = Anchor.BottomLeft;
+            }
+            else{
+                // If we make it to here, we're not around any anchor
+                // If we had a resize anchor before, restore the cursor
+                if(this._resizeAnchor){
+                    Mouse.restoreCursor();
+                }
+
+                this._resizeAnchor = null;
+            }
+        }
+
+    }
+
+    _mouseUp(e){
+        // Ensure the context menu is hidden
+        this.hideContextMenu();
+    }
+
+    _shapeMouseDown(e){
+
+        // Set the shape as focused, and the object to drag
+        Keyboard.focusedElement = e.sender;
+        this._objectToDrag = e.sender;
+
+        // Set this every time the mouse is clicked -- needed for proper dragging
+        this._dragStartX = e.x;
+        this._dragStartY = e.y;
+
+        e.handled = true;
+    }
+
+    _shapeMouseEnter(e){
+        Mouse.setCursor(Cursor.Pointer);
+    }
+
+    _shapeMouseLeave(e){
+        // If we're still dragging, them call the move event to keep things caught up
+        if(this._objectToDrag && this._objectToDrag == e.sender){
+            this._shapeMouseMove(e);
+        }
+        // Otherwise, we actually left
+        else{
+            Mouse.restoreCursor();
+        }
+    }
+
+    _shapeMouseMove(e){
+
+        console.log("shapeMouseMove handled = " + e.handled);
+
+        if(this._objectToDrag && this._objectToDrag == e.sender) {
             // Figure out how far we've moved
-            x = e.x - this._dragStartX;
-            y = e.y - this._dragStartY;
+            var x = e.x - this._dragStartX;
+            var y = e.y - this._dragStartY;
 
             // If shift is pressed, then we want to move in a straight or diagonal line
-            if(e.shiftKey){
+            if (e.shiftKey) {
 
                 // Figure out how far X and Y have absolutely moved, so we can figure if if we're dragging
                 // diagonally, horizontally, or vertically
@@ -715,93 +783,52 @@ class Canvas extends EventPropagator {
                 var small = Math.min(absX, absY);
 
                 // Straight if we've moved < 5, or if they're not within 70% of each other
-                if((absX < 5 && absY < 5) || (small / big) < .7){
-                    if(absX > absY){
+                if ((absX < 5 && absY < 5) || (small / big) < .7) {
+                    if (absX > absY) {
                         y = 0;
                     }
-                    else{
+                    else {
                         x = 0;
                     }
                 }
-                else{
+                else {
                     // Otherwise, keep them even
-                    if(absX > absY){
+                    if (absX > absY) {
                         y = absX * (absY == y ? 1 : -1);
                     }
-                    else{
+                    else {
                         x = absY * (absX == x ? 1 : -1);
                     }
                 }
             }
 
             // snap to grid, if necessary
-            if(this.snapToGrid){
+            if (this.snapToGrid) {
                 x = Math.round(x / this.gridSize) * this.gridSize;
                 y = Math.round(y / this.gridSize) * this.gridSize;
             }
 
             // And finally, tell the object to move
             this._objectToDrag.move(x, y);
-
-            // Prevent the cursor changing alter
-            return
         }
-        // If we just have an active object
-        else if(Keyboard.focusedElement){
-
-            // Try to see if we're within 5px of any of the anchors
-            var allowedDist = 5;
-            if (this._getAnchorRect(Anchor.TopLeft).isPointInShape(e.x, e.y, allowedDist)){
-                this._canvas.style.cursor = "nwse-resize";
-                this._resizeAnchor = Anchor.TopLeft;
-
-                return;
-            }
-            else if(this._getAnchorRect(Anchor.BottomRight).isPointInShape(e.x, e.y, allowedDist)){
-                this._canvas.style.cursor = "nwse-resize";
-                this._resizeAnchor = Anchor.BottomRight;
-
-                return;
-            }
-            else if(this._getAnchorRect(Anchor.TopRight).isPointInShape(e.x, e.y, allowedDist)){
-                this._canvas.style.cursor = "nesw-resize";
-                this._resizeAnchor = Anchor.TopRight;
-
-                return;
-            }
-            else if(this._getAnchorRect(Anchor.BottomLeft).isPointInShape(e.x, e.y, allowedDist)) {
-                this._canvas.style.cursor = "nesw-resize";
-                this._resizeAnchor = Anchor.BottomLeft;
-
-                return;
-            }
-
-            // If we make it to here, we're not around any anchor
-            this._resizeAnchor = null;
-        }
-
-        /*// If we make it this far, see if we're hovering over any of the objects
-        for(var object of this.__children){
-            if(object.isPointInObject(e.x, e.y)){
-                // this._canvas.style.cursor = "pointer";
-                return;
-            }
-        }
-
-        // Default the cursor if we make it this far
-        this._canvas.style.cursor = "default";*/
     }
 
-    _mouseUp(e){
-        // If we're dragging or resizing, then save the commit state
+    _shapeMouseUp(e){
         if(this._objectToDrag){
             this._objectToDrag.commitResize();
             this._objectToDrag = null;
         }
-
-        // Ensure the context menu is hidden
-        this.hideContextMenu();
     }
+
+
+    _shapeBeginCapResize(e){
+
+    }
+
+    _shapeEndCapResize(e){
+
+    }
+
 
     // endregion
 }

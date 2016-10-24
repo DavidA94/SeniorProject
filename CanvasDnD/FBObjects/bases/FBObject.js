@@ -45,6 +45,13 @@ class FBObject extends EventPropagator {
         this._caption = new Caption();
 
         /**
+         * Holds the original caption reserve for resizing
+         * @type {number}
+         * @private
+         */
+        this._backupCaptionReserve = this._caption.reserve;
+
+        /**
          * Holds the layout properties for the object
          * @type {Layout}
          * @private
@@ -57,6 +64,26 @@ class FBObject extends EventPropagator {
          * @private
          */
         this._captionData = null;
+
+        /**
+         * @type {object<function, function>}
+         * @private
+         */
+        this._boundMethods = {};
+
+        /**
+         * The starting X point for a drag
+         * @private
+         * @type {number}
+         */
+        this._dragStartX = 0;
+
+        /**
+         * The starting Y point for a drag
+         * @type {number}
+         * @private
+         */
+        this._dragStartY = 0;
 
         // Initialize the layout properties with what was passed in
         this._layout.x = x;
@@ -74,9 +101,13 @@ class FBObject extends EventPropagator {
         this._captionResizer = new Box(0, 0, 0, 0);
         this.__children.unshift(this._captionResizer);
 
-        this._captionResizer.subscribe(MouseEventType.MouseMove, (e) => console.log(e));
-        this._captionResizer.subscribe(MouseEventType.MouseEnter, (e) => { e.Handled = true; Mouse.setCursor(Cursor.LeftRight); });
-        this._captionResizer.subscribe(MouseEventType.MouseLeave, (e) => { e.Handled = true; Mouse.restoreCursor(); });
+        this._captionResizer.subscribe(MouseEventType.MouseDown, this._getBoundFunc(this._captionResize_MouseDown));
+        this._captionResizer.subscribe(MouseEventType.MouseEnter, this._getBoundFunc(this._captionResize_MouseEnter));
+        this._captionResizer.subscribe(MouseEventType.MouseLeave, this._getBoundFunc(this._captionResize_MouseLeave));
+        this._captionResizer.subscribe(MouseEventType.MouseMove, this._getBoundFunc(this._captionResize_MouseMove));
+        this._captionResizer.subscribe(MouseEventType.MouseUp, this._getBoundFunc(this._captionResize_MouseUp));
+
+        // this.subscribe(MouseEventType.MouseMove, this._getBoundFunc(this._captionResize_MouseMove));
     }
 
     /**
@@ -222,6 +253,7 @@ class FBObject extends EventPropagator {
      */
     cancelResize(){
         this._layout = this._backupLayout.clone();
+        this._caption.reserve = this._backupCaptionReserve;
     }
 
     /**
@@ -229,6 +261,7 @@ class FBObject extends EventPropagator {
      */
     commitResize(){
         this._backupLayout = this._layout.clone();
+        this._backupCaptionReserve = this._caption.reserve;
     }
 
     /**
@@ -399,6 +432,19 @@ class FBObject extends EventPropagator {
     // endregion
 
     // region Private Methods
+
+    /**
+     * Gets a method which has `this` bound to it so it can be used for events
+     * Creates the bound method if it does not exist.
+     * @param {function} func - The original function that needed `this` bound to it
+     * @returns {function}
+     * @private
+     */
+    _getBoundFunc(func){
+        if(!this._boundMethods[func]) this._boundMethods[func] = func.bind(this);
+
+        return this._boundMethods[func];
+    }
 
     /**
      * Gets the minimum visual height this object can be
@@ -764,34 +810,67 @@ class FBObject extends EventPropagator {
         };
     }
 
-    _getCaptionResizerCoords(){
-        if(this.caption.text && this.caption.text !== "") {
-            var xPos, yPos, width, height;
-            var capLoc = this.caption.location;
-            var capPad = CAPTION_PADDING;
+    // endregion
 
-            var top = this.y;
-            var right = this.x + this.width;
-            var bottom = this.y + this.height;
-            var left = this.x;
+    // region Event Handlers
 
-            if(capLoc === CaptionLocation.Top){
-                xPos = left;
-                yPos = top - capPad + (capPad * 0.2);
-                width = right - left;
-                height = capPad * 0.6;
-            }
-            else if(capLoc === CaptionLocation.Right){
-                xPos = right + (capPad * 0.2);
-                yPos = top;
-                width = capPad * 0.6;
-                height = bottom - top;
-            }
+    _captionResize_MouseDown(e){
+        // this.__dispatchEvent(EVENT_BEGIN_CAPTION_RESIZE, null);
+        this._dragStartX = e.x;
+        this._dragStartY = e.y;
+        e.sender.setCapture();
+        e.handled = true;
+    }
 
-            return {xPos, yPos, width, height};
+    _captionResize_MouseEnter(e){
+        e.handled = true;
+
+        if(this.caption.location & CAPTION_TOP_BOTTOM){
+            Mouse.setCursor(Cursor.RowResize);
+        }
+        else if(this.caption.location & CAPTION_LEFT_RIGHT){
+            Mouse.setCursor(Cursor.ColumnResize);
         }
 
-        return null;
+
+    }
+
+    _captionResize_MouseLeave(e){
+        Mouse.restoreCursor();
+    }
+
+    _captionResize_MouseMove(e){
+
+        if(this._dragStartX > 0 && this._dragStartY > 0) {
+
+            e.handled = true;
+
+            if(this._caption.location == CaptionLocation.Right){
+                var moveDist = e.x - this._dragStartX;
+
+                var newWidth = this._backupLayout.width + moveDist;
+                var newReserve = this._backupCaptionReserve - moveDist;
+
+                if(newWidth < 0){
+                    newWidth = 0;
+                    newReserve = this._backupCaptionReserve + this._backupLayout.width;
+                }
+                else if(newReserve < 0){
+                    newWidth = this._backupCaptionReserve + this._backupLayout.width;
+                    newReserve = 0;
+                }
+
+                this.layout.width = newWidth;
+                this.caption.reserve = newReserve;
+
+            }
+        }
+    }
+
+    _captionResize_MouseUp(e){
+        console.log("Got Up");
+        // this.__dispatchEvent(EVENT_END_CAPTION_RESIZE, null);
+        this._dragStartX = this._dragStartY = 0;
     }
 
     // endregion

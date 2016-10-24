@@ -23,8 +23,12 @@ class Mouse {
     /**
      * Sets the current mouse cursor
      * @param {Cursor} mouseCursor - The cursor to be set
+     * @param {boolean} doNotDuplicate - Indicates that the cursor should not be set if it is already what is needed
      */
-    static setCursor(mouseCursor){
+    static setCursor(mouseCursor, doNotDuplicate = false){
+
+        if(doNotDuplicate && Mouse._cursorStack[Mouse._cursorStack.length - 1] == mouseCursor) return;
+
         if(Mouse._htmlElementWindow.style.cursor && Mouse._htmlElementWindow.style.cursor != ""){
             Mouse._cursorStack.push(Mouse._htmlElementWindow.style.cursor);
         }
