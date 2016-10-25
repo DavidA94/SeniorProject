@@ -17,9 +17,16 @@ class EventPropagator extends Subscribable {
         /**
          * The children in this object
          * @type {EventPropagator[]}
-         * @protected
+         * @private
          */
-        this.__children = [];
+        this._children = [];
+
+        /**
+         * Holds the parent of this object, if it is a child
+         * @type {EventPropagator}
+         * @private
+         */
+        this._parent = null;
 
         /**
          * Keeps track of which element is focused for keyboard events
@@ -52,7 +59,7 @@ class EventPropagator extends Subscribable {
                 eventData.originalTarget = EventPropagator.captureObj;
                 EventPropagator.captureObj._propagate(eventType, eventData);
 
-                // If the event was the mouse being released, then stop capturing
+                // If the event was the mouse being released, then stop any capturing
                 if(eventType.event === MouseEventType.MouseUp) {
                     console.log("Got MouseUp event from " + this.toString());
                     this.releaseCapture();
@@ -63,7 +70,7 @@ class EventPropagator extends Subscribable {
             // Only bother to look for children if we're not capturing. This prevents infinite recursion.
             else if(!EventPropagator.captureObj) {
                 // Find the child target
-                for (var child of this.__children) {
+                for (var child of this._children) {
                     // If we can get the location of the shape, and it's in it, then remember it, and stop the loop
                     if (typeof child.isPointInObject === 'function' && child.isPointInObject(eventData.x, eventData.y)) {
                         childTarget = child;
@@ -153,7 +160,6 @@ class EventPropagator extends Subscribable {
      */
     setCapture(){
         EventPropagator.captureObj = this;
-        console.log("Mouse capture is bound to " + this.toString());
     }
 
     /**
@@ -163,4 +169,46 @@ class EventPropagator extends Subscribable {
         console.log("Releasing capture");
         EventPropagator.captureObj = null;
     }
+
+    /**
+     * Adds a child
+     * @param {EventPropagator} child
+     * @protected
+     */
+    __addChild(child){
+        if(child.parent  && child.parent != this){
+            throw Error(child.toString() + " is already a child of " + child.parent.toString())
+        }
+
+        if(child.parent != this){
+            this._children.push(child)
+        }
+    }
+
+    /**
+     * Removes a child
+     * @param {EventPropagator} child
+     * @protected
+     */
+    __removeChild(child){
+        var idx = this._children.indexOf(child);
+        if(idx < 0){
+            throw Error("Child must be added before it can be removed");
+        }
+
+        // Otherwise, remove it from the array
+        this._children.splice(idx, 1);
+    }
+
+    /**
+     * The parent of this element
+     * @returns {EventPropagator}
+     */
+    get parent() { return this._parent; }
+
+    /**
+     * The children of this element
+     * @returns {EventPropagator[]}
+     */
+    get children() { return this._children; }
 }

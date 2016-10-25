@@ -115,7 +115,7 @@ class Canvas extends EventPropagator {
 
         // Setup and dispatch custom events
         this.__addEvent(EVENT_SHAPE_CHANGE);
-        this.__dispatchEvent(EVENT_SHAPE_CHANGE, { 'activeShape': Keyboard.focusedElement });
+        // this.__dispatchEvent(EVENT_SHAPE_CHANGE, { 'activeShape': Keyboard.focusedElement });
 
         // Request callback when the canvas is drawn (one-time -- must be re-done after each call)
         window.requestAnimationFrame(() => this._draw());
@@ -217,7 +217,7 @@ class Canvas extends EventPropagator {
             throw "Argument shape must be a Shape type";
         }
 
-        this.__children.unshift(object);
+        this.children.unshift(object);
 
         object.subscribe(MouseEventType.MouseDown, this._getBoundFunc(this._shapeMouseDown));
         object.subscribe(MouseEventType.MouseEnter, this._getBoundFunc(this._shapeMouseEnter));
@@ -274,12 +274,10 @@ class Canvas extends EventPropagator {
             throw "Argument shape must be a Shape type";
         }
 
-        // Try to find the shape -- If we can't find it, throw an exception
-        var idx = this.__children.indexOf(object);
-        if(idx < 0){
-            throw "shape was not found in _canvas";
-        }
+        // Remove the child
+        this.__removeChild(object);
 
+        // Unsubscribe from everything
         object.unsubscribe(MouseEventType.MouseDown, this._getBoundFunc(this._shapeMouseDown));
         object.unsubscribe(MouseEventType.MouseEnter, this._getBoundFunc(this._shapeMouseEnter));
         object.unsubscribe(MouseEventType.MouseLeave, this._getBoundFunc(this._shapeMouseLeave));
@@ -287,9 +285,6 @@ class Canvas extends EventPropagator {
         object.unsubscribe(MouseEventType.MouseUp, this._getBoundFunc(this._shapeMouseUp));
         // object.unsubscribe(EVENT_BEGIN_CAPTION_RESIZE, this._getBoundFunc(this._shapeBeginCapResize));
         // object.unsubscribe(EVENT_END_CAPTION_RESIZE, this._getBoundFunc(this._shapeEndCapResize));
-
-        // Otherwise, remove it from the array
-        this.__children.splice(idx, 1);
     }
 
     /**
@@ -351,7 +346,7 @@ class Canvas extends EventPropagator {
         }
 
         // Otherwise add it to the end of the array
-        this.__children.push(object);
+        this.__addChild(object);
     }
 
     /**
@@ -369,9 +364,9 @@ class Canvas extends EventPropagator {
         this._context.scale(this.scale, this.scale);
 
         // Draw all objects in reverse, that way recently added elements are on top
-        for(var idx = this.__children.length - 1; idx >= 0; --idx){
-            // for(var shape of this.__children){
-            this.__children[idx].draw(this._context);
+        for(var idx = this.children.length - 1; idx >= 0; --idx){
+            // for(var shape of this._children){
+            this.children[idx].draw(this._context);
         }
 
         // Restore so there's no zooming on the selection

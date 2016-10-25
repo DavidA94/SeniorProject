@@ -20,6 +20,7 @@ const MouseButton = {
 class MouseEventArgs extends EventArgs {
     /**
      * Creates a new MouseEventArgs object
+     * @param {Subscribable} sender - The object that is sending the event
      * @param {number} x - The X position the event happened at
      * @param {number} y - The y position the event happened at
      * @param {MouseButton} mouseButton

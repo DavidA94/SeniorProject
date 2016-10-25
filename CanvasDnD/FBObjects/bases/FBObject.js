@@ -98,8 +98,9 @@ class FBObject extends EventPropagator {
          */
         this._backupLayout = this._layout.clone();
 
+        // Put the box on the top
         this._captionResizer = new Box(0, 0, 0, 0);
-        this.__children.unshift(this._captionResizer);
+        this.children.unshift(this._captionResizer);
 
         this._captionResizer.subscribe(MouseEventType.MouseDown, this._getBoundFunc(this._captionResize_MouseDown));
         this._captionResizer.subscribe(MouseEventType.MouseEnter, this._getBoundFunc(this._captionResize_MouseEnter));

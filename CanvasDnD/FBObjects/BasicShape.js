@@ -17,7 +17,7 @@ class BasicShape extends FBObject {
          * @type {Shape}
          */
         this._shape = shape;
-        this.__children.push(this._shape);
+        this.__addChild(this._shape);
 
         this.caption.text = "Well, wha-da-ya know? It's a BOX!";
         this.caption.font.fontFamily = FontFamilies.Tahoma;
