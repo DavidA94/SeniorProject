@@ -21,7 +21,6 @@ class Box extends Shape {
 
         // Initialize some defaults for testing purposes
         this.appearance.strokeThickness = 0;
-        this.appearance.strokeColor = "cyan";
         this.appearance.background = "red";
 
         this.layout.margin.top = 0;
@@ -58,8 +57,10 @@ class Box extends Shape {
         x = x - this.layout.x;
         y = y - this.layout.y;
 
-        return x >= 0 && x <= this.layout.width &&
-            y >= 0 && y <= this.layout.height;
+        var width = this.layout.width + this.layout.margin.left + this.layout.margin.right;
+        var height = this.layout.height + this.layout.margin.top + this.layout.margin.bottom;
+
+        return x >= 0 && x <= width && y >= 0 && y <= height;
     }
 
     /**
@@ -74,10 +75,12 @@ class Box extends Shape {
         var boxY = this.layout.y;
         var boxH = this.layout.height;
         var boxW = this.layout.width;
+        var marginL = this.layout.margin.left;
+        var marginT = this.layout.margin.top;
 
         // First draw the box with its stroke
         context.beginPath();
-        context.translate(boxX, boxY);
+        context.translate(boxX + marginL, boxY + marginT);
         context.fillStyle = this.appearance.background;
         context.strokeStyle = this.appearance.strokeColor;
         context.lineWidth = this.appearance.strokeThickness;

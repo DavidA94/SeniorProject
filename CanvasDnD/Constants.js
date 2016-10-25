@@ -61,8 +61,10 @@ var CaptionLocation = {
     None: 0
 };
 
-CAPTION_TOP_BOTTOM = 3;  // Used for binary operations with CaptionLocation
-CAPTION_LEFT_RIGHT = 12; // Ditto
+const CAPTION_TOP_BOTTOM = 3;  // Used for binary operations with CaptionLocation
+const CAPTION_LEFT_RIGHT = 12; // Ditto
+const CAPTION_NONE = 0;
+const CAPTION_CENTER = 16;
 
 /**
  * Represents the types of cursors that can be returned

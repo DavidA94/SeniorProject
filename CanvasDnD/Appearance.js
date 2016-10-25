@@ -91,7 +91,13 @@ class Appearance {
      * The thickness of the stroke
      * @param {number} value
      */
-    set strokeThickness(value) { this._strokeThickness = value; }
+    set strokeThickness(value) {
+        // These values are ignored, so make it a really small value so it'll never be seen.
+        if(value === 0 || value === NaN || value === Infinity){
+            value = 0.00000001;
+        }
+        this._strokeThickness = value;
+    }
 
     // endregion
 }

@@ -100,6 +100,7 @@ class FBObject extends EventPropagator {
 
         // Put the box on the top
         this._captionResizer = new Box(0, 0, 0, 0);
+        this._captionResizer.appearance.background = "#bbb";
         this.children.unshift(this._captionResizer);
 
         this._captionResizer.subscribe(MouseEventType.MouseDown, this._getBoundFunc(this._captionResize_MouseDown));
@@ -109,14 +110,6 @@ class FBObject extends EventPropagator {
         this._captionResizer.subscribe(MouseEventType.MouseUp, this._getBoundFunc(this._captionResize_MouseUp));
 
         // this.subscribe(MouseEventType.MouseMove, this._getBoundFunc(this._captionResize_MouseMove));
-    }
-
-    /**
-     * Set the layout
-     * @param {Layout} layout
-     */
-    setLayout(layout){
-        this._layout = layout;
     }
 
     // endregion
@@ -147,8 +140,16 @@ class FBObject extends EventPropagator {
      */
     get layout() { return this._layout; }
 
+    /**
+     * Gets the margin properties of the object
+     * @returns {TRBL}
+     */
     get margin() { return this._layout.margin; }
 
+    /**
+     * Gets the padding properties of the object
+     * @returns {TRBL}
+     */
     get padding() { return this._layout.padding; }
 
 
@@ -289,21 +290,48 @@ class FBObject extends EventPropagator {
             if(this._captionData) {
 
                 var capLoc = this.caption.location;
-                if (capLoc === CaptionLocation.Top) {
-                    this._captionResizer.layout.x = this.left;
-                    this._captionResizer.layout.y = this.top - this.border.top - this.margin.top - (CAPTION_PADDING * 0.2);
+
+                // Don't draw a resizer if it's in the middle
+                if(capLoc & CAPTION_CENTER){
+                    this._captionResizer.layout.width = this._captionResizer.layout.height = 0;
+                    return;
+                }
+
+                if(capLoc & CAPTION_TOP_BOTTOM){
                     this._captionResizer.layout.width = this.width;
-                    this._captionResizer.layout.height = (CAPTION_PADDING * 0.6);
+                    this._captionResizer.layout.height = CAPTION_PADDING * 0.2;
+                    this._captionResizer.layout.x = this.x;
+                    this._captionResizer.margin.top = this._captionResizer.margin.bottom = CAPTION_PADDING * 0.4;
+                }
+                else if(capLoc & CAPTION_LEFT_RIGHT){
+                    this._captionResizer.layout.width = CAPTION_PADDING * 0.2;
+                    this._captionResizer.layout.height = this.height;
+                    this._captionResizer.layout.y = this.y;
+                    this._captionResizer.margin.left = this._captionResizer.margin.right = CAPTION_PADDING * 0.4;
+                }
+
+                if (capLoc === CaptionLocation.Top) {
+                    var resizerHeight = this._captionResizer.height + this._captionResizer.margin.top + this._captionResizer.margin.bottom;
+                    this._captionResizer.layout.y = this.y - this.border.top - resizerHeight;
                 }
                 else if (capLoc === CaptionLocation.Right) {
-                    this._captionResizer.layout.x = this.x + this.width + this.border.right + this.margin.right + (CAPTION_PADDING * 0.2);
-                    this._captionResizer.layout.y = this.y;
-                    this._captionResizer.layout.width = (CAPTION_PADDING * 0.6);
-                    this._captionResizer.layout.height = this.height;
+                    this._captionResizer.layout.x = this.x + this.width + this.border.right;
 
-                    this._captionResizer.draw(context);
                 }
+                else if(capLoc === CaptionLocation.Bottom){
+                    this._captionResizer.layout.y = this.y + this.height + this.border.bottom;
+                }
+                else if(capLoc === CaptionLocation.Left){
+                    var resizerWidth = this._captionResizer.width + this._captionResizer.margin.left + this._captionResizer.margin.right;
+                    this._captionResizer.layout.x = this.x - this.border.left - resizerWidth;
+                }
+
+                this._captionResizer.draw(context);
             }
+        }
+        // Otherwise, ensure captionData is null
+        else{
+            this._captionData = null;
         }
     }
 
@@ -726,11 +754,6 @@ class FBObject extends EventPropagator {
         var outputText = []; // Holds the lines of text to be returned
         var tempLine = "";   // Holds the line being measured
 
-        // If we don't have enough height for one line
-        if(height !== null && fontSize > height){
-            return null;
-        }
-
         // Hold a dash and a [255] character
         var dash255 = "-" + String.fromCharCode(255);
 
@@ -797,8 +820,17 @@ class FBObject extends EventPropagator {
             // Calculate how high we are now
             calcHeight = fontSize + ((fontSize * FLH_RATIO) * (outputText.length - 1));
 
-            // If we've reached the end, the stop processing
-            if(wordEndIdx == words.length){
+            // If we've gotten too tall, remove the last element we added, and stop processing
+            if(height && calcHeight > height){
+                outputText.pop();
+                
+                // Recalculate the height
+                calcHeight = fontSize + ((fontSize * FLH_RATIO) * (outputText.length - 1));
+
+                break;
+            }
+            // Otherwise, If we've reached the end, the stop processing
+            else if(wordEndIdx == words.length){
                 break;
             }
         }
@@ -819,6 +851,9 @@ class FBObject extends EventPropagator {
         // this.__dispatchEvent(EVENT_BEGIN_CAPTION_RESIZE, null);
         this._dragStartX = e.x;
         this._dragStartY = e.y;
+
+        this._backupCaptionReserve = this.caption.reserve;
+
         e.sender.setCapture();
         e.handled = true;
     }
@@ -846,30 +881,41 @@ class FBObject extends EventPropagator {
 
             e.handled = true;
 
-            if(this._caption.location == CaptionLocation.Right){
-                var moveDist = e.x - this._dragStartX;
+            var capLoc  = this._caption.location;
+            var moveDist = 0;
 
-                var newWidth = this._backupLayout.width + moveDist;
-                var newReserve = this._backupCaptionReserve - moveDist;
+            if(capLoc & CAPTION_LEFT_RIGHT){
+                moveDist = e.x - this._dragStartX;
+            }
+            else if(capLoc & CAPTION_TOP_BOTTOM) {
+                moveDist = e.y - this._dragStartY;
+            }
 
-                if(newWidth < 0){
-                    newWidth = 0;
-                    newReserve = this._backupCaptionReserve + this._backupLayout.width;
-                }
-                else if(newReserve < 0){
-                    newWidth = this._backupCaptionReserve + this._backupLayout.width;
-                    newReserve = 0;
-                }
+            var upperBound = 0;
+            if(capLoc === CaptionLocation.Top){
+                upperBound = this._backupLayout.height + this._backupCaptionReserve;
 
-                this.layout.width = newWidth;
+                var newHeight = Math.clip(this._backupLayout.height - moveDist, 0, upperBound);
+                var newReserve = Math.clip(this._backupCaptionReserve + moveDist, 0, upperBound);
+                var newY = this._backupLayout.y + (this._backupLayout.height - newHeight);
+
+                this.layout.height = newHeight;
+                this.layout.y = newY;
                 this.caption.reserve = newReserve;
+
+            }
+
+            else if(capLoc == CaptionLocation.Right){
+                upperBound = this._backupLayout.width + this._backupCaptionReserve;
+
+                this.layout.width = Math.clip(this._backupLayout.width + moveDist, 0, upperBound);
+                this.caption.reserve = Math.clip(this._backupCaptionReserve - moveDist, 0, upperBound);
 
             }
         }
     }
 
     _captionResize_MouseUp(e){
-        console.log("Got Up");
         // this.__dispatchEvent(EVENT_END_CAPTION_RESIZE, null);
         this._dragStartX = this._dragStartY = 0;
     }

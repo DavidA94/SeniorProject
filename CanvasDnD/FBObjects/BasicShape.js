@@ -24,7 +24,7 @@ class BasicShape extends FBObject {
         this.caption.font.color = "blue";
         this.caption.font.bold = true;
         this.caption.font.italic = true;
-        this.caption.location = CaptionLocation.Right;
+        this.caption.location = CaptionLocation.Top;
         this.caption.reserve = 100;
 
         this.border.color = "green";

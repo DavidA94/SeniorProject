@@ -29,8 +29,53 @@ class Shape extends EventPropagator {
         this._layout.height = height;
     }
 
+    /**
+     * Gets the appearance properties of the object
+     * @returns {Appearance}
+     */
     get appearance() { return this._appearance; }
+
+    /**
+     * Gets the layout properties of the object
+     * @returns {Layout|*}
+     */
     get layout() { return this._layout; }
+
+    /**
+     * Gets the margin properties of the object
+     * @returns {TRBL}
+     */
+    get margin() { return this._layout.margin; }
+
+    /**
+     * Gets the padding properties of the object
+     * @returns {TRBL}
+     */
+    get padding() { return this._layout.padding; }
+
+    /**
+     * Gets the x position of the base object
+     * @returns {number}
+     */
+    get x() { return this.layout.x; }
+
+    /**
+     * Gets the y position of the base object
+     * @returns {number}
+     */
+    get y() { return this.layout.y; }
+
+    /**
+     * Gets the width of the base object
+     * @returns {number}
+     */
+    get width() { return this.layout.width; }
+
+    /**
+     * Gets the height of the base object
+     * @returns {number}
+     */
+    get height() { return this.layout.height; }
 
     toString() { return "Shape"; }
 

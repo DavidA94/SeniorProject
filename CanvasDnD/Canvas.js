@@ -763,9 +763,6 @@ class Canvas extends EventPropagator {
     }
 
     _shapeMouseMove(e){
-
-        console.log("shapeMouseMove handled = " + e.handled);
-
         if(this._objectToDrag && this._objectToDrag == e.sender) {
             // Figure out how far we've moved
             var x = e.x - this._dragStartX;

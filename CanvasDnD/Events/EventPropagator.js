@@ -53,15 +53,12 @@ class EventPropagator extends Subscribable {
             // If somebody is capturing mouse data, send it directly to them.
             if(EventPropagator.captureObj && EventPropagator.captureObj !== this){
 
-                console.log("Redirecting " + eventType.event + " to " + EventPropagator.captureObj);
-
                 // Update the initial target, then start propagation
                 eventData.originalTarget = EventPropagator.captureObj;
                 EventPropagator.captureObj._propagate(eventType, eventData);
 
                 // If the event was the mouse being released, then stop any capturing
                 if(eventType.event === MouseEventType.MouseUp) {
-                    console.log("Got MouseUp event from " + this.toString());
                     this.releaseCapture();
                 }
 
@@ -166,7 +163,6 @@ class EventPropagator extends Subscribable {
      * Releases the mouse capture, if it's currently enabled.
      */
     releaseCapture(){
-        console.log("Releasing capture");
         EventPropagator.captureObj = null;
     }
 
