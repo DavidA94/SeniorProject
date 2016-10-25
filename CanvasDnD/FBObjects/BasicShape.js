@@ -9,8 +9,7 @@ class BasicShape extends FBObject {
             throw TypeError("shape parameter must be an instance of Shape");
         }
 
-        super();
-        super.setLayout(shape.layout);
+        super(shape.layout.x, shape.layout.y, shape.layout.width, shape.layout.height);
 
         /**
          * @private
@@ -33,8 +32,6 @@ class BasicShape extends FBObject {
         this.border.bottom = 7;
         this.border.left = 7;
         this.border.top = 7;
-
-        super._layout = this._layout
     }
 
     /**
@@ -43,6 +40,7 @@ class BasicShape extends FBObject {
      * @private
      */
     _doDraw(context){
+        this._shape._layout = this.layout;
         this._shape.draw(context);
     }
 
@@ -50,4 +48,6 @@ class BasicShape extends FBObject {
 
     get minWidth() { return this._shape.minWidth; }
     get minHeight() { return this._shape.minHeight; }
+
+    // get layout() { return this._shape.layout; }
 }

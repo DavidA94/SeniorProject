@@ -220,6 +220,7 @@ class Canvas extends EventPropagator {
         this.children.unshift(object);
 
         object.subscribe(MouseEventType.MouseDown, this._getBoundFunc(this._shapeMouseDown));
+        object.subscribe(MouseEventType.MouseDown, this._getBoundFunc(this._shapeMouseDownCapture), true);
         object.subscribe(MouseEventType.MouseEnter, this._getBoundFunc(this._shapeMouseEnter));
         object.subscribe(MouseEventType.MouseLeave, this._getBoundFunc(this._shapeMouseLeave));
         object.subscribe(MouseEventType.MouseMove, this._getBoundFunc(this._shapeMouseMove));
@@ -596,6 +597,10 @@ class Canvas extends EventPropagator {
         var virtualX = (e.pageX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
         var virtualY = (e.pageY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
 
+        // Set this every time the mouse is clicked -- needed for proper dragging
+        this._dragStartX = virtualX;
+        this._dragStartY = virtualY;
+
         this._propagate(new MouseEvent(MouseEventType.MouseDown), new MouseEventArgs(this, virtualX, virtualY, e.button))
     }
 
@@ -728,17 +733,18 @@ class Canvas extends EventPropagator {
         this.hideContextMenu();
     }
 
+    _shapeMouseDownCapture(e){
+        // Focus the element
+        Keyboard.focusedElement = e.sender;
+    }
+
     _shapeMouseDown(e){
 
-        // Set the shape as focused, and the object to drag
-        Keyboard.focusedElement = e.sender;
+        // Set as the object to drag
         this._objectToDrag = e.sender;
 
-        // Set this every time the mouse is clicked -- needed for proper dragging
-        this._dragStartX = e.x;
-        this._dragStartY = e.y;
-
         e.handled = true;
+        e.sender.setCapture();
     }
 
     _shapeMouseEnter(e){

@@ -261,8 +261,8 @@ class FBObject extends EventPropagator {
      * Commits or saves the current resize or move operation
      */
     commitResize(){
-        this._backupLayout = this._layout.clone();
-        this._backupCaptionReserve = this._caption.reserve;
+        this._backupLayout = this.layout.clone();
+        this._backupCaptionReserve = this.caption.reserve;
     }
 
     /**
