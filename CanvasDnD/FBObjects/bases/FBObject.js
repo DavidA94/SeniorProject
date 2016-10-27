@@ -99,6 +99,12 @@ class FBObject extends EventPropagator {
         this._backupLayout = this._layout.clone();
 
         // Put the box on the top
+
+        /**
+         * The resizer object for the caption
+         * @type {Box}
+         * @private
+         */
         this._captionResizer = new Box(0, 0, 0, 0);
         this._captionResizer.appearance.background = "#bbb";
         this.children.unshift(this._captionResizer);
@@ -892,25 +898,39 @@ class FBObject extends EventPropagator {
             }
 
             var upperBound = 0;
-            if(capLoc === CaptionLocation.Top){
-                upperBound = this._backupLayout.height + this._backupCaptionReserve;
+            var lowerBound = CAPTION_PADDING;
 
-                var newHeight = Math.clip(this._backupLayout.height - moveDist, 0, upperBound);
-                var newReserve = Math.clip(this._backupCaptionReserve + moveDist, 0, upperBound);
+            if(capLoc === CaptionLocation.Top){
+                upperBound = this._backupLayout.height + this._backupCaptionReserve - CAPTION_PADDING;
+
+                var newHeight = Math.clip(this._backupLayout.height - moveDist, lowerBound, upperBound);
                 var newY = this._backupLayout.y + (this._backupLayout.height - newHeight);
 
                 this.layout.height = newHeight;
                 this.layout.y = newY;
-                this.caption.reserve = newReserve;
-
+                this.caption.reserve = Math.clip(this._backupCaptionReserve + moveDist, lowerBound, upperBound);
             }
-
             else if(capLoc == CaptionLocation.Right){
-                upperBound = this._backupLayout.width + this._backupCaptionReserve;
+                upperBound = this._backupLayout.width + this._backupCaptionReserve - CAPTION_PADDING;
 
-                this.layout.width = Math.clip(this._backupLayout.width + moveDist, 0, upperBound);
-                this.caption.reserve = Math.clip(this._backupCaptionReserve - moveDist, 0, upperBound);
+                this.layout.width = Math.clip(this._backupLayout.width + moveDist, lowerBound, upperBound);
+                this.caption.reserve = Math.clip(this._backupCaptionReserve - moveDist, lowerBound, upperBound);
+            }
+            else if(capLoc == CaptionLocation.Bottom){
+                upperBound = this._backupLayout.height + this._backupCaptionReserve - CAPTION_PADDING;
 
+                this.layout.height = Math.clip(this._backupLayout.height + moveDist, lowerBound, upperBound);
+                this.caption.reserve = Math.clip(this._backupCaptionReserve - moveDist, lowerBound, upperBound);
+            }
+            else if(capLoc === CaptionLocation.Left){
+                upperBound = this._backupLayout.width + this._backupCaptionReserve - CAPTION_PADDING;
+
+                var newWidth = Math.clip(this._backupLayout.width - moveDist, lowerBound, upperBound);
+                var newX = this._backupLayout.x + (this._backupLayout.width - newWidth);
+
+                this.layout.width = newWidth;
+                this.layout.x = newX;
+                this.caption.reserve = Math.clip(this._backupCaptionReserve + moveDist, lowerBound, upperBound);
             }
         }
     }
@@ -918,6 +938,7 @@ class FBObject extends EventPropagator {
     _captionResize_MouseUp(e){
         // this.__dispatchEvent(EVENT_END_CAPTION_RESIZE, null);
         this._dragStartX = this._dragStartY = 0;
+        this.commitResize();
     }
 
     // endregion

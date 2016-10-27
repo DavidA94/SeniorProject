@@ -207,4 +207,6 @@ class EventPropagator extends Subscribable {
      * @returns {EventPropagator[]}
      */
     get children() { return this._children; }
+
+    get isFocused() { return (this._parent && this._parent._focusedElement === this); }
 }
