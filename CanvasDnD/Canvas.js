@@ -102,6 +102,19 @@ class Canvas extends EventPropagator {
          */
         this._boundMethods = {};
 
+        this.anchors = {};
+        this.anchors[Anchor.TopLeft] = new Box(0,0,0,0);
+        this.anchors[Anchor.TopRight] = new Box(0,0,0,0);
+        this.anchors[Anchor.BottomLeft] = new Box(0,0,0,0);
+        this.anchors[Anchor.BottomRight] = new Box(0,0,0,0);
+        for(var anchor = Anchor.TopLeft; anchor <= Anchor.BottomRight; ++anchor){
+            this.anchors[anchor].appearance.foreground = "transparent";
+            this.anchors[anchor].appearance.background = "transparent";
+            this.anchors[anchor].appearance.strokeColor = "black";
+            this.anchors[anchor].appearance.strokeThickness = 1;
+            this.addObject(this.anchors[anchor]);
+        }
+
         // Subscribe to the events we need for the canvas
         this._canvas.addEventListener("mousedown", this._getBoundFunc(this._canvasMouseDown));
         this._canvas.addEventListener("mouseup", this._getBoundFunc(this._canvasMouseUp));
@@ -213,11 +226,11 @@ class Canvas extends EventPropagator {
      */
     addObject(object){
         // If it's no an FBObject, throw an exception, otherwise add it to the top of the array
-        if(!(object instanceof FBObject)){
+        if(!(object instanceof FBObject) && !(object instanceof Shape)){
             throw "Argument shape must be a Shape type";
         }
 
-        this.children.unshift(object);
+        this.children.splice(FIRST_IDX_AFTER_ANCHORS, 0, object);
 
         object.subscribe(MouseEventType.MouseDown, this._getBoundFunc(this._shapeMouseDown));
         object.subscribe(MouseEventType.MouseDown, this._getBoundFunc(this._shapeMouseDownCapture), true);
@@ -236,9 +249,12 @@ class Canvas extends EventPropagator {
         // If we don't have an active shape, do nothing
         if(!Keyboard.focusedElement) return;
 
-        // Otherwise, remove it, and then add it to the top
-        this.removeObject(Keyboard.focusedElement);
-        this.addObject(Keyboard.focusedElement);
+        // Get the index, and if it's not in the children, do nothing
+        var idx = this.children.indexOf(Keyboard.focusedElement);
+        if(idx < 0) return;
+
+        // Move to 4, which is past all the anchors
+        this.children.move(idx, FIRST_IDX_AFTER_ANCHORS);
     }
 
     /**
@@ -295,9 +311,12 @@ class Canvas extends EventPropagator {
         // If there is no active shape, do nothing
         if(!Keyboard.focusedElement) return;
 
-        // Otherwise, remove it and re-add it
-        this.removeObject(Keyboard.focusedElement);
-        this._appendObject(Keyboard.focusedElement);
+        // Get the index, and if it's not in the children, do nothing
+        var idx = this.children.indexOf(Keyboard.focusedElement);
+        if(idx < 0) return;
+
+        // Move to the end
+        this.children.move(idx, this.children.length);
     }
 
     /**
@@ -335,22 +354,6 @@ class Canvas extends EventPropagator {
     // region Private Functions
 
     /**
-     * Adds an object to the canvas below everything else
-     * @param {FBObject} object - The object to be added
-     * @throws {string} Thrown if object is not an FBObject
-     * @private
-     */
-    _appendObject(object){
-        // If object is not the right type, throw an exception
-        if(!(object instanceof FBObject)){
-            throw "Argument shape must be a Shape type";
-        }
-
-        // Otherwise add it to the end of the array
-        this.__addChild(object);
-    }
-
-    /**
      * Draws the canvas
      * @private
      */
@@ -365,7 +368,7 @@ class Canvas extends EventPropagator {
         this._context.scale(this.scale, this.scale);
 
         // Draw all objects in reverse, that way recently added elements are on top
-        for(var idx = this.children.length - 1; idx >= 0; --idx){
+        for(var idx = this.children.length - 1; idx >= FIRST_IDX_AFTER_ANCHORS; --idx){
             // for(var shape of this._children){
             this.children[idx].draw(this._context);
         }
@@ -482,13 +485,12 @@ class Canvas extends EventPropagator {
             c.setLineDash([0]);
 
             // Get all the anchors, and draw them accordingly
-            c.beginPath();
             for(var anchor = Anchor.TopLeft; anchor <= Anchor.BottomRight; ++anchor){
-                var box = this._getAnchorRect(anchor);
-                c.rect(box.Left, box.Top, box.Width, box.Height);
+                this._adjustAnchorRect(anchor);
+                c.save();
+                this.anchors[anchor].draw(this._context);
+                c.restore();
             }
-            c.stroke();
-            c.closePath();
 
             // Restore the original settings
             c.restore();
@@ -502,7 +504,7 @@ class Canvas extends EventPropagator {
      * @private
      * @throws {string} Thrown if a bad anchorCorner is given
      */
-    _getAnchorRect(anchorCorner){
+    _adjustAnchorRect(anchorCorner){
 
         // As long as there is an active shape
         if(!Keyboard.focusedElement){
@@ -512,6 +514,7 @@ class Canvas extends EventPropagator {
         var active = Keyboard.focusedElement;
 
         // Figure out where the sides of the object are
+        // Scale has to be kept, since these are drawn the same size regardless
         var top = this.scale * (active.visualY);
         var right = this.scale * (active.visualX + active.visualWidth);
         var bottom = this.scale * (active.visualY + active.visualHeight);
@@ -522,22 +525,26 @@ class Canvas extends EventPropagator {
         const adjustment2 = 2;
         const adjustment3 = 3;
 
+        var box = this.anchors[anchorCorner];
+        box.layout.width = box.layout.height = boxSize;
+
         // Return correctly based on which anchor was given
         // Some spots need adjusted by 3 because math.
         if(anchorCorner === Anchor.TopLeft){
-            return new AnchorHandle(left - adjustment2, top - adjustment2, boxSize, boxSize);
+            box.layout.x = left - adjustment2;
+            box.layout.y = top - adjustment2;
         }
         else if(anchorCorner === Anchor.BottomLeft){
-            return new AnchorHandle(left - adjustment2, bottom - adjustment3, boxSize, boxSize);
+            box.layout.x = left - adjustment2;
+            box.layout.y = bottom - adjustment3;
         }
         else if(anchorCorner === Anchor.TopRight){
-            return new AnchorHandle(right - adjustment3, top - adjustment2, boxSize, boxSize);
+            box.layout.x = right - adjustment3;
+            box.layout.y = top - adjustment2;
         }
         else if(anchorCorner === Anchor.BottomRight){
-            return new AnchorHandle(right - adjustment3, bottom - adjustment3, boxSize, boxSize);
-        }
-        else{
-            throw "anchorCorner must be ANCHOR_LEFT_TOP, ANCHOR_LEFT_BOTTOM, ANCHOR_RIGHT_TOP, or ANCHOR_RIGHT_BOTTOM";
+            box.layout.x = right - adjustment3;
+            box.layout.y = bottom - adjustment3;
         }
     }
 
@@ -674,9 +681,10 @@ class Canvas extends EventPropagator {
     // region Event Handlers
 
     _mouseDown(e){
-        // If we're on a resize anchor already (set in _mouseMove), then set the shape to drag and leave
+        // If we're on a resize anchor already (set in _mouseMove), then set the shape to drag and capture the mouse
         if(this._resizeAnchor){
             this._objectToDrag = Keyboard.focusedElement;
+            this.setCapture();
         }
         // Otherwise, ensure nothing is focused, since we must have clicked somewhere on the canvas' "whitespace"
         else{
@@ -696,22 +704,22 @@ class Canvas extends EventPropagator {
         }
         // Otherwise, if there is something focused, figure out if we're over an anchor
         else if(Keyboard.focusedElement){
-
+            return;
             // Try to see if we're within 5px of any of the anchors
             var allowedDist = 5;
-            if (this._getAnchorRect(Anchor.TopLeft).isPointInShape(e.x, e.y, allowedDist)){
+            if (this._adjustAnchorRect(Anchor.TopLeft).isPointInShape(e.x, e.y, allowedDist)){
                 Mouse.setCursor(Cursor.TopLeft, true);
                 this._resizeAnchor = Anchor.TopLeft;
             }
-            else if(this._getAnchorRect(Anchor.BottomRight).isPointInShape(e.x, e.y, allowedDist)){
+            else if(this._adjustAnchorRect(Anchor.BottomRight).isPointInShape(e.x, e.y, allowedDist)){
                 Mouse.setCursor(Cursor.BottomRight, true);
                 this._resizeAnchor = Anchor.BottomRight;
             }
-            else if(this._getAnchorRect(Anchor.TopRight).isPointInShape(e.x, e.y, allowedDist)){
+            else if(this._adjustAnchorRect(Anchor.TopRight).isPointInShape(e.x, e.y, allowedDist)){
                 Mouse.setCursor(Cursor.TopRight, true);
                 this._resizeAnchor = Anchor.TopRight;
             }
-            else if(this._getAnchorRect(Anchor.BottomLeft).isPointInShape(e.x, e.y, allowedDist)) {
+            else if(this._adjustAnchorRect(Anchor.BottomLeft).isPointInShape(e.x, e.y, allowedDist)) {
                 Mouse.setCursor(Cursor.BottomLeft, true);
                 this._resizeAnchor = Anchor.BottomLeft;
             }
@@ -731,6 +739,11 @@ class Canvas extends EventPropagator {
     _mouseUp(e){
         // Ensure the context menu is hidden
         this.hideContextMenu();
+
+        // Ensure we don't keep resizing
+        this._objectToDrag = null;
+
+        this.releaseCapture();
     }
 
     _shapeMouseDownCapture(e){

@@ -42,11 +42,13 @@ const EVENT_END_CAPTION_RESIZE = "endCaptionResize";
  * @enum {number}
  */
 const Anchor = {
-    TopLeft: 1,
-    TopRight: 2,
-    BottomLeft: 3,
-    BottomRight: 4
+    TopLeft: 0,
+    TopRight: 1,
+    BottomLeft: 2,
+    BottomRight: 3
 };
+
+const FIRST_IDX_AFTER_ANCHORS = 4
 
 /**
  * Represents valid locations for a caption
