@@ -434,18 +434,24 @@ class FBObject extends EventPropagator {
 
         // If we have a minimum width, and it has been exceeded, then make it the minimum
         if (this.minWidth && newW < this.minWidth) {
+            // Readjust the X axis with the width, if necessary (Prevents it from sliding when the minimum is hit)
+            if(newX !== this._backupLayout.x) newX -= (this.minWidth - newW);
             newW = this.minWidth;
         }
         // Otherwise, if we have a minimum visual, make it no smaller than zero
         else if (newW < 0 && this.__getMinVisualWidth() > 0) {
+            // Ditto like above
+            if(newX !== this._backupLayout.x && !keepCenter) newX -= Math.abs(newW);
             newW = 0;
         }
 
         // DITTO for height
         if (this.minHeight && newH < this.minHeight) {
+            if(newY !== this._backupLayout.y) newY -= (this.minHeight - newH);
             newH = this.minHeight;
         }
         else if (newH < 0 && this.__getMinVisualHeight() > 0) {
+            if(newY !== this._backupLayout.y) newY -= Math.abs(newH);
             newH = 0;
         }
 

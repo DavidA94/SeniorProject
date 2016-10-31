@@ -23,9 +23,12 @@ class MouseEventArgs extends EventArgs {
      * @param {Subscribable} sender - The object that is sending the event
      * @param {number} x - The X position the event happened at
      * @param {number} y - The y position the event happened at
-     * @param {MouseButton} mouseButton
+     * @param {MouseButton} mouseButton - The currently pressed button
+     * @param {boolean} altKey
+     * @param {boolean} ctrlKey
+     * @param {boolean} shiftKey
      */
-    constructor(sender, x, y, mouseButton){
+    constructor(sender, x, y, mouseButton, altKey, ctrlKey, shiftKey){
         super(sender);
 
         /**
@@ -45,6 +48,24 @@ class MouseEventArgs extends EventArgs {
          * @type {MouseButton}
          */
         this._mouseButton = mouseButton;
+
+        /**
+         * @type {boolean}
+         * @private
+         */
+        this._alt = altKey;
+
+        /**
+         * @type {boolean}
+         * @private
+         */
+        this._ctrl = ctrlKey;
+
+        /**
+         * @type {boolean}
+         * @private
+         */
+        this._shift = shiftKey
     }
 
     /**
@@ -61,4 +82,19 @@ class MouseEventArgs extends EventArgs {
      * @returns {MouseButton}
      */
     get button() { return this._mouseButton; }
+
+    /**
+     * @returns {boolean}
+     */
+    get altKey() { return this._alt; }
+
+    /**
+     * @returns {boolean}
+     */
+    get ctrlKey() { return this._ctrl; }
+
+    /**
+     * @returns {boolean}
+     */
+    get shiftKey() { return this._shift; }
 }

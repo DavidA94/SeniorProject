@@ -112,13 +112,21 @@ class Canvas extends EventPropagator {
             this.anchors[anchor].appearance.background = "transparent";
             this.anchors[anchor].appearance.strokeColor = "black";
             this.anchors[anchor].appearance.strokeThickness = 1;
-            this.addObject(this.anchors[anchor]);
+            // Add directly so we don't have the normal subscriptions
+            this.__addChild(this.anchors[anchor]);
+
+            this.anchors[anchor].subscribe(MouseEventType.MouseDown, this._getBoundFunc(this._anchor_MouseDown));
+            this.anchors[anchor].subscribe(MouseEventType.MouseEnter, this._getBoundFunc(this._anchor_MouseEnter));
+            this.anchors[anchor].subscribe(MouseEventType.MouseLeave, this._getBoundFunc(this._anchor_MouseLeave));
+            this.anchors[anchor].subscribe(MouseEventType.MouseMove, this._getBoundFunc(this._anchor_MouseMove));
+            this.anchors[anchor].subscribe(MouseEventType.MouseUp, this._getBoundFunc(this._anchor_MouseUp));
         }
 
         // Subscribe to the events we need for the canvas
         this._canvas.addEventListener("mousedown", this._getBoundFunc(this._canvasMouseDown));
         this._canvas.addEventListener("mouseup", this._getBoundFunc(this._canvasMouseUp));
         this._canvas.addEventListener("mousemove", this._getBoundFunc(this._canvasMouseMove));
+        this._canvas.addEventListener("keydown", (e) => e.preventDefault() );
         window.addEventListener("keyup", (e) => this._keyUp(e));
 
         // Subscribe for when the events get called on our custom propagator
@@ -599,6 +607,7 @@ class Canvas extends EventPropagator {
     _canvasMouseDown(e){
         // Don't do the default
         e.preventDefault();
+        this._canvas.focus();
 
         // Figure out where the mouse was pressed down relative to the canvas, when not scaled
         var virtualX = (e.pageX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
@@ -608,7 +617,8 @@ class Canvas extends EventPropagator {
         this._dragStartX = virtualX;
         this._dragStartY = virtualY;
 
-        this._propagate(new MouseEvent(MouseEventType.MouseDown), new MouseEventArgs(this, virtualX, virtualY, e.button))
+        this._propagate(new MouseEvent(MouseEventType.MouseDown),
+            new MouseEventArgs(this, virtualX, virtualY, e.button, e.altKey, e.ctrlKey, e.shiftKey));
     }
 
     /**
@@ -625,7 +635,8 @@ class Canvas extends EventPropagator {
         var virtualX = (e.pageX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
         var virtualY = (e.pageY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
 
-        this._propagate(new MouseEvent(MouseEventType.MouseMove), new MouseEventArgs(this, virtualX, virtualY, e.button));
+        this._propagate(new MouseEvent(MouseEventType.MouseMove),
+            new MouseEventArgs(this, virtualX, virtualY, e.button, e.altKey, e.ctrlKey, e.shiftKey));
     }
 
     /**
@@ -641,7 +652,8 @@ class Canvas extends EventPropagator {
         var virtualX = (e.pageX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
         var virtualY = (e.pageY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
 
-        this._propagate(new MouseEvent(MouseEventType.MouseUp), new MouseEventArgs(this, virtualX, virtualY, e.button))
+        this._propagate(new MouseEvent(MouseEventType.MouseUp),
+            new MouseEventArgs(this, virtualX, virtualY, e.button, e.altKey, e.ctrlKey, e.shiftKey));
     }
 
     /**
@@ -746,6 +758,8 @@ class Canvas extends EventPropagator {
         this.releaseCapture();
     }
 
+    // region Shape Events
+
     _shapeMouseDownCapture(e){
         // Focus the element
         Keyboard.focusedElement = e.sender;
@@ -831,13 +845,47 @@ class Canvas extends EventPropagator {
         }
     }
 
+    // endregion
 
-    _shapeBeginCapResize(e){
-
+    _anchor_MouseDown(e){
+        this._resizeAnchor = e.sender;
+        e.sender.setCapture();
+        e.handled = true;
     }
 
-    _shapeEndCapResize(e){
 
+    _anchor_MouseEnter(e){
+        if(e.sender === this.anchors[Anchor.TopLeft]) Mouse.setCursor(Cursor.TopLeft);
+        else if(e.sender === this.anchors[Anchor.TopRight]) Mouse.setCursor(Cursor.TopRight);
+        else if(e.sender === this.anchors[Anchor.BottomLeft]) Mouse.setCursor(Cursor.BottomLeft);
+        else if(e.sender === this.anchors[Anchor.BottomRight]) Mouse.setCursor(Cursor.BottomRight);
+    }
+
+
+    _anchor_MouseLeave(e){
+        Mouse.restoreCursor();
+    }
+
+
+    _anchor_MouseMove(e){
+        if(this._resizeAnchor == e.sender){
+            var x = e.x - this._dragStartX;
+            var y = e.y - this._dragStartY;
+
+            var anchor;
+            if(e.sender === this.anchors[Anchor.TopLeft]) anchor = Anchor.TopLeft;
+            else if(e.sender === this.anchors[Anchor.TopRight]) anchor = Anchor.TopRight;
+            else if(e.sender === this.anchors[Anchor.BottomLeft]) anchor = Anchor.BottomLeft;
+            else if(e.sender === this.anchors[Anchor.BottomRight]) anchor = Anchor.BottomRight;
+
+            Keyboard.focusedElement.resize(x, y, anchor, e.shiftKey, e.altKey);
+        }
+    }
+
+
+    _anchor_MouseUp(e){
+        Keyboard.focusedElement.commitResize();
+        this._resizeAnchor = null;
     }
 
 
