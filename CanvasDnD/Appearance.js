@@ -93,7 +93,7 @@ class Appearance {
      */
     set strokeThickness(value) {
         // These values are ignored, so make it a really small value so it'll never be seen.
-        if(value === 0 || value === NaN || value === Infinity){
+        if(value === 0 || value === Infinity){
             value = 0.00000001;
         }
         this._strokeThickness = value;

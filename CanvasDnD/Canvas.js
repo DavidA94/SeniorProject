@@ -714,38 +714,6 @@ class Canvas extends EventPropagator {
         if(this._resizeAnchor && this._objectToDrag){
             this._objectToDrag.resize(x, y, this._resizeAnchor, e.shiftKey, e.altKey);
         }
-        // Otherwise, if there is something focused, figure out if we're over an anchor
-        else if(Keyboard.focusedElement){
-            return;
-            // Try to see if we're within 5px of any of the anchors
-            var allowedDist = 5;
-            if (this._adjustAnchorRect(Anchor.TopLeft).isPointInShape(e.x, e.y, allowedDist)){
-                Mouse.setCursor(Cursor.TopLeft, true);
-                this._resizeAnchor = Anchor.TopLeft;
-            }
-            else if(this._adjustAnchorRect(Anchor.BottomRight).isPointInShape(e.x, e.y, allowedDist)){
-                Mouse.setCursor(Cursor.BottomRight, true);
-                this._resizeAnchor = Anchor.BottomRight;
-            }
-            else if(this._adjustAnchorRect(Anchor.TopRight).isPointInShape(e.x, e.y, allowedDist)){
-                Mouse.setCursor(Cursor.TopRight, true);
-                this._resizeAnchor = Anchor.TopRight;
-            }
-            else if(this._adjustAnchorRect(Anchor.BottomLeft).isPointInShape(e.x, e.y, allowedDist)) {
-                Mouse.setCursor(Cursor.BottomLeft, true);
-                this._resizeAnchor = Anchor.BottomLeft;
-            }
-            else{
-                // If we make it to here, we're not around any anchor
-                // If we had a resize anchor before, restore the cursor
-                if(this._resizeAnchor){
-                    Mouse.restoreCursor();
-                }
-
-                this._resizeAnchor = null;
-            }
-        }
-
     }
 
     _mouseUp(e){

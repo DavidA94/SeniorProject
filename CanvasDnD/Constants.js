@@ -48,7 +48,7 @@ const Anchor = {
     BottomRight: 3
 };
 
-const FIRST_IDX_AFTER_ANCHORS = 4
+const FIRST_IDX_AFTER_ANCHORS = 4;
 
 /**
  * Represents valid locations for a caption
