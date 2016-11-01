@@ -377,7 +377,6 @@ class Canvas extends EventPropagator {
 
         // Draw all objects in reverse, that way recently added elements are on top
         for(var idx = this.children.length - 1; idx >= FIRST_IDX_AFTER_ANCHORS; --idx){
-            // for(var shape of this._children){
             this.children[idx].draw(this._context);
         }
 
@@ -815,6 +814,8 @@ class Canvas extends EventPropagator {
 
     // endregion
 
+    // region Anchor Events
+
     _anchor_MouseDown(e){
         this._resizeAnchor = e.sender;
         e.sender.setCapture();
@@ -828,7 +829,6 @@ class Canvas extends EventPropagator {
         else if(e.sender === this.anchors[Anchor.BottomLeft]) Mouse.setCursor(Cursor.BottomLeft);
         else if(e.sender === this.anchors[Anchor.BottomRight]) Mouse.setCursor(Cursor.BottomRight);
     }
-
 
     _anchor_MouseLeave(e){
         Mouse.restoreCursor();
@@ -850,12 +850,12 @@ class Canvas extends EventPropagator {
         }
     }
 
-
     _anchor_MouseUp(e){
         Keyboard.focusedElement.commitResize();
         this._resizeAnchor = null;
     }
 
+    // endregion
 
     // endregion
 }

@@ -332,7 +332,9 @@ class FBObject extends EventPropagator {
                     this._captionResizer.layout.x = this.x - this.border.left - resizerWidth;
                 }
 
+                context.save();
                 this._captionResizer.draw(context);
+                context.restore();
             }
         }
         // Otherwise, ensure captionData is null

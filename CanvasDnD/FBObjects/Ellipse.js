@@ -5,7 +5,7 @@
 /**
  * Represents a Ellipse on the form builder
  */
-class Ellipse extends FBObject {
+class Ellipse extends Shape {
 
     // region Constructor
 
@@ -19,14 +19,23 @@ class Ellipse extends FBObject {
         super(centerX - radius, centerY - radius, radius * 2, radius * 2);
 
         // Setup some default properties
-        this._appearance.background = "black";
+        this.appearance.background = "black";
     }
 
     // endregion
 
     // region Public Properties
 
+    /**
+     * Gets the minimum width the object can be, or null if there is no minimum width
+     * @returns {boolean|null}
+     */
     get minWidth() { return null; }
+
+    /**
+     * Gets the minimum height the object can be, or null if there is no minimum height
+     * @returns {boolean|null}
+     */
     get minHeight() { return null; }
 
     // endregion
@@ -38,28 +47,28 @@ class Ellipse extends FBObject {
      * @returns {number}
      * @private
      */
-    get _centerX() { return this._layout._x + (this._layout.width / 2.0); }
+    get _centerX() { return this.layout._x + (this.layout.width / 2.0); }
 
     /**
      * Gets the center Y position
      * @returns {number}
      * @private
      */
-    get _centerY() { return this._layout._y + (this._layout.height / 2.0); }
+    get _centerY() { return this.layout._y + (this.layout.height / 2.0); }
 
     /**
      * Gets the radius width
      * @returns {number}
      * @private
      */
-    get _radiusX() { return (this._layout.width / 2.0); }
+    get _radiusX() { return (this.layout.width / 2.0); }
 
     /**
      * Gets the radius height
      * @returns {number}
      * @private
      */
-    get _radiusY() { return (this._layout.height / 2.0); }
+    get _radiusY() { return (this.layout.height / 2.0); }
 
     // endregion
 
@@ -70,21 +79,18 @@ class Ellipse extends FBObject {
      * @param {CanvasRenderingContext2D} context - The context to draw with
      * @private
      */
-    _doDraw(context){
+    draw(context){
 
         // Begin the path, and setup the context properties from the shape properties
         context.beginPath();
-        context.fillStyle = this._appearance.background;
-        context.strokeStyle = this._appearance.strokeColor;
-        context.lineWidth = this._appearance.strokeThickness;
+        context.fillStyle = this.appearance.background;
+        context.strokeStyle = this.appearance.strokeColor;
+        context.lineWidth = this.appearance.strokeThickness;
 
-        // Translate to the center of the circle, and draw the ellipse
+        // Draw the ellipse with its stroke
         context.translate(this._centerX, this._centerY);
         context.ellipse(0, 0, this._radiusX, this._radiusY, 0, 0, 2 * Math.PI);
-
-        // Close the path, then fill and stroke it
         context.closePath();
-
         context.fill();
         context.stroke();
     }
@@ -95,7 +101,7 @@ class Ellipse extends FBObject {
      * @param {number} y - The y coordinate
      * @returns {boolean}
      */
-    _isPointInRealObject(x, y){
+    isPointInObject(x, y){
         // Scale all the parameters, and then do the math for just the circle
         var cX = this._centerX;
         var cY = this._centerY;
