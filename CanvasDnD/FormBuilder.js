@@ -72,7 +72,7 @@ class FormBuilder{
         Mouse.initialize(this._canvas._canvas);
 
         // Add a couple shapes for testing
-        this._canvas.addObject(new Ellipse(25, 25, 20));
+        this._canvas.addObject(new BasicShape(new Ellipse(25, 25, 20)));
         this._canvas.addObject(new BasicShape(new Box(250, 200, 40, 20)));
     }
 
