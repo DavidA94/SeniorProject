@@ -9,8 +9,8 @@ class EventArgs {
      * @param {EventPropagator} originalTarget - The originator of the event
      */
     constructor(originalTarget){
-        if(!originalTarget || !(originalTarget instanceof EventPropagator)){
-            throw Error("EventArgs must be constructed with an EventPropagator originalTarget");
+        if(!originalTarget || !(originalTarget instanceof Subscribable)){
+            throw Error("EventArgs must be constructed with an Subscribable originalTarget");
         }
 
         /**

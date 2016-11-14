@@ -115,7 +115,15 @@ class FBObject extends EventPropagator {
         this._captionResizer.subscribe(MouseEventType.MouseMove, this._getBoundFunc(this._captionResize_MouseMove));
         this._captionResizer.subscribe(MouseEventType.MouseUp, this._getBoundFunc(this._captionResize_MouseUp));
 
-        // this.subscribe(MouseEventType.MouseMove, this._getBoundFunc(this._captionResize_MouseMove));
+        this.__addEvent(EVENT_PROPERTY_CHANGE);
+        this.layout.subscribe(EVENT_PROPERTY_CHANGE, (propNameEventArgs) => {
+            this.__dispatchEvent(EVENT_PROPERTY_CHANGE,
+                new PropertyChangedEventArgs("layout_" + propNameEventArgs.propertyName, this));
+        });
+        this.caption.subscribe(EVENT_PROPERTY_CHANGE, (propNameEventArgs) => {
+            this.__dispatchEvent(EVENT_PROPERTY_CHANGE,
+                new PropertyChangedEventArgs("caption_" + propNameEventArgs.propertyName, this));
+        });
     }
 
     // endregion
@@ -158,6 +166,30 @@ class FBObject extends EventPropagator {
      */
     get padding() { return this._layout.padding; }
 
+    get captionReserve() { return this.caption.reserve; }
+    set captionReserve(value) {
+
+        // This just makes the move method think the caption is being resized via the mouse
+        // which makes all the logic be able to stay in one place
+
+        var diff = value - this.captionReserve;
+
+        var downEvent = new MouseEventArgs(this, 1, 1, MouseButton.Left, false, false, false);
+        downEvent.sender = this._captionResizer;
+        var moveEvent;
+
+        if(this.caption.location & CAPTION_TOP_BOTTOM){
+            moveEvent = new MouseEventArgs(this, 0, diff + 1, MouseButton.Left, false, false, false);
+        }
+        else if(this.caption.location & CAPTION_LEFT_RIGHT){
+            moveEvent = new MouseEventArgs(this, diff + 1, 0, MouseButton.Left, false, false, false);
+        }
+
+        this._captionResize_MouseDown(downEvent);
+        this._captionResize_MouseMove(moveEvent);
+        this._captionResize_MouseUp(null);
+    }
+
 
     /**
      * Gets the x position of the base object
@@ -194,12 +226,21 @@ class FBObject extends EventPropagator {
         var margin = this.layout.margin.left;
         var caption = 0;
 
-        if(this.caption.location == CaptionLocation.Left) {
-            caption = this.caption.reserve === null ? this._captionData.width : this.caption.reserve;
+        if(this.caption.location == Location.Left) {
+            caption = (this.caption.reserve === 0 ? this._captionData.width : this.caption.reserve) + CAPTION_PADDING;
         }
 
         return x - border - caption - margin;
     }
+
+    /**
+     * @param {number} value
+     */
+    set visualX(value){
+        // Just shift the current x value by the difference between old and new visualX
+        this.layout.x = this.layout.x + (value - this.visualX);
+    }
+
 
     /**
      * Gets the y position of the entire object, including the border, margin, and caption
@@ -211,12 +252,21 @@ class FBObject extends EventPropagator {
         var margin = this.layout.margin.top;
         var caption = 0;
 
-        if(this.caption.location == CaptionLocation.Top) {
-            caption = this.caption.reserve === null ? this._captionData.height : this.caption.reserve;
+        if(this.caption.location == Location.Top) {
+            caption = (this.caption.reserve === 0 ? this._captionData.height : this.caption.reserve) + CAPTION_PADDING;
         }
 
         return y - border - caption - margin;
     }
+
+    /**
+     * @param {number} value
+     */
+    set visualY(value){
+        // Just shift the current y value by the difference between old and new visualY
+        this.layout.y = this.layout.y + (value - this.visualY);
+    }
+
 
     /**
      * Gets the width of the entire object, including the border, margin, and caption
@@ -228,12 +278,21 @@ class FBObject extends EventPropagator {
         var margin = this._layout.margin.left + this._layout.margin.right;
         var caption = 0;
 
-        if(this.caption.location == CaptionLocation.Left || this.caption.location == CaptionLocation.Right) {
-            caption = (this.caption.reserve === null ? this._captionData.width : this.caption.reserve);
+        if(this.caption.location == Location.Left || this.caption.location == Location.Right) {
+            caption = (this.caption.reserve === 0 ? this._captionData.width : this.caption.reserve) + CAPTION_PADDING;
         }
 
         return width + border + caption + margin;
     }
+
+    /**
+     * @param {number} value
+     */
+    set visualWidth(value){
+        // Just shift the current width value by the difference between old and new visualWidth
+        this.layout.width = Math.max(this.layout.width + (value - this.visualWidth), 0);
+    }
+
 
     /**
      * Gets the height of the entire object, including the border, margin, and caption
@@ -245,11 +304,19 @@ class FBObject extends EventPropagator {
         var margin = this._layout.margin.top + this._layout.margin.bottom;
         var caption = 0;
 
-        if(this.caption.location == CaptionLocation.Top || this.caption.location == CaptionLocation.Bottom) {
-            caption = this.caption.reserve === null ? this._captionData.height : this.caption.reserve;
+        if(this.caption.location == Location.Top || this.caption.location == Location.Bottom) {
+            caption = (this.caption.reserve === 0 ? this._captionData.height : this.caption.reserve) + CAPTION_PADDING;
         }
 
         return height + border + caption + margin;
+    }
+
+    /**
+     * @param {number} value
+     */
+    set visualHeight(value){
+        // Just shift the current height value by the difference between old and new visualHeight
+        this.layout.height = Math.max(this.layout.height + (value - this.visualHeight), 0);
     }
 
     // endregion
@@ -316,18 +383,18 @@ class FBObject extends EventPropagator {
                     this._captionResizer.margin.left = this._captionResizer.margin.right = CAPTION_PADDING * 0.4;
                 }
 
-                if (capLoc === CaptionLocation.Top) {
+                if (capLoc === Location.Top) {
                     var resizerHeight = this._captionResizer.height + this._captionResizer.margin.top + this._captionResizer.margin.bottom;
                     this._captionResizer.layout.y = this.y - this.border.top - resizerHeight;
                 }
-                else if (capLoc === CaptionLocation.Right) {
+                else if (capLoc === Location.Right) {
                     this._captionResizer.layout.x = this.x + this.width + this.border.right;
 
                 }
-                else if(capLoc === CaptionLocation.Bottom){
+                else if(capLoc === Location.Bottom){
                     this._captionResizer.layout.y = this.y + this.height + this.border.bottom;
                 }
-                else if(capLoc === CaptionLocation.Left){
+                else if(capLoc === Location.Left){
                     var resizerWidth = this._captionResizer.width + this._captionResizer.margin.left + this._captionResizer.margin.right;
                     this._captionResizer.layout.x = this.x - this.border.left - resizerWidth;
                 }
@@ -365,8 +432,8 @@ class FBObject extends EventPropagator {
      * @param {number} relativeY - The relative Y distance to move the object
      */
     move(relativeX, relativeY){
-        this._layout._x = this._backupLayout._x + relativeX;
-        this._layout._y = this._backupLayout._y + relativeY;
+        this._layout.x = this._backupLayout._x + relativeX;
+        this._layout.y = this._backupLayout._y + relativeY;
     }
 
     /**
@@ -503,8 +570,8 @@ class FBObject extends EventPropagator {
         var minHeight = this.minHeight + this.border.top + this.border.bottom+ this.layout.margin.top+ this.layout.margin.bottom;
 
         // If the caption is at the top or bottom, add it in
-        if(this.caption.location === CaptionLocation.Top || this.caption.location === CaptionLocation.Bottom){
-            minHeight += this.caption.reserve === null ? this._captionData.width : this.caption.reserve;
+        if(this.caption.location === Location.Top || this.caption.location === Location.Bottom){
+            minHeight += this.caption.reserve === 0 ? this._captionData.width : this.caption.reserve;
         }
 
         return minHeight;
@@ -520,8 +587,8 @@ class FBObject extends EventPropagator {
         var minWidth = this.minWidth + this.border.left + this.border.right + this.layout.margin.left + this.layout.margin.right;
 
         // If the caption is on the left or right, add that in
-        if(this.caption.location === CaptionLocation.Left || this.caption.location === CaptionLocation.Right){
-            minWidth += this.caption.reserve === null ? this._captionData.width : this.caption.reserve;
+        if(this.caption.location === Location.Left || this.caption.location === Location.Right){
+            minWidth += this.caption.reserve === 0 ? this._captionData.width : this.caption.reserve;
         }
 
         return minWidth;
@@ -624,11 +691,12 @@ class FBObject extends EventPropagator {
 
         // If the reserve is null, then it is auto sized, but if it's set,
         // then scale it, and remove the padding from it
-        var reserve = this.caption.reserve === null ? null : this.caption.reserve - capPadding;
+        var reserve = this.captionReserve === 0 ? null :
+            this.captionReserve - capPadding;
 
         // Italic must be first because that's how they designed it
-        var fontProps = this._caption.font.italic ? "italic" : "";
-        fontProps += this._caption.font.bold ? " bold" : "";
+        var fontProps = this.caption.font.italic ? "italic" : "";
+        fontProps += this.caption.font.bold ? " bold" : "";
         fontProps = fontProps.trim(); // ensure there's no excess spaces from one not being set
 
         var fontSize = this._caption.font.size;
@@ -643,17 +711,17 @@ class FBObject extends EventPropagator {
         var captionData;
 
         // If we're on the left or right, the the reserve is the width
-        if (capLoc == CaptionLocation.Left || capLoc == CaptionLocation.Right) {
+        if (capLoc == Location.Left || capLoc == Location.Right) {
             captionData = this.__getTextProperties(context, capText, reserve, this.height, fontSize);
-            reserve = reserve === null ? captionData.width : reserve;
+            reserve = reserve === 0 ? captionData.width : reserve;
         }
         // Otherwise if we're on the top or bottom, the reserve is the height
-        else if (capLoc == CaptionLocation.Top || capLoc == CaptionLocation.Bottom) {
+        else if (capLoc == Location.Top || capLoc == Location.Bottom) {
             captionData = this.__getTextProperties(context, capText, this.width, reserve, fontSize);
-            reserve = reserve === null ? captionData.height : reserve;
+            reserve = reserve === 0 ? captionData.height : reserve;
         }
         // Otherwise if we're in the center, the width and height are specified by the shape's width
-        else if (capLoc == CaptionLocation.Center) {
+        else if (capLoc == Location.Center) {
             // Remove the padding from the width/height, and then twice the capPadding since it has to apply to
             // both sides.
             var resWidth = (this.width - this.layout.padding.left - this.layout.padding.right) - (capPadding * 2);
@@ -685,7 +753,7 @@ class FBObject extends EventPropagator {
 
         // And based on the caption's location, shift the caption accordingly
         switch (capLoc) {
-            case CaptionLocation.Top:
+            case Location.Top:
                 // Start at the left side
                 xShift = left;
 
@@ -697,7 +765,7 @@ class FBObject extends EventPropagator {
                 yShift = top - this.border.top - capPadding - captionData.height;
 
                 break;
-            case CaptionLocation.Right:
+            case Location.Right:
                 // Ditto, just different math for different sides
 
                 xShift = left + width + this.border.right + capPadding;
@@ -708,7 +776,7 @@ class FBObject extends EventPropagator {
                 yShift = top + ((height - captionData.height) / 2);
 
                 break;
-            case CaptionLocation.Bottom:
+            case Location.Bottom:
                 // Ditto, just different math for different sides
 
                 xShift = left;
@@ -719,18 +787,17 @@ class FBObject extends EventPropagator {
                 yShift = top + height + this.border.bottom + capPadding;
 
                 break;
-            case CaptionLocation.Left:
+            case Location.Left:
                 // Ditto, just different math for different sides
-
                 xShift = left - this.border.left - capPadding;
 
                 if (capAlign == FontAlignment.Center) xShift -= (reserve / 2);
-                else if (capAlign == FontAlignment.Left) xShift -= reserve;
+                else if (capAlign == FontAlignment.Left) xShift -= (!reserve ? captionData.width : reserve);
 
                 yShift = top + ((height - captionData.height) / 2);
 
                 break;
-            case CaptionLocation.Center:
+            case Location.Center:
                 // Ditto, just different math for different sides
 
                 xShift = left + this.layout.padding.left + capPadding;
@@ -853,6 +920,9 @@ class FBObject extends EventPropagator {
             }
         }
 
+        // Ensure not a decimal; Go up so not too small
+        calcHeight = Math.ceil(calcHeight);
+
         // Return what we got
         return {
             width: maxWidth,
@@ -870,7 +940,17 @@ class FBObject extends EventPropagator {
         this._dragStartX = e.x;
         this._dragStartY = e.y;
 
-        this._backupCaptionReserve = this.caption.reserve;
+        if(this.caption.reserve === 0){
+            if(this.caption.location & CAPTION_TOP_BOTTOM) {
+                this._backupCaptionReserve = this._captionData.height;
+            }
+            else if(this.caption.location & CAPTION_LEFT_RIGHT){
+                this._backupCaptionReserve = this._captionData.width + CAPTION_PADDING;
+            }
+        }
+        else {
+            this._backupCaptionReserve = this.caption.reserve;
+        }
 
         e.sender.setCapture();
         e.handled = true;
@@ -912,7 +992,7 @@ class FBObject extends EventPropagator {
             var upperBound = 0;
             var lowerBound = CAPTION_PADDING;
 
-            if(capLoc === CaptionLocation.Top){
+            if(capLoc === Location.Top){
                 upperBound = this._backupLayout.height + this._backupCaptionReserve - CAPTION_PADDING;
 
                 var newHeight = Math.clip(this._backupLayout.height - moveDist, lowerBound, upperBound);
@@ -922,19 +1002,19 @@ class FBObject extends EventPropagator {
                 this.layout.y = newY;
                 this.caption.reserve = Math.clip(this._backupCaptionReserve + moveDist, lowerBound, upperBound);
             }
-            else if(capLoc == CaptionLocation.Right){
+            else if(capLoc == Location.Right){
                 upperBound = this._backupLayout.width + this._backupCaptionReserve - CAPTION_PADDING;
 
                 this.layout.width = Math.clip(this._backupLayout.width + moveDist, lowerBound, upperBound);
                 this.caption.reserve = Math.clip(this._backupCaptionReserve - moveDist, lowerBound, upperBound);
             }
-            else if(capLoc == CaptionLocation.Bottom){
+            else if(capLoc == Location.Bottom){
                 upperBound = this._backupLayout.height + this._backupCaptionReserve - CAPTION_PADDING;
 
                 this.layout.height = Math.clip(this._backupLayout.height + moveDist, lowerBound, upperBound);
                 this.caption.reserve = Math.clip(this._backupCaptionReserve - moveDist, lowerBound, upperBound);
             }
-            else if(capLoc === CaptionLocation.Left){
+            else if(capLoc === Location.Left){
                 upperBound = this._backupLayout.width + this._backupCaptionReserve - CAPTION_PADDING;
 
                 var newWidth = Math.clip(this._backupLayout.width - moveDist, lowerBound, upperBound);

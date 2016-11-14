@@ -5,10 +5,12 @@
 /**
  * Represents the base appearance of an object
  */
-class Appearance {
+class Appearance extends SubscribableProperty {
     // region Constructor
 
     constructor(){
+        super();
+
         /**
          * The color of the background
          * @type {string|null}
@@ -36,6 +38,8 @@ class Appearance {
          * @private
          */
         this._strokeThickness = 0;
+
+        this.__addEvent(EVENT_PROPERTY_CHANGE);
     }
 
     // endregion
@@ -52,7 +56,7 @@ class Appearance {
      * The background color
      * @param {string|null} value
      */
-    set background(value) { this._background = value; }
+    set background(value) { this._background = value; this.__sendPropChangeEvent("background"); }
 
 
     /**
@@ -65,7 +69,7 @@ class Appearance {
      * The foreground color
      * @param {string} value
      */
-    set foreground(value) { this._foreground = value; }
+    set foreground(value) { this._foreground = value; this.__sendPropChangeEvent("foreground"); }
 
 
     /**
@@ -78,7 +82,7 @@ class Appearance {
      * The stroke color
      * @param {string} value
      */
-    set strokeColor(value) { this._strokeColor = value; }
+    set strokeColor(value) { this._strokeColor = value; this.__sendPropChangeEvent("strokeColor"); }
 
 
     /**
@@ -97,7 +101,11 @@ class Appearance {
             value = 0.00000001;
         }
         this._strokeThickness = value;
+
+        this.__sendPropChangeEvent("strokeThickness");
     }
 
     // endregion
+
+
 }

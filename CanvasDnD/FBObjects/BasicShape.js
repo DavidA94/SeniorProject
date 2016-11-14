@@ -22,13 +22,13 @@ class BasicShape extends FBObject {
             this.caption.text = "Well, wha-da-ya know? It's a BOX!";
             this.caption.font.fontFamily = FontFamilies.Tahoma;
             this.caption.font.fontSize = 16;
-            this.caption.font.color = "blue";
+            this.caption.font.color = "#0000ff";
             this.caption.font.bold = true;
             this.caption.font.italic = true;
-            this.caption.location = CaptionLocation.Top;
-            this.caption.reserve = 100;
+            this.caption.location = Location.Left;
+            this.caption.reserve = 0;
 
-            this.border.color = "green";
+            this.border.color = "#00aa00";
             this.border.right = 7;
             this.border.bottom = 7;
             this.border.left = 7;
@@ -42,7 +42,14 @@ class BasicShape extends FBObject {
      * @private
      */
     _doDraw(context){
-        this._shape._layout = this.layout;
+        // The shape layout is used to draw itself, but the one that everyone else is drawing on
+        // is kept in `this`. This is a side-effect of the composition. Since we only want the
+        // shape to draw itself, and the margin and padding are taken care of in `this`, only
+        // pass in x, y, width, height, or weird things will happen
+        if(this._shape.layout.x !== this.layout.x) this._shape.layout.x = this.layout.x;
+        if(this._shape.layout.y !== this.layout.y) this._shape.layout.y = this.layout.y;
+        if(this._shape.layout.width !== this.layout.width) this._shape.layout.width = this.layout.width;
+        if(this._shape.layout.height !== this.layout.height) this._shape.layout.height = this.layout.height;
         this._shape.draw(context);
     }
 

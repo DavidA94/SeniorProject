@@ -56,9 +56,9 @@ class Subscribable {
      * @protected
      */
     __dispatchEvent(eventName, eventData, isCapture = false){
+        // if(eventName == EVENT_PROPERTY_CHANGE) console.log(this._subscribers[eventName][isCapture]);
         if(this._subscribers[eventName] && this._subscribers[eventName][isCapture]){
             for(var func of this._subscribers[eventName][isCapture]){
-
                 // Don't use setTimeout here, or if a method Handles an event, one that would get called following it
                 // might still get called. If something takes too long, they should use setTimeout in that method.
                 eventData.sender = this;

@@ -135,8 +135,9 @@ class Canvas extends EventPropagator {
         this.subscribe(MouseEventType.MouseUp, this._getBoundFunc(this._mouseUp));
 
         // Setup and dispatch custom events
-        this.__addEvent(EVENT_SHAPE_CHANGE);
-        // this.__dispatchEvent(EVENT_SHAPE_CHANGE, { 'activeShape': Keyboard.focusedElement });
+        this.__addEvent(EVENT_OBJECT_CHANGE);
+        this.__addEvent(EVENT_PROPERTY_CHANGE);
+        // this.__dispatchEvent(EVENT_OBJECT_CHANGE, { 'activeShape': Keyboard.focusedElement });
 
         // Request callback when the canvas is drawn (one-time -- must be re-done after each call)
         window.requestAnimationFrame(() => this._draw());
@@ -246,8 +247,7 @@ class Canvas extends EventPropagator {
         object.subscribe(MouseEventType.MouseLeave, this._getBoundFunc(this._shapeMouseLeave));
         object.subscribe(MouseEventType.MouseMove, this._getBoundFunc(this._shapeMouseMove));
         object.subscribe(MouseEventType.MouseUp, this._getBoundFunc(this._shapeMouseUp));
-        // object.subscribe(EVENT_BEGIN_CAPTION_RESIZE, this._getBoundFunc(this._shapeBeginCapResize));
-        // object.subscribe(EVENT_END_CAPTION_RESIZE, this._getBoundFunc(this._shapeEndCapResize));
+        object.subscribe(EVENT_PROPERTY_CHANGE, this._getBoundFunc(this._shapePropertyChanged));
     }
 
     /**
@@ -275,6 +275,7 @@ class Canvas extends EventPropagator {
         // Otherwise remove it, and update the active shape
         this.removeObject(Keyboard.focusedElement);
         Keyboard.focusedElement = null;
+        this.__dispatchEvent(EVENT_OBJECT_CHANGE, new ObjectChangedEventArgs(this, null));
     }
 
     /**
@@ -609,8 +610,8 @@ class Canvas extends EventPropagator {
         this._canvas.focus();
 
         // Figure out where the mouse was pressed down relative to the canvas, when not scaled
-        var virtualX = (e.pageX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
-        var virtualY = (e.pageY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
+        var virtualX = (e.clientX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
+        var virtualY = (e.clientY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
 
         // Set this every time the mouse is clicked -- needed for proper dragging
         this._dragStartX = virtualX;
@@ -631,8 +632,8 @@ class Canvas extends EventPropagator {
 
         // Figure out where the mouse is at relative to the canvas
         // Figure out where the mouse was pressed down relative to the canvas, when not scaled
-        var virtualX = (e.pageX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
-        var virtualY = (e.pageY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
+        var virtualX = (e.clientX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
+        var virtualY = (e.clientY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
 
         this._propagate(new MouseEvent(MouseEventType.MouseMove),
             new MouseEventArgs(this, virtualX, virtualY, e.button, e.altKey, e.ctrlKey, e.shiftKey));
@@ -648,8 +649,8 @@ class Canvas extends EventPropagator {
         e.preventDefault();
 
         // Figure out where the mouse was pressed down relative to the canvas, when not scaled
-        var virtualX = (e.pageX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
-        var virtualY = (e.pageY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
+        var virtualX = (e.clientX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
+        var virtualY = (e.clientY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
 
         this._propagate(new MouseEvent(MouseEventType.MouseUp),
             new MouseEventArgs(this, virtualX, virtualY, e.button, e.altKey, e.ctrlKey, e.shiftKey));
@@ -700,6 +701,7 @@ class Canvas extends EventPropagator {
         // Otherwise, ensure nothing is focused, since we must have clicked somewhere on the canvas' "whitespace"
         else{
             Keyboard.focusedElement = this._objectToDrag = null;
+            this.__dispatchEvent(EVENT_OBJECT_CHANGE, new ObjectChangedEventArgs(this, null));
         }
     }
 
@@ -730,6 +732,7 @@ class Canvas extends EventPropagator {
     _shapeMouseDownCapture(e){
         // Focus the element
         Keyboard.focusedElement = e.sender;
+        this.__dispatchEvent(EVENT_OBJECT_CHANGE, new ObjectChangedEventArgs(this, e.sender));
     }
 
     _shapeMouseDown(e){
@@ -856,6 +859,16 @@ class Canvas extends EventPropagator {
     }
 
     // endregion
+
+    /**
+     * Fires when an object has a property changed
+     * @param {PropertyChangedEventArgs} propChangeEventArgs
+     * @private
+     */
+    _shapePropertyChanged(propChangeEventArgs){
+        // Just pass it up
+        this.__dispatchEvent(EVENT_PROPERTY_CHANGE, propChangeEventArgs);
+    }
 
     // endregion
 }

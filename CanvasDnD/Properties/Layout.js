@@ -5,13 +5,15 @@
 /**
  * Represents the Layout properties of an object
  */
-class Layout {
+class Layout extends SubscribableProperty {
     // region Constructor
 
     /**
      * Creates a new Layout object
      */
     constructor(){
+        super();
+
         /**
          * The x position
          * @type {number}
@@ -69,7 +71,7 @@ class Layout {
      * Sets the X value
      * @param {number} value
      */
-    set x(value) { this._x = value; }
+    set x(value) { this._x = value; this.__sendPropChangeEvent("x"); }
 
 
     /**
@@ -82,7 +84,7 @@ class Layout {
      * Sets the Y value
      * @param {number} value
      */
-    set y(value) { this._y = value; }
+    set y(value) { this._y = value; this.__sendPropChangeEvent("y"); }
 
 
     /**
@@ -95,7 +97,7 @@ class Layout {
      * Sets the width
      * @param {number} value
      */
-    set width(value) { this._width = value; }
+    set width(value) { this._width = value; this.__sendPropChangeEvent("width"); }
 
 
     /**
@@ -108,7 +110,7 @@ class Layout {
      * Sets the height
      * @param {number} value
      */
-    set height(value) { this._height = value; }
+    set height(value) { this._height = value; this.__sendPropChangeEvent("height"); }
 
 
     /**

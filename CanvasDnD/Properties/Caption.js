@@ -5,13 +5,14 @@
 /**
  * Holds data about a caption
  */
-class Caption {
+class Caption extends SubscribableProperty {
     // region Constructor
 
     /**
      * Creates a new caption object
      */
     constructor(){
+        super();
         /**
          * @private
          * @type {string}
@@ -20,9 +21,9 @@ class Caption {
 
         /**
          * @private
-         * @type {CaptionLocation}
+         * @type {Location}
          */
-        this._location = CaptionLocation.None;
+        this._location = Location.None;
 
         /**
          * @private
@@ -51,20 +52,20 @@ class Caption {
      * Sets the text of the caption
      * @param {string} value
      */
-    set text(value) { this._text = value; }
+    set text(value) { this._text = value; this.__sendPropChangeEvent("text"); }
 
 
     /**
      * Gets the location of the caption
-     * @returns {CaptionLocation}
+     * @returns {Location}
      */
     get location() { return this._location; }
 
     /**
      * Sets the location of the caption
-     * @param {CaptionLocation} value
+     * @param {Location} value
      */
-    set location(value) { this._location = value; }
+    set location(value) { this._location = value; console.log("Setting Loc"); this.__sendPropChangeEvent("location"); }
 
 
     /**
@@ -76,15 +77,15 @@ class Caption {
 
     /**
      * Gets the caption's reserve amount
-     * @returns {number|null}
+     * @returns {number}
      */
     get reserve() { return this._reserve }
 
     /**
      * Sets the caption's reserve amount
-     * @param {number|null} value
+     * @param {number} value
      */
-    set reserve(value) { this._reserve = value; }
+    set reserve(value) { this._reserve = value; this.__sendPropChangeEvent("reserve"); }
 
     // endregion
 }

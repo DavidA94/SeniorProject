@@ -8,6 +8,7 @@ const CANVAS_ID = "dnd";
 const CANVAS_CONTEXT_MENU_ID = "canvasContextMenu";
 const FORM_BUILDER_ID = "formBuilder";
 const PROPERTIES = "properties";
+const PROPERTIES_FORM = "propForm";
 const ZOOM_ID = "zoom";
 
 // endregion
@@ -29,7 +30,8 @@ const PAGE_MODE_P = "portrait";
 
 // region Custom Subscribable Names
 
-const EVENT_SHAPE_CHANGE = "shapechange";
+const EVENT_OBJECT_CHANGE = "shapechange";
+const EVENT_PROPERTY_CHANGE = "propertychange";
 const EVENT_BEGIN_CAPTION_RESIZE = "beginCaptionResize";
 const EVENT_END_CAPTION_RESIZE = "endCaptionResize";
 
@@ -48,13 +50,27 @@ const Anchor = {
     BottomRight: 3
 };
 
+/**
+ * Represents what types a property can be
+ * @enum {string}
+ */
+const PropertyType = {
+    ABS: "abs",
+    Number: "number",
+    Color: "color",
+    Text: "text",
+    FontFamily: "fontFamily",
+    Checkbox: "checkbox",
+    Location: "location",
+};
+
 const FIRST_IDX_AFTER_ANCHORS = 4;
 
 /**
  * Represents valid locations for a caption
  * @enum {int}
  */
-var CaptionLocation = {
+var Location = {
     Top: 1,
     Right: 4,
     Bottom: 2,
@@ -63,7 +79,7 @@ var CaptionLocation = {
     None: 0
 };
 
-const CAPTION_TOP_BOTTOM = 3;  // Used for binary operations with CaptionLocation
+const CAPTION_TOP_BOTTOM = 3;  // Used for binary operations with Location
 const CAPTION_LEFT_RIGHT = 12; // Ditto
 const CAPTION_NONE = 0;
 const CAPTION_CENTER = 16;
@@ -101,7 +117,6 @@ const FontAlignment = {
  */
 const FontFamilies = {
     "Arial" : "Arial",
-    "Arial Black" : "Arial Black",
     "Courier New" : "Courier New",
     "Georgia": "Georgia",
     "Tahoma" : "Tahoma",
