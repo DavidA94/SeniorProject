@@ -2,7 +2,7 @@
  * Created by David on 10/10/16.
  */
 
-class EventPropagator extends Subscribable {
+class EventPropagator extends SubscribableProperty {
 
     constructor(){
         super();
@@ -47,7 +47,7 @@ class EventPropagator extends Subscribable {
     _propagate(eventType, eventData){
 
         // If a mouse event, figure out if the data is over any child
-        var childTarget = null;
+        let childTarget = null;
         if(eventData instanceof MouseEventArgs) {
 
             // If somebody is capturing mouse data, send it directly to them.
@@ -67,7 +67,7 @@ class EventPropagator extends Subscribable {
             // Only bother to look for children if we're not capturing. This prevents infinite recursion.
             else if(!EventPropagator.captureObj) {
                 // Find the child target
-                for (var child of this._children) {
+                for (let child of this._children) {
                     // If we can get the location of the shape, and it's in it, then remember it, and stop the loop
                     if (typeof child.isPointInObject === 'function' && child.isPointInObject(eventData.x, eventData.y)) {
                         childTarget = child;
@@ -86,12 +86,12 @@ class EventPropagator extends Subscribable {
                         // Send the leave event to the old element, if necessary
                         if (this.__lastMouseElement) {
 
-                            var leaveEvent = new MouseEvent(MouseEventType.MouseLeave);
+                            const leaveEvent = new MouseEvent(MouseEventType.MouseLeave);
                             this.__lastMouseElement._propagate(leaveEvent, eventData);
                         }
 
                         // If we found a child, send the enter event to them, otherwise send it to ourself
-                        var enterEvent = new MouseEvent(MouseEventType.MouseEnter);
+                        const enterEvent = new MouseEvent(MouseEventType.MouseEnter);
                         if (childTarget) {
 
                             // Send the enter event to the new element
@@ -107,7 +107,16 @@ class EventPropagator extends Subscribable {
                     }
                 }
                 else if (eventType.event == MouseEventType.MouseDown) {
+                    const kbEventData = new KeyboardEventArgs(eventData.originalTarget, null);
+
+                    if(this._focusedElement && this._focusedElement !== childTarget){
+                        this._focusedElement._propagate(new KeyboardEvent(KeyboardEventType.LostFocus), kbEventData)
+                    }
+
                     this._focusedElement = (childTarget ? childTarget : null);
+                    if(this._focusedElement) {
+                        this._focusedElement._propagate(new KeyboardEvent(KeyboardEventType.GotFocus), kbEventData);
+                    }
                 }
 
             }
@@ -117,7 +126,7 @@ class EventPropagator extends Subscribable {
 
         // ----- Going DOWN
 
-        // Start with outselves as tunnel
+        // Start with ourselves as tunnel
         this.__dispatchEvent(eventType.event, eventData, true);
 
 
@@ -134,6 +143,10 @@ class EventPropagator extends Subscribable {
 
                 // If the child has a focused element, make the child be this level's focus
                 if(childTarget._focusedElement) this._focusedElement = childTarget;
+            }
+            // Otherwise, if there's a focused element (for keyboard stuff)
+            else if(this._focusedElement){
+                this._focusedElement._propagate(eventType, eventData);
             }
             // Otherwise, it's time to flip the originalTarget, since we will be bubbling from this point on
             else if(eventData.originalTarget !== this){
@@ -187,7 +200,7 @@ class EventPropagator extends Subscribable {
      * @protected
      */
     __removeChild(child){
-        var idx = this._children.indexOf(child);
+        const idx = this._children.indexOf(child);
         if(idx < 0){
             throw Error("Child must be added before it can be removed");
         }

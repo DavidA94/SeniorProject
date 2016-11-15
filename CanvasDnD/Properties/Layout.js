@@ -134,7 +134,7 @@ class Layout extends SubscribableProperty {
      * @returns {Layout}
      */
     clone(){
-        var newLayout = new Layout();
+        const newLayout = new Layout();
         newLayout._x = this._x;
         newLayout._y = this._y;
         newLayout.width = this.width;

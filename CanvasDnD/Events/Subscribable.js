@@ -23,11 +23,16 @@ class Subscribable {
          * @type {Object<string, Object<boolean, EventHandler[]>>}
          */
         this._subscribers = {};
+        this.__addEvent(MouseEventType.DblClick);
         this.__addEvent(MouseEventType.MouseDown);
         this.__addEvent(MouseEventType.MouseEnter);
         this.__addEvent(MouseEventType.MouseLeave);
         this.__addEvent(MouseEventType.MouseMove);
         this.__addEvent(MouseEventType.MouseUp);
+        this.__addEvent(KeyboardEventType.GotFocus);
+        this.__addEvent(KeyboardEventType.LostFocus);
+        this.__addEvent(KeyboardEventType.KeyDown);
+        this.__addEvent(KeyboardEventType.KeyUp);
     }
 
     // endregion
@@ -58,7 +63,7 @@ class Subscribable {
     __dispatchEvent(eventName, eventData, isCapture = false){
         // if(eventName == EVENT_PROPERTY_CHANGE) console.log(this._subscribers[eventName][isCapture]);
         if(this._subscribers[eventName] && this._subscribers[eventName][isCapture]){
-            for(var func of this._subscribers[eventName][isCapture]){
+            for(let func of this._subscribers[eventName][isCapture]){
                 // Don't use setTimeout here, or if a method Handles an event, one that would get called following it
                 // might still get called. If something takes too long, they should use setTimeout in that method.
                 eventData.sender = this;

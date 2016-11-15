@@ -107,7 +107,7 @@ class Canvas extends EventPropagator {
         this.anchors[Anchor.TopRight] = new Box(0,0,0,0);
         this.anchors[Anchor.BottomLeft] = new Box(0,0,0,0);
         this.anchors[Anchor.BottomRight] = new Box(0,0,0,0);
-        for(var anchor = Anchor.TopLeft; anchor <= Anchor.BottomRight; ++anchor){
+        for(let anchor = Anchor.TopLeft; anchor <= Anchor.BottomRight; ++anchor){
             this.anchors[anchor].appearance.foreground = "transparent";
             this.anchors[anchor].appearance.background = "transparent";
             this.anchors[anchor].appearance.strokeColor = "black";
@@ -123,10 +123,11 @@ class Canvas extends EventPropagator {
         }
 
         // Subscribe to the events we need for the canvas
+        this._canvas.addEventListener("dblclick", this._getBoundFunc(this._canvasDblClick));
         this._canvas.addEventListener("mousedown", this._getBoundFunc(this._canvasMouseDown));
         this._canvas.addEventListener("mouseup", this._getBoundFunc(this._canvasMouseUp));
         this._canvas.addEventListener("mousemove", this._getBoundFunc(this._canvasMouseMove));
-        this._canvas.addEventListener("keydown", (e) => e.preventDefault() );
+        this._canvas.addEventListener("keydown", this._getBoundFunc(this._canvasKeyDown));
         window.addEventListener("keyup", (e) => this._keyUp(e));
 
         // Subscribe for when the events get called on our custom propagator
@@ -258,7 +259,7 @@ class Canvas extends EventPropagator {
         if(!Keyboard.focusedElement) return;
 
         // Get the index, and if it's not in the children, do nothing
-        var idx = this.children.indexOf(Keyboard.focusedElement);
+        const idx = this.children.indexOf(Keyboard.focusedElement);
         if(idx < 0) return;
 
         // Move to 4, which is past all the anchors
@@ -321,7 +322,7 @@ class Canvas extends EventPropagator {
         if(!Keyboard.focusedElement) return;
 
         // Get the index, and if it's not in the children, do nothing
-        var idx = this.children.indexOf(Keyboard.focusedElement);
+        const idx = this.children.indexOf(Keyboard.focusedElement);
         if(idx < 0) return;
 
         // Move to the end
@@ -339,7 +340,7 @@ class Canvas extends EventPropagator {
             e.preventDefault();
 
             // Get a handle to the HTML element
-            var context = document.getElementById(CANVAS_CONTEXT_MENU_ID);
+            const context = document.getElementById(CANVAS_CONTEXT_MENU_ID);
 
             // And bring it into view, where the mouse was clicked
             context.style.left = e.pageX + "px";
@@ -377,7 +378,7 @@ class Canvas extends EventPropagator {
         this._context.scale(this.scale, this.scale);
 
         // Draw all objects in reverse, that way recently added elements are on top
-        for(var idx = this.children.length - 1; idx >= FIRST_IDX_AFTER_ANCHORS; --idx){
+        for(let idx = this.children.length - 1; idx >= FIRST_IDX_AFTER_ANCHORS; --idx){
             this.children[idx].draw(this._context);
         }
 
@@ -398,7 +399,7 @@ class Canvas extends EventPropagator {
     _drawPage(){
 
         // TODO: Move to page properties
-        var margin = (.25 * 300) * this.scale;
+        const margin = (.25 * 300) * this.scale;
 
         // Save the context so anything we do here doesn't affect later drawing
         this._context.save();
@@ -419,16 +420,16 @@ class Canvas extends EventPropagator {
         this._context.moveTo(0, 0);
 
         // Get the grid size at the right DPI and scaling
-        var gridSize = this.scale * this._gridSize * 300;
+        const gridSize = this.scale * this._gridSize * 300;
 
         // Draw the horizontal lines
-        for(var xPos = gridSize; xPos < this.width; xPos += gridSize){
+        for(let xPos = gridSize; xPos < this.width; xPos += gridSize){
             this._context.moveTo(xPos, 0);
             this._context.lineTo(xPos, this.height);
         }
 
         // Draw the vertical lines
-        for(var yPos = gridSize; yPos < this.height; yPos += gridSize){
+        for(let yPos = gridSize; yPos < this.height; yPos += gridSize){
             this._context.moveTo(0, yPos);
             this._context.lineTo(this.width, yPos);
         }
@@ -450,11 +451,11 @@ class Canvas extends EventPropagator {
         if(Keyboard.focusedElement){
 
             // Use the current number of milliseconds to make the "ants" move consistently
-            var date = new Date();
-            var space = date.getMilliseconds() / (1000 / 14);
+            const date = new Date();
+            let space = date.getMilliseconds() / (1000 / 14);
 
             // Shorthand, because we use the context a lot
-            var c = this._context;
+            const c = this._context;
 
             // Save the current settings
             c.save();
@@ -463,7 +464,7 @@ class Canvas extends EventPropagator {
             c.lineWidth = 1;
 
             // First run draws black ants, second run draws white space between the ants
-            for(var i = 0; i < 2; ++i){
+            for(let i = 0; i < 2; ++i){
                 if(i == 0){
                     // 8 black, 6 transparent
                     c.setLineDash([8, 6]);
@@ -493,7 +494,7 @@ class Canvas extends EventPropagator {
             c.setLineDash([0]);
 
             // Get all the anchors, and draw them accordingly
-            for(var anchor = Anchor.TopLeft; anchor <= Anchor.BottomRight; ++anchor){
+            for(let anchor = Anchor.TopLeft; anchor <= Anchor.BottomRight; ++anchor){
                 this._adjustAnchorRect(anchor);
                 c.save();
                 this.anchors[anchor].draw(this._context);
@@ -519,21 +520,21 @@ class Canvas extends EventPropagator {
             return null;
         }
 
-        var active = Keyboard.focusedElement;
+        const active = Keyboard.focusedElement;
 
         // Figure out where the sides of the object are
         // Scale has to be kept, since these are drawn the same size regardless
-        var top = this.scale * (active.visualY);
-        var right = this.scale * (active.visualX + active.visualWidth);
-        var bottom = this.scale * (active.visualY + active.visualHeight);
-        var left = this.scale * (active.visualX);
+        const top = this.scale * (active.visualY);
+        const right = this.scale * (active.visualX + active.visualWidth);
+        const bottom = this.scale * (active.visualY + active.visualHeight);
+        const left = this.scale * (active.visualX);
 
         // Constants
         const boxSize = 5;
         const adjustment2 = 2;
         const adjustment3 = 3;
 
-        var box = this.anchors[anchorCorner];
+        const box = this.anchors[anchorCorner];
         box.layout.width = box.layout.height = boxSize;
 
         // Return correctly based on which anchor was given
@@ -570,6 +571,17 @@ class Canvas extends EventPropagator {
     }
 
     /**
+     * Called when a key is pressed
+     * @param e
+     * @private
+     */
+    _canvasKeyDown(e){
+        e.preventDefault();
+
+        this._propagate(new KeyboardEvent(KeyboardEventType.KeyDown), new KeyboardEventArgs(this, e.keyCode));
+    }
+
+    /**
      * Called when a key is released
      * @param e - The key data
      * @private
@@ -586,7 +598,7 @@ class Canvas extends EventPropagator {
                 this._objectToDrag = null;
                 this._resizeAnchor = null;
 
-                Mouse.restoreCursor();
+                Mouse.setCursor(Cursor.Default);
             }
 
             // Otherwise, if the context menu is open, close it
@@ -600,6 +612,24 @@ class Canvas extends EventPropagator {
     }
 
     /**
+     * Called when the mouse is double clicked on the canvas
+     * @param e - The mouse data
+     * @private
+     */
+    _canvasDblClick(e){
+        // Don't do the default
+        e.preventDefault();
+        this._canvas.focus();
+
+        // Figure out where the mouse was pressed down relative to the canvas, when not scaled
+        const virtualX = (e.clientX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
+        const virtualY = (e.clientY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
+
+        this._propagate(new MouseEvent(MouseEventType.DblClick),
+            new MouseEventArgs(this, virtualX, virtualY, e.button, e.altKey, e.ctrlKey, e.shiftKey));
+    }
+
+    /**
      * Called when the mouse is pressed down on the canvas
      * @param e - The mouse data
      * @private
@@ -610,8 +640,8 @@ class Canvas extends EventPropagator {
         this._canvas.focus();
 
         // Figure out where the mouse was pressed down relative to the canvas, when not scaled
-        var virtualX = (e.clientX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
-        var virtualY = (e.clientY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
+        const virtualX = (e.clientX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
+        const virtualY = (e.clientY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
 
         // Set this every time the mouse is clicked -- needed for proper dragging
         this._dragStartX = virtualX;
@@ -632,8 +662,8 @@ class Canvas extends EventPropagator {
 
         // Figure out where the mouse is at relative to the canvas
         // Figure out where the mouse was pressed down relative to the canvas, when not scaled
-        var virtualX = (e.clientX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
-        var virtualY = (e.clientY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
+        const virtualX = (e.clientX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
+        const virtualY = (e.clientY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
 
         this._propagate(new MouseEvent(MouseEventType.MouseMove),
             new MouseEventArgs(this, virtualX, virtualY, e.button, e.altKey, e.ctrlKey, e.shiftKey));
@@ -649,8 +679,8 @@ class Canvas extends EventPropagator {
         e.preventDefault();
 
         // Figure out where the mouse was pressed down relative to the canvas, when not scaled
-        var virtualX = (e.clientX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
-        var virtualY = (e.clientY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
+        const virtualX = (e.clientX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
+        const virtualY = (e.clientY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
 
         this._propagate(new MouseEvent(MouseEventType.MouseUp),
             new MouseEventArgs(this, virtualX, virtualY, e.button, e.altKey, e.ctrlKey, e.shiftKey));
@@ -665,7 +695,7 @@ class Canvas extends EventPropagator {
     _scrollX(node){
         // If we have a parent node, return the scroll amount plus the parents scroll amount (recursive)
         if(node.parentNode){
-            return (node.scrollLeft ? this.scrollLeft : 0) + this._scrollX(node.parentNode);
+            return (node.scrollLeft ? node.scrollLeft : 0) + this._scrollX(node.parentNode);
         }
 
         // Otherwise, return the current element's scroll amount
@@ -708,8 +738,8 @@ class Canvas extends EventPropagator {
     _mouseMove(e){
 
         // Figure out how far we've moved
-        var x = e.x - this._dragStartX;
-        var y = e.y - this._dragStartY;
+        const x = e.x - this._dragStartX;
+        const y = e.y - this._dragStartY;
 
         // If we have a resize anchor, and an object that can be dragged, then we must be resizing
         if(this._resizeAnchor && this._objectToDrag){
@@ -755,27 +785,27 @@ class Canvas extends EventPropagator {
         }
         // Otherwise, we actually left
         else{
-            Mouse.restoreCursor();
+            Mouse.setCursor(Cursor.Default);
         }
     }
 
     _shapeMouseMove(e){
         if(this._objectToDrag && this._objectToDrag == e.sender) {
             // Figure out how far we've moved
-            var x = e.x - this._dragStartX;
-            var y = e.y - this._dragStartY;
+            let x = e.x - this._dragStartX;
+            let y = e.y - this._dragStartY;
 
             // If shift is pressed, then we want to move in a straight or diagonal line
             if (e.shiftKey) {
 
                 // Figure out how far X and Y have absolutely moved, so we can figure if if we're dragging
                 // diagonally, horizontally, or vertically
-                var absX = Math.abs(x);
-                var absY = Math.abs(y);
+                const absX = Math.abs(x);
+                const absY = Math.abs(y);
 
                 // Figure out which one is bigger and smaller
-                var big = Math.max(absX, absY);
-                var small = Math.min(absX, absY);
+                const big = Math.max(absX, absY);
+                const small = Math.min(absX, absY);
 
                 // Straight if we've moved < 5, or if they're not within 70% of each other
                 if ((absX < 5 && absY < 5) || (small / big) < .7) {
@@ -834,16 +864,16 @@ class Canvas extends EventPropagator {
     }
 
     _anchor_MouseLeave(e){
-        Mouse.restoreCursor();
+        Mouse.setCursor(Cursor.Default);
     }
 
 
     _anchor_MouseMove(e){
         if(this._resizeAnchor == e.sender){
-            var x = e.x - this._dragStartX;
-            var y = e.y - this._dragStartY;
+            const x = e.x - this._dragStartX;
+            const y = e.y - this._dragStartY;
 
-            var anchor;
+            let anchor;
             if(e.sender === this.anchors[Anchor.TopLeft]) anchor = Anchor.TopLeft;
             else if(e.sender === this.anchors[Anchor.TopRight]) anchor = Anchor.TopRight;
             else if(e.sender === this.anchors[Anchor.BottomLeft]) anchor = Anchor.BottomLeft;

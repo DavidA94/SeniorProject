@@ -33,13 +33,13 @@ class Box extends Shape {
 
     /**
      * Gets the minimum width the object can be, or null if there is no minimum width
-     * @returns {boolean|null}
+     * @returns {number|null}
      */
     get minWidth() { return null; }
 
     /**
      * Gets the minimum height the object can be, or null if there is no minimum height
-     * @returns {boolean|null}
+     * @returns {number|null}
      */
     get minHeight() { return null; }
 
@@ -57,8 +57,8 @@ class Box extends Shape {
         x = x - this.layout.x;
         y = y - this.layout.y;
 
-        var width = this.layout.width + this.layout.margin.left + this.layout.margin.right;
-        var height = this.layout.height + this.layout.margin.top + this.layout.margin.bottom;
+        const width = this.layout.width + this.layout.margin.left + this.layout.margin.right;
+        const height = this.layout.height + this.layout.margin.top + this.layout.margin.bottom;
 
         return x >= 0 && x <= width && y >= 0 && y <= height;
     }
@@ -71,12 +71,12 @@ class Box extends Shape {
     draw(context){
 
         // Figure out where the box is going
-        var boxX = this.layout.x;
-        var boxY = this.layout.y;
-        var boxH = this.layout.height;
-        var boxW = this.layout.width;
-        var marginL = this.layout.margin.left;
-        var marginT = this.layout.margin.top;
+        const boxX = this.layout.x;
+        const boxY = this.layout.y;
+        const boxH = this.layout.height;
+        const boxW = this.layout.width;
+        const marginL = this.layout.margin.left;
+        const marginT = this.layout.margin.top;
 
         // First draw the box with its stroke
         context.beginPath();

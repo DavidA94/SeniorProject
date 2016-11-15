@@ -1,5 +1,5 @@
 /**
- * Created by dantonuc on 10/25/2016.
+ * Created by David on 10/25/2016.
  */
 
 Math.clip = function(number, min, max){

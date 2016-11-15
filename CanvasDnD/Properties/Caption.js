@@ -65,7 +65,7 @@ class Caption extends SubscribableProperty {
      * Sets the location of the caption
      * @param {Location} value
      */
-    set location(value) { this._location = value; console.log("Setting Loc"); this.__sendPropChangeEvent("location"); }
+    set location(value) { this._location = value; this.__sendPropChangeEvent("location"); }
 
 
     /**

@@ -68,7 +68,7 @@ class FormBuilder{
      */
     _initializeCanvas(){
         // Get the canvas HTML element, and setup it's width and height
-        var _canvas = document.getElementById(CANVAS_ID);
+        const _canvas = document.getElementById(CANVAS_ID);
         _canvas.width = this.pageMode == PAGE_MODE_P ? PAGE_WIDTH : PAGE_HEIGHT;
         _canvas.height = this.pageMode == PAGE_MODE_L ? PAGE_WIDTH : PAGE_HEIGHT;
 
@@ -79,12 +79,14 @@ class FormBuilder{
         this._canvas = new Canvas(CANVAS_ID);
         this._canvas.scale = 1;
 
-        // Initialize the static Mouse class
+        // Initialize the static Mouse class -- Suppress warning because no other way to get to the object
+        // noinspection JSAccessibilityCheck
         Mouse.initialize(this._canvas._canvas);
 
         // Add a couple shapes for testing
         this._canvas.addObject(new BasicShape(new Ellipse(25, 25, 20)));
-        this._canvas.addObject(new BasicShape(new Box(250, 200, 40, 20)));
+        this._canvas.addObject(new BasicShape(new Box(300, 15, 40, 20)));
+        this._canvas.addObject(new TextBlock(250, 200, 100, 100, "The LORD is my shepherd, I shall not want. He maketh me to..."));
     }
 
     /**
@@ -100,17 +102,17 @@ class FormBuilder{
         // - Send to Back
         // - Delete
 
-        var btf = document.createElement("li");
+        const btf = document.createElement("li");
         btf.innerHTML = "Bring to Front";
         btf.addEventListener("mouseup", () => {this._canvas.bringActiveToFront(); this._canvas.hideContextMenu(); });
         this._canvasContextMenu.appendChild(btf);
 
-        var stb = document.createElement("li");
+        const stb = document.createElement("li");
         stb.innerHTML = "Send to Back";
         stb.addEventListener("mouseup", () => {this._canvas.sendActiveToBack(); this._canvas.hideContextMenu(); });
         this._canvasContextMenu.appendChild(stb);
 
-        var del = document.createElement("li");
+        const del = document.createElement("li");
         del.innerHTML = "Delete";
         del.addEventListener("mouseup", () => {this._canvas.deleteActive(); this._canvas.hideContextMenu(); });
         this._canvasContextMenu.appendChild(del);
@@ -122,25 +124,25 @@ class FormBuilder{
      */
     _initializeCanvasProperties(){
 
-        var props = FormBuilder._getHtmlPropertyTypes();
+        const props = FormBuilder._getHtmlPropertyTypes();
 
-        var propertyChangedEventHandler = (e) => {
-            if(Keyboard.focusedElement){
-                var box = e.originalTarget;
-                var newData = null;
+        let propertyChangedEventHandler = (e) => {
+            if (Keyboard.focusedElement) {
+                const box = e.originalTarget;
+                let newData = null;
 
-                if(box.nodeName.toLowerCase() === "input"){
-                    if(box.type.toLowerCase() === "number"){
+                if (box.nodeName.toLowerCase() === "input") {
+                    if (box.type.toLowerCase() === "number") {
                         newData = parseInt(box.value);
                     }
-                    else if(box.type.toLowerCase() === "checkbox"){
+                    else if (box.type.toLowerCase() === "checkbox") {
                         newData = box.checked;
                     }
-                    else{
+                    else {
                         newData = box.value;
                     }
                 }
-                else if (box.nodeName.toLowerCase() === "select"){
+                else if (box.nodeName.toLowerCase() === "select") {
                     newData = box.value;
                 }
 
@@ -149,31 +151,31 @@ class FormBuilder{
         };
         propertyChangedEventHandler = propertyChangedEventHandler.bind(this);
 
-        var propForm = document.createElement("form");
+        const propForm = document.createElement("form");
         propForm.action = "#";
         propForm.method = "POST";
         propForm.id = PROPERTIES_FORM;
         propForm.addEventListener("submit", () => { return false; });
         document.getElementById(PROPERTIES).appendChild(propForm);
 
-        for(var key of Object.keys(props)){
-            var prop = props[key];
+        for(let key of Object.keys(props)){
+            const prop = props[key];
 
-            var groupBox = document.getElementById(prop.Group);
+            let groupBox = document.getElementById(prop.Group);
             if(!groupBox){
-                var newGroup = document.createElement("div");
+                const newGroup = document.createElement("div");
                 newGroup.id = prop.Group.replace(/ /g, "");
                 propForm.appendChild(newGroup);
                 groupBox = document.getElementById(prop.Group);
             }
 
-            var parentOfElem = groupBox;
+            let parentOfElem = groupBox;
 
             if(prop.SubGroup) {
-                var subGroupId = (prop.Group + "_" + prop.SubGroup).replace(/ /g, "");
-                var subGroupBox = document.getElementById(subGroupId);
+                const subGroupId = (prop.Group + "_" + prop.SubGroup).replace(/ /g, "");
+                let subGroupBox = document.getElementById(subGroupId);
                 if(!subGroupBox){
-                    var newSubGroup = document.createElement("div");
+                    const newSubGroup = document.createElement("div");
                     newSubGroup.id = subGroupId;
                     newSubGroup.className = "subgroup";
                     groupBox.appendChild(newSubGroup);
@@ -183,20 +185,20 @@ class FormBuilder{
                 parentOfElem = subGroupBox;
             }
 
-            var label = document.createElement("label");
+            const label = document.createElement("label");
             label.innerHTML = prop.Name;
             label.htmlFor = key;
             parentOfElem.appendChild(label);
 
-            var propElement;
+            let propElement;
 
             switch(prop.Type){
                 case PropertyType.FontFamily: {
                     propElement = document.createElement("select");
                     propElement.id = key;
 
-                    for (var font of Object.keys(FontFamilies)) {
-                        var option = document.createElement("option");
+                    for (let font of Object.keys(FontFamilies)) {
+                        const option = document.createElement("option");
                         option.value = FontFamilies[font];
                         option.innerHTML = FontFamilies[font];
                         propElement.appendChild(option);
@@ -210,10 +212,25 @@ class FormBuilder{
                     propElement = document.createElement("select");
                     propElement.id = key;
 
-                    for (var loc of Object.keys(Location)) {
-                        var option = document.createElement("option");
+                    for (let loc of Object.keys(Location)) {
+                        const option = document.createElement("option");
                         option.value = Location[loc];
                         option.innerHTML = loc;
+                        propElement.appendChild(option);
+                    }
+
+                    parentOfElem.appendChild(propElement);
+
+                    break;
+                }
+                case PropertyType.Alignment: {
+                    propElement = document.createElement("select");
+                    propElement.id = key;
+
+                    for (let align of Object.keys(Alignment)) {
+                        const option = document.createElement("option");
+                        option.value = Alignment[align];
+                        option.innerHTML = Alignment[align];
                         propElement.appendChild(option);
                     }
 
@@ -253,9 +270,9 @@ class FormBuilder{
     _initializeZoom(){
 
         // Create the HTML elements
-        var zoom = document.getElementById(ZOOM_ID);
-        var zoomIn = document.createElement("div");
-        var zoomOut = document.createElement("div");
+        const zoom = document.getElementById(ZOOM_ID);
+        const zoomIn = document.createElement("div");
+        const zoomOut = document.createElement("div");
         this._zoomAmt = document.createElement("div");
 
         // Add the listeners and add them to the DOM
@@ -336,9 +353,9 @@ class FormBuilder{
         else{
             this._htmlObjDict = this._getHtmlObjectDict(e.focusedObject);
             document.getElementById(PROPERTIES_FORM).style.display = "block";
-            for(var id of Object.keys(this._htmlObjDict)){
-                var element = document.getElementById(id);
-                var value = this._htmlObjDict[id].get();
+            for(let id of Object.keys(this._htmlObjDict)){
+                const element = document.getElementById(id);
+                const value = this._htmlObjDict[id].get();
 
                 if(element.nodeName.toLowerCase() === "input" && element.type.toLowerCase() === "checkbox"){
                     element.checked = value;
@@ -367,7 +384,7 @@ class FormBuilder{
      * @private
      */
     static _getHtmlPropertyTypes(){
-        var retVal = {};
+        const retVal = {};
 
 
         retVal.layout_x = FormBuilder._makePropertyType("Layout", "X", PropertyType.Number, "Size and Position");
@@ -402,6 +419,7 @@ class FormBuilder{
         retVal.caption_font_family = FormBuilder._makePropertyType("Text", "Font Family", PropertyType.FontFamily, "Caption");
         retVal.caption_font_size = FormBuilder._makePropertyType("Text", "Font Size", PropertyType.ABS, "Caption");
         retVal.caption_font_color = FormBuilder._makePropertyType("Text", "Font Color", PropertyType.Color, "Caption");
+        retVal.caption_font_color = FormBuilder._makePropertyType("Text", "Alignment", PropertyType.Alignment, "Caption");
         retVal.caption_font_bold = FormBuilder._makePropertyType("Text", "Bold", PropertyType.Checkbox, "Caption");
         retVal.caption_font_italic = FormBuilder._makePropertyType("Text", "Italic", PropertyType.Checkbox, "Caption");
 
@@ -430,7 +448,7 @@ class FormBuilder{
     _getHtmlObjectDict(fbObject){
         if(fbObject == null) return null;
 
-        var retVal = {};
+        const retVal = {};
         retVal.layout_x = this._makeHtmlObjectElement(fbObject, "visualX");
         retVal.layout_y = this._makeHtmlObjectElement(fbObject, "visualY");
         retVal.layout_width = this._makeHtmlObjectElement(fbObject, "visualWidth");
@@ -454,13 +472,13 @@ class FormBuilder{
         retVal.border_color = this._makeHtmlObjectElement(fbObject.border, "color");
         retVal.caption_text = this._makeHtmlObjectElement(fbObject.caption, "text");
         retVal.caption_reserve = this._makeHtmlObjectElement(fbObject, "captionReserve");
-        retVal.caption_location = this._makeHtmlObjectElement(fbObject.caption, "location",
-                (value) => { return parseInt(value); });
+        retVal.caption_location = this._makeHtmlObjectElement(fbObject.caption, "location", parseInt);
         retVal.caption_font_family = this._makeHtmlObjectElement(fbObject.caption.font, "fontFamily");
         retVal.caption_font_size = this._makeHtmlObjectElement(fbObject.caption.font, "size");
         retVal.caption_font_bold = this._makeHtmlObjectElement(fbObject.caption.font, "bold");
         retVal.caption_font_italic = this._makeHtmlObjectElement(fbObject.caption.font, "italic");
         retVal.caption_font_color = this._makeHtmlObjectElement(fbObject.caption.font, "color");
+        retVal.caption_font_color = this._makeHtmlObjectElement(fbObject.caption.font, "alignment");
 
         return retVal;
     }

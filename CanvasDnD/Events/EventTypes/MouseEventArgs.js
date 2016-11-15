@@ -20,7 +20,7 @@ const MouseButton = {
 class MouseEventArgs extends EventArgs {
     /**
      * Creates a new MouseEventArgs object
-     * @param {Subscribable} sender - The object that is sending the event
+     * @param {Subscribable} originalTarget - The object that is sending the event
      * @param {number} x - The X position the event happened at
      * @param {number} y - The y position the event happened at
      * @param {MouseButton} mouseButton - The currently pressed button
@@ -28,8 +28,8 @@ class MouseEventArgs extends EventArgs {
      * @param {boolean} ctrlKey
      * @param {boolean} shiftKey
      */
-    constructor(sender, x, y, mouseButton, altKey, ctrlKey, shiftKey){
-        super(sender);
+    constructor(originalTarget, x, y, mouseButton, altKey, ctrlKey, shiftKey){
+        super(originalTarget);
 
         /**
          * @private

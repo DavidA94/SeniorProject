@@ -98,7 +98,7 @@ class TRBL {
      * @returns {TRBL}
      */
     clone(){
-        var newTRBL = new TRBL();
+        const newTRBL = new TRBL();
         newTRBL.top = this.top;
         newTRBL.right = this.right;
         newTRBL.bottom = this.bottom;

@@ -103,10 +103,10 @@ class Ellipse extends Shape {
      */
     isPointInObject(x, y){
         // Scale all the parameters, and then do the math for just the circle
-        var cX = this._centerX;
-        var cY = this._centerY;
-        var rX = this._radiusX;
-        var rY = this._radiusY;
+        const cX = this._centerX;
+        const cY = this._centerY;
+        const rX = this._radiusX;
+        const rY = this._radiusY;
         return (Math.pow((x - cX), 2) / Math.pow(rX, 2)) + (Math.pow((y - cY), 2) / Math.pow(rY, 2)) <= 1;
     }
 

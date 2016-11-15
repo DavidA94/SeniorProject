@@ -14,9 +14,9 @@ class Font {
     constructor(){
         /**
          * @private
-         * @type {FontAlignment}
+         * @type {Alignment}
          */
-        this._alignment = FontAlignment.Left;
+        this._alignment = Alignment.Left;
 
         /**
          * @private
@@ -61,13 +61,13 @@ class Font {
 
     /**
      * Gets the current alignment
-     * @returns {FontAlignment}
+     * @returns {Alignment}
      */
     get alignment() { return this._alignment; }
 
     /**
      * Sets the current alignment
-     * @param {FontAlignment} value
+     * @param {Alignment} value
      */
     set alignment(value) { this._alignment = value; }
 

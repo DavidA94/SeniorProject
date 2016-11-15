@@ -62,6 +62,7 @@ const PropertyType = {
     FontFamily: "fontFamily",
     Checkbox: "checkbox",
     Location: "location",
+    Alignment: "alignment"
 };
 
 const FIRST_IDX_AFTER_ANCHORS = 4;
@@ -70,7 +71,7 @@ const FIRST_IDX_AFTER_ANCHORS = 4;
  * Represents valid locations for a caption
  * @enum {int}
  */
-var Location = {
+let Location = {
     Top: 1,
     Right: 4,
     Bottom: 2,
@@ -98,17 +99,18 @@ const Cursor = {
     LeftRight: "ew-resize",
     ColumnResize: "col-resize",
     RowResize: "row-resize",
-    Default: "default"
+    Default: "default",
+    Text: "text",
 };
 
 /**
  * Font alignment options
  * @enum {string}
  */
-const FontAlignment = {
-    Left: "left",
-    Right: "right",
-    Center: "center"
+const Alignment = {
+    Left: "Left",
+    Right: "Right",
+    Center: "Center"
 };
 
 /**
