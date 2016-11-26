@@ -4,7 +4,7 @@
 <title>Drag and Drop Prototype</title>
     <meta charset="utf-8" />
 <style>
-    #canvasHolder {height:90vh;width:600px;box-sizing:border-box;border:1px solid black;float:left;overflow:auto;}
+    #canvasHolder {position:relative;height:90vh;width:600px;box-sizing:border-box;border:1px solid black;float:left;overflow:auto;}
     #canvasContextMenu {position:absolute;left:-999px;z-index:999;list-style:none;font-family:Arial,sans-serif;
                         border:1px solid darkgray;margin:0;padding:5px 0;font-size:14px;line-height:24px;
                         box-shadow: 3px 5px 10px darkgray;min-width:125px;user-select:none;-webkit-user-select:none;
@@ -21,6 +21,7 @@
     <script type="text/javascript" src="Extensions.js"></script>
     <script type="text/javascript" src="Statics/Keyboard.js"></script>
     <script type="text/javascript" src="Statics/Mouse.js"></script>
+    <script type="text/javascript" src="Statics/HtmlTextBox.js"></script>
     <script type="text/javascript" src="Events/EventTypes/BaseEventType.js"></script>
     <script type="text/javascript" src="Events/EventTypes/KeyboardEvent.js"></script>
     <script type="text/javascript" src="Events/EventTypes/MouseEvent.js"></script>
@@ -29,6 +30,7 @@
     <script type="text/javascript" src="Events/EventTypes/KeyboardEventArgs.js"></script>
     <script type="text/javascript" src="Events/EventTypes/ObjectChangedEventArgs.js"></script>
     <script type="text/javascript" src="Events/EventTypes/PropertyChangedEventArgs.js"></script>
+    <script type="text/javascript" src="Events/EventTypes/ScaleChangeEventArgs.js"></script>
     <script type="text/javascript" src="Events/Subscribable.js"></script>
     <script type="text/javascript" src="Properties/BaseTypes/SubscribableProperty.js"></script>
     <script type="text/javascript" src="Events/EventPropagator.js"></script>

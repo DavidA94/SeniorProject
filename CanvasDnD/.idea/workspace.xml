@@ -1,32 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9b9e04d8-7628-4a9d-a8eb-737b707a7946" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/watcherTasks.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Events/EventTypes/KeyboardEvent.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Events/EventTypes/KeyboardEventArgs.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/FBObjects/TextBlock.js" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Property.js" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+    <list default="true" id="9b9e04d8-7628-4a9d-a8eb-737b707a7946" name="Default" comment="Added Keyboard event support&#10;Added double-click support&#10;Renamed var to const/let&#10;Added TextBlock object&#10;Made caption be a SubscribeableProperty&#10;Renamed some enums&#10;Fixed mouse cursor setting issue&#10;">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Events/EventTypes/ScaleChangeEventArgs.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Statics/HtmlTextBox.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Canvas.js" afterPath="$PROJECT_DIR$/Canvas.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Constants.js" afterPath="$PROJECT_DIR$/Constants.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DnD.html" afterPath="$PROJECT_DIR$/DnD.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Events/EventPropagator.js" afterPath="$PROJECT_DIR$/Events/EventPropagator.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Events/EventTypes/MouseEvent.js" afterPath="$PROJECT_DIR$/Events/EventTypes/MouseEvent.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Events/EventTypes/MouseEventArgs.js" afterPath="$PROJECT_DIR$/Events/EventTypes/MouseEventArgs.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Events/Subscribable.js" afterPath="$PROJECT_DIR$/Events/Subscribable.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Extensions.js" afterPath="$PROJECT_DIR$/Extensions.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FBObjects/Box.js" afterPath="$PROJECT_DIR$/FBObjects/Box.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FBObjects/Ellipse.js" afterPath="$PROJECT_DIR$/FBObjects/Ellipse.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FBObjects/bases/FBObject.js" afterPath="$PROJECT_DIR$/FBObjects/bases/FBObject.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FBObjects/TextBlock.js" afterPath="$PROJECT_DIR$/FBObjects/TextBlock.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FormBuilder.js" afterPath="$PROJECT_DIR$/FormBuilder.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Properties/Caption.js" afterPath="$PROJECT_DIR$/Properties/Caption.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Properties/Font.js" afterPath="$PROJECT_DIR$/Properties/Font.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Properties/Layout.js" afterPath="$PROJECT_DIR$/Properties/Layout.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Properties/TRBL.js" afterPath="$PROJECT_DIR$/Properties/TRBL.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Statics/Keyboard.js" afterPath="$PROJECT_DIR$/Statics/Keyboard.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Statics/Mouse.js" afterPath="$PROJECT_DIR$/Statics/Mouse.js" />
     </list>
     <ignored path="CanvasDnD.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -49,11 +33,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="TextBlock.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="TextBlock.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/FBObjects/TextBlock.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="154">
-              <caret line="278" column="118" lean-forward="false" selection-start-line="278" selection-start-column="118" selection-end-line="278" selection-end-column="118" />
+            <state relative-caret-position="234">
+              <caret line="149" column="44" lean-forward="false" selection-start-line="149" selection-start-column="44" selection-end-line="149" selection-end-column="44" />
               <folding>
                 <element signature="n#!!doc;n#TextBlock#0" expanded="false" />
                 <element signature="n#!!doc;n#constructor#0;n#TextBlock#0" expanded="false" />
@@ -68,40 +52,50 @@
                 <element signature="n#!!doc;n#text#1;n#TextBlock#0" expanded="false" />
                 <element signature="n#!!doc;n#_getTextProperties#0;n#TextBlock#0" expanded="false" />
                 <element signature="n#!!block;n#_getTextProperties#0;n#TextBlock#0" expanded="false" />
-                <element signature="e#12853#12937#0" expanded="false" />
-                <element signature="e#13894#14811#0" expanded="false" />
-                <element signature="e#13917#13985#0" expanded="false" />
-                <element signature="e#14486#14556#0" expanded="false" />
-                <element signature="e#14701#14793#0" expanded="false" />
-                <element signature="e#15227#15309#0" expanded="false" />
-                <element signature="e#16029#16067#0" expanded="false" />
+                <element signature="e#6229#6313#0" expanded="false" />
+                <element signature="e#7862#7932#0" expanded="false" />
+                <element signature="e#8077#8169#0" expanded="false" />
+                <element signature="e#8603#8685#0" expanded="false" />
+                <element signature="e#9405#9443#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Caption.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Properties/Caption.js">
+      <file leaf-file-name="HtmlTextBox.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Statics/HtmlTextBox.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="242">
-              <caret line="42" column="4" lean-forward="false" selection-start-line="42" selection-start-column="4" selection-end-line="42" selection-end-column="4" />
+            <state relative-caret-position="308">
+              <caret line="74" column="46" lean-forward="false" selection-start-line="74" selection-start-column="46" selection-end-line="74" selection-end-column="46" />
               <folding>
-                <element signature="n#!!doc;n#Caption#0" expanded="false" />
-                <element signature="n#!!doc;n#constructor#0;n#Caption#0" expanded="false" />
-                <element signature="n#!!block;n#constructor#0;n#Caption#0" expanded="false" />
-                <element signature="e#248#309#0" expanded="false" />
-                <element signature="e#344#407#0" expanded="false" />
-                <element signature="e#457#516#0" expanded="false" />
-                <element signature="e#559#625#0" expanded="false" />
-                <element signature="e#685#712#0" expanded="false" />
-                <element signature="n#!!doc;n#text#0;n#Caption#0" expanded="false" />
-                <element signature="n#!!doc;n#text#1;n#Caption#0" expanded="false" />
-                <element signature="n#!!doc;n#location#0;n#Caption#0" expanded="false" />
-                <element signature="n#!!doc;n#location#1;n#Caption#0" expanded="false" />
-                <element signature="n#!!doc;n#font#0;n#Caption#0" expanded="false" />
-                <element signature="n#!!doc;n#reserve#0;n#Caption#0" expanded="false" />
-                <element signature="n#!!doc;n#reserve#1;n#Caption#0" expanded="false" />
+                <element signature="n#!!doc;n#HtmlTextBox#0" expanded="false" />
+                <element signature="n#!!block;n#initialize#0;n#HtmlTextBox#0" expanded="false" />
+                <element signature="n#!!doc;n#makeTextBox#0;n#HtmlTextBox#0" expanded="false" />
+                <element signature="n#!!block;n#makeTextBox#0;n#HtmlTextBox#0" expanded="false" />
+                <element signature="n#!!doc;n#closeTextBox#0;n#HtmlTextBox#0" expanded="false" />
+                <element signature="n#!!doc;n#_shiftBox#0;n#HtmlTextBox#0" expanded="false" />
+                <element signature="n#!!block;n#_shiftBox#0;n#HtmlTextBox#0" expanded="false" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Constants.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Constants.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-109">
+              <caret line="121" column="18" lean-forward="false" selection-start-line="121" selection-start-column="6" selection-end-line="121" selection-end-column="18" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DnD.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DnD.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="22">
+              <caret line="32" column="81" lean-forward="false" selection-start-line="32" selection-start-column="81" selection-end-line="32" selection-end-column="81" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -109,8 +103,8 @@
       <file leaf-file-name="EventPropagator.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Events/EventPropagator.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="400">
-              <caret line="146" column="75" lean-forward="false" selection-start-line="146" selection-start-column="75" selection-end-line="146" selection-end-column="75" />
+            <state relative-caret-position="-21">
+              <caret line="129" column="63" lean-forward="true" selection-start-line="129" selection-start-column="63" selection-end-line="129" selection-end-column="63" />
               <folding>
                 <element signature="n#!!doc;n#EventPropagator#0" expanded="false" />
                 <element signature="e#346#457#0" expanded="false" />
@@ -124,48 +118,8 @@
       <file leaf-file-name="Subscribable.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Events/Subscribable.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="506">
+            <state relative-caret-position="573">
               <caret line="34" column="47" lean-forward="false" selection-start-line="34" selection-start-column="47" selection-end-line="34" selection-end-column="47" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MouseEvent.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Events/EventTypes/MouseEvent.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
-              <caret line="19" column="24" lean-forward="false" selection-start-line="19" selection-start-column="24" selection-end-line="19" selection-end-column="24" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="KeyboardEvent.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Events/EventTypes/KeyboardEvent.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="111">
-              <caret line="11" column="19" lean-forward="false" selection-start-line="11" selection-start-column="19" selection-end-line="11" selection-end-column="19" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="KeyboardEventArgs.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Events/EventTypes/KeyboardEventArgs.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="242">
-              <caret line="13" column="30" lean-forward="false" selection-start-line="13" selection-start-column="30" selection-end-line="13" selection-end-column="30" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="EventArgs.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Events/EventTypes/EventArgs.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="10" column="30" lean-forward="false" selection-start-line="10" selection-start-column="16" selection-end-line="10" selection-end-column="30" />
               <folding />
             </state>
           </provider>
@@ -174,8 +128,8 @@
       <file leaf-file-name="Canvas.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Canvas.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="66">
-              <caret line="580" column="109" lean-forward="false" selection-start-line="580" selection-start-column="109" selection-end-line="580" selection-end-column="109" />
+            <state relative-caret-position="925">
+              <caret line="729" column="4" lean-forward="false" selection-start-line="729" selection-start-column="4" selection-end-line="729" selection-end-column="4" />
               <folding>
                 <element signature="n#!!doc;n#Canvas#0" expanded="false" />
                 <element signature="n#!!doc;n#constructor#0;n#Canvas#0" expanded="false" />
@@ -192,10 +146,11 @@
                 <element signature="e#2000#2113#0" expanded="false" />
                 <element signature="e#2148#2272#0" expanded="false" />
                 <element signature="e#2320#2401#0" expanded="false" />
-                <element signature="e#2779#3758#0" expanded="false" />
-                <element signature="e#5107#5134#0" expanded="false" />
+                <element signature="e#2779#3868#0" expanded="false" />
+                <element signature="e#5262#5289#0" expanded="false" />
                 <element signature="n#!!doc;n#scale#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!doc;n#scale#1;n#Canvas#0" expanded="false" />
+                <element signature="n#!!block;n#scale#1;n#Canvas#0" expanded="false" />
                 <element signature="n#!!doc;n#width#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!doc;n#width#1;n#Canvas#0" expanded="false" />
                 <element signature="n#!!doc;n#height#0;n#Canvas#0" expanded="false" />
@@ -206,104 +161,102 @@
                 <element signature="n#!!doc;n#snapToGrid#1;n#Canvas#0" expanded="false" />
                 <element signature="n#!!doc;n#showGrid#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!doc;n#showGrid#1;n#Canvas#0" expanded="false" />
-                <element signature="e#6830#6856#0" expanded="false" />
                 <element signature="n#!!doc;n#addObject#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#addObject#0;n#Canvas#0" expanded="false" />
-                <element signature="e#7238#7306#0" expanded="false" />
+                <element signature="e#7538#7606#0" expanded="false" />
                 <element signature="n#!!doc;n#bringActiveToFront#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#bringActiveToFront#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!doc;n#deleteActive#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#deleteActive#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!doc;n#hideContextMenu#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#hideContextMenu#0;n#Canvas#0" expanded="false" />
-                <element signature="e#9113#9252#0" expanded="false" />
+                <element signature="e#9502#9641#0" expanded="false" />
                 <element signature="n#!!doc;n#removeObject#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#removeObject#0;n#Canvas#0" expanded="false" />
-                <element signature="e#9596#9664#0" expanded="false" />
-                <element signature="e#10258#10355#0" expanded="false" />
+                <element signature="e#9985#10053#0" expanded="false" />
+                <element signature="e#10647#10744#0" expanded="false" />
                 <element signature="n#!!doc;n#sendActiveToBack#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#sendActiveToBack#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!doc;n#showContextMenu#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#showContextMenu#0;n#Canvas#0" expanded="false" />
-                <element signature="e#11107#11533#0" expanded="false" />
+                <element signature="e#11496#11922#0" expanded="false" />
                 <element signature="n#!!doc;n#reset#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#reset#0;n#Canvas#0" expanded="false" />
+                <element signature="e#12147#12174#0" expanded="false" />
                 <element signature="n#!!doc;n#_draw#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_draw#0;n#Canvas#0" expanded="false" />
-                <element signature="e#12252#12315#0" expanded="false" />
+                <element signature="e#12641#12704#0" expanded="false" />
                 <element signature="n#!!doc;n#_drawPage#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_drawPage#0;n#Canvas#0" expanded="false" />
-                <element signature="e#13202#13270#0" expanded="false" />
-                <element signature="e#13689#13796#0" expanded="false" />
-                <element signature="e#13903#14009#0" expanded="false" />
+                <element signature="e#13591#13659#0" expanded="false" />
+                <element signature="e#14078#14185#0" expanded="false" />
+                <element signature="e#14292#14398#0" expanded="false" />
                 <element signature="n#!!doc;n#_drawSelection#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_drawSelection#0;n#Canvas#0" expanded="false" />
-                <element signature="e#14378#16487#0" expanded="false" />
-                <element signature="e#14925#15877#0" expanded="false" />
-                <element signature="e#14953#15108#0" expanded="false" />
-                <element signature="e#15129#15288#0" expanded="false" />
-                <element signature="e#16230#16406#0" expanded="false" />
+                <element signature="e#14767#16876#0" expanded="false" />
+                <element signature="e#15314#16266#0" expanded="false" />
+                <element signature="e#15342#15497#0" expanded="false" />
+                <element signature="e#15518#15677#0" expanded="false" />
+                <element signature="e#16619#16795#0" expanded="false" />
                 <element signature="n#!!doc;n#_adjustAnchorRect#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_adjustAnchorRect#0;n#Canvas#0" expanded="false" />
-                <element signature="e#16835#16871#0" expanded="false" />
-                <element signature="e#16930#16977#0" expanded="false" />
-                <element signature="e#17536#17587#0" expanded="false" />
-                <element signature="e#17686#17790#0" expanded="false" />
-                <element signature="e#17842#17949#0" expanded="false" />
-                <element signature="e#17999#18104#0" expanded="false" />
-                <element signature="e#18157#18265#0" expanded="false" />
+                <element signature="e#17224#17260#0" expanded="false" />
+                <element signature="e#17319#17366#0" expanded="false" />
+                <element signature="e#17925#17976#0" expanded="false" />
+                <element signature="e#18075#18179#0" expanded="false" />
+                <element signature="e#18231#18338#0" expanded="false" />
+                <element signature="e#18388#18493#0" expanded="false" />
+                <element signature="e#18546#18654#0" expanded="false" />
                 <element signature="n#!!doc;n#_getBoundFunc#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_getBoundFunc#0;n#Canvas#0" expanded="false" />
-                <element signature="e#19177#19771#0" expanded="false" />
-                <element signature="e#19213#19522#0" expanded="false" />
-                <element signature="e#19629#19761#0" expanded="false" />
+                <element signature="n#!!doc;n#_canvasKeyDown#0;n#Canvas#0" expanded="false" />
+                <element signature="n#!!block;n#_canvasKeyDown#0;n#Canvas#0" expanded="false" />
+                <element signature="n#!!doc;n#_keyUp#0;n#Canvas#0" expanded="false" />
+                <element signature="n#!!block;n#_keyUp#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!doc;n#_canvasDblClick#0;n#Canvas#0" expanded="false" />
+                <element signature="n#!!block;n#_canvasDblClick#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!doc;n#_canvasMouseDown#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_canvasMouseDown#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!doc;n#_canvasMouseMove#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_canvasMouseMove#0;n#Canvas#0" expanded="false" />
-                <element signature="e#21595#21653#0" expanded="false" />
                 <element signature="n#!!doc;n#_canvasMouseUp#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_canvasMouseUp#0;n#Canvas#0" expanded="false" />
+                <element signature="n#!!block;n#_getVirtualXY#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!doc;n#_scrollX#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_scrollX#0;n#Canvas#0" expanded="false" />
-                <element signature="e#23153#23257#0" expanded="false" />
                 <element signature="n#!!doc;n#_scrollY#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_scrollY#0;n#Canvas#0" expanded="false" />
-                <element signature="e#23718#23820#0" expanded="false" />
-                <element signature="e#23968#23992#0" expanded="false" />
+                <element signature="e#23814#23838#0" expanded="false" />
                 <element signature="n#!!block;n#_mouseDown#0;n#Canvas#0" expanded="false" />
-                <element signature="e#24160#24260#0" expanded="false" />
-                <element signature="e#24387#24558#0" expanded="false" />
                 <element signature="n#!!block;n#_mouseMove#0;n#Canvas#0" expanded="false" />
-                <element signature="e#24864#24962#0" expanded="false" />
                 <element signature="n#!!block;n#_mouseUp#0;n#Canvas#0" expanded="false" />
-                <element signature="e#25184#25206#0" expanded="false" />
+                <element signature="e#24364#24386#0" expanded="false" />
+                <element signature="n#!!doc;n#_shapeKeyUp#0;n#Canvas#0" expanded="false" />
+                <element signature="n#!!block;n#_shapeKeyUp#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_shapeMouseDownCapture#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_shapeMouseDown#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_shapeMouseEnter#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_shapeMouseLeave#0;n#Canvas#0" expanded="false" />
-                <element signature="e#25828#25876#0" expanded="false" />
-                <element signature="e#25928#25984#0" expanded="false" />
+                <element signature="e#25749#25797#0" expanded="false" />
+                <element signature="e#25849#25905#0" expanded="false" />
                 <element signature="n#!!block;n#_shapeMouseMove#0;n#Canvas#0" expanded="false" />
-                <element signature="e#26081#27761#0" expanded="false" />
-                <element signature="e#26334#27429#0" expanded="false" />
-                <element signature="e#26353#26443#0" expanded="false" />
-                <element signature="e#26910#27101#0" expanded="false" />
-                <element signature="e#26949#27003#0" expanded="false" />
-                <element signature="e#27029#27083#0" expanded="false" />
-                <element signature="e#27123#27415#0" expanded="false" />
-                <element signature="e#27211#27291#0" expanded="false" />
-                <element signature="e#27317#27397#0" expanded="false" />
-                <element signature="e#27506#27655#0" expanded="false" />
+                <element signature="e#26002#27682#0" expanded="false" />
+                <element signature="e#26255#27350#0" expanded="false" />
+                <element signature="e#26274#26364#0" expanded="false" />
+                <element signature="e#26831#27022#0" expanded="false" />
+                <element signature="e#26870#26924#0" expanded="false" />
+                <element signature="e#26950#27004#0" expanded="false" />
+                <element signature="e#27044#27336#0" expanded="false" />
+                <element signature="e#27132#27212#0" expanded="false" />
+                <element signature="e#27238#27318#0" expanded="false" />
+                <element signature="e#27427#27576#0" expanded="false" />
                 <element signature="n#!!block;n#_shapeMouseUp#0;n#Canvas#0" expanded="false" />
-                <element signature="e#27821#27918#0" expanded="false" />
-                <element signature="e#27948#27971#0" expanded="false" />
+                <element signature="e#27869#27892#0" expanded="false" />
+                <element signature="n#!!block;n#_anchor_KeyUp#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_anchor_MouseDown#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_anchor_MouseEnter#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_anchor_MouseLeave#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_anchor_MouseMove#0;n#Canvas#0" expanded="false" />
-                <element signature="e#28660#29232#0" expanded="false" />
                 <element signature="n#!!block;n#_anchor_MouseUp#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!doc;n#_shapePropertyChanged#0;n#Canvas#0" expanded="false" />
                 <element signature="n#!!block;n#_shapePropertyChanged#0;n#Canvas#0" expanded="false" />
@@ -312,12 +265,155 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MouseEventArgs.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Events/EventTypes/MouseEventArgs.js">
+      <file leaf-file-name="FormBuilder.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/FormBuilder.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="353">
-              <caret line="30" column="30" lean-forward="false" selection-start-line="30" selection-start-column="30" selection-end-line="30" selection-end-column="30" />
+            <state relative-caret-position="573">
+              <caret line="502" column="11" lean-forward="false" selection-start-line="502" selection-start-column="11" selection-end-line="502" selection-end-column="11" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FBObject.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/FBObjects/bases/FBObject.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1078">
+              <caret line="111" column="17" lean-forward="true" selection-start-line="111" selection-start-column="17" selection-end-line="111" selection-end-column="17" />
+              <folding>
+                <element signature="e#42#130#0" expanded="false" />
+                <element signature="n#!!doc;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#constructor#0;n#FBObject#0" expanded="false" />
+                <element signature="e#611#734#0" expanded="false" />
+                <element signature="e#789#904#0" expanded="false" />
+                <element signature="e#951#1068#0" expanded="false" />
+                <element signature="e#1117#1237#0" expanded="false" />
+                <element signature="e#1307#1422#0" expanded="false" />
+                <element signature="e#1469#1591#0" expanded="false" />
+                <element signature="e#1635#1716#0" expanded="false" />
+                <element signature="e#1759#1863#0" expanded="false" />
+                <element signature="e#1903#2007#0" expanded="false" />
+                <element signature="e#2246#2416#0" expanded="false" />
+                <element signature="e#2512#2616#0" expanded="false" />
+                <element signature="e#3494#3658#0" expanded="false" />
+                <element signature="e#3738#3903#0" expanded="false" />
+                <element signature="n#!!doc;n#appearance#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#border#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#caption#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#layout#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#margin#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#padding#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#captionReserve#1;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#x#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#y#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#width#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#height#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#visualX#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#visualX#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#visualX#1;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#visualX#1;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#visualY#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#visualY#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#visualY#1;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#visualY#1;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#visualWidth#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#visualWidth#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#visualWidth#1;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#visualWidth#1;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#visualHeight#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#visualHeight#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#visualHeight#1;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#visualHeight#1;n#FBObject#0" expanded="false" />
+                <element signature="e#9774#9798#0" expanded="false" />
+                <element signature="n#!!doc;n#cancelResize#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#commitResize#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#commitResize#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#draw#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#draw#0;n#FBObject#0" expanded="false" />
+                <element signature="e#10727#13035#0" expanded="false" />
+                <element signature="e#10863#13025#0" expanded="false" />
+                <element signature="e#11026#11169#0" expanded="false" />
+                <element signature="e#11218#11559#0" expanded="false" />
+                <element signature="e#11612#11954#0" expanded="false" />
+                <element signature="e#12001#12256#0" expanded="false" />
+                <element signature="e#12309#12422#0" expanded="false" />
+                <element signature="e#12474#12588#0" expanded="false" />
+                <element signature="e#12638#12891#0" expanded="false" />
+                <element signature="e#13097#13146#0" expanded="false" />
+                <element signature="n#!!doc;n#isPointInObject#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#isPointInObject#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#move#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#move#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#resize#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#resize#0;n#FBObject#0" expanded="false" />
+                <element signature="e#14601#14726#0" expanded="false" />
+                <element signature="e#14906#15717#0" expanded="false" />
+                <element signature="e#14920#15180#0" expanded="false" />
+                <element signature="e#15296#15477#0" expanded="false" />
+                <element signature="e#15527#15707#0" expanded="false" />
+                <element signature="e#15959#16089#0" expanded="false" />
+                <element signature="e#16146#16295#0" expanded="false" />
+                <element signature="e#16398#16529#0" expanded="false" />
+                <element signature="e#16587#16737#0" expanded="false" />
+                <element signature="e#16880#17207#0" expanded="false" />
+                <element signature="e#17349#17565#0" expanded="false" />
+                <element signature="e#17648#17863#0" expanded="false" />
+                <element signature="e#17926#18110#0" expanded="false" />
+                <element signature="e#18134#18206#0" expanded="false" />
+                <element signature="e#18229#18301#0" expanded="false" />
+                <element signature="n#!!doc;n#_getBoundFunc#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#_getBoundFunc#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#__getMinVisualHeight#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#__getMinVisualHeight#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#__getMinVisualWidth#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#__getMinVisualWidth#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!doc;n#_drawBorder#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#_drawBorder#0;n#FBObject#0" expanded="false" />
+                <element signature="e#20917#21614#0" expanded="false" />
+                <element signature="n#!!doc;n#_drawCaption#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#_drawCaption#0;n#FBObject#0" expanded="false" />
+                <element signature="e#23567#23633#0" expanded="false" />
+                <element signature="e#25318#25805#0" expanded="false" />
+                <element signature="e#25332#25431#0" expanded="false" />
+                <element signature="e#25835#25866#0" expanded="false" />
+                <element signature="e#26059#26090#0" expanded="false" />
+                <element signature="n#!!doc;n#__getTextProperties#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#__getTextProperties#0;n#FBObject#0" expanded="false" />
+                <element signature="e#30520#30604#0" expanded="false" />
+                <element signature="e#31295#31427#0" expanded="false" />
+                <element signature="e#31444#32492#0" expanded="false" />
+                <element signature="e#31561#32478#0" expanded="false" />
+                <element signature="e#31584#31652#0" expanded="false" />
+                <element signature="e#32153#32223#0" expanded="false" />
+                <element signature="e#32368#32460#0" expanded="false" />
+                <element signature="e#32894#32976#0" expanded="false" />
+                <element signature="e#33712#33750#0" expanded="false" />
+                <element signature="n#!!block;n#_captionResize_MouseDown#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#_captionResize_MouseEnter#0;n#FBObject#0" expanded="false" />
+                <element signature="e#34867#34925#0" expanded="false" />
+                <element signature="e#34985#35046#0" expanded="false" />
+                <element signature="n#!!block;n#_captionResize_MouseLeave#0;n#FBObject#0" expanded="false" />
+                <element signature="n#!!block;n#_captionResize_MouseMove#0;n#FBObject#0" expanded="false" />
+                <element signature="e#35388#35454#0" expanded="false" />
+                <element signature="e#35504#35570#0" expanded="false" />
+                <element signature="e#35692#36211#0" expanded="false" />
+                <element signature="e#36257#36596#0" expanded="false" />
+                <element signature="e#36643#36985#0" expanded="false" />
+                <element signature="e#37031#37543#0" expanded="false" />
+                <element signature="n#!!block;n#_captionResize_MouseUp#0;n#FBObject#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Caption.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Properties/Caption.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="67">
+              <caret line="7" column="6" lean-forward="false" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
+              <folding>
+                <element signature="n#!!block;n#constructor#0;n#Caption#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -342,7 +438,11 @@
       <find>this._selectionEnd</find>
       <find>consol</find>
       <find>.new</find>
-      <find>.new</find>
+      <find>70</find>
+      <find>draw</find>
+      <find>EVENT_SCALE_CHANGE</find>
+      <find>virtualX</find>
+      <find>virtualX</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -382,21 +482,23 @@
         <option value="$PROJECT_DIR$/Statics/Keyboard.js" />
         <option value="$PROJECT_DIR$/FBObjects/Ellipse.js" />
         <option value="$PROJECT_DIR$/FBObjects/Box.js" />
-        <option value="$PROJECT_DIR$/FormBuilder.js" />
         <option value="$PROJECT_DIR$/Events/EventTypes/MouseEvent.js" />
         <option value="$PROJECT_DIR$/Statics/Mouse.js" />
         <option value="$PROJECT_DIR$/FBObjects/bases/FBObject.js" />
-        <option value="$PROJECT_DIR$/Constants.js" />
         <option value="$PROJECT_DIR$/Events/EventTypes/KeyboardEventType.js" />
-        <option value="$PROJECT_DIR$/DnD.html" />
         <option value="$PROJECT_DIR$/Events/EventTypes/KeyboardEventArgs.js" />
         <option value="$PROJECT_DIR$/Events/EventTypes/MouseEventArgs.js" />
         <option value="$PROJECT_DIR$/Properties/Caption.js" />
         <option value="$PROJECT_DIR$/Events/EventTypes/KeyboardEvent.js" />
         <option value="$PROJECT_DIR$/Events/Subscribable.js" />
-        <option value="$PROJECT_DIR$/Canvas.js" />
-        <option value="$PROJECT_DIR$/Events/EventPropagator.js" />
+        <option value="$PROJECT_DIR$/FormBuilder.js" />
+        <option value="$PROJECT_DIR$/Constants.js" />
+        <option value="$PROJECT_DIR$/DnD.html" />
+        <option value="$PROJECT_DIR$/Events/EventTypes/ScaleChangeEventArgs.js" />
         <option value="$PROJECT_DIR$/FBObjects/TextBlock.js" />
+        <option value="$PROJECT_DIR$/Events/EventPropagator.js" />
+        <option value="$PROJECT_DIR$/Statics/HtmlTextBox.js" />
+        <option value="$PROJECT_DIR$/Canvas.js" />
       </list>
     </option>
   </component>
@@ -452,8 +554,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -518,6 +618,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="FBObjects" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bases" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CanvasDnD" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CanvasDnD" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="Events" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -542,6 +660,8 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -669,7 +789,11 @@
       <workItem from="1478576518475" duration="10989000" />
       <workItem from="1478663387949" duration="861000" />
       <workItem from="1479088384964" duration="21424000" />
-      <workItem from="1479174013541" duration="17452000" />
+      <workItem from="1479174013541" duration="23084000" />
+      <workItem from="1480035931505" duration="529000" />
+      <workItem from="1480036509995" duration="599000" />
+      <workItem from="1480100628225" duration="843000" />
+      <workItem from="1480106606252" duration="7618000" />
     </task>
     <task id="LOCAL-00001" summary="Adding git to WebStorm">
       <created>1472446071083</created>
@@ -874,22 +998,28 @@
       <option name="project" value="LOCAL" />
       <updated>1479132057944</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="Added Keyboard event support&#10;Added double-click support&#10;Renamed var to const/let&#10;Added TextBlock object&#10;Made caption be a SubscribeableProperty&#10;Renamed some enums&#10;Fixed mouse cursor setting issue&#10;">
+      <created>1479191799805</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1479191799805</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="367527000" />
+    <option name="totallyTimeSpent" value="382748000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1048" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1427816" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1427816" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295583" sideWeight="0.5021482" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295583" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26387316" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16023268" sideWeight="0.49785176" order="3" side_tool="false" content_ui="combo" />
+      <window_info id="Version Control" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16023268" sideWeight="0.49785176" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24960339" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295583" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -901,6 +1031,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295583" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
@@ -979,7 +1110,8 @@
     <MESSAGE value="[Stable]&#10;- Added base EventArgs and MouseEventArgs&#10;- Implemented custom event propagation system&#10;- Added generic Shape class to holds things like Box and Ellipse&#10;- Added static Keyboard and Mouse classes for keeping track of relative things&#10;- Fixed bug with stroke thickness being 0, which doesn't do anything&#10;- Moved Children to the EventPropagator&#10;- Moved events to new propagation system&#10;- Moved anchors to be children in the Canvas class to make using the new system easier&#10;- Added caption resizing&#10;- Other bug fixes and minor adjustments/improvements" />
     <MESSAGE value="Changing ellipse to inherit from Shape&#10;Fixing bug where context was not saved/restored properly." />
     <MESSAGE value="Added in notifications for when a property changes for some classes&#10;Implemented the ObjectChanged event&#10;Re-worked some of the FBObject API so that there are special paths for numbers coming from the GUI&#10;Fixed caption display&#10;Changed caption to be auto'd when at 0 instead of null&#10;Fixed bug with margin/padding in BasicShape&#10;Fixed bug with the mouse coordinate being wrong if the page is scrolled&#10;Added the ability to change the object properties from the GUI, and auto-generated those elements&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added in notifications for when a property changes for some classes&#10;Implemented the ObjectChanged event&#10;Re-worked some of the FBObject API so that there are special paths for numbers coming from the GUI&#10;Fixed caption display&#10;Changed caption to be auto'd when at 0 instead of null&#10;Fixed bug with margin/padding in BasicShape&#10;Fixed bug with the mouse coordinate being wrong if the page is scrolled&#10;Added the ability to change the object properties from the GUI, and auto-generated those elements&#10;" />
+    <MESSAGE value="Added Keyboard event support&#10;Added double-click support&#10;Renamed var to const/let&#10;Added TextBlock object&#10;Made caption be a SubscribeableProperty&#10;Renamed some enums&#10;Fixed mouse cursor setting issue&#10;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Keyboard event support&#10;Added double-click support&#10;Renamed var to const/let&#10;Added TextBlock object&#10;Made caption be a SubscribeableProperty&#10;Renamed some enums&#10;Fixed mouse cursor setting issue&#10;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -988,39 +1120,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Properties/TRBL.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="440">
-          <caret line="22" column="43" lean-forward="false" selection-start-line="12" selection-start-column="4" selection-end-line="22" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Properties/Layout.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="4" column="3" lean-forward="false" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
-          <folding>
-            <element signature="e#266#353#0" expanded="false" />
-            <element signature="e#384#471#0" expanded="false" />
-            <element signature="e#502#584#0" expanded="false" />
-            <element signature="e#619#702#0" expanded="false" />
-            <element signature="e#738#836#0" expanded="false" />
-            <element signature="e#881#980#0" expanded="false" />
-            <element signature="n#!!doc;n#x#0;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#x#1;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#y#0;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#y#1;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#width#0;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#width#1;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#height#0;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#height#1;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#margin#0;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#padding#0;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#clone#0;n#Layout#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Properties/Border.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="286">
@@ -1269,7 +1368,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="22">
           <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1312,9 +1410,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1848">
           <caret line="86" column="4" lean-forward="false" selection-start-line="86" selection-start-column="4" selection-end-line="86" selection-end-column="4" />
-          <folding>
-            <marker date="1477441698538" expanded="true" signature="2149:2157" ph="/** Indicates if the point is within the shape ...*/" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1322,7 +1417,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="66">
           <caret line="5" column="44" lean-forward="false" selection-start-line="5" selection-start-column="44" selection-end-line="5" selection-end-column="44" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1330,7 +1424,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="22">
           <caret line="1" column="19" lean-forward="false" selection-start-line="1" selection-start-column="19" selection-end-line="1" selection-end-column="19" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1338,7 +1431,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="22">
           <caret line="1" column="19" lean-forward="false" selection-start-line="1" selection-start-column="19" selection-end-line="1" selection-end-column="19" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1346,7 +1438,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1804">
           <caret line="84" column="99" lean-forward="false" selection-start-line="84" selection-start-column="99" selection-end-line="84" selection-end-column="99" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1354,25 +1445,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1056">
           <caret line="86" column="51" lean-forward="false" selection-start-line="86" selection-start-column="51" selection-end-line="86" selection-end-column="51" />
-          <folding>
-            <element signature="e#266#353#0" expanded="false" />
-            <element signature="e#384#471#0" expanded="false" />
-            <element signature="e#502#584#0" expanded="false" />
-            <element signature="e#619#702#0" expanded="false" />
-            <element signature="e#738#836#0" expanded="false" />
-            <element signature="e#881#980#0" expanded="false" />
-            <element signature="n#!!doc;n#x#0;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#x#1;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#y#0;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#y#1;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#width#0;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#width#1;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#height#0;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#height#1;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#margin#0;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#padding#0;n#Layout#0" expanded="false" />
-            <element signature="n#!!doc;n#clone#0;n#Layout#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1380,18 +1452,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1804">
           <caret line="84" column="28" lean-forward="false" selection-start-line="84" selection-start-column="28" selection-end-line="84" selection-end-column="28" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Property.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-276">
-          <caret line="29" column="74" lean-forward="false" selection-start-line="29" selection-start-column="70" selection-end-line="29" selection-end-column="74" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/Property.js" />
     <entry file="file://$PROJECT_DIR$/FBObjects/BasicShape.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="198">
@@ -1410,82 +1474,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/FormBuilder.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="416">
-          <caret line="88" column="127" lean-forward="false" selection-start-line="88" selection-start-column="127" selection-end-line="88" selection-end-column="127" />
-          <folding>
-            <element signature="e#42#146#0" expanded="false" />
-            <element signature="n#!!doc;n#FormBuilder#0" expanded="false" />
-            <element signature="e#215#236#0" expanded="false" />
-            <element signature="n#!!block;n#constructor#0;n#FormBuilder#0" expanded="false" />
-            <element signature="e#303#364#0" expanded="false" />
-            <element signature="e#403#472#0" expanded="false" />
-            <element signature="e#522#591#0" expanded="false" />
-            <element signature="e#666#742#0" expanded="false" />
-            <element signature="n#!!doc;n#_initializeCanvas#0;n#FormBuilder#0" expanded="false" />
-            <element signature="e#2174#2272#0" expanded="false" />
-            <element signature="n#!!doc;n#_initializeCanvasContextMenu#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!block;n#_initializeCanvasContextMenu#0;n#FormBuilder#0" expanded="false" />
-            <element signature="e#2932#2984#0" expanded="false" />
-            <element signature="n#!!doc;n#_initializeCanvasProperties#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!block;n#_initializeCanvasProperties#0;n#FormBuilder#0" expanded="false" />
-            <element signature="e#4050#4851#0" expanded="false" />
-            <element signature="e#4093#4841#0" expanded="false" />
-            <element signature="e#4238#4630#0" expanded="false" />
-            <element signature="e#4301#4379#0" expanded="false" />
-            <element signature="e#4448#4518#0" expanded="false" />
-            <element signature="e#4544#4612#0" expanded="false" />
-            <element signature="e#4697#4757#0" expanded="false" />
-            <element signature="e#5273#9215#0" expanded="false" />
-            <element signature="e#5402#5653#0" expanded="false" />
-            <element signature="e#5727#6301#0" expanded="false" />
-            <element signature="e#5921#6242#0" expanded="false" />
-            <element signature="e#6524#9076#0" expanded="false" />
-            <element signature="e#6589#7147#0" expanded="false" />
-            <element signature="e#6766#7041#0" expanded="false" />
-            <element signature="e#7192#7725#0" expanded="false" />
-            <element signature="e#7364#7619#0" expanded="false" />
-            <element signature="e#7771#8323#0" expanded="false" />
-            <element signature="e#7946#8217#0" expanded="false" />
-            <element signature="e#9105#9205#0" expanded="false" />
-            <element signature="n#!!doc;n#_initializeZoom#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!block;n#_initializeZoom#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!doc;n#_zoomIn#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!block;n#_zoomIn#0;n#FormBuilder#0" expanded="false" />
-            <element signature="e#10106#10182#0" expanded="false" />
-            <element signature="e#10303#10352#0" expanded="false" />
-            <element signature="e#10365#10450#0" expanded="false" />
-            <element signature="n#!!doc;n#_zoomOut#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!block;n#_zoomOut#0;n#FormBuilder#0" expanded="false" />
-            <element signature="e#10574#10652#0" expanded="false" />
-            <element signature="e#10774#10859#0" expanded="false" />
-            <element signature="e#10872#10958#0" expanded="false" />
-            <element signature="n#!!doc;n#_updateZoomAmt#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!block;n#_updateZoomAmt#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!doc;n#_canvas_shapechange#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!block;n#_canvas_shapechange#0;n#FormBuilder#0" expanded="false" />
-            <element signature="e#11817#12005#0" expanded="false" />
-            <element signature="e#12018#12630#0" expanded="false" />
-            <element signature="e#12229#12620#0" expanded="false" />
-            <element signature="e#12459#12523#0" expanded="false" />
-            <element signature="e#12544#12606#0" expanded="false" />
-            <element signature="n#!!doc;n#_canvas_propertychange#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!block;n#_canvas_propertychange#0;n#FormBuilder#0" expanded="false" />
-            <element signature="e#12873#12985#0" expanded="false" />
-            <element signature="n#!!doc;n#_getHtmlPropertyTypes#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!block;n#_getHtmlPropertyTypes#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!doc;n#_makePropertyType#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!block;n#_makePropertyType#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!doc;n#_getHtmlObjectDict#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!block;n#_getHtmlObjectDict#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!doc;n#_makeHtmlObjectElement#0;n#FormBuilder#0" expanded="false" />
-            <element signature="n#!!block;n#_makeHtmlObjectElement#0;n#FormBuilder#0" expanded="false" />
-            <element signature="e#20619#20764#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/FBObjects/Box.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-572">
@@ -1497,16 +1485,303 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Statics/Mouse.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="24" column="20" lean-forward="false" selection-start-line="24" selection-start-column="11" selection-end-line="24" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Events/EventTypes/EventArgs.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="30" lean-forward="false" selection-start-line="10" selection-start-column="16" selection-end-line="10" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Events/EventTypes/KeyboardEventArgs.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="13" column="30" lean-forward="false" selection-start-line="13" selection-start-column="30" selection-end-line="13" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Events/EventTypes/MouseEvent.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="19" column="24" lean-forward="false" selection-start-line="19" selection-start-column="24" selection-end-line="19" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Events/EventTypes/KeyboardEvent.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="111">
+          <caret line="11" column="19" lean-forward="false" selection-start-line="11" selection-start-column="19" selection-end-line="11" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Events/EventTypes/MouseEventArgs.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="616">
+          <caret line="30" column="30" lean-forward="false" selection-start-line="30" selection-start-column="30" selection-end-line="30" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Events/EventTypes/ScaleChangeEventArgs.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="462">
+          <caret line="23" column="0" lean-forward="true" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+          <folding>
+            <element signature="n#!!doc;n#ScaleChangeEventArgs#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/FormBuilder.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="573">
+          <caret line="502" column="11" lean-forward="false" selection-start-line="502" selection-start-column="11" selection-end-line="502" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Events/Subscribable.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="573">
+          <caret line="34" column="47" lean-forward="false" selection-start-line="34" selection-start-column="47" selection-end-line="34" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Constants.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-109">
+          <caret line="121" column="18" lean-forward="false" selection-start-line="121" selection-start-column="6" selection-end-line="121" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Events/EventPropagator.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-21">
+          <caret line="129" column="63" lean-forward="true" selection-start-line="129" selection-start-column="63" selection-end-line="129" selection-end-column="63" />
+          <folding>
+            <element signature="n#!!doc;n#EventPropagator#0" expanded="false" />
+            <element signature="e#346#457#0" expanded="false" />
+            <element signature="e#496#627#0" expanded="false" />
+            <element signature="e#1325#4717#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Statics/HtmlTextBox.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="74" column="46" lean-forward="false" selection-start-line="74" selection-start-column="46" selection-end-line="74" selection-end-column="46" />
+          <folding>
+            <element signature="n#!!doc;n#HtmlTextBox#0" expanded="false" />
+            <element signature="n#!!block;n#initialize#0;n#HtmlTextBox#0" expanded="false" />
+            <element signature="n#!!doc;n#makeTextBox#0;n#HtmlTextBox#0" expanded="false" />
+            <element signature="n#!!block;n#makeTextBox#0;n#HtmlTextBox#0" expanded="false" />
+            <element signature="n#!!doc;n#closeTextBox#0;n#HtmlTextBox#0" expanded="false" />
+            <element signature="n#!!doc;n#_shiftBox#0;n#HtmlTextBox#0" expanded="false" />
+            <element signature="n#!!block;n#_shiftBox#0;n#HtmlTextBox#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/FBObjects/TextBlock.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="149" column="44" lean-forward="false" selection-start-line="149" selection-start-column="44" selection-end-line="149" selection-end-column="44" />
+          <folding>
+            <element signature="n#!!doc;n#TextBlock#0" expanded="false" />
+            <element signature="n#!!doc;n#constructor#0;n#TextBlock#0" expanded="false" />
+            <element signature="e#552#613#0" expanded="false" />
+            <element signature="e#650#709#0" expanded="false" />
+            <element signature="e#752#889#0" expanded="false" />
+            <element signature="e#961#1096#0" expanded="false" />
+            <element signature="e#1166#1347#0" expanded="false" />
+            <element signature="e#1414#1559#0" expanded="false" />
+            <element signature="e#1613#1730#0" expanded="false" />
+            <element signature="n#!!doc;n#text#0;n#TextBlock#0" expanded="false" />
+            <element signature="n#!!doc;n#text#1;n#TextBlock#0" expanded="false" />
+            <element signature="n#!!doc;n#_getTextProperties#0;n#TextBlock#0" expanded="false" />
+            <element signature="n#!!block;n#_getTextProperties#0;n#TextBlock#0" expanded="false" />
+            <element signature="e#6229#6313#0" expanded="false" />
+            <element signature="e#7862#7932#0" expanded="false" />
+            <element signature="e#8077#8169#0" expanded="false" />
+            <element signature="e#8603#8685#0" expanded="false" />
+            <element signature="e#9405#9443#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Canvas.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="925">
+          <caret line="729" column="4" lean-forward="false" selection-start-line="729" selection-start-column="4" selection-end-line="729" selection-end-column="4" />
+          <folding>
+            <element signature="n#!!doc;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#constructor#0;n#Canvas#0" expanded="false" />
+            <element signature="e#371#410#0" expanded="false" />
+            <element signature="e#420#492#0" expanded="false" />
+            <element signature="e#560#639#0" expanded="false" />
+            <element signature="e#916#1052#0" expanded="false" />
+            <element signature="e#1090#1183#0" expanded="false" />
+            <element signature="e#1225#1336#0" expanded="false" />
+            <element signature="e#1377#1493#0" expanded="false" />
+            <element signature="e#1538#1667#0" expanded="false" />
+            <element signature="e#1712#1816#0" expanded="false" />
+            <element signature="e#1856#1960#0" expanded="false" />
+            <element signature="e#2000#2113#0" expanded="false" />
+            <element signature="e#2148#2272#0" expanded="false" />
+            <element signature="e#2320#2401#0" expanded="false" />
+            <element signature="e#2779#3868#0" expanded="false" />
+            <element signature="e#5262#5289#0" expanded="false" />
+            <element signature="n#!!doc;n#scale#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#scale#1;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#scale#1;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#width#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#width#1;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#height#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#height#1;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#gridSize#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#gridSize#1;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#snapToGrid#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#snapToGrid#1;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#showGrid#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#showGrid#1;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#addObject#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#addObject#0;n#Canvas#0" expanded="false" />
+            <element signature="e#7538#7606#0" expanded="false" />
+            <element signature="n#!!doc;n#bringActiveToFront#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#bringActiveToFront#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#deleteActive#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#deleteActive#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#hideContextMenu#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#hideContextMenu#0;n#Canvas#0" expanded="false" />
+            <element signature="e#9502#9641#0" expanded="false" />
+            <element signature="n#!!doc;n#removeObject#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#removeObject#0;n#Canvas#0" expanded="false" />
+            <element signature="e#9985#10053#0" expanded="false" />
+            <element signature="e#10647#10744#0" expanded="false" />
+            <element signature="n#!!doc;n#sendActiveToBack#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#sendActiveToBack#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#showContextMenu#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#showContextMenu#0;n#Canvas#0" expanded="false" />
+            <element signature="e#11496#11922#0" expanded="false" />
+            <element signature="n#!!doc;n#reset#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#reset#0;n#Canvas#0" expanded="false" />
+            <element signature="e#12147#12174#0" expanded="false" />
+            <element signature="n#!!doc;n#_draw#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_draw#0;n#Canvas#0" expanded="false" />
+            <element signature="e#12641#12704#0" expanded="false" />
+            <element signature="n#!!doc;n#_drawPage#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_drawPage#0;n#Canvas#0" expanded="false" />
+            <element signature="e#13591#13659#0" expanded="false" />
+            <element signature="e#14078#14185#0" expanded="false" />
+            <element signature="e#14292#14398#0" expanded="false" />
+            <element signature="n#!!doc;n#_drawSelection#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_drawSelection#0;n#Canvas#0" expanded="false" />
+            <element signature="e#14767#16876#0" expanded="false" />
+            <element signature="e#15314#16266#0" expanded="false" />
+            <element signature="e#15342#15497#0" expanded="false" />
+            <element signature="e#15518#15677#0" expanded="false" />
+            <element signature="e#16619#16795#0" expanded="false" />
+            <element signature="n#!!doc;n#_adjustAnchorRect#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_adjustAnchorRect#0;n#Canvas#0" expanded="false" />
+            <element signature="e#17224#17260#0" expanded="false" />
+            <element signature="e#17319#17366#0" expanded="false" />
+            <element signature="e#17925#17976#0" expanded="false" />
+            <element signature="e#18075#18179#0" expanded="false" />
+            <element signature="e#18231#18338#0" expanded="false" />
+            <element signature="e#18388#18493#0" expanded="false" />
+            <element signature="e#18546#18654#0" expanded="false" />
+            <element signature="n#!!doc;n#_getBoundFunc#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_getBoundFunc#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#_canvasKeyDown#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_canvasKeyDown#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#_keyUp#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_keyUp#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#_canvasDblClick#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_canvasDblClick#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#_canvasMouseDown#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_canvasMouseDown#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#_canvasMouseMove#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_canvasMouseMove#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#_canvasMouseUp#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_canvasMouseUp#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_getVirtualXY#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#_scrollX#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_scrollX#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#_scrollY#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_scrollY#0;n#Canvas#0" expanded="false" />
+            <element signature="e#23814#23838#0" expanded="false" />
+            <element signature="n#!!block;n#_mouseDown#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_mouseMove#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_mouseUp#0;n#Canvas#0" expanded="false" />
+            <element signature="e#24364#24386#0" expanded="false" />
+            <element signature="n#!!doc;n#_shapeKeyUp#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_shapeKeyUp#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_shapeMouseDownCapture#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_shapeMouseDown#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_shapeMouseEnter#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_shapeMouseLeave#0;n#Canvas#0" expanded="false" />
+            <element signature="e#25749#25797#0" expanded="false" />
+            <element signature="e#25849#25905#0" expanded="false" />
+            <element signature="n#!!block;n#_shapeMouseMove#0;n#Canvas#0" expanded="false" />
+            <element signature="e#26002#27682#0" expanded="false" />
+            <element signature="e#26255#27350#0" expanded="false" />
+            <element signature="e#26274#26364#0" expanded="false" />
+            <element signature="e#26831#27022#0" expanded="false" />
+            <element signature="e#26870#26924#0" expanded="false" />
+            <element signature="e#26950#27004#0" expanded="false" />
+            <element signature="e#27044#27336#0" expanded="false" />
+            <element signature="e#27132#27212#0" expanded="false" />
+            <element signature="e#27238#27318#0" expanded="false" />
+            <element signature="e#27427#27576#0" expanded="false" />
+            <element signature="n#!!block;n#_shapeMouseUp#0;n#Canvas#0" expanded="false" />
+            <element signature="e#27869#27892#0" expanded="false" />
+            <element signature="n#!!block;n#_anchor_KeyUp#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_anchor_MouseDown#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_anchor_MouseEnter#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_anchor_MouseLeave#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_anchor_MouseMove#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_anchor_MouseUp#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!doc;n#_shapePropertyChanged#0;n#Canvas#0" expanded="false" />
+            <element signature="n#!!block;n#_shapePropertyChanged#0;n#Canvas#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DnD.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="32" column="81" lean-forward="false" selection-start-line="32" selection-start-column="81" selection-end-line="32" selection-end-column="81" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Properties/Caption.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="67">
+          <caret line="7" column="6" lean-forward="false" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
+          <folding>
+            <element signature="n#!!block;n#constructor#0;n#Caption#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/FBObjects/bases/FBObject.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="295">
-          <caret line="977" column="40" lean-forward="false" selection-start-line="977" selection-start-column="40" selection-end-line="977" selection-end-column="40" />
+        <state relative-caret-position="-1078">
+          <caret line="111" column="17" lean-forward="true" selection-start-line="111" selection-start-column="17" selection-end-line="111" selection-end-column="17" />
           <folding>
             <element signature="e#42#130#0" expanded="false" />
             <element signature="n#!!doc;n#FBObject#0" expanded="false" />
-            <element signature="e#222#243#0" expanded="false" />
             <element signature="n#!!doc;n#constructor#0;n#FBObject#0" expanded="false" />
-            <element signature="n#!!block;n#constructor#0;n#FBObject#0" expanded="false" />
             <element signature="e#611#734#0" expanded="false" />
             <element signature="e#789#904#0" expanded="false" />
             <element signature="e#951#1068#0" expanded="false" />
@@ -1615,6 +1890,7 @@
             <element signature="n#!!block;n#_captionResize_MouseEnter#0;n#FBObject#0" expanded="false" />
             <element signature="e#34867#34925#0" expanded="false" />
             <element signature="e#34985#35046#0" expanded="false" />
+            <element signature="n#!!block;n#_captionResize_MouseLeave#0;n#FBObject#0" expanded="false" />
             <element signature="n#!!block;n#_captionResize_MouseMove#0;n#FBObject#0" expanded="false" />
             <element signature="e#35388#35454#0" expanded="false" />
             <element signature="e#35504#35570#0" expanded="false" />
@@ -1623,283 +1899,6 @@
             <element signature="e#36643#36985#0" expanded="false" />
             <element signature="e#37031#37543#0" expanded="false" />
             <element signature="n#!!block;n#_captionResize_MouseUp#0;n#FBObject#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Statics/Mouse.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="24" column="20" lean-forward="false" selection-start-line="24" selection-start-column="11" selection-end-line="24" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Constants.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="1" column="26" lean-forward="true" selection-start-line="1" selection-start-column="26" selection-end-line="1" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Events/EventTypes/EventArgs.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="30" lean-forward="false" selection-start-line="10" selection-start-column="16" selection-end-line="10" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Events/EventTypes/KeyboardEventArgs.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="13" column="30" lean-forward="false" selection-start-line="13" selection-start-column="30" selection-end-line="13" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Events/EventTypes/MouseEvent.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="19" column="24" lean-forward="false" selection-start-line="19" selection-start-column="24" selection-end-line="19" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DnD.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="28" column="78" lean-forward="false" selection-start-line="28" selection-start-column="78" selection-end-line="28" selection-end-column="78" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Properties/Caption.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="42" column="4" lean-forward="false" selection-start-line="42" selection-start-column="4" selection-end-line="42" selection-end-column="4" />
-          <folding>
-            <element signature="n#!!doc;n#Caption#0" expanded="false" />
-            <element signature="n#!!doc;n#constructor#0;n#Caption#0" expanded="false" />
-            <element signature="n#!!block;n#constructor#0;n#Caption#0" expanded="false" />
-            <element signature="e#248#309#0" expanded="false" />
-            <element signature="e#344#407#0" expanded="false" />
-            <element signature="e#457#516#0" expanded="false" />
-            <element signature="e#559#625#0" expanded="false" />
-            <element signature="e#685#712#0" expanded="false" />
-            <element signature="n#!!doc;n#text#0;n#Caption#0" expanded="false" />
-            <element signature="n#!!doc;n#text#1;n#Caption#0" expanded="false" />
-            <element signature="n#!!doc;n#location#0;n#Caption#0" expanded="false" />
-            <element signature="n#!!doc;n#location#1;n#Caption#0" expanded="false" />
-            <element signature="n#!!doc;n#font#0;n#Caption#0" expanded="false" />
-            <element signature="n#!!doc;n#reserve#0;n#Caption#0" expanded="false" />
-            <element signature="n#!!doc;n#reserve#1;n#Caption#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Events/EventTypes/KeyboardEvent.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="111">
-          <caret line="11" column="19" lean-forward="false" selection-start-line="11" selection-start-column="19" selection-end-line="11" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Events/Subscribable.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="506">
-          <caret line="34" column="47" lean-forward="false" selection-start-line="34" selection-start-column="47" selection-end-line="34" selection-end-column="47" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Canvas.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="66">
-          <caret line="580" column="109" lean-forward="false" selection-start-line="580" selection-start-column="109" selection-end-line="580" selection-end-column="109" />
-          <folding>
-            <element signature="n#!!doc;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#constructor#0;n#Canvas#0" expanded="false" />
-            <element signature="e#371#410#0" expanded="false" />
-            <element signature="e#420#492#0" expanded="false" />
-            <element signature="e#560#639#0" expanded="false" />
-            <element signature="e#916#1052#0" expanded="false" />
-            <element signature="e#1090#1183#0" expanded="false" />
-            <element signature="e#1225#1336#0" expanded="false" />
-            <element signature="e#1377#1493#0" expanded="false" />
-            <element signature="e#1538#1667#0" expanded="false" />
-            <element signature="e#1712#1816#0" expanded="false" />
-            <element signature="e#1856#1960#0" expanded="false" />
-            <element signature="e#2000#2113#0" expanded="false" />
-            <element signature="e#2148#2272#0" expanded="false" />
-            <element signature="e#2320#2401#0" expanded="false" />
-            <element signature="e#2779#3758#0" expanded="false" />
-            <element signature="e#5107#5134#0" expanded="false" />
-            <element signature="n#!!doc;n#scale#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#scale#1;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#width#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#width#1;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#height#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#height#1;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#gridSize#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#gridSize#1;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#snapToGrid#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#snapToGrid#1;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#showGrid#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#showGrid#1;n#Canvas#0" expanded="false" />
-            <element signature="e#6830#6856#0" expanded="false" />
-            <element signature="n#!!doc;n#addObject#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#addObject#0;n#Canvas#0" expanded="false" />
-            <element signature="e#7238#7306#0" expanded="false" />
-            <element signature="n#!!doc;n#bringActiveToFront#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#bringActiveToFront#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#deleteActive#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#deleteActive#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#hideContextMenu#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#hideContextMenu#0;n#Canvas#0" expanded="false" />
-            <element signature="e#9113#9252#0" expanded="false" />
-            <element signature="n#!!doc;n#removeObject#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#removeObject#0;n#Canvas#0" expanded="false" />
-            <element signature="e#9596#9664#0" expanded="false" />
-            <element signature="e#10258#10355#0" expanded="false" />
-            <element signature="n#!!doc;n#sendActiveToBack#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#sendActiveToBack#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#showContextMenu#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#showContextMenu#0;n#Canvas#0" expanded="false" />
-            <element signature="e#11107#11533#0" expanded="false" />
-            <element signature="n#!!doc;n#reset#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#reset#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#_draw#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_draw#0;n#Canvas#0" expanded="false" />
-            <element signature="e#12252#12315#0" expanded="false" />
-            <element signature="n#!!doc;n#_drawPage#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_drawPage#0;n#Canvas#0" expanded="false" />
-            <element signature="e#13202#13270#0" expanded="false" />
-            <element signature="e#13689#13796#0" expanded="false" />
-            <element signature="e#13903#14009#0" expanded="false" />
-            <element signature="n#!!doc;n#_drawSelection#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_drawSelection#0;n#Canvas#0" expanded="false" />
-            <element signature="e#14378#16487#0" expanded="false" />
-            <element signature="e#14925#15877#0" expanded="false" />
-            <element signature="e#14953#15108#0" expanded="false" />
-            <element signature="e#15129#15288#0" expanded="false" />
-            <element signature="e#16230#16406#0" expanded="false" />
-            <element signature="n#!!doc;n#_adjustAnchorRect#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_adjustAnchorRect#0;n#Canvas#0" expanded="false" />
-            <element signature="e#16835#16871#0" expanded="false" />
-            <element signature="e#16930#16977#0" expanded="false" />
-            <element signature="e#17536#17587#0" expanded="false" />
-            <element signature="e#17686#17790#0" expanded="false" />
-            <element signature="e#17842#17949#0" expanded="false" />
-            <element signature="e#17999#18104#0" expanded="false" />
-            <element signature="e#18157#18265#0" expanded="false" />
-            <element signature="n#!!doc;n#_getBoundFunc#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_getBoundFunc#0;n#Canvas#0" expanded="false" />
-            <element signature="e#19177#19771#0" expanded="false" />
-            <element signature="e#19213#19522#0" expanded="false" />
-            <element signature="e#19629#19761#0" expanded="false" />
-            <element signature="n#!!doc;n#_canvasDblClick#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#_canvasMouseDown#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_canvasMouseDown#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#_canvasMouseMove#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_canvasMouseMove#0;n#Canvas#0" expanded="false" />
-            <element signature="e#21595#21653#0" expanded="false" />
-            <element signature="n#!!doc;n#_canvasMouseUp#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_canvasMouseUp#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#_scrollX#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_scrollX#0;n#Canvas#0" expanded="false" />
-            <element signature="e#23153#23257#0" expanded="false" />
-            <element signature="n#!!doc;n#_scrollY#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_scrollY#0;n#Canvas#0" expanded="false" />
-            <element signature="e#23718#23820#0" expanded="false" />
-            <element signature="e#23968#23992#0" expanded="false" />
-            <element signature="n#!!block;n#_mouseDown#0;n#Canvas#0" expanded="false" />
-            <element signature="e#24160#24260#0" expanded="false" />
-            <element signature="e#24387#24558#0" expanded="false" />
-            <element signature="n#!!block;n#_mouseMove#0;n#Canvas#0" expanded="false" />
-            <element signature="e#24864#24962#0" expanded="false" />
-            <element signature="n#!!block;n#_mouseUp#0;n#Canvas#0" expanded="false" />
-            <element signature="e#25184#25206#0" expanded="false" />
-            <element signature="n#!!block;n#_shapeMouseDownCapture#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_shapeMouseDown#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_shapeMouseEnter#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_shapeMouseLeave#0;n#Canvas#0" expanded="false" />
-            <element signature="e#25828#25876#0" expanded="false" />
-            <element signature="e#25928#25984#0" expanded="false" />
-            <element signature="n#!!block;n#_shapeMouseMove#0;n#Canvas#0" expanded="false" />
-            <element signature="e#26081#27761#0" expanded="false" />
-            <element signature="e#26334#27429#0" expanded="false" />
-            <element signature="e#26353#26443#0" expanded="false" />
-            <element signature="e#26910#27101#0" expanded="false" />
-            <element signature="e#26949#27003#0" expanded="false" />
-            <element signature="e#27029#27083#0" expanded="false" />
-            <element signature="e#27123#27415#0" expanded="false" />
-            <element signature="e#27211#27291#0" expanded="false" />
-            <element signature="e#27317#27397#0" expanded="false" />
-            <element signature="e#27506#27655#0" expanded="false" />
-            <element signature="n#!!block;n#_shapeMouseUp#0;n#Canvas#0" expanded="false" />
-            <element signature="e#27821#27918#0" expanded="false" />
-            <element signature="e#27948#27971#0" expanded="false" />
-            <element signature="n#!!block;n#_anchor_MouseDown#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_anchor_MouseEnter#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_anchor_MouseLeave#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_anchor_MouseMove#0;n#Canvas#0" expanded="false" />
-            <element signature="e#28660#29232#0" expanded="false" />
-            <element signature="n#!!block;n#_anchor_MouseUp#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!doc;n#_shapePropertyChanged#0;n#Canvas#0" expanded="false" />
-            <element signature="n#!!block;n#_shapePropertyChanged#0;n#Canvas#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Events/EventTypes/MouseEventArgs.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="353">
-          <caret line="30" column="30" lean-forward="false" selection-start-line="30" selection-start-column="30" selection-end-line="30" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Events/EventPropagator.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="146" column="75" lean-forward="false" selection-start-line="146" selection-start-column="75" selection-end-line="146" selection-end-column="75" />
-          <folding>
-            <element signature="n#!!doc;n#EventPropagator#0" expanded="false" />
-            <element signature="e#346#457#0" expanded="false" />
-            <element signature="e#496#627#0" expanded="false" />
-            <element signature="e#1325#4717#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/FBObjects/TextBlock.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="278" column="118" lean-forward="false" selection-start-line="278" selection-start-column="118" selection-end-line="278" selection-end-column="118" />
-          <folding>
-            <element signature="n#!!doc;n#TextBlock#0" expanded="false" />
-            <element signature="n#!!doc;n#constructor#0;n#TextBlock#0" expanded="false" />
-            <element signature="e#552#613#0" expanded="false" />
-            <element signature="e#650#709#0" expanded="false" />
-            <element signature="e#752#889#0" expanded="false" />
-            <element signature="e#961#1096#0" expanded="false" />
-            <element signature="e#1166#1347#0" expanded="false" />
-            <element signature="e#1414#1559#0" expanded="false" />
-            <element signature="e#1613#1730#0" expanded="false" />
-            <element signature="n#!!doc;n#text#0;n#TextBlock#0" expanded="false" />
-            <element signature="n#!!doc;n#text#1;n#TextBlock#0" expanded="false" />
-            <element signature="n#!!doc;n#_getTextProperties#0;n#TextBlock#0" expanded="false" />
-            <element signature="n#!!block;n#_getTextProperties#0;n#TextBlock#0" expanded="false" />
-            <element signature="e#12853#12937#0" expanded="false" />
-            <element signature="e#13894#14811#0" expanded="false" />
-            <element signature="e#13917#13985#0" expanded="false" />
-            <element signature="e#14486#14556#0" expanded="false" />
-            <element signature="e#14701#14793#0" expanded="false" />
-            <element signature="e#15227#15309#0" expanded="false" />
-            <element signature="e#16029#16067#0" expanded="false" />
           </folding>
         </state>
       </provider>

@@ -145,7 +145,7 @@ class EventPropagator extends SubscribableProperty {
                 if(childTarget._focusedElement) this._focusedElement = childTarget;
             }
             // Otherwise, if there's a focused element (for keyboard stuff)
-            else if(this._focusedElement){
+            else if(this._focusedElement && eventData instanceof KeyboardEventArgs){
                 this._focusedElement._propagate(eventType, eventData);
             }
             // Otherwise, it's time to flip the originalTarget, since we will be bubbling from this point on

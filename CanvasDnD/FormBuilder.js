@@ -82,6 +82,8 @@ class FormBuilder{
         // Initialize the static Mouse class -- Suppress warning because no other way to get to the object
         // noinspection JSAccessibilityCheck
         Mouse.initialize(this._canvas._canvas);
+        // noinspection JSAccessibilityCheck
+        HtmlTextBox.initialize(this._canvas);
 
         // Add a couple shapes for testing
         this._canvas.addObject(new BasicShape(new Ellipse(25, 25, 20)));

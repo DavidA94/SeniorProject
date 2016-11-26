@@ -4,6 +4,7 @@
 
 // region HTML constants
 
+const CANVAS_HOLDER = "canvasHolder";
 const CANVAS_ID = "dnd";
 const CANVAS_CONTEXT_MENU_ID = "canvasContextMenu";
 const FORM_BUILDER_ID = "formBuilder";
@@ -32,6 +33,7 @@ const PAGE_MODE_P = "portrait";
 
 const EVENT_OBJECT_CHANGE = "shapechange";
 const EVENT_PROPERTY_CHANGE = "propertychange";
+const EVENT_SCALE_CHANGE = "scalechange";
 const EVENT_BEGIN_CAPTION_RESIZE = "beginCaptionResize";
 const EVENT_END_CAPTION_RESIZE = "endCaptionResize";
 

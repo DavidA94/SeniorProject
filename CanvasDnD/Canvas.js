@@ -115,11 +115,13 @@ class Canvas extends EventPropagator {
             // Add directly so we don't have the normal subscriptions
             this.__addChild(this.anchors[anchor]);
 
+            this.anchors[anchor].subscribe(KeyboardEventType.KeyUp, this._getBoundFunc(this._anchor_KeyUp));
             this.anchors[anchor].subscribe(MouseEventType.MouseDown, this._getBoundFunc(this._anchor_MouseDown));
             this.anchors[anchor].subscribe(MouseEventType.MouseEnter, this._getBoundFunc(this._anchor_MouseEnter));
             this.anchors[anchor].subscribe(MouseEventType.MouseLeave, this._getBoundFunc(this._anchor_MouseLeave));
             this.anchors[anchor].subscribe(MouseEventType.MouseMove, this._getBoundFunc(this._anchor_MouseMove));
             this.anchors[anchor].subscribe(MouseEventType.MouseUp, this._getBoundFunc(this._anchor_MouseUp));
+
         }
 
         // Subscribe to the events we need for the canvas
@@ -138,6 +140,7 @@ class Canvas extends EventPropagator {
         // Setup and dispatch custom events
         this.__addEvent(EVENT_OBJECT_CHANGE);
         this.__addEvent(EVENT_PROPERTY_CHANGE);
+        this.__addEvent(EVENT_SCALE_CHANGE);
         // this.__dispatchEvent(EVENT_OBJECT_CHANGE, { 'activeShape': Keyboard.focusedElement });
 
         // Request callback when the canvas is drawn (one-time -- must be re-done after each call)
@@ -158,7 +161,10 @@ class Canvas extends EventPropagator {
      * Sets the scale (zoom) of the canvas
      * @param {number} value - The new zoom value
      */
-    set scale(value) { this._scale = value; }
+    set scale(value) {
+        const oldScale = this._scale;
+        this._scale = value;
+        this.__dispatchEvent(EVENT_SCALE_CHANGE, new ScaleChangeEventArgs(this, value, oldScale)); }
 
 
     /**
@@ -249,6 +255,7 @@ class Canvas extends EventPropagator {
         object.subscribe(MouseEventType.MouseMove, this._getBoundFunc(this._shapeMouseMove));
         object.subscribe(MouseEventType.MouseUp, this._getBoundFunc(this._shapeMouseUp));
         object.subscribe(EVENT_PROPERTY_CHANGE, this._getBoundFunc(this._shapePropertyChanged));
+        object.subscribe(KeyboardEventType.KeyUp, this._getBoundFunc(this._shapeKeyUp));
     }
 
     /**
@@ -587,28 +594,8 @@ class Canvas extends EventPropagator {
      * @private
      */
     _keyUp(e){
-        // If we got the [escape] key, and we're dragging a shape
-        if(e.keyCode === ESCAPE_KEY){
-            if(this._objectToDrag){
-                // Don't do the default
-                e.preventDefault();
-
-                // And cancel
-                this._objectToDrag.cancelResize();
-                this._objectToDrag = null;
-                this._resizeAnchor = null;
-
-                Mouse.setCursor(Cursor.Default);
-            }
-
-            // Otherwise, if the context menu is open, close it
-            else if(this._isContextShown){
-                // Don't do the default
-                e.preventDefault();
-
-                this.hideContextMenu();
-            }
-        }
+        e.preventDefault();
+        this._propagate(new KeyboardEvent(KeyboardEventType.KeyUp), new KeyboardEventArgs(this, e.keyCode));
     }
 
     /**
@@ -622,11 +609,10 @@ class Canvas extends EventPropagator {
         this._canvas.focus();
 
         // Figure out where the mouse was pressed down relative to the canvas, when not scaled
-        const virtualX = (e.clientX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
-        const virtualY = (e.clientY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
+        const virtual = this._getVirtualXY(e);
 
         this._propagate(new MouseEvent(MouseEventType.DblClick),
-            new MouseEventArgs(this, virtualX, virtualY, e.button, e.altKey, e.ctrlKey, e.shiftKey));
+            new MouseEventArgs(this, virtual.x, virtual.y, e.button, e.altKey, e.ctrlKey, e.shiftKey));
     }
 
     /**
@@ -640,15 +626,14 @@ class Canvas extends EventPropagator {
         this._canvas.focus();
 
         // Figure out where the mouse was pressed down relative to the canvas, when not scaled
-        const virtualX = (e.clientX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
-        const virtualY = (e.clientY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
+        const virtual = this._getVirtualXY(e);
 
         // Set this every time the mouse is clicked -- needed for proper dragging
-        this._dragStartX = virtualX;
-        this._dragStartY = virtualY;
+        this._dragStartX = virtual.x;
+        this._dragStartY = virtual.y;
 
         this._propagate(new MouseEvent(MouseEventType.MouseDown),
-            new MouseEventArgs(this, virtualX, virtualY, e.button, e.altKey, e.ctrlKey, e.shiftKey));
+            new MouseEventArgs(this, virtual.x, virtual.y, e.button, e.altKey, e.ctrlKey, e.shiftKey));
     }
 
     /**
@@ -660,13 +645,10 @@ class Canvas extends EventPropagator {
         // Don't do the default
         e.preventDefault();
 
-        // Figure out where the mouse is at relative to the canvas
-        // Figure out where the mouse was pressed down relative to the canvas, when not scaled
-        const virtualX = (e.clientX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
-        const virtualY = (e.clientY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
+        const virtual = this._getVirtualXY(e);
 
         this._propagate(new MouseEvent(MouseEventType.MouseMove),
-            new MouseEventArgs(this, virtualX, virtualY, e.button, e.altKey, e.ctrlKey, e.shiftKey));
+            new MouseEventArgs(this, virtual.x, virtual.y, e.button, e.altKey, e.ctrlKey, e.shiftKey));
     }
 
     /**
@@ -679,11 +661,26 @@ class Canvas extends EventPropagator {
         e.preventDefault();
 
         // Figure out where the mouse was pressed down relative to the canvas, when not scaled
-        const virtualX = (e.clientX - this._canvas.offsetLeft + this._scrollX(this._canvas)) / this.scale;
-        const virtualY = (e.clientY - this._canvas.offsetTop + this._scrollY(this._canvas)) / this.scale;
+        const virtual = this._getVirtualXY(e);
 
         this._propagate(new MouseEvent(MouseEventType.MouseUp),
-            new MouseEventArgs(this, virtualX, virtualY, e.button, e.altKey, e.ctrlKey, e.shiftKey));
+            new MouseEventArgs(this, virtual.x, virtual.y, e.button, e.altKey, e.ctrlKey, e.shiftKey));
+    }
+
+    /**
+     * Gets the X and Y position of the mouse on the canvas, taking into account things like offset and scrolling
+     * @param mouseEvent - The mouse event given by the browser
+     * @returns {{x: number, y: number}}
+     * @private
+     */
+    _getVirtualXY(mouseEvent){
+        // This is relatively position, which messes things up, so we need to get its offset
+        const holder = document.getElementById(CANVAS_HOLDER);
+
+        return {
+            x: (mouseEvent.clientX - holder.offsetLeft - this._scrollX(mouseEvent.originalTarget)),
+            y: (mouseEvent.clientY - holder.offsetTop  - this._scrollY(mouseEvent.originalTarget)),
+        }
     }
 
     /**
@@ -693,13 +690,18 @@ class Canvas extends EventPropagator {
      * @private
      */
     _scrollX(node){
+
+        // Figure out how much we shift for this node
+        let shiftAmt = 0;
+        if(node.scrollLeft) shiftAmt -= node.scrollLeft;
+
         // If we have a parent node, return the scroll amount plus the parents scroll amount (recursive)
         if(node.parentNode){
-            return (node.scrollLeft ? node.scrollLeft : 0) + this._scrollX(node.parentNode);
+            return shiftAmt + this._scrollX(node.parentNode);
         }
 
         // Otherwise, return the current element's scroll amount
-        return node.scrollLeft ? this.scrollLeft : 0;
+        return shiftAmt;
     }
 
     /**
@@ -709,13 +711,18 @@ class Canvas extends EventPropagator {
      * @private
      */
     _scrollY(node){
+
+        // Figure out how much we shift for this node
+        let shiftAmt = 0;
+        if(node.scrollTop) shiftAmt += node.scrollTop;
+
         // If we have a parent node, return the scroll amount plus the parents scroll amount (recursive)
         if(node.parentNode){
-            return (node.scrollTop ? node.scrollTop : 0) + this._scrollY(node.parentNode);
+            return shiftAmt + this._scrollY(node.parentNode);
         }
 
         // Otherwise, return the current element's scroll amount
-        return node.scrollTop ? node.scrollTop : 0;
+        return shiftAmt;
     }
 
     // endregion
@@ -723,41 +730,45 @@ class Canvas extends EventPropagator {
     // region Event Handlers
 
     _mouseDown(e){
-        // If we're on a resize anchor already (set in _mouseMove), then set the shape to drag and capture the mouse
-        if(this._resizeAnchor){
-            this._objectToDrag = Keyboard.focusedElement;
-            this.setCapture();
-        }
-        // Otherwise, ensure nothing is focused, since we must have clicked somewhere on the canvas' "whitespace"
-        else{
-            Keyboard.focusedElement = this._objectToDrag = null;
-            this.__dispatchEvent(EVENT_OBJECT_CHANGE, new ObjectChangedEventArgs(this, null));
-        }
+        // Ensure nothing is focused, since we must have clicked somewhere on the canvas' "whitespace"
+        Keyboard.focusedElement = this._objectToDrag = null;
+        this.__dispatchEvent(EVENT_OBJECT_CHANGE, new ObjectChangedEventArgs(this, null));
     }
 
     _mouseMove(e){
-
-        // Figure out how far we've moved
-        const x = e.x - this._dragStartX;
-        const y = e.y - this._dragStartY;
-
-        // If we have a resize anchor, and an object that can be dragged, then we must be resizing
-        if(this._resizeAnchor && this._objectToDrag){
-            this._objectToDrag.resize(x, y, this._resizeAnchor, e.shiftKey, e.altKey);
-        }
+        // Nothing needed here presently
     }
 
     _mouseUp(e){
-        // Ensure the context menu is hidden
+        // Ensure the context menu is hidden, and that we're not capturing the mouse
         this.hideContextMenu();
-
-        // Ensure we don't keep resizing
-        this._objectToDrag = null;
-
         this.releaseCapture();
     }
 
     // region Shape Events
+
+    /**
+     * Called when the shape gets a key event
+     * @param {KeyboardEventArgs} e - The event data
+     * @private
+     */
+    _shapeKeyUp(e){
+        if(e.key === ESCAPE_KEY){
+            // If we have an open text box, close that
+            if(HtmlTextBox.isOpen){
+                HtmlTextBox.closeTextBox();
+            }
+            // Otherwise, if we're dragging / resizing, stop that
+            else if(this._objectToDrag) {
+                this._objectToDrag.cancelResize();
+                this._objectToDrag = null;
+            }
+            // Otherwise, de-focus the shape
+            else if(e.originalTarget === Keyboard.focusedElement){
+                Keyboard.focusedElement = null;
+            }
+        }
+    }
 
     _shapeMouseDownCapture(e){
         // Focus the element
@@ -849,14 +860,23 @@ class Canvas extends EventPropagator {
 
     // region Anchor Events
 
+    _anchor_KeyUp(e){
+        if(e.key === ESCAPE_KEY && this._resizeAnchor){
+            if(!Keyboard.focusedElement) return;
+            Keyboard.focusedElement.cancelResize();
+            this._resizeAnchor = null;
+        }
+    }
+
     _anchor_MouseDown(e){
+        if(!Keyboard.focusedElement) return;
         this._resizeAnchor = e.sender;
         e.sender.setCapture();
         e.handled = true;
     }
 
-
     _anchor_MouseEnter(e){
+        if(!Keyboard.focusedElement) return;
         if(e.sender === this.anchors[Anchor.TopLeft]) Mouse.setCursor(Cursor.TopLeft);
         else if(e.sender === this.anchors[Anchor.TopRight]) Mouse.setCursor(Cursor.TopRight);
         else if(e.sender === this.anchors[Anchor.BottomLeft]) Mouse.setCursor(Cursor.BottomLeft);
@@ -866,7 +886,6 @@ class Canvas extends EventPropagator {
     _anchor_MouseLeave(e){
         Mouse.setCursor(Cursor.Default);
     }
-
 
     _anchor_MouseMove(e){
         if(this._resizeAnchor == e.sender){
@@ -884,6 +903,7 @@ class Canvas extends EventPropagator {
     }
 
     _anchor_MouseUp(e){
+        if(!Keyboard.focusedElement) return;
         Keyboard.focusedElement.commitResize();
         this._resizeAnchor = null;
     }

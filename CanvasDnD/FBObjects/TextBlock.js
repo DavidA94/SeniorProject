@@ -66,12 +66,7 @@ class TextBlock extends FBObject {
 
         this.subscribe(MouseEventType.DblClick, (e) => this._dblClick(e));
         this.subscribe(MouseEventType.MouseDown, (e) => this._mouseDown(e));
-        this.subscribe(MouseEventType.MouseEnter, (e) => this._mouseEnter(e));
-        this.subscribe(MouseEventType.MouseLeave, (e) => this._mouseLeave(e));
         this.subscribe(MouseEventType.MouseMove, (e) => this._mouseMove(e));
-        this.subscribe(MouseEventType.MouseUp, (e) => this._mouseUp(e));
-        this.subscribe(KeyboardEventType.LostFocus, (e) => this._inEditMode = false);
-        this.subscribe(KeyboardEventType.KeyDown, (e) => this._keyDown(e));
     }
 
     /**
@@ -136,190 +131,43 @@ class TextBlock extends FBObject {
         // Translate to that location so we can just draw at 0, Y
         context.translate(this.x + 2, this.y + yShiftAmt);
 
-        // Draw the cursor, if necessary
-        if(this._inEditMode && (new Date()).getMilliseconds() < 500) {
-            // Re-calculate where the cursor is, if necessary
-            if (this._lastMouseClick.new || this._lastMouseClick.new === null) {
-                // Null is used for double click, since it doesn't get the mouse up event
-                if(this._lastMouseClick.new === null) this._lastMouseClick.new = false;
-
-                const getLinePos = (x, y) => {
-                    const calcLine = Math.floor(y / lineHeight);
-                    let lineNum = Math.clip(calcLine, 0, textProps.textLines.length - 1);
-                    let posNum;
-                    const line = textProps.textLines[lineNum];
-
-                    if (x > context.measureText(line).width) {
-                        posNum = line.length;
-                    }
-                    else {
-
-                        let cursorPos = 0;
-                        let distance = 0;
-                        for (; cursorPos <= line.length && distance < x; ++cursorPos) {
-                            distance = context.measureText(line.substr(0, cursorPos)).width;
-                        }
-
-                        // We went one too far, and we need to go back to zero-based
-                        posNum = cursorPos - 2;
-                    }
-
-                    let charPos = posNum;
-                    for(let i = 0; i < lineNum; ++i) charPos += textProps.textLines[i].length;
-
-                    return {line: lineNum, pos: posNum, charPos: charPos};
-                };
-
-                // Get the selection markers
-                this._selectionStart = getLinePos(this._lastMouseClick.x, this._lastMouseClick.y);
-                this._selectionEnd = getLinePos(this._lastMouseMove.x, this._lastMouseMove.y);
-            }
-
-            const cursor = this._selectionEnd;
-
-            // If we're within bounds
-            if (cursor.line <= textProps.textLines.length
-                && cursor.pos <= textProps.textLines[cursor.line].length) {
-
-                const lineProps = context.measureText(textProps.textLines[cursor.line].substr(0, cursor.pos));
-
-                const yPos = (cursor.line * lineHeight) - yShiftAmt;
-                const xPos = lineProps.width;
-
-                context.fillStyle = "#000000";
-                context.beginPath();
-                context.fillRect(xPos, yPos, 1, lineHeight);
-            }
+        // If we're in edit mode, don't draw the text, as the TextArea has it currently
+        if(this._inEditMode){
+            return;
         }
 
         // Draw each line
-        let startedSelection = false;
-        let endedSelection = false;
         for (let lineIdx = 0; lineIdx < textProps.textLines.length; ++lineIdx) {
             const line = textProps.textLines[lineIdx];
             const yPos = lineIdx * lineHeight;
 
-            // If we have to worry about a selection
-            if (this._inEditMode && (this._selectionStart.line != this._selectionEnd.line ||
-                this._selectionStart.pos != this._selectionEnd.pos))
-            {
-                let selStart = this._selectionStart;
-                let selEnd = this._selectionEnd;
-
-                if(selStart.line > selEnd.line || (selStart.line == selEnd.line && selStart.pos > selEnd.pos)){
-                    selStart = this._selectionEnd;
-                    selEnd = this._selectionStart;
-                }
-
-                // Need to start the selection
-                if(!startedSelection && lineIdx == selStart.line) {
-
-                    // Draw the text that is apart of the non-selected stuff
-                    const beforeLen = context.measureText(line.substring(0, selStart.pos)).width;
-                    context.fillText(line.substring(0, selStart.pos), 0, yPos);
-
-                    // If the end position is on the same line as the start
-                    let endPos = line.length;
-                    if (selStart.line == selEnd.line) {
-                        endPos = selEnd.pos;
-                        endedSelection = true;
-                    }
-
-
-                    const selectedText = line.substring(selStart.pos, endPos);
-                    const selLen = context.measureText(selectedText).width;
-
-                    context.fillStyle = "#3399FF";
-                    context.fillRect(beforeLen, yPos - yShiftAmt, selLen, lineHeight);
-                    context.fillStyle = "white";
-                    context.fillText(selectedText, beforeLen, yPos);
-                    context.fillStyle = this.appearance.foreground;
-
-                    context.fillText(line.substring(endPos), beforeLen + selLen, yPos)
-
-                    startedSelection = true;
-                }
-                // Need to continue the selection
-                else if(startedSelection && !endedSelection && lineIdx !== selEnd.line){
-                    const selLen = context.measureText(line).width;
-
-                    context.fillStyle = "#3399FF";
-                    context.fillRect(0, yPos - yShiftAmt, selLen, lineHeight);
-                    context.fillStyle = "white";
-                    context.fillText(line, 0, yPos);
-                    context.fillStyle = this.appearance.foreground;
-                }
-                // Need to finish the selection
-                else if(startedSelection && !endedSelection){
-                    const selLen = context.measureText(line.substring(0, selEnd.pos)).width;
-
-                    context.fillStyle = "#3399FF";
-                    context.fillRect(0, yPos - yShiftAmt, selLen, lineHeight);
-                    context.fillStyle = "white";
-                    context.fillText(line.substring(0, selEnd.pos), 0, yPos);
-                    context.fillStyle = this.appearance.foreground;
-                    context.fillText(line.substring(selEnd.pos), selLen, yPos);
-
-                    endedSelection = true;
-                }
-                // Outside of the selection bounds
-                else{
-                    context.fillText(line, 0, yPos);
-                }
-            }
-            else {
-                context.fillText(line, 0, yPos);
-            }
+            context.fillText(line, 0, yPos);
         }
     }
 
-    _keyDown(e){
-        if(this._inEditMode){
-            const cursorPos = this._selectionEnd.charPos;
-            this.text = this.text.slice(0, cursorPos + 1) + String.fromCharCode(e.key) + this.text.slice(cursorPos + 1);
-        }
+    _lostFocus(e){
+        this._inEditMode = false;
+        this._text = e.originalTarget.value;
+        HtmlTextBox.closeTextBox();
     }
 
     _dblClick(e){
-        const innerX = e.x - this.x;
-        const innerY = e.y - this.y;
-
-        this._lastMouseClick = {x: innerX, y: innerY, new: null};
+        e.handled = true;
         this._inEditMode = true;
-        Mouse.setCursor(Cursor.Text);
+        HtmlTextBox.makeTextBox(this, this.text, this.font.fontFamily,
+            this.font.size, this.font.bold, this.font.italic, (e) => this._lostFocus(e));
     }
 
     _mouseDown(e){
         if(this._inEditMode){
-            const innerX = e.x - this.x;
-            const innerY = e.y - this.y;
-
-            this._lastMouseClick = {x: innerX, y: innerY, new: true};
             e.handled = true;
         }
-    }
-
-    _mouseEnter(e){
-        if(this._inEditMode){
-            Mouse.setCursor(Cursor.Text);
-            e.handled = true;
-        }
-    }
-
-    _mouseLeave(e){
-        Mouse.setCursor(Cursor.Default);
-        e.handled = true;
     }
 
     _mouseMove(e){
-        const innerX = e.x - this.x;
-        const innerY = e.y - this.y;
-
-        this._lastMouseMove = {x: innerX, y: innerY};
-    }
-
-    _mouseUp(e){
-        this._lastMouseClick.new = false;
+        if(this._inEditMode){
+            e.handled = true;
+        }
     }
 
     /**
