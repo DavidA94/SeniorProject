@@ -71,7 +71,7 @@ class Layout extends SubscribableProperty {
      * Sets the X value
      * @param {number} value
      */
-    set x(value) { this._x = value; this.__sendPropChangeEvent("x"); }
+    set x(value) { if(value !== this._x) { this._x = value; this.__sendPropChangeEvent("x"); } }
 
 
     /**
@@ -84,7 +84,7 @@ class Layout extends SubscribableProperty {
      * Sets the Y value
      * @param {number} value
      */
-    set y(value) { this._y = value; this.__sendPropChangeEvent("y"); }
+    set y(value) { if(value !== this._y) { this._y = value; this.__sendPropChangeEvent("y"); } }
 
 
     /**
@@ -97,7 +97,7 @@ class Layout extends SubscribableProperty {
      * Sets the width
      * @param {number} value
      */
-    set width(value) { this._width = value; this.__sendPropChangeEvent("width"); }
+    set width(value) { if(value !== this._width) { this._width = value; this.__sendPropChangeEvent("width"); } }
 
 
     /**
@@ -110,7 +110,7 @@ class Layout extends SubscribableProperty {
      * Sets the height
      * @param {number} value
      */
-    set height(value) { this._height = value; this.__sendPropChangeEvent("height"); }
+    set height(value) { if(value !== this._height) { this._height = value; this.__sendPropChangeEvent("height"); } }
 
 
     /**
@@ -143,6 +143,25 @@ class Layout extends SubscribableProperty {
         newLayout._padding = this.padding.clone();
 
         return newLayout;
+    }
+
+    /**
+     * Copys a layout into this one
+     * @param {Layout} layout
+     */
+    copyIn(layout){
+        this.x = layout.x;
+        this.y = layout.y;
+        this.width = layout.width;
+        this.height = layout.height;
+    }
+
+    /**
+     * Checks if this layout is equal to another
+     * @param {Layout} rhs
+     */
+    equals(rhs){
+        return this.x === rhs.x && this.y === rhs.y && this.width === rhs.width && this.height === rhs.height;
     }
 
     // endregion

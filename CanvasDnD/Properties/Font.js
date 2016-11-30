@@ -5,13 +5,15 @@
 /**
  * Represents the different aspects text can take
  */
-class Font {
+class Font extends SubscribableProperty {
     // region Constructor
 
     /**
      * Creates a new Font class
      */
     constructor(){
+        super();
+
         /**
          * @private
          * @type {Alignment}
@@ -34,7 +36,7 @@ class Font {
          * @private
          * @type {FontFamilies}
          */
-        this._fontFamily = FontFamilies.Arial;
+        this._family = FontFamilies.Arial;
 
         /**
          * @private
@@ -69,7 +71,7 @@ class Font {
      * Sets the current alignment
      * @param {Alignment} value
      */
-    set alignment(value) { this._alignment = value; }
+    set alignment(value) { this._alignment = value; this.__sendPropChangeEvent("alignment"); }
 
 
     /**
@@ -82,7 +84,7 @@ class Font {
      * Sets if the font is bold
      * @param {boolean} value
      */
-    set bold(value) { this._bold = value; }
+    set bold(value) { this._bold = value; this.__sendPropChangeEvent("bold"); }
 
 
     /**
@@ -95,20 +97,20 @@ class Font {
      * Sets the color of this font
      * @param {string} value
      */
-    set color(value) { this._color = value; }
+    set color(value) { this._color = value; this.__sendPropChangeEvent("color"); }
 
 
     /**
      * Gets the font family
      * @returns {FontFamilies}
      */
-    get fontFamily() { return this._fontFamily; }
+    get family() { return this._family; }
 
     /**
      * Set the font family
      * @param {FontFamilies} value
      */
-    set fontFamily(value) { this._fontFamily = value; }
+    set family(value) { this._family = value; this.__sendPropChangeEvent("family"); }
 
 
     /**
@@ -121,7 +123,7 @@ class Font {
      * Sets the size of the font
      * @param {number} value
      */
-    set size(value) { this._font = value; }
+    set size(value) { this._font = value; this.__sendPropChangeEvent("size"); }
 
 
     /**
@@ -134,20 +136,21 @@ class Font {
      * Sets if the font is italic
      * @param {boolean} value
      */
-    set italic(value) { this._italic = value; }
+    set italic(value) { this._italic = value; this.__sendPropChangeEvent("italic"); }
 
 
-    /**
-     * Gets if the font is underlined
-     * @returns {boolean}
-     */
-    get underline() { return this._underline; }
-
-    /**
-     * Sets if the font is underlined
-     * @param {boolean} value
-     */
-    set underline(value) { this._underline = value; }
+    // Uncomment if underline is ever supported
+    // /**
+    //  * Gets if the font is underlined
+    //  * @returns {boolean}
+    //  */
+    // get underline() { return this._underline; }
+    //
+    // /**
+    //  * Sets if the font is underlined
+    //  * @param {boolean} value
+    //  */
+    // set underline(value) { this._underline = value; }
 
     // endregion
 }

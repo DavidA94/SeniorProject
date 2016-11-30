@@ -7,6 +7,7 @@ class ScaleChangeEventArgs extends EventArgs {
      * Creates a new ScaleChangeEventArgs
      * @param {Subscribable} originalTarget - The original target of the event
      * @param {number} scale - The new scale
+     * @param {number} oldScale - The old scale
      */
     constructor(originalTarget, scale, oldScale){
         super(originalTarget);

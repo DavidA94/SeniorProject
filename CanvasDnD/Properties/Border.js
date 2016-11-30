@@ -96,4 +96,29 @@ class Border {
     set left(value) { this._thickness.left = value; }
 
     // endregion
+
+    // region Public Functions
+
+    /**
+     * Deep copies this object
+     * @returns {Border}
+     */
+    clone(){
+        const newBorder = new Border();
+        newBorder._thickness = this._thickness.clone();
+        newBorder._color = this._color;
+
+        return newBorder;
+    }
+
+    /**
+     * Checks if this border is the same as another
+     * @param {Border} rhs - The border to compare against
+     * @returns {boolean}
+     */
+    equals(rhs){
+        return this._thickness.equals(rhs._thickness) && this._color == rhs._color;
+    }
+
+    // endregion
 }

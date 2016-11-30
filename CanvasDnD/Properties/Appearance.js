@@ -37,7 +37,7 @@ class Appearance extends SubscribableProperty {
          * @type {number}
          * @private
          */
-        this._strokeThickness = 0;
+        this._strokeThickness = 0.00000001;
 
         this.__addEvent(EVENT_PROPERTY_CHANGE);
     }

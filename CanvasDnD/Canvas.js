@@ -38,7 +38,7 @@ class Canvas extends EventPropagator {
          * @private
          * @type {boolean}
          */
-        this._snap = false;
+        this._snap = true;
 
         /**
          * The size of the grid
@@ -124,8 +124,13 @@ class Canvas extends EventPropagator {
 
         }
 
+        this._mousePoint = new Box(0, 0, 1, 1);
+        this.__addChild(this._mousePoint);
+
         // Subscribe to the events we need for the canvas
+        // dragover is a flat-out hack for dragging shapes onto the canvas
         this._canvas.addEventListener("dblclick", this._getBoundFunc(this._canvasDblClick));
+        this._canvas.addEventListener("dragover", this._getBoundFunc(this._canvasMouseMove));
         this._canvas.addEventListener("mousedown", this._getBoundFunc(this._canvasMouseDown));
         this._canvas.addEventListener("mouseup", this._getBoundFunc(this._canvasMouseUp));
         this._canvas.addEventListener("mousemove", this._getBoundFunc(this._canvasMouseMove));
@@ -243,7 +248,7 @@ class Canvas extends EventPropagator {
     addObject(object){
         // If it's no an FBObject, throw an exception, otherwise add it to the top of the array
         if(!(object instanceof FBObject) && !(object instanceof Shape)){
-            throw "Argument shape must be a Shape type";
+            throw new TypeError("Argument shape must be a Shape type");
         }
 
         this.children.splice(FIRST_IDX_AFTER_ANCHORS, 0, object);
@@ -313,12 +318,17 @@ class Canvas extends EventPropagator {
 
         // Unsubscribe from everything
         object.unsubscribe(MouseEventType.MouseDown, this._getBoundFunc(this._shapeMouseDown));
+        object.unsubscribe(MouseEventType.MouseDown, this._getBoundFunc(this._shapeMouseDownCapture), true);
         object.unsubscribe(MouseEventType.MouseEnter, this._getBoundFunc(this._shapeMouseEnter));
         object.unsubscribe(MouseEventType.MouseLeave, this._getBoundFunc(this._shapeMouseLeave));
         object.unsubscribe(MouseEventType.MouseMove, this._getBoundFunc(this._shapeMouseMove));
         object.unsubscribe(MouseEventType.MouseUp, this._getBoundFunc(this._shapeMouseUp));
-        // object.unsubscribe(EVENT_BEGIN_CAPTION_RESIZE, this._getBoundFunc(this._shapeBeginCapResize));
-        // object.unsubscribe(EVENT_END_CAPTION_RESIZE, this._getBoundFunc(this._shapeEndCapResize));
+        object.unsubscribe(EVENT_PROPERTY_CHANGE, this._getBoundFunc(this._shapePropertyChanged));
+        object.unsubscribe(KeyboardEventType.KeyUp, this._getBoundFunc(this._shapeKeyUp));
+
+        if(Keyboard.focusedElement === object){
+            Keyboard.focusedElement = null;
+        }
     }
 
     /**
@@ -333,7 +343,7 @@ class Canvas extends EventPropagator {
         if(idx < 0) return;
 
         // Move to the end
-        this.children.move(idx, this.children.length);
+        this.children.move(idx, this.children.length - 1);
     }
 
     /**
@@ -348,6 +358,28 @@ class Canvas extends EventPropagator {
 
             // Get a handle to the HTML element
             const context = document.getElementById(CANVAS_CONTEXT_MENU_ID);
+
+            // Delete any old cells
+            const customNodes = context.getElementsByClassName(CANVAS_CONTEXT_CUSTOM);
+            for(let i = customNodes.length - 1; i >= 0; --i){
+                customNodes[i].parentNode.removeChild(customNodes[i]);
+            }
+            document.getElementById(CANVAS_CONTEXT_SEPARATOR).style.display = "none";
+
+            // Add any custom cells
+            const customItems = Keyboard.focusedElement ? Keyboard.focusedElement.getCustomContextOptions() : null;
+            console.log(customItems);
+            if(customItems){
+                document.getElementById(CANVAS_CONTEXT_SEPARATOR).style.display = "block";
+
+                for(let item of customItems){
+                    const li = document.createElement("li");
+                    li.className = CANVAS_CONTEXT_CUSTOM;
+                    li.innerHTML = item.text;
+                    li.addEventListener("mouseup", item.callback);
+                    context.appendChild(li);
+                }
+            }
 
             // And bring it into view, where the mouse was clicked
             context.style.left = e.pageX + "px";
@@ -386,7 +418,9 @@ class Canvas extends EventPropagator {
 
         // Draw all objects in reverse, that way recently added elements are on top
         for(let idx = this.children.length - 1; idx >= FIRST_IDX_AFTER_ANCHORS; --idx){
+            this._context.save();
             this.children[idx].draw(this._context);
+            this._context.restore();
         }
 
         // Restore so there's no zooming on the selection
@@ -506,6 +540,9 @@ class Canvas extends EventPropagator {
                 c.save();
                 this.anchors[anchor].draw(this._context);
                 c.restore();
+
+                // We need to revert the adjustment, or resizing at different scales won't work
+                this._adjustAnchorRectRevert(anchor);
             }
 
             // Restore the original settings
@@ -516,7 +553,6 @@ class Canvas extends EventPropagator {
     /**
      * Gets the anchor properties for a given corner
      * @param {Anchor} anchorCorner
-     * @returns {AnchorHandle|null}
      * @private
      * @throws {string} Thrown if a bad anchorCorner is given
      */
@@ -535,6 +571,56 @@ class Canvas extends EventPropagator {
         const right = this.scale * (active.visualX + active.visualWidth);
         const bottom = this.scale * (active.visualY + active.visualHeight);
         const left = this.scale * (active.visualX);
+
+        // Constants
+        const boxSize = 5;
+        const adjustment2 = 2;
+        const adjustment3 = 3;
+
+        const box = this.anchors[anchorCorner];
+        box.layout.width = box.layout.height = boxSize;
+
+        // Return correctly based on which anchor was given
+        // Some spots need adjusted by 3 because math.
+        if(anchorCorner === Anchor.TopLeft){
+            box.layout.x = left - adjustment2;
+            box.layout.y = top - adjustment2;
+        }
+        else if(anchorCorner === Anchor.BottomLeft){
+            box.layout.x = left - adjustment2;
+            box.layout.y = bottom - adjustment3;
+        }
+        else if(anchorCorner === Anchor.TopRight){
+            box.layout.x = right - adjustment3;
+            box.layout.y = top - adjustment2;
+        }
+        else if(anchorCorner === Anchor.BottomRight){
+            box.layout.x = right - adjustment3;
+            box.layout.y = bottom - adjustment3;
+        }
+    }
+
+    /**
+     * Reverts an anchors location to where it would be before _adjustAnchorRect
+     * @param {Anchor} anchorCorner
+     * @private
+     * @throws {string} Thrown if a bad anchorCorner is given
+     */
+    _adjustAnchorRectRevert(anchorCorner){
+
+        // As long as there is an active shape
+        if(!Keyboard.focusedElement){
+            return;
+        }
+
+        const active = Keyboard.focusedElement;
+
+        // Figure out where the sides of the object are
+        // Scale has to be kept, since these are drawn the same size regardless
+        const top = (active.visualY);
+        const right = (active.visualX + active.visualWidth);
+        const bottom = (active.visualY + active.visualHeight);
+        const left = (active.visualX);
 
         // Constants
         const boxSize = 5;
@@ -674,12 +760,9 @@ class Canvas extends EventPropagator {
      * @private
      */
     _getVirtualXY(mouseEvent){
-        // This is relatively position, which messes things up, so we need to get its offset
-        const holder = document.getElementById(CANVAS_HOLDER);
-
         return {
-            x: (mouseEvent.clientX - holder.offsetLeft - this._scrollX(mouseEvent.originalTarget)),
-            y: (mouseEvent.clientY - holder.offsetTop  - this._scrollY(mouseEvent.originalTarget)),
+            x: mouseEvent.offsetX / this.scale, // (mouseEvent.clientX - holder.offsetLeft - this._scrollX(mouseEvent.originalTarget)),
+            y: mouseEvent.offsetY / this.scale //(mouseEvent.clientY - holder.offsetTop  + this._scrollY(mouseEvent.originalTarget)),
         }
     }
 
@@ -736,7 +819,20 @@ class Canvas extends EventPropagator {
     }
 
     _mouseMove(e){
-        // Nothing needed here presently
+        // If we're not over any children, reset the mouse if it's not already on default
+        if(Mouse.getCursor() !== Cursor.Default){
+            let isOverShape = false;
+
+            for(let child of this.children) isOverShape |= child.isPointInObject(e.x, e.y);
+
+            if(!isOverShape){
+                Mouse.setCursor(Cursor.Default);
+            }
+        }
+
+        this._mousePoint.layout.x = e.x;
+        this._mousePoint.layout.y = e.y;
+
     }
 
     _mouseUp(e){
@@ -840,8 +936,9 @@ class Canvas extends EventPropagator {
 
             // snap to grid, if necessary
             if (this.snapToGrid) {
-                x = Math.round(x / this.gridSize) * this.gridSize;
-                y = Math.round(y / this.gridSize) * this.gridSize;
+                const gridSize = this.scale * this.gridSize * 300;
+                x = Math.round(x / gridSize) * gridSize;
+                y = Math.round(y / gridSize) * gridSize;
             }
 
             // And finally, tell the object to move
@@ -876,6 +973,7 @@ class Canvas extends EventPropagator {
     }
 
     _anchor_MouseEnter(e){
+        console.log("Enter");
         if(!Keyboard.focusedElement) return;
         if(e.sender === this.anchors[Anchor.TopLeft]) Mouse.setCursor(Cursor.TopLeft);
         else if(e.sender === this.anchors[Anchor.TopRight]) Mouse.setCursor(Cursor.TopRight);

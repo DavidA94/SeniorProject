@@ -28,4 +28,10 @@ class Mouse {
             Mouse._htmlElementWindow.style.cursor = mouseCursor;
         }
     }
+
+    /**
+     * Gets the current mouse cursor
+     * @return {Cursor}
+     */
+    static getCursor() { return Mouse._htmlElementWindow.style.cursor; }
 }

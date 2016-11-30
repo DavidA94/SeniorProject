@@ -184,13 +184,19 @@ class EventPropagator extends SubscribableProperty {
      * @param {EventPropagator} child
      * @protected
      */
-    __addChild(child){
+    __addChild(child, addToBack = false){
         if(child.parent  && child.parent != this){
             throw Error(child.toString() + " is already a child of " + child.parent.toString())
         }
 
         if(child.parent != this){
-            this._children.push(child)
+            child._parent = this;
+            if(addToBack){
+                this._children.unshift(child);
+            }
+            else {
+                this._children.push(child)
+            }
         }
     }
 
@@ -221,5 +227,20 @@ class EventPropagator extends SubscribableProperty {
      */
     get children() { return this._children; }
 
-    get isFocused() { return (this._parent && this._parent._focusedElement === this); }
+    /**
+     * Checks if the current element is focused
+     * @return {boolean}
+     */
+    get isFocused() {
+
+        if(this.parent) return this.parent._focusedElement === this && this.parent.isFocused;
+        else return this === Keyboard.focusedElement;
+    }
+
+    /**
+     * Gets the focused element for this object
+     * @return {EventPropagator|*}
+     * @protected
+     */
+    get __focusedChild(){ return this._focusedElement; }
 }

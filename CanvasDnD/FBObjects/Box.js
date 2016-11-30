@@ -18,13 +18,6 @@ class Box extends Shape {
     constructor(x, y, width, height) {
         // Initialize the base class
         super(x, y, width, height);
-
-        // Initialize some defaults for testing purposes
-        this.appearance.strokeThickness = 0;
-        this.appearance.background = "red";
-
-        this.layout.margin.top = 0;
-        this.layout.margin.right = 0;
     }
 
     // endregion

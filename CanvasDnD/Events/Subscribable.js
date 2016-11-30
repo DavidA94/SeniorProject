@@ -61,7 +61,6 @@ class Subscribable {
      * @protected
      */
     __dispatchEvent(eventName, eventData, isCapture = false){
-        // if(eventName == EVENT_PROPERTY_CHANGE) console.log(this._subscribers[eventName][isCapture]);
         if(this._subscribers[eventName] && this._subscribers[eventName][isCapture]){
             for(let func of this._subscribers[eventName][isCapture]){
                 // Don't use setTimeout here, or if a method Handles an event, one that would get called following it
@@ -100,10 +99,11 @@ class Subscribable {
      * Unsubscribes the given EventHandler from the given event
      * @param {string} eventName - The name of the event to unsubscribe from
      * @param {EventHandler} func - The EventHandler to remove from the event subscribers
+     * @param {boolean} isCapture - Indicates if the callback should be called on capture
      */
-    unsubscribe(eventName, func){
+    unsubscribe(eventName, func, isCapture = false){
         if(this._subscribers[eventName]){
-            this._subscribers[eventName].splice(this._subscribers.indexOf(func));
+            this._subscribers[eventName][isCapture].splice(this._subscribers[eventName][isCapture].indexOf(func));
         }
     }
 

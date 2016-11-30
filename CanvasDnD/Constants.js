@@ -7,10 +7,13 @@
 const CANVAS_HOLDER = "canvasHolder";
 const CANVAS_ID = "dnd";
 const CANVAS_CONTEXT_MENU_ID = "canvasContextMenu";
+const CANVAS_CONTEXT_SEPARATOR = "canvasContextSeparator";
+const CANVAS_CONTEXT_CUSTOM = "custom";
 const FORM_BUILDER_ID = "formBuilder";
 const PROPERTIES = "properties";
 const PROPERTIES_FORM = "propForm";
 const ZOOM_ID = "zoom";
+const SHAPES_ID = "shapes";
 
 // endregion
 
@@ -61,10 +64,11 @@ const PropertyType = {
     Number: "number",
     Color: "color",
     Text: "text",
-    FontFamily: "fontFamily",
+    FontFamily: "family",
     Checkbox: "checkbox",
     Location: "location",
-    Alignment: "alignment"
+    Alignment: "alignment",
+    File: "text"
 };
 
 const FIRST_IDX_AFTER_ANCHORS = 4;
@@ -145,5 +149,26 @@ const CAPTION_PADDING = 5;
  */
 const FLH_RATIO = 1.4;
 
+/**
+ * The border size for the table
+ * @type {number}
+ */
+const TABLE_BORDER_SIZE = 1;
+
+/**
+ * The key used for dragging shapes onto the canvas
+ * @type {string}
+ */
+const DRAG_DATA = "shape";
+
+const DRAG_CHECKBOX = "Checkbox";
+const DRAG_BOX = "Box";
+const DRAG_TABLE = "Table";
+const DRAG_ELLIPSE = "Ellipse";
+const DRAG_TEXT = "Text";
+const DRAG_IMAGE = "Image";
+
+
+const DEFAULT_IMG = "/CanvasDnD/Images/image.svg";
 
 // endregion

@@ -4,17 +4,29 @@
 <title>Drag and Drop Prototype</title>
     <meta charset="utf-8" />
 <style>
-    #canvasHolder {position:relative;height:90vh;width:600px;box-sizing:border-box;border:1px solid black;float:left;overflow:auto;}
+    #canvasHolder {position:relative;height:80vh;width:600px;box-sizing:border-box;border:1px solid black;float:left;overflow:auto;}
     #canvasContextMenu {position:absolute;left:-999px;z-index:999;list-style:none;font-family:Arial,sans-serif;
                         border:1px solid darkgray;margin:0;padding:5px 0;font-size:14px;line-height:24px;
                         box-shadow: 3px 5px 10px darkgray;min-width:125px;user-select:none;-webkit-user-select:none;
                         background:white;}
     #canvasContextMenu li {padding:0 20px 0 10px;cursor:default;}
     #canvasContextMenu li:hover {color:white;background:#0066aa;}
-    #zoom {float:left;}
-    #zoom div {width:50px;height:50px;text-align:center;line-height:50px;}
+    #canvasContextMenu #canvasContextSeparator {border-top:1px solid #777;border-bottom:1px solid #ddd;}
+    #zoom {float:left;clear:left;width:600px;text-align: center}
+    #zoom #zoomIn {width:30px;margin:10px;background:url('Images/zoomIn.svg');background-size:100%;cursor:pointer;}
+    #zoom #zoomOut {width:30px;margin:10px;background:url('Images/zoomOut.svg');background-size:100%;cursor:pointer;}
+    #zoom #zoomAmt {}
+    #zoom div {display:inline-block;text-align:center;height:30px;line-height:30px;vertical-align:middle;}
     #dnd {border:1px solid black;}
-    #properties {float:left;}
+    #shapes {padding:5px;overflow-x:hidden;width:290px;height:calc(25vh - 30px);margin-bottom:16px;border:1px solid black;}
+    #shapes h3 {text-align:center;margin-top:.2em;}
+    #shapes div {float:left;width:130px;margin:0 10px 5px 0;}
+    #shapes img {width:20px;height:20px;margin-right:10px;float:left;}
+    #shapes span {line-height:20px;float:left;}
+    #properties {float:left;width:300px;height:55vh;overflow:auto;border:1px solid black;}
+    #properties label {float:left;clear:left;margin:5px 10px 5px 0;line-height:20px;}
+    #properties input, #properties select {height:20px;float:left;margin:5px 0;}
+
 </style>
 
 
@@ -45,10 +57,15 @@
     <script type="text/javascript" src="Properties/Layout.js"></script>
     <script type="text/javascript" src="Properties/TRBL.js"></script>
     <script type="text/javascript" src="FBObjects/bases/FBObject.js"></script>
+    <script type="text/javascript" src="FBObjects/bases/TextBlock.js"></script>
     <script type="text/javascript" src="FBObjects/BasicShape.js"></script>
     <script type="text/javascript" src="FBObjects/Box.js"></script>
     <script type="text/javascript" src="FBObjects/Ellipse.js"></script>
-    <script type="text/javascript" src="FBObjects/TextBlock.js"></script>
+    <script type="text/javascript" src="FBObjects/Cell.js"></script>
+    <script type="text/javascript" src="FBObjects/FBTextBlock.js"></script>
+    <script type="text/javascript" src="FBObjects/CheckBox.js"></script>
+    <script type="text/javascript" src="FBObjects/Table.js"></script>
+    <script type="text/javascript" src="FBObjects/FBImage.js"></script>
     <script type="text/javascript" src="FormBuilder.js"></script>
 
 
@@ -61,8 +78,11 @@
         <canvas id="dnd" tabindex="0"></canvas>
     </div>
     <ul id="canvasContextMenu"></ul>
-    <div id="zoom"></div>
+    <div id="shapes">
+        <h3>Shapes</h3>
+    </div>
     <div id="properties"></div>
+    <div id="zoom"></div>
 </div>
 
 <script type="text/javascript">

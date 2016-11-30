@@ -107,5 +107,14 @@ class TRBL {
         return newTRBL;
     }
 
+    /**
+     * Checks if the given RHS is equal to this object
+     * @param {TRBL} rhs
+     * @return {boolean}
+     */
+    equals(rhs){
+        return this.top === rhs.top && this.right === rhs.right && this.bottom === rhs.bottom && this.left === rhs.left;
+    }
+
     // endregion
 }

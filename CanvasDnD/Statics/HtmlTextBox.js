@@ -16,15 +16,16 @@ class HtmlTextBox {
 
     /**
      * Creates a TextBox with the given information
-     * @param {FBObject} fbObject - The object which the TextBox will overlay
+     * @param {Layout} layout - The object which the TextBox will overlay
      * @param {string} text - The text to put into the box
      * @param {FontFamilies} fontFamily - The font family to use
      * @param {number} fontSize - The font size to use
+     * @param {Alignment} alignment - How to text-align the text
      * @param {boolean} bold - Indicates if the text should be bold
      * @param {boolean} italic - Indicates if the text should be italic
-     * @param {EventHandler} focusLostCallback - The callback for when the TextBox loses its focus
+     * @returns {HTMLTextAreaElement}
      */
-    static makeTextBox(fbObject, text, fontFamily, fontSize, bold, italic, focusLostCallback){
+    static makeTextBox(layout, text, fontFamily, fontSize, alignment, bold, italic){
         HtmlTextBox._isActive = true;
 
         if(HtmlTextBox._textArea){
@@ -40,11 +41,12 @@ class HtmlTextBox {
             HtmlTextBox._textArea.style.fontSize = fontSize + "px";
             HtmlTextBox._textArea.style.fontWeight = bold ? "bold" : "normal";
             HtmlTextBox._textArea.style.fontStyle = italic ? "italic" : "normal";
+            HtmlTextBox._textArea.style.textAlign = alignment;
             HtmlTextBox._textArea.style.position = "absolute";
-            HtmlTextBox._textArea.style.top = (fbObject.y * scale) + "px";
-            HtmlTextBox._textArea.style.left = ((fbObject.x + 2) * scale) + "px";
-            HtmlTextBox._textArea.style.width = fbObject.width + "px";
-            HtmlTextBox._textArea.style.height = fbObject.height + "px";
+            HtmlTextBox._textArea.style.top = (layout.y * scale) + "px";
+            HtmlTextBox._textArea.style.left = ((layout.x + 2) * scale) + "px";
+            HtmlTextBox._textArea.style.width = layout.width + "px";
+            HtmlTextBox._textArea.style.height = layout.height + "px";
             HtmlTextBox._textArea.style.transform = "scale(" + scale + ", " + scale + ")";
             HtmlTextBox._textArea.style.transformOrigin = "left top";
             HtmlTextBox._textArea.style.resize = "none";
@@ -52,29 +54,36 @@ class HtmlTextBox {
             HtmlTextBox._textArea.style.background = "transparent";
             HtmlTextBox._textArea.style.border = "0";
             HtmlTextBox._textArea.style.lineHeight = (fontSize * FLH_RATIO) + "px";
-            HtmlTextBox._textArea.onblur = focusLostCallback;
+            HtmlTextBox._textArea.style.padding = "0";
 
             document.getElementById(CANVAS_HOLDER).appendChild(HtmlTextBox._textArea);
             HtmlTextBox._textArea.focus();
         }
         else{
-            HtmlTextBox._textArea.style.top = (fbObject.y * scale) + "px";
-            HtmlTextBox._textArea.style.left = ((fbObject.x + 2) * scale) + "px";
-            HtmlTextBox._textArea.style.width = fbObject.width + "px";
-            HtmlTextBox._textArea.style.height = fbObject.height + "px";
-            HtmlTextBox._textArea.onblur = focusLostCallback;
+            HtmlTextBox._textArea.style.top = (layout.y * scale) + "px";
+            HtmlTextBox._textArea.style.left = ((layout.x + 2) * scale) + "px";
+            HtmlTextBox._textArea.style.width = layout.width + "px";
+            HtmlTextBox._textArea.style.height = layout.height + "px";
             HtmlTextBox._textArea.innerHTML = text;
             HtmlTextBox._textArea.style.transform = "scale(" + scale + ", " + scale + ")";
         }
+
+        return HtmlTextBox._textArea;
     }
 
     /**
      * Closes the currently opened TextBox
      */
     static closeTextBox(){
+        if(!HtmlTextBox._textArea) return;
+
         // Ensure the lose-focus event happens
         HtmlTextBox._textArea.blur();
         HtmlTextBox._isActive = false;
+
+        // Not sure why this is needed twice, but it is.
+        if(!HtmlTextBox._textArea) return;
+
         HtmlTextBox._textArea.parentNode.removeChild(HtmlTextBox._textArea);
         HtmlTextBox._textArea = null;
     }
