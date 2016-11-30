@@ -59,7 +59,6 @@ class Box extends Shape {
     /**
      * Draws the Box
      * @param {CanvasRenderingContext2D} context - The context to draw with
-     * @private
      */
     draw(context){
 

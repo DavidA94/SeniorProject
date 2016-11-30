@@ -28,12 +28,12 @@ class CheckBox extends FBObject {
         const height = this.height - lineWidth;
 
         // Shift so we'll draw within the bounds
-        context.translate(this.x + (lineWidth / 2), this.y + (lineWidth / 2))
+        context.translate(this.x + (lineWidth / 2), this.y + (lineWidth / 2));
 
         context.lineWidth = Math.floor(scaleAmt);
         context.lineCap = "round";
         context.lineJoin = "round";
-        context.beginPath()
+        context.beginPath();
 
         // Arcs are in clockwise order starting at the top left
         context.moveTo(0, cornerAmt);

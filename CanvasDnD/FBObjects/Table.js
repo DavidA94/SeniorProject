@@ -75,8 +75,8 @@ class Table extends FBObject {
                         separator.layout.width = this.layout.width;
                     }
                 }
-                const addedWidth = this.width - this._columnWidths.reduce((a, b) => a + b);
-                this._columnWidths[this._columnWidths.length - 1] += addedWidth;
+
+                this._columnWidths[this._columnWidths.length - 1] += this.width - this._columnWidths.reduce((a, b) => a + b);
             }
             else if(e.propertyName == "height"){
                 for(let separator of this._separators){

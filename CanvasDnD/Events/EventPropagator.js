@@ -182,6 +182,7 @@ class EventPropagator extends SubscribableProperty {
     /**
      * Adds a child
      * @param {EventPropagator} child
+     * @param {boolean} addToBack - Indicates if the child should be added to the opposite side
      * @protected
      */
     __addChild(child, addToBack = false){

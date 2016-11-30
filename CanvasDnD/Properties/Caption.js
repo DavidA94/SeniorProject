@@ -128,6 +128,12 @@ class Caption extends SubscribableProperty {
 
     // endregion
 
+    /**
+     * Draws the caption
+     * @param {CanvasRenderingContext2D} context
+     * @param {Layout} layout - The layout of the object that has the caption
+     * @param {Border} border - The border of the object that has the caption
+     */
     draw(context, layout, border){
 
         // If there's nothing to draw, stop here.
