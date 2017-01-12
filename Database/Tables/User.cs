@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Database.Tables.ManyManyTables;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -19,26 +20,42 @@ namespace Database.Tables
         [Required]
         public string LastName { get; set; }
 
-        [Index(IsUnique = true)]
+        // TODO: [Index(IsUnique = true)]
         [StringLength(50)]
         [EmailAddress]
         [Required]
         public string Email { get; set; }
 
-        [Required]
-        public byte[] Password { get; set; }
+        public virtual ICollection<Customer> Contacts { get; set; }
 
-        public byte[] Salt { get; set; } 
+        public ICollection<UserPermission> UserPermisions { get; set; }
 
-        public bool MustResetPassword { get; set; } = false;
 
-        [StringLength(64)]
-        public string ResetToken { get; set; } = null;
 
-        public DateTime ResetTimeout { get; set; }
+        public static User MakeNewUser(string first, string last, string email, IEnumerable<Permission> permissions)
+        {
+            var user = new User()
+            {
+                FirstName = first,
+                LastName = last,
+                Email = email,
+            };
 
-        public List<Permission> Permisions { get; set; } = new List<Permission>();
+            var userPermissions = new List<UserPermission>();
 
-        public List<Customer> Contacts { get; set; } = new List<Customer>();
+            foreach (var permission in permissions)
+            {
+                userPermissions.Add(new UserPermission()
+                {
+                    User = user,
+                    Permision = permission,
+                    PermissionType = permission.PermissionType
+                });
+            }
+
+            user.UserPermisions = userPermissions;
+
+            return user;
+        }
     }
 }

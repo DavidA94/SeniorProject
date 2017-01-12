@@ -1,16 +1,18 @@
-﻿using Shared;
+﻿using Database.Tables.ManyManyTables;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Database.Tables
 {
     public class Permission
     {
         [Key]
-        [Index(IsUnique = true)]
-        public PermissionType PermissionType { get; set; }
+        // TODO: [Index(IsUnique = true)]
+        public string PermissionType { get; set; }
 
         [Required]
         public string Description { get; set; }
+
+        public ICollection<UserPermission> UserPermissions { get; set; }
     }
 }

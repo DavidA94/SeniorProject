@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using Database.Tables.ManyManyTables;
+using Shared;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,5 +21,7 @@ namespace Database.Tables
         public int NumPages { get; set; }
 
         public PageOrientation Orientation { get; set; }
+
+        public List<InvoiceInvoicePageTemplate> IIPT { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using Database.Tables.ManyManyTables;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -16,11 +17,11 @@ namespace Database.Tables
 
         public Customer Buyer { get; set; }
 
-        public List<VehicleInfo> Vehicles { get; set; }
+        public ICollection<VehicleInfo> Vehicles { get; set; }
 
         public InvoiceState State { get; set; }
 
-        public List<MiscellaneousFee> Fees { get; set; }
+        public ICollection<MiscellaneousFee> Fees { get; set; }
         
         public User SalesPerson { get; set; }
 
@@ -33,10 +34,12 @@ namespace Database.Tables
         [Required]
         public decimal TaxAmount { get; set; }
 
-        public List<decimal> Payments { get; set; }
+        public ICollection<Payment> Payments { get; set; }
 
         // NOTE: Prompt user if this will change -- Use latest version if not on this list
-        public List<InvoicePageTemplate> PagesUsed { get; set; } = null;
-        
+        public ICollection<InvoicePageTemplate> PagesUsed { get; set; } = null;
+
+        public ICollection<InvoiceInvoicePageTemplate> IIPT { get; set; }
+
     }
 }
