@@ -1,0 +1,31 @@
+﻿@using Shared.SecurityTypes;
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div id="dashboard">
+    @*http://www.istockphoto.com/vector/file-document-icon-set-vector-eps10-gm527795151-53395100?st=86db603*@
+    @if (User.HasClaim(c => c.Type == AccessPolicy.EditInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
+    {
+        <a href="#" id="dashboardNewInvoice" class="dashboardButton"><p>New Invoice</p></a> 
+    }
+    @if (User.HasClaim(c => c.Type == AccessPolicy.ViewInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
+    { 
+        <a href="#" id="dashboardOpenInvoice" class="dashboardButton"><p>View Invoices</p></a> 
+    }
+    @if (User.HasClaim(c => c.Type == AccessPolicy.EditInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
+    {
+        <a href="#" id="dashboardContacts" class="dashboardButton"><p>Contacts</p></a> 
+    }
+    @if (User.HasClaim(c => c.Type == AccessPolicy.ViewInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
+    { 
+        <a href="#" id="dashboardSearch" class="dashboardButton"><p>Search</p></a> 
+    }
+    @if (User.HasClaim(c => c.Type == AccessPolicy.FormEditorPrivilege || c.Type == AccessPolicy.AdminPrivilege))
+    {
+        <a href="#" id="dashboardFormEditor" class="dashboardButton"><p>Form Editor</p></a> 
+    }
+    @if (User.HasClaim(c => c.Type == AccessPolicy.AdminPrivilege)) {
+        <a href="#" id="dashboardManagement" class="dashboardButton"><p>Management</p></a> 
+    }
+</div>
