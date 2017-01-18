@@ -34,6 +34,8 @@ namespace Database.Tables
         [Required]
         public decimal TaxAmount { get; set; }
 
+        public LienHolder LienHolder { get; set; }
+
         public ICollection<Payment> Payments { get; set; }
 
         // NOTE: Prompt user if this will change -- Use latest version if not on this list

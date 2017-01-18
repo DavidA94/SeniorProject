@@ -9,15 +9,16 @@ using Shared;
 namespace Seciovni.APIs.Migrations
 {
     [DbContext(typeof(SeciovniContext))]
-    partial class SeciovniContextModelSnapshot : ModelSnapshot
+    [Migration("20170116224856_AddressFix")]
+    partial class AddressFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Database.Tables.Address", b =>
+            modelBuilder.Entity("Database.AddressTypes.Address", b =>
                 {
                     b.Property<int>("AddressID")
                         .ValueGeneratedOnAdd();
@@ -249,8 +250,6 @@ namespace Seciovni.APIs.Migrations
 
                     b.Property<int?>("CustomerID");
 
-                    b.Property<int>("Type");
-
                     b.HasKey("Number");
 
                     b.HasIndex("CustomerID");
@@ -324,11 +323,11 @@ namespace Seciovni.APIs.Migrations
                     b.ToTable("VehicleInfo");
                 });
 
-            modelBuilder.Entity("Database.Tables.Address", b =>
+            modelBuilder.Entity("Database.AddressTypes.Address", b =>
                 {
                     b.HasOne("Database.Tables.Customer")
                         .WithOne("Address")
-                        .HasForeignKey("Database.Tables.Address", "CustomerID")
+                        .HasForeignKey("Database.AddressTypes.Address", "CustomerID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

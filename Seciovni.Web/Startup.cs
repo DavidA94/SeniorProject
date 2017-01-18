@@ -143,7 +143,7 @@ namespace Seciovni.Web
             initAuthCode(context.Principal, context.HttpContext.Session);
             return Task.FromResult(0);
         }
-
+        
         private void initAuthCode(ClaimsPrincipal user, ISession session)
         {
             if (!session.Keys.Contains(Constants.AUTH_TOKEN))

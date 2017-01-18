@@ -12,15 +12,18 @@ namespace Database.Tables
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserID { get; set; }
 
+        [Display(Name = "First Name")]
         [StringLength(30)]
         [Required]
         public string FirstName { get; set; }
 
+        [Display(Name = "Last Name")]
         [StringLength(30)]
         [Required]
         public string LastName { get; set; }
 
         // TODO: [Index(IsUnique = true)]
+        [Display(Name = "Email")]
         [StringLength(50)]
         [EmailAddress]
         [Required]

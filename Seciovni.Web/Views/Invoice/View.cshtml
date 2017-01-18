@@ -1,0 +1,9 @@
+﻿@using Database.Tables;
+@model Invoice
+@{
+    ViewData["Title"] = "View Invoice " + Model.InvoiceID;
+}
+
+<div>
+    @Html.Partial("InvoiceTemplate", Model)
+</div>

@@ -33,7 +33,8 @@
     "Microsoft.Extensions.Configuration.Json": "1.1.0",
     "Microsoft.Extensions.Configuration.UserSecrets": "1.1.0",
     "Shared": "1.0.0-*",
-    "Microsoft.IdentityModel.Clients.ActiveDirectory": "3.13.8"
+    "Microsoft.IdentityModel.Clients.ActiveDirectory": "3.13.8",
+    "Database": "1.0.0-*"
   },
 
   "tools": {
