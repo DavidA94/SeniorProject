@@ -1,5 +1,4 @@
 ﻿using Database.Tables.ManyManyTables;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -29,11 +28,7 @@ namespace Database.Tables
         [Required]
         public string Email { get; set; }
 
-        public virtual ICollection<Customer> Contacts { get; set; }
-
         public ICollection<UserPermission> UserPermisions { get; set; }
-
-
 
         public static User MakeNewUser(string first, string last, string email, IEnumerable<Permission> permissions)
         {

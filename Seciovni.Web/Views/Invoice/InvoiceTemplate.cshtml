@@ -22,7 +22,7 @@
             <input id="invoiceCustomer" disabled="disabled" />
             <button id="getCustomerButton">•••</button>
         </div>
-        <div id="invoiceCustomerData">
+        <dialog id="invoiceCustomerData">
             <div id="contactsList">
                 <div class="contactPreviewItem">
                     <p>David Antonucci</p>
@@ -61,7 +61,7 @@
                     <input class="row" asp-for="Buyer.ResaleNumber" type="text" placeholder-title="Buyer.ResaleNumber" />
                 </div>
             </div>
-        </div>
+        </dialog>
     </div>
     <div id="invoiceLienHolderDiv" class="row">
         <div>
@@ -101,7 +101,7 @@
                 <div class="location">Location</div>
                 <div class="price">Unit Price</div>
             </div>
-            <div class="dataRow">
+            <div class="dataRow" data-repeating>
                 <div class="stockNo"><input type="text" /></div>
                 <div class="vin"><input type="text" /></div>
                 <div class="year disabled"><input type="text" disabled="disabled" /></div>
@@ -109,7 +109,7 @@
                 <div class="model"><input type="text" /></div>
                 <div class="miles"><input type="text" /></div>
                 <div class="location"><input type="text" /></div>
-                <div class="price"><input type="text" /></div>
+                <div class="price"><input type="text" data-money /></div>
             </div>
         </div>
     </div>
@@ -120,11 +120,31 @@
                 <div class="miscChargeDesc">Miscellaneous Charge</div>
                 <div class="price">Price</div>
             </div>
-            <div class="dataRow">
+            <div class="dataRow" data-repeating>
                 <div class="miscChargeDesc"><input type="text" /></div>
-                <div class="price"><input type="text" /></div>
+                <div class="price"><input type="text" data-money /></div>
             </div>
         </div>
     </div>
 
+    <div id="endData">
+        <div>
+            <div class="endLabel">Tax:</div>
+            <div class="price"><input type="text" data-money /></div>
+        </div>
+        <div>
+            <div class="endLabel">Doc Fee:</div>
+            <div class="price"><input type="text" data-money /></div>
+        </div>
+        <div>
+            <div class="endLabel">Down Payment:</div>
+            <div class="price"><input type="text" data-money /></div>
+        </div>
+        <div>
+            <div class="endLabel">Total Due:</div>
+            <div id="invoiceTotalDue">$ 0.00</div>
+        </div>
+    </div>
 }
+<script src="~/js/invoiceInputs.js"></script>
+<script src="~/js/invoiceCustomer.js"></script>

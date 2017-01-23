@@ -1,4 +1,5 @@
 ﻿using Database.Tables;
+using Shared;
 using Shared.SecurityTypes;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,14 +38,68 @@ namespace Seciovni.APIs.Contexts
                 context.Permissions.AddRange(permissions);
                 context.SaveChanges();
 
-                var defaultUser = User.MakeNewUser("David", "Antonucci", "dra151994@hotmail.com", permissions);
+                var defaultUser = new Employee
+                {
+                    User = User.MakeNewUser("David", "Antonucci", "dra151994@hotmail.com", permissions)
+                };
 
-                var otherUser = User.MakeNewUser("John", "Doe", "JohnDoe@dra151994hotmail.onmicrosoft.com",
-                    permissions.Where(p => p.PermissionType == AccessPolicy.AdminPrivilege));
+
+
+                var otherUser = new Employee
+                {
+                    User = User.MakeNewUser("John", "Doe", "JohnDoe@dra151994hotmail.onmicrosoft.com",
+                    permissions.Where(p => p.PermissionType == AccessPolicy.AdminPrivilege))
+                };
                     
-                context.Users.Add(defaultUser);
-                context.Users.Add(otherUser);
+                context.Employees.Add(defaultUser);
+                context.Employees.Add(otherUser);
+                context.SaveChanges();
 
+                var lance = new Customer()
+                {
+                    Address = new Address()
+                    {
+                        City = "Murfreesboro",
+                        Country = Country.USA,
+                        State = "TN",
+                        StreetAddress = "2049 Buffalo Creek Rd.",
+                        ZipCode = "37130"
+                    },
+                    CompanyName = "Get My Furniture",
+                    DealerLicenseNumber = "AZ 33280",
+                    Emails = new List<EmailAddress> { new EmailAddress() { Email = "LanceMGillespie@jourrapide.com" } },
+                    PhoneNumbers = new List<PhoneNumber> { new PhoneNumber() { Number = "615-895-7269", Type = PhoneType.Cell } },
+                    User = new User()
+                    {
+                        FirstName = "Lance",
+                        LastName = "Glover",
+                        Email = "LanceMGillespie@jourrapide.com"
+                    }
+                };
+
+                var melinda = new Customer()
+                {
+                    Address = new Address()
+                    {
+                        City = "Cherokee",
+                        Country = Country.USA,
+                        State = "OK",
+                        StreetAddress = "66 Simpson Square",
+                        ZipCode = "73728"
+                    },
+                    CompanyName = "Army Spy",
+                    DealerLicenseNumber = "OK 88280",
+                    Emails = new List<EmailAddress> { new EmailAddress() { Email = "MelindaPYoung@armyspy.com" } },
+                    PhoneNumbers = new List<PhoneNumber> { new PhoneNumber() { Number = "580-596-1036", Type = PhoneType.Cell } },
+                    User = new User()
+                    {
+                        FirstName = "Melinda",
+                        LastName = "Young",
+                        Email = "MelindaPYoung@armyspy.com"
+                    }
+                };
+
+                defaultUser.Contacts = new List<Customer> { lance, melinda };
                 context.SaveChanges();
             }
         }

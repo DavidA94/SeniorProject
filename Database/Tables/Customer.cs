@@ -11,7 +11,12 @@ namespace Database.Tables
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CustomerID { get; set; }
 
+
         public User User { get; set; }
+
+        [ForeignKey(nameof(User))]
+        public int UserID { get; set; }
+
         public Address Address { get; set; }
 
         [Display(Name = "Company Name")]

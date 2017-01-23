@@ -47,7 +47,7 @@ namespace Seciovni.APIs.Controllers
             var loginToken = Request.Headers.Authorization.Parameter;
 
             // If they haven't already been logged in
-            if (db.Logins.FirstOrDefault(l => l.LoginToken == loginToken) != null)
+            if (db.Logins.FirstOrDefault(l => l.LoginToken == loginToken) == null)
             {
                 // Log them in
                 db.Logins.Add(new UserLogin()
@@ -67,7 +67,6 @@ namespace Seciovni.APIs.Controllers
             return allowed;
         }
 
-        [AllowAnonymous]
         [HttpGet("test")]
         public string Test()
         {

@@ -9,9 +9,10 @@ using Shared;
 namespace Seciovni.APIs.Migrations
 {
     [DbContext(typeof(SeciovniContext))]
-    partial class SeciovniContextModelSnapshot : ModelSnapshot
+    [Migration("20170123051144_Adding Lien Holder")]
+    partial class AddingLienHolder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
@@ -59,19 +60,15 @@ namespace Seciovni.APIs.Migrations
 
                     b.Property<string>("DealerLicenseNumber");
 
-                    b.Property<int?>("EmployeeID");
-
                     b.Property<string>("Group");
 
                     b.Property<string>("MCNumber");
 
                     b.Property<string>("ResaleNumber");
 
-                    b.Property<int>("UserID");
+                    b.Property<int?>("UserID");
 
                     b.HasKey("CustomerID");
-
-                    b.HasIndex("EmployeeID");
 
                     b.HasIndex("UserID");
 
@@ -90,21 +87,6 @@ namespace Seciovni.APIs.Migrations
                     b.HasIndex("CustomerID");
 
                     b.ToTable("EmailAddress");
-                });
-
-            modelBuilder.Entity("Database.Tables.Employee", b =>
-                {
-                    b.Property<int>("EmployeeID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("UserID");
-
-                    b.HasKey("EmployeeID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("Database.Tables.Invoice", b =>
@@ -376,14 +358,9 @@ namespace Seciovni.APIs.Migrations
 
             modelBuilder.Entity("Database.Tables.Customer", b =>
                 {
-                    b.HasOne("Database.Tables.Employee")
-                        .WithMany("Contacts")
-                        .HasForeignKey("EmployeeID");
-
                     b.HasOne("Database.Tables.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany("Contacts")
+                        .HasForeignKey("UserID");
                 });
 
             modelBuilder.Entity("Database.Tables.EmailAddress", b =>
@@ -391,13 +368,6 @@ namespace Seciovni.APIs.Migrations
                     b.HasOne("Database.Tables.Customer")
                         .WithMany("Emails")
                         .HasForeignKey("CustomerID");
-                });
-
-            modelBuilder.Entity("Database.Tables.Employee", b =>
-                {
-                    b.HasOne("Database.Tables.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID");
                 });
 
             modelBuilder.Entity("Database.Tables.Invoice", b =>

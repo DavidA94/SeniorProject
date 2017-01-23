@@ -14,7 +14,7 @@ namespace Seciovni.APIs.Contexts
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<InvoicePageTemplate> InvoiceTemplates { get; set; }
-        
+        public DbSet<Employee> Employees { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
