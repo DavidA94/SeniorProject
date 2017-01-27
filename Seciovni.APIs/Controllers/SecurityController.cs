@@ -12,6 +12,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Cors;
 
 namespace Seciovni.APIs.Controllers
 {
@@ -70,7 +71,7 @@ namespace Seciovni.APIs.Controllers
         [HttpGet("test")]
         public string Test()
         {
-            return "ABC";
+            return "ABCD";
         }
 
         [Authorize]

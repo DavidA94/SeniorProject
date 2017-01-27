@@ -1,4 +1,5 @@
 ﻿using Database.Tables.ManyManyTables;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,6 +9,7 @@ namespace Database.Tables
     public class User
     {
         [Key]
+        [JsonIgnore]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserID { get; set; }
 
@@ -28,6 +30,7 @@ namespace Database.Tables
         [Required]
         public string Email { get; set; }
 
+        [JsonIgnore]
         public ICollection<UserPermission> UserPermisions { get; set; }
 
         public static User MakeNewUser(string first, string last, string email, IEnumerable<Permission> permissions)

@@ -14,9 +14,6 @@ namespace Database.Tables
 
         public User User { get; set; }
 
-        [ForeignKey(nameof(User))]
-        public int UserID { get; set; }
-
         public Address Address { get; set; }
 
         [Display(Name = "Company Name")]

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Shared;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,6 +13,8 @@ namespace Database.Tables
 
         public User User { get; set; }
 
-        public virtual ICollection<Customer> Contacts { get; set; }
+        public JobType Job { get; set; }
+
+        public ICollection<Customer> Contacts { get; set; }
     }
 }

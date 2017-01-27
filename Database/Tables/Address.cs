@@ -7,12 +7,14 @@ using Shared;
 using System.Net.Http;
 using System.Xml.Linq;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Database.Tables
 {
     public class Address : IValidatableObject
     {
         [Key]
+        [JsonIgnore]
         public int AddressID { get; set; }
 
         [ForeignKey(nameof(Customer))]

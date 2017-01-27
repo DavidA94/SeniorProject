@@ -9,4 +9,6 @@
     public enum PermissionType { Admin, Sales }
 
     public enum PhoneType { Cell, Home, Work }
+
+    public enum JobType { Assistant, Manager, Sales }
 }

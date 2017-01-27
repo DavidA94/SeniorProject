@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +39,7 @@ namespace Seciovni.APIs
             
             // Add framework services.
             services.AddMvc();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,6 +56,10 @@ namespace Seciovni.APIs
                     serviceScope.ServiceProvider.GetService<SeciovniContext>().EnsureSeedData();
                 }
             }
+
+            app.UseCors(builder => builder.WithOrigins("https://localhost:44306")
+                                          .AllowAnyMethod()
+                                          .AllowAnyHeader());
 
             app.UseJwtBearerAuthentication(new JwtBearerOptions
             {

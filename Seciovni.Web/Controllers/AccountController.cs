@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Shared;
 
 namespace Seciovni.Web.Controllers
 {
@@ -25,10 +27,21 @@ namespace Seciovni.Web.Controllers
             if (HttpContext.User.Identity.IsAuthenticated)
             {
                 // Redirect to home page if the user is authenticated.
-                return RedirectToAction(nameof(HomeController.Dashboard), "Home");
+                return RedirectToAction(nameof(HomeController.Dashboard), nameof(HomeController).Replace("Controller", ""));
             }
 
             return View();
+        }
+
+        [Authorize]
+        public IActionResult Login()
+        {
+            if (HttpContext.Request.Cookies.ContainsKey(Constants.AUTH_TOKEN))
+            {
+                return View();
+            }
+
+            return RedirectToAction(nameof(HomeController.Dashboard), nameof(HomeController).Replace("Controller", ""));
         }
     }
 }

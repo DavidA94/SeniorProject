@@ -47,7 +47,7 @@ function setupMoneyFields() {
     for (let i = 0; i < moneyInputs.length; ++i) {
         const input = moneyInputs[i];
 
-        if (input instanceof HTMLInputElement && input.type == "text") {
+        if (input instanceof HTMLInputElement && input.type === "text") {
             const clone = input.cloneNode(true);
             clone.type = "hidden";
             clone.addEventListener('change', updateTotal);
@@ -67,7 +67,7 @@ function duplicateRow(e) {
 
     if (!input || !repeatRow || !container) return;
 
-    if (container.lastElementChild == repeatRow && input.value != "") {
+    if (container.lastElementChild === repeatRow && input.value !== "") {
         const clone = repeatRow.cloneNode(true);
 
         const inputs = clone.getElementsByTagName('input');
@@ -91,13 +91,13 @@ function deleteRow(e) {
     const repeatRow = findRepeatingParent(input);
     const container = repeatRow.parentNode;
 
-    if (container.lastElementChild != repeatRow && input.value == "") {
+    if (container.lastElementChild !== repeatRow && input.value === "") {
         const inputs = repeatRow.getElementsByTagName("input");
 
         let allEmpty = true;
 
         for (let i = 0; i < inputs.length; ++i) {
-            allEmpty &= inputs[i].value == "";
+            allEmpty &= inputs[i].value === "";
         }
 
         if (allEmpty) {
@@ -132,7 +132,7 @@ function loadPrettyMoneyValue(e) {
     realValueNode.value = prettyValueNode.value;
 
     // If it's empty, stop here
-    if (prettyValueNode.value == "") {
+    if (prettyValueNode.value === "") {
         updateTotal(realValueNode);
         return;
     }
@@ -150,12 +150,12 @@ function loadPrettyMoneyValue(e) {
 
 function ensureNumberValue(e) {
     // 46 = '.'; 48 = '0'; 57 = '9'
-    if (e.keyCode != 46 && (e.keyCode < 48 || e.keyCode > 57)) {
+    if (e.keyCode !== 46 && (e.keyCode < 48 || e.keyCode > 57)) {
         e.preventDefault();
         return;
     }
 
-    if (e.srcElement.value == "" && e.keyCode == 46);
+    if (e.srcElement.value === "" && e.keyCode === 46);
     else {
         oldValue = e.srcElement.value;
         setTimeout(() => {
@@ -167,7 +167,7 @@ function ensureNumberValue(e) {
 }
 
 function findRepeatingParent(node) {
-    if (node == null || node.hasAttribute(REPEATING_ATTRIB)) return node;
+    if (node === null || node.hasAttribute(REPEATING_ATTRIB)) return node;
 
     return findRepeatingParent(node.parentNode);
 }

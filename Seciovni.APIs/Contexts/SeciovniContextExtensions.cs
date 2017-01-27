@@ -40,15 +40,17 @@ namespace Seciovni.APIs.Contexts
 
                 var defaultUser = new Employee
                 {
-                    User = User.MakeNewUser("David", "Antonucci", "dra151994@hotmail.com", permissions)
+                    User = User.MakeNewUser("David", "Antonucci", "dra151994@hotmail.com", permissions),
+                    Job = JobType.Assistant
                 };
 
 
 
                 var otherUser = new Employee
                 {
-                    User = User.MakeNewUser("John", "Doe", "JohnDoe@dra151994hotmail.onmicrosoft.com",
-                    permissions.Where(p => p.PermissionType == AccessPolicy.AdminPrivilege))
+                    User = User.MakeNewUser("John", "Doe", "JohnDoe@dra151994hotmail.onmicrosoft.com", 
+                        new List<Permission> { permissions[1], permissions[3] }),
+                    Job = JobType.Sales
                 };
                     
                 context.Employees.Add(defaultUser);

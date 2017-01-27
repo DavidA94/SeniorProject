@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Seciovni.Web.WebHelpers;
 using Shared;
 using Shared.Authorization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -124,7 +125,7 @@ namespace Seciovni.Web
 
         private Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
         {
-            initAuthCode(context.Ticket.Principal, context.HttpContext.Session);
+            initAuthCode(context.Ticket.Principal, context.HttpContext.Session, context.HttpContext);
             //context.HandleCodeRedemption();
 
             return Task.FromResult(0);
@@ -140,11 +141,11 @@ namespace Seciovni.Web
 
         private Task OnValidatePrincipal(CookieValidatePrincipalContext context)
         {
-            initAuthCode(context.Principal, context.HttpContext.Session);
+            initAuthCode(context.Principal, context.HttpContext.Session, context.HttpContext);
             return Task.FromResult(0);
         }
         
-        private void initAuthCode(ClaimsPrincipal user, ISession session)
+        private void initAuthCode(ClaimsPrincipal user, ISession session, HttpContext context)
         {
             if (!session.Keys.Contains(Constants.AUTH_TOKEN))
             {
@@ -178,6 +179,15 @@ namespace Seciovni.Web
 
                             // Add the claims
                             (user.Identity as ClaimsIdentity).AddClaims(permissions.Select(p => new Claim(p.ToString(), "True")));
+
+                            context.Response.Cookies.Append(Constants.AUTH_TOKEN, result.AccessToken,
+                                new CookieOptions()
+                                {
+                                    Secure = true,
+                                    Expires = new DateTimeOffset(DateTime.UtcNow.AddSeconds(30)),
+                                });
+
+                            context.Response.Redirect("/Account/Login", true);
                         }
                     }
                 }

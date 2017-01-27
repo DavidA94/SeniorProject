@@ -67,7 +67,7 @@ namespace Seciovni.APIs.Migrations
 
                     b.Property<string>("ResaleNumber");
 
-                    b.Property<int>("UserID");
+                    b.Property<int?>("UserID");
 
                     b.HasKey("CustomerID");
 
@@ -97,6 +97,8 @@ namespace Seciovni.APIs.Migrations
                     b.Property<int>("EmployeeID")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Job");
 
                     b.Property<int?>("UserID");
 
@@ -382,8 +384,7 @@ namespace Seciovni.APIs.Migrations
 
                     b.HasOne("Database.Tables.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserID");
                 });
 
             modelBuilder.Entity("Database.Tables.EmailAddress", b =>
