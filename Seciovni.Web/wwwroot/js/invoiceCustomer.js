@@ -1,6 +1,11 @@
 ﻿let useNewCustomer = false;
 let contactsLoaded = false;
 
+function loadInvoice() {
+    loadInvoiceCustomerDialog();
+    loadInvoiceLienDialog();
+}
+
 function loadInvoiceCustomerDialog() {
     document.getElementById("getCustomerButton").addEventListener('click', showCustomerDialog);
     document.getElementById("closeCustomerDialog").addEventListener('click', hideCustomerDialog);
@@ -121,5 +126,4 @@ function showContacts() {
     document.getElementById("showCustom").style.display = "block";
 }
 
-loadInvoiceCustomerDialog();
-loadInvoiceLienDialog();
+loadInvoice();

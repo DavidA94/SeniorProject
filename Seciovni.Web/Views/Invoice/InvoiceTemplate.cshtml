@@ -103,16 +103,35 @@
                 <div class="location">Location</div>
                 <div class="price">Unit Price</div>
             </div>
-            <div class="dataRow" data-repeating>
-                <div class="stockNo"><input type="text" /></div>
-                <div class="vin"><input type="text" /></div>
-                <div class="year disabled"><input type="text" disabled="disabled" /></div>
-                <div class="make disabled"><input type="text" disabled="disabled" /></div>
-                <div class="model"><input type="text" /></div>
-                <div class="miles"><input type="text" /></div>
-                <div class="location"><input type="text" /></div>
-                <div class="price"><input type="text" data-money /></div>
-            </div>
+
+            @for(int i = 0; i < Model.Vehicles.Count; ++i)
+            {
+                <div class="dataRow" data-repeating>
+                    <div class="stockNo">@Html.TextBoxFor(m => m.Vehicles[i].StockNum)</div>
+                    <div class="vin">@Html.TextBoxFor(m => m.Vehicles[i].VIN, new { data_vin = "" })</div>
+                    
+                    @if (Model.Vehicles[i].Year == 0)
+                    {
+                        <div class="year disabled"><input type="text" disabled="disabled" /></div>
+                        <div class="make disabled"><input type="text" disabled="disabled" /></div>
+                    }
+                    else if (Model.Vehicles[i].Year < 0)
+                    {
+                        <div class="year disabled"><input type="text" disabled="disabled" value="Invalid" /></div>
+                        <div class="make disabled"><input type="text" disabled="disabled" value="Invalid" /></div>
+                    }
+                    else
+                    {
+                        <div class="year disabled"><input type="text" disabled="disabled" value="@Model.Vehicles[i].Year" /></div>
+                        <div class="make disabled"><input type="text" disabled="disabled" value="@Model.Vehicles[i].Make" /></div>
+                    }
+
+                    <div class="model">@Html.TextBoxFor(m => m.Vehicles[i].Model)</div>
+                    <div class="miles">@Html.TextBoxFor(m => m.Vehicles[i].Miles, new { data_zero = "" })</div>
+                    <div class="location">@Html.TextBoxFor(m => m.Vehicles[i].Location)</div>
+                    <div class="price">@Html.TextBoxFor(m => m.Vehicles[i].Price, new { data_money = "", data_zero = "" })</div>
+                </div>
+            }
         </div>
     </div>
 
@@ -146,6 +165,11 @@
             <div class="endLabel">Total Due:</div>
             <div id="invoiceTotalDue">$ 0.00</div>
         </div>
+    </div>
+
+    <div>
+        <input type="submit" name="draft" value="Save Draft" />
+        <input type="submit" name="submit" value="Save Invoice" />
     </div>
 }
 <script src="~/js/invoiceInputs.js"></script>

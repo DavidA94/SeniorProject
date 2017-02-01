@@ -26,7 +26,12 @@ namespace Seciovni.Web.Controllers
         // GET: /<controller>/<id> -- View a static invoice
         public IActionResult View(int id)
         {
-            return View(new Invoice() { InvoiceID = id, InvoiceDate = DateTime.Now });
+            return View(new Invoice()
+            {
+                InvoiceID = id,
+                InvoiceDate = DateTime.Now,
+                Vehicles = new List<VehicleInfo> { new VehicleInfo() { Miles = 0 } }
+            });
         }
     }
 }

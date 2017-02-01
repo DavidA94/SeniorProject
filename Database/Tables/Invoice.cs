@@ -17,11 +17,11 @@ namespace Database.Tables
 
         public Customer Buyer { get; set; }
 
-        public ICollection<VehicleInfo> Vehicles { get; set; }
+        public IList<VehicleInfo> Vehicles { get; set; }
 
         public InvoiceState State { get; set; }
 
-        public ICollection<MiscellaneousFee> Fees { get; set; }
+        public IList<MiscellaneousFee> Fees { get; set; }
         
         public User SalesPerson { get; set; }
 
@@ -36,12 +36,12 @@ namespace Database.Tables
 
         public LienHolder LienHolder { get; set; }
 
-        public ICollection<Payment> Payments { get; set; }
+        public IList<Payment> Payments { get; set; }
 
         // NOTE: Prompt user if this will change -- Use latest version if not on this list
-        public ICollection<InvoicePageTemplate> PagesUsed { get; set; } = null;
+        public IList<InvoicePageTemplate> PagesUsed { get; set; } = null;
 
-        public ICollection<InvoiceInvoicePageTemplate> IIPT { get; set; }
+        public IList<InvoiceInvoicePageTemplate> IIPT { get; set; }
 
     }
 }

@@ -20,6 +20,12 @@ namespace Database.Tables
 
         public int Year { get; set; }
 
+        public string Make { get; set; }
+
+        public string Model { get; set; }
+
+        public int Miles { get; set; }
+
         public string Location { get; set; }
 
         public decimal Price { get; set; }
