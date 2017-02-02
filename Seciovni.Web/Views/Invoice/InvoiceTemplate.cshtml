@@ -3,9 +3,9 @@
 @model Invoice
 
 @using (Html.BeginForm(ViewContext.RouteData.Values["action"].ToString(),
-                                   ViewContext.RouteData.Values["controller"].ToString(),
-                                   new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, true,
-                                   new { id = "invoiceForm" }))
+                                                           ViewContext.RouteData.Values["controller"].ToString(),
+                                                           new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, true,
+                                                           new { id = "invoiceForm" }))
 {
     <div id="invoiceData">
         <div>Invoice Number: @Model.InvoiceID</div>
@@ -103,35 +103,17 @@
                 <div class="location">Location</div>
                 <div class="price">Unit Price</div>
             </div>
+            <div class="dataRow" id="vehicleTemplate">
+                <div class="stockNo"><input type="text" data-bind="StockNum" /></div>
+                <div class="vin"><input type="text" data-bind="VIN" data-vin /></div>
+                <div class="year disabled"><input type="text" data-bind="Year" disabled="disabled" /></div>
+                <div class="make disabled"><input type="text" data-bind="Make" disabled="disabled" /></div>
 
-            @for(int i = 0; i < Model.Vehicles.Count; ++i)
-            {
-                <div class="dataRow" data-repeating>
-                    <div class="stockNo">@Html.TextBoxFor(m => m.Vehicles[i].StockNum)</div>
-                    <div class="vin">@Html.TextBoxFor(m => m.Vehicles[i].VIN, new { data_vin = "" })</div>
-                    
-                    @if (Model.Vehicles[i].Year == 0)
-                    {
-                        <div class="year disabled"><input type="text" disabled="disabled" /></div>
-                        <div class="make disabled"><input type="text" disabled="disabled" /></div>
-                    }
-                    else if (Model.Vehicles[i].Year < 0)
-                    {
-                        <div class="year disabled"><input type="text" disabled="disabled" value="Invalid" /></div>
-                        <div class="make disabled"><input type="text" disabled="disabled" value="Invalid" /></div>
-                    }
-                    else
-                    {
-                        <div class="year disabled"><input type="text" disabled="disabled" value="@Model.Vehicles[i].Year" /></div>
-                        <div class="make disabled"><input type="text" disabled="disabled" value="@Model.Vehicles[i].Make" /></div>
-                    }
-
-                    <div class="model">@Html.TextBoxFor(m => m.Vehicles[i].Model)</div>
-                    <div class="miles">@Html.TextBoxFor(m => m.Vehicles[i].Miles, new { data_zero = "" })</div>
-                    <div class="location">@Html.TextBoxFor(m => m.Vehicles[i].Location)</div>
-                    <div class="price">@Html.TextBoxFor(m => m.Vehicles[i].Price, new { data_money = "", data_zero = "" })</div>
-                </div>
-            }
+                <div class="model"><input type="text" data-bind="Model" /></div>
+                <div class="miles"><input type="text" data-bind="Miles" /></div>
+                <div class="location"><input type="text" data-bind="Location" /></div>
+                <div class="price"><input type="text" data-bind="Price" data-money /></div>
+            </div>
         </div>
     </div>
 
@@ -141,9 +123,9 @@
                 <div class="miscChargeDesc">Miscellaneous Charge</div>
                 <div class="price">Price</div>
             </div>
-            <div class="dataRow" data-repeating>
-                <div class="miscChargeDesc"><input type="text" /></div>
-                <div class="price"><input type="text" data-money /></div>
+            <div class="dataRow" id="miscChargeTemplate">
+                <div class="miscChargeDesc"><input type="text" data-bind="Description" /></div>
+                <div class="price"><input type="text" data-bind="Price" /></div>
             </div>
         </div>
     </div>
@@ -151,15 +133,15 @@
     <div id="endData">
         <div>
             <div class="endLabel">Tax:</div>
-            <div class="price"><input type="text" data-money /></div>
+            <div class="price"><input type="text" id="tax" /></div>
         </div>
         <div>
             <div class="endLabel">Doc Fee:</div>
-            <div class="price"><input type="text" data-money /></div>
+            <div class="price"><input type="text" id="docFee" /></div>
         </div>
         <div>
             <div class="endLabel">Down Payment:</div>
-            <div class="price"><input type="text" data-money /></div>
+            <div class="price"><input type="text" id="downPayment" /></div>
         </div>
         <div>
             <div class="endLabel">Total Due:</div>
@@ -172,6 +154,19 @@
         <input type="submit" name="submit" value="Save Invoice" />
     </div>
 }
-<script src="~/js/invoiceInputs.js"></script>
-<script src="~/js/invoiceCustomer.js"></script>
-<script src="~/js/previewContacts.js"></script>
+<script src="~/js/Events/EventTypes/EventArgs.js"></script>
+<script src="~/js/Events/EventTypes/PropertyChangedEventArgs.js"></script>
+<script src="~/js/Invoice/Constants.js"></script>
+<script src="~/js/Constants.js"></script>
+<script src="~/js/Events/Subscribable.js"></script>
+<script src="~/js/Events/SubscribableProperty.js"></script>
+<script src="~/js/helpers.js"></script>
+<script src="~/js/HelperTypes/HTMLElements/BaseHtmlElement.js"></script>
+<script src="~/js/HelperTypes/HTMLElements/TextInput.js"></script>
+<script src="~/js/HelperTypes/HTMLElements/MoneyInput.js"></script>
+<script src="~/js/Invoice/Vehicle.js"></script>
+<script src="~/js/Invoice/MiscCharge.js"></script>
+<script src="~/js/Invoice/Invoice.js"></script>
+
+<script src="~/js/Invoice/invoiceCustomer.js"></script>
+<script src="~/js/Invoice/previewContacts.js"></script>

@@ -67,31 +67,31 @@ function hideCustomerDialog(e) {
 
 function loadContacts(contacts) {
 
-    var listNode = document.getElementById("contactsList");
+    const listNode = document.getElementById("contactsList");
 
-    while (listNode.childElementCount > 1) listNode.removeChild(listNode.lastChild)
+    while (listNode.childElementCount > 1) listNode.removeChild(listNode.lastChild);
 
     if (contacts.length == 0) {
         showNewCustomer();
-        var noContacts = document.createElement("p");
+        const noContacts = document.createElement("p");
         noContacts.innerHTML = "No Contacts";
         noContacts.className = "row";
 
         listNode.appendChild(noContacts);
     }
 
-    for (var contact of contacts) {
-        var div = document.createElement("div");
+    for (let contact of contacts) {
+        const div = document.createElement("div");
         div.className = "contactPreviewItem row";
 
-        var nameNode = document.createElement("p");
+        const nameNode = document.createElement("p");
         nameNode.innerHTML = "<b>" + contact.user.firstName + " " + contact.user.lastName + "</b>";
 
-        var addressNode = document.createElement("p");
+        const addressNode = document.createElement("p");
         addressNode.innerHTML = contact.address.streetAddress + " " + contact.address.city + ", " +
                                 contact.address.state + " " + contact.address.zipCode;
 
-        var emailNode = document.createElement("p");
+        const emailNode = document.createElement("p");
         emailNode.innerHTML = contact.user.email;
 
         div.appendChild(nameNode);

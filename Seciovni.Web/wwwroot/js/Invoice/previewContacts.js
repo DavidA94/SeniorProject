@@ -1,5 +1,5 @@
 ﻿function getContactPreviews(resultsCallback) {
-    var xmlhttp = new XMLHttpRequest();
+    const xmlhttp = new XMLHttpRequest();
 
     xmlhttp.onreadystatechange = () => {
         if (xmlhttp.readyState == XMLHttpRequest.DONE) {
@@ -10,7 +10,7 @@
                 resultsCallback([]);
             }
         }
-    }
+    };
 
     xmlhttp.open("GET", "https://localhost:44357/api/User/ContactsPreview", true);
     xmlhttp.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("AuthorizationToken"));
