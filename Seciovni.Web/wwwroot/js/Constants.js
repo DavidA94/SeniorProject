@@ -39,6 +39,7 @@ const EVENT_PROPERTY_CHANGE = "propertychange";
 const EVENT_SCALE_CHANGE = "scalechange";
 const EVENT_BEGIN_CAPTION_RESIZE = "beginCaptionResize";
 const EVENT_END_CAPTION_RESIZE = "endCaptionResize";
+const EVENT_DATA_SAVED = "dataSaved";
 
 // endregion
 
@@ -170,5 +171,8 @@ const DRAG_IMAGE = "Image";
 
 
 const DEFAULT_IMG = "/CanvasDnD/Images/image.svg";
+
+const AUTH_TOKEN = "AuthorizationToken";
+const AUTH_TOKEN_TIME = "AuthorizationTokenTime";
 
 // endregion

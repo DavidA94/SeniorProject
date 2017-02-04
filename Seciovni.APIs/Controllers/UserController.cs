@@ -51,10 +51,6 @@ namespace Seciovni.APIs.Controllers
         [HttpGet(nameof(ContactsPreview))]
         public IEnumerable<Customer> ContactsPreview()
         {
-            Context.Response.Cookies.Append("Test", "TesT", new Microsoft.AspNetCore.Http.CookieOptions()
-            {
-            });
-
             var fullContacts = Contacts();
             var previewContacts = new List<Customer>();
 
@@ -62,6 +58,7 @@ namespace Seciovni.APIs.Controllers
             {
                 previewContacts.Add(new Customer()
                 {
+                    CustomerID = contact.CustomerID,
                     Address = contact.Address,
                     CompanyName = contact.CompanyName,
                     User = new User()

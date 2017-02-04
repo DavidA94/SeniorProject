@@ -1,187 +1,308 @@
-﻿class Vehicle extends SubscribableProperty {
+﻿class VehicleFields {
+    static get stockNum() { return "StockNum"; }
+    static get vin() { return "VIN"; }
+    static get year() { return "Year"; }
+    static get make() { return "Make"; }
+    static get model() { return "Model"; }
+    static get miles() { return "Miles"; }
+    static get location() { return "Location"; }
+    static get price() { return "Price"; }
+}
+
+class Vehicle extends SubscribableProperty {
+
+    // region CTOR
+
+    /**
+     * Creates a new Vehicle object
+     * @param {HTMLDivElement} divRow - The DIV element that has all of the _vehicles HTML fields
+     */
     constructor(divRow) {
         super();
-        const stockNum = "StockNum";
-        const vin = "VIN";
-        const year = "Year";
-        const make = "Make";
-        const model = "Model";
-        const miles = "Miles";
-        const location = "Location";
-        const price = "Price";
 
-        this.stockNumInput = null;
-        this.vinInput = null;
-        this.yearInput = null;
-        this.makeInput = null;
-        this.modelInput = null;
-        this.milesInput = null;
-        this.locationInput = null;
-        this.priceInput = null;
+        /**
+         * @private
+         * @type {HTMLInputElement}
+         */
+        this._stockNum = null;
 
-        this.boundMethods = {};
-        this.boundMethods[this.fieldUpdated] = this.fieldUpdated.bind(this);
+        /**
+         * @private
+         * @type {HTMLInputElement}
+         */
+        this._vin = null;
 
-        this.inputEvent = () => this.__sendPropChangeEvent("");
+        /**
+         * @private
+         * @type {HTMLInputElement}
+         */
+        this._year = null;
 
-        this.parentRow = divRow;
+        /**
+         * @private
+         * @type {HTMLInputElement}
+         */
+        this._make = null;
 
-        const inputs = divRow.getElementsByTagName("input");
+        /**
+         * @private
+         * @type {HTMLInputElement}
+         */
+        this._model = null;
 
-        for (let i = 0; i < inputs.length; ++i) {
-            const attrib = inputs[i].getAttribute(BIND_ATTRIB);
+        /**
+         * @private
+         * @type {HTMLInputElement}
+         */
+        this._miles = null;
 
-            let input = null;
+        /**
+         * @private
+         * @type {HTMLInputElement}
+         */
+        this._location = null;
 
-            switch (attrib) {
-                case stockNum:
-                    input = this.stockNumInput = new TextInput(inputs[i]);
+        /**
+         * @private
+         * @type {HTMLInputElement}
+         */
+        this._price = null;
+
+        /**
+         * @private
+         * @type {HTMLDivElement}
+         */
+        this._parentRow = divRow;
+        
+        /**
+         * The event to fire when one of the fields fires it PropertyChanged event
+         * @type {function}
+         * @private
+         */
+        this._boundFieldUpdated = this._fieldUpdated.bind(this);
+
+        /**
+         * The event fired when the 'input' event is fired on any of the fields
+         * @type {function}
+         * @private
+         */
+        this._inputEvent = () => this.__sendPropChangeEvent("");
+
+        /**
+         * The event fired when the keydown event is gotten
+         * @param e
+         * @private
+         */
+        this._keydownEvent = (e) => invoice_keydown(e, this._parentRow);
+
+        // Get all the elements that can be bound to
+        const elements = divRow.querySelectorAll(BIND_QUERY);
+
+        // And put them in their proper member variable
+        for (let i = 0; i < elements.length; ++i) {
+            const attribute = elements[i].getAttribute(BIND_ATTRIB);
+
+            let element = null;
+
+            switch (attribute) {
+                case VehicleFields.stockNum:
+                    this._stockNum = element = new TextInput(elements[i]);
                     break;
-                case vin:
-                    input = this.vinInput = new TextInput(inputs[i]);
+                case VehicleFields.vin:
+                    this._vin = element = new TextInput(elements[i]);
                     break;
-                case year:
-                    input = this.yearInput = new TextInput(inputs[i]);
+                case VehicleFields.year:
+                    this._year = element = new TextInput(elements[i]);
                     break;
-                case make:
-                    input = this.makeInput = new TextInput(inputs[i]);
+                case VehicleFields.make:
+                    this._make = element = new TextInput(elements[i]);
                     break;
-                case model:
-                    input = this.modelInput = new TextInput(inputs[i]);
+                case VehicleFields.model:
+                    this._model = element = new TextInput(elements[i]);
                     break;
-                case miles:
-                    input = this.milesInput = new TextInput(inputs[i]);
+                case VehicleFields.miles:
+                    this._miles = element = new NumricInput(elements[i]);
                     break;
-                case location:
-                    input = this.locationInput = new TextInput(inputs[i]);
+                case VehicleFields.location:
+                    this._location = element = new TextInput(elements[i]);
                     break;
-                case price:
-                    input = this.priceInput = new MoneyInput(inputs[i]);
+                case VehicleFields.price:
+                    this._price = element = new MoneyInput(elements[i]);
                     break;
             }
 
-            input.subscribe(EVENT_PROPERTY_CHANGE, this.boundMethods[this.fieldUpdated]);
-            input.addEvent('input', this.inputEvent);
+            // Subscribe to when they change, and subscribe to the input event
+            element.subscribe(EVENT_PROPERTY_CHANGE, this._boundFieldUpdated);
+            element.addEvent('input', this._inputEvent);
+            element.addEvent('keydown', this._keydownEvent);
         }
     }
 
-    fieldUpdated(e) {
+    // endregion
+
+    // region Public Methods
+
+    /**
+     * Checks if all the fields in this object are empty
+     * @return {boolean}
+     */
+    areInputsEmpty(){
+        return this._stockNum.value == "" &&
+            this._vin.value == "" &&
+            this._model.value == "" &&
+            this._miles.value == -1 &&
+            this._location.value == "" &&
+            this._price.value == -1;
+    }
+
+    /**
+     * Destroys this object, and removes its corresponding HTML elements from the document
+     */
+    destroy(){
+
+        const fields = [
+            this._stockNum,
+            this._vin,
+            this._year,
+            this._make,
+            this._model,
+            this._miles,
+            this._location,
+            this._price
+        ];
+
+        for(let field of fields) field.clearEvents();
+        this._parentRow.nextElementSibling.getElementsByTagName("input")[0].focus();
+        this._parentRow.remove();
+    }
+
+    /**
+     * Gets the JSON data for this class
+     * @return {Object<string, *>}
+     */
+    toJSON(){
+        const properties = {};
+        properties[VehicleFields.stockNum] = this.StockNum;
+        properties[VehicleFields.vin] = this.VIN;
+        properties[VehicleFields.year] = this.Year;
+        properties[VehicleFields.make] = this.Make;
+        properties[VehicleFields.model] = this.Model;
+        properties[VehicleFields.miles] = this.Miles;
+        properties[VehicleFields.location] = this.Location;
+        properties[VehicleFields.price] = this.Price;
+
+        return properties;
+    }
+
+    // endregion
+
+    // region Public Properties
+
+    get StockNum() {
+        return this._stockNum.value;
+    }
+
+    set StockNum(value) {
+        this._stockNum.value = value;
+    }
+
+    get VIN() {
+        return this._vin.value;
+    }
+
+    set VIN(value) {
+        this._vin.value = value;
+    }
+
+    get Year() {
+        return this._year.value;
+    }
+
+    set Year(value) {
+        this._year.value = value;
+    }
+
+    get Make() {
+        return this._make.value;
+    }
+
+    set Make(value) {
+        this._make.value = value;
+    }
+
+    get Model() {
+        return this._model.value;
+    }
+
+    set Model(value) {
+        this._model.value = value;
+    }
+
+    get Miles() {
+        return this._miles.value;
+    }
+
+    set Miles(value) {
+        this._miles.value = value;
+    }
+
+    get Location() {
+        return this._location.value;
+    }
+
+    set Location(value) {
+        this._location.value = value;
+    }
+
+    get Price() {
+        return this._price.value;
+    }
+
+    set Price(value) {
+        this._price.value = value;
+    }
+
+    // endregion
+
+    // region Private Methods
+
+    /**
+     * Fires when one of the fields is updated
+     * @param e
+     * @private
+     */
+    _fieldUpdated(e) {
         this.__sendPropChangeEvent(e.propertyName);
 
-        if(e.propertyName == "VIN"){
+        // Ensure the VIN is valid, and update the year and make accordingly
+        if(e.propertyName == VehicleFields.vin){
             const value = this.VIN;
 
             if (value === ""){
-                this.vinInput.htmlObj.removeAttribute(ERROR_ATTRIB);
+                this._vin.hasError = false;
                 this.Make = "";
                 this.Year = "";
             }
-            else if (this.validateVIN(value)) {
-                this.vinInput.htmlObj.removeAttribute(ERROR_ATTRIB);
-                this.Make = this.getMake(value);
-                this.Year = this.getYear(value);
+            else if (Vehicle._validateVIN(value)) {
+                this._vin.hasError = false;
+                this.Make = Vehicle._getMake(value);
+                this.Year = Vehicle._getYear(value);
             }
             else {
-                this.vinInput.htmlObj.setAttribute(ERROR_ATTRIB, "");
+                this._vin.hasError = true;
                 this.Make = "INVALID";
                 this.Year = "INVALID";
             }
         }
     }
 
-    areInputsEmpty(){
-        return this.stockNumInput.value == "" &&
-            this.vinInput.value == "" &&
-            this.modelInput.value == "" &&
-            this.milesInput.value == "" &&
-            this.locationInput.value == "" &&
-            this.priceInput.value == "";
-    }
-
-    destroy(){
-
-        const fields = [
-            this.stockNumInput,
-            this.vinInput,
-            this.yearInput,
-            this.makeInput,
-            this.modelInput,
-            this.milesInput,
-            this.locationInput,
-            this.priceInput
-        ];
-
-        for(let field of fields) field.clearEvents();
-        this.parentRow.nextElementSibling.getElementsByTagName("input")[0].focus();
-        this.parentRow.remove();
-    }
-
-    get StockNum() {
-        return this.stockNumInput.value;
-    }
-
-    set StockNum(value) {
-        this.stockNumInput.value = value;
-    }
-
-    get VIN() {
-        return this.vinInput.value;
-    }
-
-    set VIN(value) {
-        this.vinInput.value = value;
-    }
-
-    get Year() {
-        return this.yearInput.value;
-    }
-
-    set Year(value) {
-        this.yearInput.value = value;
-    }
-
-    get Make() {
-        return this.makeInput.value;
-    }
-
-    set Make(value) {
-        this.makeInput.value = value;
-    }
-
-    get Model() {
-        return this.modelInput.value;
-    }
-
-    set Model(value) {
-        this.modelInput.value = value;
-    }
-
-    get Miles() {
-        return this.milesInput.value;
-    }
-
-    set Miles(value) {
-        this.milesInput.value = value;
-    }
-
-    get Location() {
-        return this.locationInput.value;
-    }
-
-    set Location(value) {
-        this.locationInput.value = value;
-    }
-
-    get Price() {
-        return this.priceInput.value;
-    }
-
-    set Price(value) {
-        this.priceInput.value = value;
-    }
-
-
-    getYear(vin) {
+    /**
+     * Gets the year for the given VIN
+     * @param {string} vin - The VIN to analyze
+     * @return {number}
+     * @private
+     */
+    static _getYear(vin) {
         let year = vin[9];
 
         if (isNaN(year)) {
@@ -213,7 +334,13 @@
         return year;
     }
 
-    getMake(vin) {
+    /**
+     * Gets the make for the given VIN
+     * @param {string} vin - The VIN to be analyzed
+     * @return {string}
+     * @private
+     */
+    static _getMake(vin) {
 
         let make = vin.substr(1, 2).toUpperCase();
 
@@ -255,7 +382,13 @@
 
     }
 
-    validateVIN(vin) {
+    /**
+     * Checks if the given VIN is valid
+     * @param {string} vin - The VIN to validate
+     * @return {boolean}
+     * @private
+     */
+    static _validateVIN(vin) {
         // Check check digit
         // Visit http://en.wikipedia.org/wiki/Vehicle_Identification_Number#Check_digit_calculation for more info
         const alphaNum = {
@@ -279,4 +412,6 @@
         return !(vin.length < 17 || vin[8] != valid);
 
     }
+
+    // endregion
 }

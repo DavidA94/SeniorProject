@@ -26,13 +26,6 @@ namespace Seciovni.Web
 {
     public class Startup
     {
-        public static string ClientId;
-        public static string ClientSecret;
-        public static string ClientResourceId;
-        public static string Authority;
-        public static string GraphResourceId;
-        public static string ApiResourceId;
-
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -91,18 +84,18 @@ namespace Seciovni.Web
                 }
             });
 
-            Authority = Configuration["Authentication:AzureAd:AADInstance"] + Configuration["Authentication:AzureAd:TenantId"];
-            ClientId = Configuration["Authentication:AzureAd:ClientId"];
-            ClientSecret = Configuration["Authentication:AzureAd:ClientSecret"];
-            ClientResourceId = Configuration["Authentication:AzureAd:ClientResourceId"];
-            GraphResourceId = Configuration["Authentication:AzureAd:GraphResourceId"];
-            ApiResourceId = Configuration["Authentication:AzureAd:ApiResourceId"];
+            ApiLogin.Authority = Configuration["Authentication:AzureAd:AADInstance"] + Configuration["Authentication:AzureAd:TenantId"];
+            ApiLogin.ClientId = Configuration["Authentication:AzureAd:ClientId"];
+            ApiLogin.ClientSecret = Configuration["Authentication:AzureAd:ClientSecret"];
+            ApiLogin.ClientResourceId = Configuration["Authentication:AzureAd:ClientResourceId"];
+            ApiLogin.GraphResourceId = Configuration["Authentication:AzureAd:GraphResourceId"];
+            ApiLogin.ApiResourceId = Configuration["Authentication:AzureAd:ApiResourceId"];
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
             {
-                ClientId = ClientId,
-                ClientSecret = ClientSecret,
-                Authority = Authority,
+                ClientId = ApiLogin.ClientId,
+                ClientSecret = ApiLogin.ClientSecret,
+                Authority = ApiLogin.Authority,
                 PostLogoutRedirectUri = Configuration["AzureAd:PostLogoutRedirectUri"],
                 ResponseType = OpenIdConnectResponseType.CodeIdToken,
                 CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"],
@@ -149,48 +142,19 @@ namespace Seciovni.Web
         {
             if (!session.Keys.Contains(Constants.AUTH_TOKEN))
             {
-                // Get the email or stop
                 var email = user.FindFirst(ClaimTypes.Email)?.Value ?? user.Identity.Name;
                 if (email == null || !email.Contains('@')) return;
 
-                // Get the authorization data so we can call to the API
-                string userObjectID = (user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier"))?.Value;
-                AuthenticationContext authContext = new AuthenticationContext(Authority, new NativeSessionCache(userObjectID));
-                ClientCredential credential = new ClientCredential(ClientId, ClientSecret);
-                AuthenticationResult result = authContext.AcquireTokenAsync(ApiResourceId, credential).Result;
+                string token = ApiLogin.GetToken(user);
 
-                session.Set(Constants.AUTH_TOKEN, Encoding.ASCII.GetBytes(result.AccessToken));
+                if (string.IsNullOrWhiteSpace(token)) return;
 
-                // Get all the user's permissions
-                using (var client = new HttpClient())
-                {
-                    var address = $"{Constants.API_BASE_ADDR}/api/security/Login";
+                session.Set(Constants.AUTH_TOKEN, Encoding.ASCII.GetBytes(token));
+                session.Set(Constants.AUTH_TOKEN_TIME, BitConverter.GetBytes(DateTime.UtcNow.AddMinutes(58).Ticks));
 
-                    using (var request = new HttpRequestMessage(HttpMethod.Post, address))
-                    {
-                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
-                        request.Content = new StringContent($@"""{email}""", Encoding.UTF8, "application/json");
-
-                        var response = client.SendAsync(request).Result;
-
-                        if (response.IsSuccessStatusCode)
-                        {
-                            var permissions = JsonConvert.DeserializeObject<List<string>>(response.Content.ReadAsStringAsync().Result);
-
-                            // Add the claims
-                            (user.Identity as ClaimsIdentity).AddClaims(permissions.Select(p => new Claim(p.ToString(), "True")));
-
-                            context.Response.Cookies.Append(Constants.AUTH_TOKEN, result.AccessToken,
-                                new CookieOptions()
-                                {
-                                    Secure = true,
-                                    Expires = new DateTimeOffset(DateTime.UtcNow.AddSeconds(30)),
-                                });
-
-                            context.Response.Redirect("/Account/Login", true);
-                        }
-                    }
-                }
+                // Add the claims
+                var claims = ApiLogin.LoginUser(token, email) ?? new List<string> { };
+                (user.Identity as ClaimsIdentity).AddClaims(claims.Select(p => new Claim(p.ToString(), "True")));
             }
         }
     }

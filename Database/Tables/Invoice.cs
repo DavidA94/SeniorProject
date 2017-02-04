@@ -29,7 +29,7 @@ namespace Database.Tables
         public decimal DocFee { get; set; }
 
         [Required]
-        public decimal Downpayment { get; set; }
+        public decimal DownPayment { get; set; }
 
         [Required]
         public decimal TaxAmount { get; set; }

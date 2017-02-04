@@ -2,18 +2,15 @@
 @using Shared;
 @model Invoice
 
-@using (Html.BeginForm(ViewContext.RouteData.Values["action"].ToString(),
-                                                           ViewContext.RouteData.Values["controller"].ToString(),
-                                                           new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, true,
-                                                           new { id = "invoiceForm" }))
-{
+
+<form method="post" action="#" id="invoiceForm">
     <div id="invoiceData">
         <div>Invoice Number: @Model.InvoiceID</div>
         <div>Invoice Date: @Model.InvoiceDate.ToString("yyyy-MM-dd")</div>
     </div>
     <div id="invoiceState" class="row">
-        <label class="cell" asp-for="State">Invoice State</label>
-        <select class="cell" asp-for="State" asp-items="Html.GetEnumSelectList<InvoiceState>()"></select>
+        <label class="cell" for="invoiceState">Invoice State</label>
+        <select class="cell" id="invoicState" asp-items="@Html.GetEnumSelectList<InvoiceState>()"></select>
     </div>
     <div id="invoiceCustomerDiv" class="row">
         <div>
@@ -34,31 +31,31 @@
                 <h1>Buyer Information</h1>
                 <h2>Name</h2>
                 <div id="invoiceName" class="row">
-                    <input asp-for="Buyer.User.FirstName" type="text" placeholder-title="Buyer.User.FirstName" /
-                    ><input asp-for="Buyer.User.LastName" type="text" placeholder-title="Buyer.User.LastName" />
+                    <input data-bind="FirstName" type="text" placeholder-title="Buyer.User.FirstName"
+                    /><input data-bind="LastName" type="text" placeholder-title="Buyer.User.LastName" />
                 </div>
                 <h2>Contact</h2>
                 <div id="invoiceContact" class="row">
-                    <input asp-for="Buyer.User.Email" type="text" placeholder-title="Buyer.User.Email" /
-                    ><input asp-for="Buyer.PhoneNumbers[0].Number" type="text" placeholder-title="Buyer.PhoneNumbers[0].Number" />
+                    <input data-bind="Email" type="text" placeholder-title="Buyer.User.Email"
+                    /><input data-bind="PhoneNumber" type="text" placeholder-title="Buyer.PhoneNumbers[0].Number" />
                 </div>
                 <div id="invoiceAddress">
                     <h2>Address</h2>
                     <div id="invoiceStreetAddr" class="row">
-                        <input asp-for="Buyer.Address.StreetAddress" type="text" placeholder-title="Buyer.Address.StreetAddress" />
+                        <input data-bind="StreetAddress" type="text" placeholder-title="Buyer.Address.StreetAddress" />
                     </div>
                     <div class="row">
-                        <input class="invoiceAddrCity" asp-for="Buyer.Address.City" type="text" placeholder-title="Buyer.Address.City" /
-                        ><input class="invoiceAddrState" asp-for="Buyer.Address.State" type="text" placeholder-title="Buyer.Address.State" maxlength="2" /
-                        ><input class="invoiceAddrZip" asp-for="Buyer.Address.ZipCode" type="text" placeholder-title="Buyer.Address.ZipCode" maxlength="6" />
+                        <input class="invoiceAddrCity" data-bind="City" type="text" placeholder-title="Buyer.Address.City"
+                        /><input class="invoiceAddrState" data-bind="State" type="text" placeholder-title="Buyer.Address.State" maxlength="2"
+                        /><input class="invoiceAddrZip" data-bind="ZipCode" type="text" placeholder-title="Buyer.Address.ZipCode" maxlength="6" />
                     </div>
                 </div>
                 <div id="invoiceBusinessInfo">
                     <h1>Business Information</h1>
-                    <input class="row" asp-for="Buyer.CompanyName" type="text" placeholder-title="Buyer.CompanyName" />
-                    <input class="row" asp-for="Buyer.DealerLicenseNumber" type="text" placeholder-title="Buyer.DealerLicenseNumber" />
-                    <input class="row" asp-for="Buyer.MCNumber" type="text" placeholder-title="Buyer.MCNumber" />
-                    <input class="row" asp-for="Buyer.ResaleNumber" type="text" placeholder-title="Buyer.ResaleNumber" />
+                    <input class="row" data-bind="CompanyName" type="text" placeholder-title="Buyer.CompanyName" />
+                    <input class="row" data-bind="DealerLicenseNumber" type="text" placeholder-title="Buyer.DealerLicenseNumber" />
+                    <input class="row" data-bind="MCNumber" type="text" placeholder-title="Buyer.MCNumber" />
+                    <input class="row" data-bind="ResaleNumber" type="text" placeholder-title="Buyer.ResaleNumber" />
                 </div>
             </div>
             <button id="closeCustomerDialog" class="row">Save</button>
@@ -71,21 +68,21 @@
             <button id="getLienButton">•••</button>
         </div>
         <dialog id="invoiceLienHolderData">
-            <div id="invoiceLienName" class="row">
-                <input class="lienInputFullWidth" asp-for="LienHolder.Name" type="text" placeholder-title="LienHolder.Name" />
+            <div class="row">
+                <input class="lienInputFullWidth" data-bind="Name" type="text" placeholder-title="LienHolder.Name" />
             </div>
             <div id="invoiceLienAddress">
-                <div id="invoiceStreetAddr" class="row">
-                    <input class="lienInputFullWidth" asp-for="LienHolder.Address.StreetAddress" type="text" placeholder-title="LienHolder.Address.StreetAddress" />
+                <div class="row">
+                    <input class="lienInputFullWidth" data-bind="StreetAddress" type="text" placeholder-title="LienHolder.Address.StreetAddress" />
                 </div>
                 <div class="row">
-                    <input class="invoiceAddrCity" asp-for="LienHolder.Address.City" type="text" placeholder-title="LienHolder.Address.City" /
-                    ><input class="invoiceAddrState" asp-for="LienHolder.Address.State" type="text" placeholder-title="LienHolder.Address.State" maxlength="2" /
-                    ><input class="invoiceAddrZip" asp-for="LienHolder.Address.ZipCode" type="text" placeholder-title="LienHolder.Address.ZipCode" maxlength="6" />
+                    <input class="invoiceAddrCity" data-bind="City" type="text" placeholder-title="LienHolder.Address.City"
+                    /><input class="invoiceAddrState" data-bind="State" type="text" placeholder-title="LienHolder.Address.State" maxlength="2"
+                    /><input class="invoiceAddrZip" data-bind="ZipCode" type="text" placeholder-title="LienHolder.Address.ZipCode" maxlength="6" />
                 </div>
             </div>
             <div id="invoiceBusinessInfo" class="row">
-                <input class="lienInputFullWidth" asp-for="LienHolder.EIN" type="text" placeholder-title="LienHolder.EIN" />
+                <input class="lienInputFullWidth" data-bind="EIN" type="text" placeholder-title="LienHolder.EIN" />
             </div>
             <button id="closeLienDialog">Save</button>
         </dialog>
@@ -153,9 +150,11 @@
         <input type="submit" name="draft" value="Save Draft" />
         <input type="submit" name="submit" value="Save Invoice" />
     </div>
-}
+</form>
+
 <script src="~/js/Events/EventTypes/EventArgs.js"></script>
 <script src="~/js/Events/EventTypes/PropertyChangedEventArgs.js"></script>
+
 <script src="~/js/Invoice/Constants.js"></script>
 <script src="~/js/Constants.js"></script>
 <script src="~/js/Events/Subscribable.js"></script>
@@ -163,10 +162,10 @@
 <script src="~/js/helpers.js"></script>
 <script src="~/js/HelperTypes/HTMLElements/BaseHtmlElement.js"></script>
 <script src="~/js/HelperTypes/HTMLElements/TextInput.js"></script>
+<script src="~/js/HelperTypes/HTMLElements/NumricInput.js"></script>
 <script src="~/js/HelperTypes/HTMLElements/MoneyInput.js"></script>
 <script src="~/js/Invoice/Vehicle.js"></script>
 <script src="~/js/Invoice/MiscCharge.js"></script>
+<script src="~/js/Invoice/Customer.js"></script>
+<script src="~/js/Invoice/LienHolder.js"></script>
 <script src="~/js/Invoice/Invoice.js"></script>
-
-<script src="~/js/Invoice/invoiceCustomer.js"></script>
-<script src="~/js/Invoice/previewContacts.js"></script>

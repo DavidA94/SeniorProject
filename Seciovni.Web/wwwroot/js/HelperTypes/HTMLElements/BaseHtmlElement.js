@@ -69,6 +69,21 @@ class BaseHtmlElement extends SubscribableProperty {
     get htmlObj() { return this._htmlObj; }
 
     /**
+     * Indicates if this element has an error on it
+     * @return {boolean}
+     */
+    get hasError() { return this.htmlObj.hasAttribute(ERROR_ATTRIB); }
+
+    /**
+     * Indicates if this element has an error on it
+     * @param {boolean} value
+     */
+    set hasError(value) {
+        if(value) this.htmlObj.setAttribute(ERROR_ATTRIB, "");
+        else this.htmlObj.removeAttribute(ERROR_ATTRIB);
+    }
+
+    /**
      * The Value of the field
      * @return {string|number}
      * @abstract
@@ -81,4 +96,8 @@ class BaseHtmlElement extends SubscribableProperty {
      * @abstract
      */
     set value(value) {  }
+
+    toString(){
+        return this.value;
+    }
 }
