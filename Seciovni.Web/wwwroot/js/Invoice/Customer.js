@@ -186,7 +186,7 @@ class Customer {
                     this._state = element = new TextInput(elements[i]);
                     break;
                 case CustomerFields.zip:
-                    this._zip = element = new NumricInput(elements[i]);
+                    this._zip = element = new NumericInput(elements[i], "", 0, false);
                     break;
                 case CustomerFields.company:
                     this._company = element = new TextInput(elements[i]);
@@ -247,13 +247,7 @@ class Customer {
         e.preventDefault();
         this._dialog.close();
 
-        if(this._showingContacts && document.getElementById(CHOSEN_CONTACT_ID)){
-            // Meh
-            this._displayName.value = document.getElementById(CHOSEN_CONTACT_ID).getElementsByTagName("b")[0].innerHTML;
-        }
-        else{
-            this._displayName.value = this.FirstName + " " + this.LastName;
-        }
+        this._updatePreviewField();
     }
 
     /**
@@ -293,6 +287,31 @@ class Customer {
     }
 
     /**
+     * Initializes this class from a JSON object
+     * @param {json} json - The JSON data
+     */
+    initialize_json(json){
+        const zip = json[CustomerFields.zip];
+
+        this._firstName.value = json[CustomerFields.firstName];
+        this._lastName.value = json[CustomerFields.lastName];
+        this._phone.value = json[CustomerFields.email];
+        this._email.value = json[CustomerFields.phone];
+        this._address.value = json[CustomerFields.address];
+        this._city.value = json[CustomerFields.city];
+        this._state.value = json[CustomerFields.state];
+        this._zip.htmlObj.value = (isNaN(zip) || zip === "") ? "" : parseInt(zip);
+        this._company.value = json[CustomerFields.company];
+        this._licenseNum.value = json[CustomerFields.licenseNum];
+        this._mcNum.value = json[CustomerFields.mcNum];
+        this._resaleNum.value = json[CustomerFields.resaleNum];
+        this._contactID = json["CustomerID"];
+
+        this._updatePreviewField();
+        if(this._contactID === -1) this.swap(new Event(""));
+    }
+    
+    /**
      * Gets the JSON data for this class
      * @return {Object<string, *>}
      */
@@ -305,11 +324,12 @@ class Customer {
         properties[CustomerFields.address] = this._address.value;
         properties[CustomerFields.city] = this._city.value;
         properties[CustomerFields.state] = this._state.value;
-        properties[CustomerFields.zip] = this._zip.value;
+        properties[CustomerFields.zip] = this._zip.htmlObj.value;
         properties[CustomerFields.company] = this._company.value;
         properties[CustomerFields.licenseNum] = this._licenseNum.value;
         properties[CustomerFields.mcNum] = this._mcNum.value;
         properties[CustomerFields.resaleNum] = this._resaleNum.value;
+        properties["CustomerID"] = this._contactID;
 
         return properties;
     }
@@ -324,12 +344,36 @@ class Customer {
      * @private
      */
     _fieldUpdated(e) {
-        // Ensure the phone and zip are valid
+        // Ensure the phone, email, and zip are valid
         if(e.propertyName == CustomerFields.phone){
             const phone = this._phone.value;
             const phoneRegEx = new RegExp(/^(1[.\-])?[0-9]{3}[.\-]?[0-9]{3}[.\-]?[0-9]{4}$/);
 
-            this._phone.hasError = phone != "" && !phone.match(phoneRegEx);
+            if(phone != "" && !phone.match(phoneRegEx)){
+                this._phone.error = "Invalid Phone Number. Expecting format 1-111-111-1111";
+            }
+            else{
+                this._phone.error = null;
+            }
+        }
+        else if(e.propertyName === CustomerFields.email){
+            const email = this._email.value;
+
+            // This is weak, but should work well enough
+            if(email != "" && !email.match(/^.+@.+\..{2,}$/)) {
+                this._email.error = "Invalid Email Address";
+            }
+            else{
+                this._email.error = null;
+            }
+        }
+        else if(e.propertyName === CustomerFields.zip){
+            if(this._zip.value.length < 5 || this._zip.value.length > 6){
+                this._zip.error = "Invalid ZIP code";
+            }
+            else{
+                this._zip.error = null;
+            }
         }
     }
 
@@ -349,7 +393,7 @@ class Customer {
         xmlhttp.onreadystatechange = () => {
             if (xmlhttp.readyState == XMLHttpRequest.DONE) {
                 if (xmlhttp.status == 200) {
-                    this._loadContacts(JSON.parse(xmlhttp.response));
+                    this._loadContacts(JSON.parse(xmlhttp.response.toString()));
                 }
                 else {
                     this._loadContacts([]);
@@ -418,13 +462,25 @@ class Customer {
                 if (document.getElementById(CHOSEN_CONTACT_ID)) {
                     document.getElementById(CHOSEN_CONTACT_ID).removeAttribute("id")
                 }
-                e.currentTarget.id = CHOSEN_CONTACT_ID
+                e.currentTarget.id = CHOSEN_CONTACT_ID;
                 this._contactID = e.currentTarget.getAttribute(CUSTOMER_ID_ATTRIB);
             });
         }
     }
 
+    /**
+     * Updates the preview field that the user sees when the dialog is closed
+     * @private
+     */
+    _updatePreviewField(){
+        if(this._showingContacts && document.getElementById(CHOSEN_CONTACT_ID)){
+            // Meh
+            this._displayName.value = document.getElementById(CHOSEN_CONTACT_ID).getElementsByTagName("b")[0].innerHTML;
+        }
+        else{
+            this._displayName.value = this.FirstName + " " + this.LastName;
+        }
+    }
+
     // endregion
-
-
 }

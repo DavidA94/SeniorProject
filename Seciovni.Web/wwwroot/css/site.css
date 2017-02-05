@@ -11,7 +11,13 @@
 }
 
 
-input[data-error] {background:red;color:white;}
+input[data-error] {box-shadow:0 0 5px 1px #800;}
+input[type=date]::-webkit-clear-button {display:none;}
+input[type=date]::-webkit-inner-spin-button {display:none;}
+input[type=date]::-webkit-calendar-picker-indicator {display:none;}
+input[type=date]::-webkit-clear-button {display:none;}
+input[type=date]::-webkit-inner-spin-button {display:none;}
+input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hover::-webkit-calendar-picker-indicator {display:block;}
 
 #dashboard {overflow:hidden;max-width:730px;margin:auto;}
 #dashboard .dashboardButton {position:relative;width:200px;height:200px;float:left;margin:20px;background:#efefef;border:2px solid #999;
@@ -55,8 +61,11 @@ input[data-error] {background:red;color:white;}
 .dataTable .location {width:100px;}
 .dataTable .price {width:100px;}
 .dataTable .price input {text-align:right;}
-.dataTable .miscChargeDesc {width:800px;text-align:left}
-.dataTable .miscChargeDesc input {text-align:left}
+.dataTable .miscChargeDesc {width:800px;}
+.dataTable .paymentDesc {width:680px}
+.dataTable .paymentDate {width:120px}
+.dataTable .description {text-align:left}
+.dataTable .description input {text-align:left}
 
 #endData{margin:10px 0;overflow:hidden;}
 #endData > div {margin:5px 0;overflow:hidden;}
@@ -68,7 +77,7 @@ input[data-error] {background:red;color:white;}
 .stackedLabel {margin-right:1em;}
 .stackedLabel label {display:block;font-size:11px;margin:0;}
 
-.row {display:block;overflow:hidden;margin:5px 0 0;}
+.row {display:block;margin:5px 0 0;}
 .cell {float:left;}
 
 .contactPreviewItem {border-left:2px solid #ccc;margin:.5em 0;padding:0 .5em}

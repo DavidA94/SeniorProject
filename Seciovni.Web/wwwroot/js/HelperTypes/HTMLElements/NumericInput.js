@@ -2,14 +2,15 @@
  * Created by David on 02/02/17.
  */
 
-class NumricInput extends TextInput{
+class NumericInput extends TextInput{
     /**
-     * Creates a new Numric Input
+     * Creates a new Numeric Input
      * @param {HTMLInputElement} input - The input element to use
      * @param {string} prefix - The prefix used when making the number pretty
      * @param {number} fixedPlaces - The number of fixed decimal places (<= 0 === ignore)
+     * @param {boolean} makePretty - Indicates if commas should be put in the thousands place
      */
-    constructor(input, prefix = "", fixedPlaces = 0){
+    constructor(input, prefix = "", fixedPlaces = 0, makePretty = true){
         super(input);
 
         /**
@@ -33,6 +34,13 @@ class NumricInput extends TextInput{
          */
         this._fixedPlaces = fixedPlaces;
 
+        /**
+         * Indicates if we want commas in the thousands place
+         * @type {boolean}
+         * @private
+         */
+        this._makePretty = makePretty;
+
         input.addEventListener("keypress", numricInput_keypress);
         input.addEventListener("focus", this.__getBoundFunc(this._makeInputEditable));
         input.addEventListener("blur", this.__getBoundFunc(this._makeInputPretty));
@@ -45,6 +53,7 @@ class NumricInput extends TextInput{
 
         this.htmlObj.value = value;
         this.numberVal = parseFloat(value);
+        this._makeInputPretty();
     }
 
     _makeInputEditable(){
@@ -73,7 +82,11 @@ class NumricInput extends TextInput{
         }
 
         // Add commas and prefix
-        tempVal = this._prettyPrefix + tempVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        if(this._makePretty) {
+            tempVal = tempVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        tempVal = this._prettyPrefix + tempVal;
 
         input.value = tempVal;
     }

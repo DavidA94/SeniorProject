@@ -24,6 +24,13 @@ class BaseHtmlElement extends SubscribableProperty {
          * @private
          */
         this._events = [];
+
+        /**
+         * The original title to be used when an error is cleared
+         * @type {string}
+         * @private
+         */
+        this._title = htmlObj.hasAttribute("title") ? htmlObj.getAttribute("title") : "";
     }
 
     /**
@@ -70,17 +77,17 @@ class BaseHtmlElement extends SubscribableProperty {
 
     /**
      * Indicates if this element has an error on it
-     * @return {boolean}
+     * @param {string|null} value - The error the cell has -- null if no error
      */
-    get hasError() { return this.htmlObj.hasAttribute(ERROR_ATTRIB); }
-
-    /**
-     * Indicates if this element has an error on it
-     * @param {boolean} value
-     */
-    set hasError(value) {
-        if(value) this.htmlObj.setAttribute(ERROR_ATTRIB, "");
-        else this.htmlObj.removeAttribute(ERROR_ATTRIB);
+    set error(value) {
+        if(value === null){
+            this.htmlObj.removeAttribute(ERROR_ATTRIB);
+            this.htmlObj.setAttribute("title", this._title);
+        }
+        else{
+            this.htmlObj.setAttribute(ERROR_ATTRIB, value);
+            this.htmlObj.setAttribute("title", value);
+        }
     }
 
     /**

@@ -12,8 +12,8 @@ namespace Seciovni.Web.WebHelpers
 {
     public class ApiLogin
     {
-        // It will timeout from MS at 60 minutes
-        public static TimeSpan Timeout = TimeSpan.FromMinutes(58);
+        // It will timeout from MS at 60 minutes or maybe 30?
+        public static TimeSpan Timeout = TimeSpan.FromMinutes(28);
 
         public static string ClientId;
         public static string ClientSecret;

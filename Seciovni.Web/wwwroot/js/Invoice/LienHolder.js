@@ -105,7 +105,7 @@ class LienHolder{
                     this._state = element = new TextInput(elements[i]);
                     break;
                 case LienFields.zip:
-                    this._zip = element = new NumricInput(elements[i]);
+                    this._zip = element = new NumericInput(elements[i], "", 0, false);
                     break;
                 case LienFields.ein:
                     this._ein = element = new TextInput(elements[i]);
@@ -138,6 +138,23 @@ class LienHolder{
     // region Public Methods
 
     /**
+     * Initializes this class from a JSON object
+     * @param {json} json - The JSON data
+     */
+    initialize_json(json){
+        const zip = json[LienHolder.zip];
+
+        this._name.value = json[LienFields.name];
+        this._address.value = json[LienFields.address];
+        this._city.value = json[LienFields.city];
+        this._state.value = json[LienFields.state];
+        this._zip.htmlObj.value = (isNaN(zip) || zip === "") ? "" : parseInt(zip);
+        this._ein.value = json[LienFields.ein];
+
+        this._updatePreviewField();
+    }
+    
+    /**
      * Shows the dialog
      * @param e
      */
@@ -154,7 +171,7 @@ class LienHolder{
         e.preventDefault();
         this._dialog.close();
 
-        this._displayName.value = this.Name;
+        this._updatePreviewField();
     }
 
     /**
@@ -167,10 +184,22 @@ class LienHolder{
         properties[LienFields.address] = this._address.value;
         properties[LienFields.city] = this._city.value;
         properties[LienFields.state] = this._state.value;
-        properties[LienFields.zip] = this._zip.value;
+        properties[LienFields.zip] = this._zip.htmlObj.value;
         properties[LienFields.ein] = this._ein.value;
 
         return properties;
+    }
+
+    // endregion
+
+    // region Private Methods
+
+    /**
+     * Updates the preview field that the user sees when the dialog is closed
+     * @private
+     */
+    _updatePreviewField(){
+        this._displayName.value = this.Name;
     }
 
     // endregion

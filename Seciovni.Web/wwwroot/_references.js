@@ -19,6 +19,7 @@
 /// <reference path="js/helpertypes/htmlelements/numricinput.js" />
 /// <reference path="js/HelperTypes/HTMLElements/TextInput.js" />
 /// <reference path="js/invoice/constants.js" />
+/// <reference path="js/invoice/customer.js" />
 /// <reference path="js/Invoice/Invoice.js" />
 /// <reference path="js/invoice/invoicecustomer.js" />
 /// <reference path="js/invoice/misccharge.js" />

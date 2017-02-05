@@ -27,7 +27,7 @@ function ensureValidToken(){
     xmlhttp.onreadystatechange = () => {
         if (xmlhttp.readyState == XMLHttpRequest.DONE) {
             if (xmlhttp.status == 200) {
-                const response = JSON.parse(xmlhttp.response);
+                const response = JSON.parse(xmlhttp.response.toString());
 
                 localStorage.setItem(AUTH_TOKEN, response["token"]);
                 localStorage.setItem(AUTH_TOKEN_TIME, response["expires"]);

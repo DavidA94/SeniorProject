@@ -121,7 +121,7 @@ class Vehicle extends SubscribableProperty {
                     this._model = element = new TextInput(elements[i]);
                     break;
                 case VehicleFields.miles:
-                    this._miles = element = new NumricInput(elements[i]);
+                    this._miles = element = new NumericInput(elements[i]);
                     break;
                 case VehicleFields.location:
                     this._location = element = new TextInput(elements[i]);
@@ -177,19 +177,37 @@ class Vehicle extends SubscribableProperty {
     }
 
     /**
+     * Initializes this class from a JSON object
+     * @param {json} json - The JSON data
+     */
+    initialize_json(json){
+        this.StockNum.value = json[VehicleFields.stockNum];
+        this.VIN.value = json[VehicleFields.vin];
+        this.Year.value = json[VehicleFields.year];
+        this.Make.value = json[VehicleFields.make];
+        this.Model.value = json[VehicleFields.model];
+        this.Miles.value = json[VehicleFields.miles];
+        this.Location.value = json[VehicleFields.location];
+        this.Price.value = json[VehicleFields.price];
+
+        // Ensure the parent knows that something has changed.
+        this.__sendPropChangeEvent("");
+    }
+    
+    /**
      * Gets the JSON data for this class
      * @return {Object<string, *>}
      */
     toJSON(){
         const properties = {};
-        properties[VehicleFields.stockNum] = this.StockNum;
-        properties[VehicleFields.vin] = this.VIN;
-        properties[VehicleFields.year] = this.Year;
-        properties[VehicleFields.make] = this.Make;
-        properties[VehicleFields.model] = this.Model;
-        properties[VehicleFields.miles] = this.Miles;
-        properties[VehicleFields.location] = this.Location;
-        properties[VehicleFields.price] = this.Price;
+        properties[VehicleFields.stockNum] = this.StockNum.value;
+        properties[VehicleFields.vin] = this.VIN.value;
+        properties[VehicleFields.year] = this.Year.value;
+        properties[VehicleFields.make] = this.Make.value;
+        properties[VehicleFields.model] = this.Model.value;
+        properties[VehicleFields.miles] = this.Miles.value;
+        properties[VehicleFields.location] = this.Location.value;
+        properties[VehicleFields.price] = this.Price.value;
 
         return properties;
     }
@@ -199,67 +217,35 @@ class Vehicle extends SubscribableProperty {
     // region Public Properties
 
     get StockNum() {
-        return this._stockNum.value;
-    }
-
-    set StockNum(value) {
-        this._stockNum.value = value;
+        return this._stockNum;
     }
 
     get VIN() {
-        return this._vin.value;
-    }
-
-    set VIN(value) {
-        this._vin.value = value;
+        return this._vin;
     }
 
     get Year() {
-        return this._year.value;
-    }
-
-    set Year(value) {
-        this._year.value = value;
+        return this._year;
     }
 
     get Make() {
-        return this._make.value;
-    }
-
-    set Make(value) {
-        this._make.value = value;
+        return this._make;
     }
 
     get Model() {
-        return this._model.value;
-    }
-
-    set Model(value) {
-        this._model.value = value;
+        return this._model;
     }
 
     get Miles() {
-        return this._miles.value;
-    }
-
-    set Miles(value) {
-        this._miles.value = value;
+        return this._miles;
     }
 
     get Location() {
-        return this._location.value;
-    }
-
-    set Location(value) {
-        this._location.value = value;
+        return this._location;
     }
 
     get Price() {
-        return this._price.value;
-    }
-
-    set Price(value) {
-        this._price.value = value;
+        return this._price;
     }
 
     // endregion
@@ -272,28 +258,29 @@ class Vehicle extends SubscribableProperty {
      * @private
      */
     _fieldUpdated(e) {
-        this.__sendPropChangeEvent(e.propertyName);
-
         // Ensure the VIN is valid, and update the year and make accordingly
         if(e.propertyName == VehicleFields.vin){
-            const value = this.VIN;
+            const value = this.VIN.value;
 
             if (value === ""){
-                this._vin.hasError = false;
-                this.Make = "";
-                this.Year = "";
+                this._vin.error = null;
+                this.Make.value = "";
+                this.Year.value = "";
             }
             else if (Vehicle._validateVIN(value)) {
-                this._vin.hasError = false;
-                this.Make = Vehicle._getMake(value);
-                this.Year = Vehicle._getYear(value);
+                console.log("VALID");
+                this._vin.error = null;
+                this.Make.value = Vehicle._getMake(value);
+                this.Year.value = Vehicle._getYear(value);
             }
             else {
-                this._vin.hasError = true;
-                this.Make = "INVALID";
-                this.Year = "INVALID";
+                this._vin.error = "Invalid VIN";
+                this.Make.value = "INVALID";
+                this.Year.value = "INVALID";
             }
         }
+
+        this.__sendPropChangeEvent(e.propertyName);
     }
 
     /**

@@ -112,14 +112,26 @@ class MiscCharge extends SubscribableProperty {
     }
 
     /**
+     * Initializes this class from a JSON object
+     * @param {json} json - The JSON data
+     */
+    initialize_json(json) {
+        this.Description = json[MiscChargeFields.description];
+        this.Price = json[MiscChargeFields.price];
+        
+        // Ensure the parent knows something has changed
+        this.__sendPropChangeEvent("");
+    }
+    
+    /**
      * Gets the JSON data for this class
      * @return {Object<string, *>}
      */
     toJSON(){
-        const propreties = {};
-        propreties[MiscChargeFields.description] = this.Description;
-        propreties[MiscChargeFields.price] = this.Price;
-        return propreties;
+        const properties = {};
+        properties[MiscChargeFields.description] = this.Description;
+        properties[MiscChargeFields.price] = this.Price;
+        return properties;
     }
 
     // endregion

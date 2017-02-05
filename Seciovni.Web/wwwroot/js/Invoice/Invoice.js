@@ -125,13 +125,38 @@ class Invoice {
      * Initialize the default document
      */
     initialize() {
-        const vehicle = new Vehicle(document.getElementById(VEHICLE_TEMPLATE_ID));
+        const vehicle = new Vehicle(/** @type {HTMLDivElement} */document.getElementById(VEHICLE_TEMPLATE_ID));
         vehicle.subscribe(EVENT_PROPERTY_CHANGE, this._boundLastRowChanged);
         this._vehicles.push(vehicle);
 
-        const miscCharge = new MiscCharge(document.getElementById(MISC_CHARGE_ID));
+        const miscCharge = new MiscCharge(/** @type {HTMLDivElement} */document.getElementById(MISC_CHARGE_ID));
         miscCharge.subscribe(EVENT_PROPERTY_CHANGE, this._boundLastRowChanged);
         this._miscCharges.push(miscCharge);
+    }
+
+    /**
+     * Initializes this class from a JSON object
+     * @param {json} json - The JSON data
+     */
+    initialize_json(json){
+        this.initialize();
+
+        this._state.value = json.State;
+        this._customer.initialize_json(json.Buyer);
+        this._lienHolder.initialize_json(json.LienHolder);
+        this._tax.value = json.TaxAmount;
+        this._docFee.value = json.DocFee;
+        this._downPayment.value = json.DownPayment;
+
+        for(let vehicle of json.Vehicles){
+            this._vehicles[this._vehicles.length - 1].initialize_json(vehicle);
+        }
+
+        for(let fee of json.Fees){
+            this._miscCharges[this._miscCharges.length - 1].initialize_json(fee);
+        }
+
+        this._calculateTotal();
     }
 
     /**
@@ -139,7 +164,7 @@ class Invoice {
      * @return {Object<string, *>}
      */
     toJSON(){
-        var properties = {};
+        const properties = {};
         properties["State"] = this._state.value;
         properties["Buyer"] = this._customer;
         properties["LienHolder"] = this._lienHolder;
@@ -199,9 +224,40 @@ class Invoice {
         }
 
         // Otherwise, if it came from a price object, calculate the new total
-        else if (e.propertyName == "Price") {
+        else if (e.propertyName === VehicleFields.price || e.propertyName === MiscChargeFields.price) {
             this._calculateTotal();
         }
+        // If the VIN ensure no duplicates
+        else if(e.propertyName === VehicleFields.vin){
+            const vin = e.sender.VIN.value;
+            e.sender.VIN.error = null;
+
+            for(let v of this._vehicles){
+                if(v !== e.sender && v.VIN.value === vin){
+                    v.VIN.error = "Duplicate VIN";
+                    e.sender.VIN.error = "Duplicate VIN";
+                }
+                else if(v !== e.sender){
+                    v.VIN.error = null;
+                }
+            }
+        }
+        // If the stock number, ensure no duplicates
+        else if(e.propertyName === VehicleFields.stockNum){
+            const stockNum = e.sender.StockNum.value;
+            e.sender.StockNum.error = null;
+
+            for(let v of this._vehicles){
+                if(v !== e.sender && v.StockNum.value === stockNum){
+                    v.StockNum.error = "Duplicate VIN";
+                    e.sender.StockNum.error = "Duplicate VIN";
+                }
+                else if(v !== e.sender){
+                    v.StockNum.error = null;
+                }
+            }
+        }
+
     }
 
     /**
@@ -221,7 +277,7 @@ class Invoice {
 
             // Create a new row, and subscribe this event to it
             const newRow = this._vehicleTemplate.cloneNode(true);
-            const newVehicle = new Vehicle(newRow);
+            const newVehicle = new Vehicle(/** @type {HTMLDivElement} */newRow);
             newVehicle.subscribe(EVENT_PROPERTY_CHANGE, this._boundLastRowChanged);
             this._vehicles.push(newVehicle);
 
@@ -236,7 +292,7 @@ class Invoice {
             lastRow.subscribe(EVENT_PROPERTY_CHANGE, this._boundExistingRowChanged);
 
             const newRow = this._chargeTemplate.cloneNode(true);
-            const newCharge = new MiscCharge(newRow);
+            const newCharge = new MiscCharge(/** @type {HTMLDivElement} */newRow);
             newCharge.subscribe(EVENT_PROPERTY_CHANGE, this._boundLastRowChanged);
             this._miscCharges.push(newCharge);
 
@@ -247,5 +303,5 @@ class Invoice {
     // endregion
 }
 
-const invoice = new Invoice();
+let invoice = new Invoice();
 invoice.initialize();
