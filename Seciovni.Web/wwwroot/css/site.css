@@ -10,6 +10,10 @@
     padding-right: 15px;
 }
 
+input {height:20px;line-height:20px;box-sizing:content-box;}
+dialog {padding:15px;}
+dialog div.saveButton {margin:10px -15px -15px;padding:7px 15px;background:#f0f0f0;border-top:1px solid #bbb;overflow:hidden;}
+dialog div.saveButton button {float:right;}
 
 input[data-error] {box-shadow:0 0 5px 1px #800;}
 input[type=date]::-webkit-clear-button {display:none;}
@@ -25,25 +29,21 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #dashboard .dashboardButton:hover {color:#000;}
 #dashboard .dashboardButton p {text-align:center;position:absolute;bottom:0;width:100%;font-size:18px;margin:5px 0;}
 
-#invoiceCustomerData {}
-#invoiceCustomerData > div {margin:0 0 10px;}
-#invoiceCustomerData h1 {font-size:1.3em;margin:1em 0 0;}
-#invoiceCustomerData h2 {font-size:1.1em;margin:.5em 0 .2em;}
-#invoiceCustomerData .row {margin-left:1em;}
-#invoiceCustomerData #invoiceName input, #invoiceContact input {width:200px;margin-right:10px;}
-#invoiceCustomerData #invoiceStreetAddr input {width:410px; /*Includes Borders*/}
-#invoiceCustomerData #city {width:240px;margin-right:10px;}
-#invoiceCustomerData #state {width:50px;margin-right:10px;}
-#invoiceCustomerData #zipCode {width:100px;margin-right:10px;}
+.invoiceDialog input {box-sizing:border-box;height:auto;}
+.invoiceDialog > div {margin:0 0 10px;}
+.invoiceDialog  h1 {font-size:1.3em;margin:0 0 .2em}
+.invoiceDialog  h2 {font-size:1.1em;margin:.5em 0 .2em;}
+.invoiceDialog .invoiceAddrCity {width:220px;margin-right:10px;}
+.invoiceDialog .invoiceAddrState {width:50px;margin-right:10px;}
+.invoiceDialog .invoiceAddrZip {width:100px;margin-right:10px;}
+.invoiceDialog .fullWidth {width:390px;}
+.invoiceDialog .row {margin-left:1em;}
+
+#invoiceCustomerData {width:450px;}
+#invoiceCustomerData #invoiceName input, #invoiceContact input {width:190px;margin-right:10px;}
+#invoiceCustomerData #invoiceAddress {margin-bottom:.5em;}
 #invoiceCustomerData #invoiceBusinessInfo input {width:200px;}
 #invoiceCustomerData #showContacts, #newCustomer {display:none;}
-
-#invoiceForm * {box-sizing:border-box;}
-
-#invoiceForm .invoiceAddrCity {width:220px;margin-right:10px;}
-#invoiceForm .invoiceAddrState {width:50px;margin-right:10px;}
-#invoiceForm .invoiceAddrZip {width:100px;margin-right:10px;}
-#invoiceForm .lienInputFullWidth {width:390px;}
 
 .dataTable {overflow:hidden;margin-top:1em;}
 .dataTable > div {border:solid #333; border-width:0 0 1px 1px;float:left;}
@@ -62,8 +62,8 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 .dataTable .price {width:100px;}
 .dataTable .price input {text-align:right;}
 .dataTable .miscChargeDesc {width:800px;}
-.dataTable .paymentDesc {width:680px}
-.dataTable .paymentDate {width:120px}
+.dataTable .paymentDesc {width:400px}
+.dataTable .paymentDate {width:100px}
 .dataTable .description {text-align:left}
 .dataTable .description input {text-align:left}
 
@@ -72,7 +72,11 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #endData .endLabel {width:790px;margin-right:10px;text-align:right;float:left;clear:left;}
 #endData .price {width:100px;float:left;}
 #endData .price input {width:100%;text-align:right;border:1px solid #333;}
-#endData #invoiceTotalDue {text-align:right;padding-right:5px;width:100px;float:left;}
+#endData #invoiceTotalDue, #endData #totalPayments {text-align:right;padding-right:5px;width:100px;float:left;}
+
+#paymentEndData {margin:5px 0;overflow:hidden;}
+#paymentEndData .endLabel { width:calc(100% - 110px);text-align:right;float:left;clear:left;margin-right:10px;}
+#paymentEndData #totalPaymentsInner {text-align:right;padding-right:5px;width:100px;float:left;}
 
 .stackedLabel {margin-right:1em;}
 .stackedLabel label {display:block;font-size:11px;margin:0;}
@@ -83,3 +87,6 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 .contactPreviewItem {border-left:2px solid #ccc;margin:.5em 0;padding:0 .5em}
 .contactPreviewItem:hover, #chosenContact {border-left:2px solid #059;cursor:pointer;}
 .contactPreviewItem p {margin:0;}
+
+.loadingSpinner {width:100px;}
+.centerSpinner {display:block;margin:auto;}

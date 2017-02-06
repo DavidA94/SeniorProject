@@ -1,22 +1,29 @@
 /**
- * Created by David on 01/31/17.
+ * Created by David on 2017-02-05.
  */
 
-class MiscChargeFields {
+class PaymentFields {
+    static get date() { return "Date"; }
     static get description() { return "Description"; }
     static get price() { return "Price"; }
 }
 
-class MiscCharge extends SubscribableProperty {
+class Payment extends SubscribableProperty {
 
     // region CTOR
 
     /**
-     * Creates a new MiscCharge object
-     * @param {HTMLDivElement} divRow - The DIV element that holds the miscellaneous charge inputs
+     * Creates a new Payment object
+     * @param {HTMLDivElement} divRow - The DIV element that holds the payment inputs
      */
-    constructor(divRow) {
+    constructor(divRow){
         super();
+
+        /**
+         * @private
+         * @type {HTMLInputElement}
+         */
+        this._date = null;
 
         /**
          * @private
@@ -67,7 +74,10 @@ class MiscCharge extends SubscribableProperty {
             let element = null;
 
             switch (attribute) {
-                case MiscChargeFields.description:
+                case PaymentFields.date:
+                    this._date = element = new TextInput(elements[i]);
+                    break;
+                case PaymentFields.description:
                     this._description = element = new TextInput(elements[i]);
                     break;
                 case MiscChargeFields.price:
@@ -84,6 +94,28 @@ class MiscCharge extends SubscribableProperty {
 
     // endregion
 
+    // region Public Properties
+
+    /**
+     * The payments date
+     * @return {TextInput}
+     */
+    get Date() { return this._date; }
+
+    /**
+     * The payment's description
+     * @return {TextInput}
+     */
+    get Description() { return this._description; }
+
+    /**
+     * The payment's price
+     * @return {MoneyInput}
+     */
+    get Price() { return this._price; }
+
+    // endregion
+
     // region Public Methods
 
     /**
@@ -91,7 +123,8 @@ class MiscCharge extends SubscribableProperty {
      * @return {boolean}
      */
     areInputsEmpty() {
-        return this._description.value == "" &&
+        return this._date.value == "" &&
+            this._description.value == "" &&
             this._price.value == -1;
     }
 
@@ -101,6 +134,7 @@ class MiscCharge extends SubscribableProperty {
     destroy() {
 
         const fields = [
+            this._date,
             this._description,
             this._price
         ];
@@ -116,42 +150,24 @@ class MiscCharge extends SubscribableProperty {
      * @param {json} json - The JSON data
      */
     initialize_json(json) {
+        this.Date.value = json[PaymentFields.date];
         this.Description.value = json[MiscChargeFields.description];
-        this.Price.value = json[MiscChargeFields.price];
-        
+        this.Price.value = json[PaymentFields.price];
+
         // Ensure the parent knows something has changed
         this.__sendPropChangeEvent("");
     }
-    
+
     /**
      * Gets the JSON data for this class
      * @return {Object<string, *>}
      */
     toJSON(){
         const properties = {};
-        properties[MiscChargeFields.description] = this.Description.value;
-        properties[MiscChargeFields.price] = this.Price.value;
+        properties[PaymentFields.date] = this.Date.value;
+        properties[PaymentFields.description] = this.Description.value;
+        properties[PaymentFields.price] = this.Price.value;
         return properties;
-    }
-
-    // endregion
-
-    // region Public Properties
-
-    /**
-     * The description for this charge
-     * @return {TextInput}
-     */
-    get Description() {
-        return this._description;
-    }
-
-    /**
-     * The price for this charge
-     * @return {MoneyInput}
-     */
-    get Price() {
-        return this._price;
     }
 
     // endregion
@@ -168,5 +184,4 @@ class MiscCharge extends SubscribableProperty {
     }
 
     // endregion
-
 }

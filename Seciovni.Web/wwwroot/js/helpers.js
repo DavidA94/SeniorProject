@@ -3,10 +3,18 @@
  */
 
 /**
+ * @callback ValidTokenCallback
+ * @param {boolean} gotValidResponse
+ * @param {string|null} token
+ */
+
+
+/**
  * Ensures we have a valid token in the local storage
+ * @param {ValidTokenCallback} callback - The method to call once the token has been retrieved
  * @return {boolean}
  */
-function ensureValidToken(){
+function ensureValidToken(callback){
     // If we have the token time
     if(localStorage.getItem("AuthorizationTokenTime")){
 
@@ -15,7 +23,7 @@ function ensureValidToken(){
 
         // If we haven't expired, we're good
         if(expires - Date.now() > 0){
-            return true;
+            callback(true, localStorage.getItem("AuthorizationTokenTime"));
         }
     }
 
@@ -32,15 +40,15 @@ function ensureValidToken(){
                 localStorage.setItem(AUTH_TOKEN, response["token"]);
                 localStorage.setItem(AUTH_TOKEN_TIME, response["expires"]);
 
-                return true;
+                callback(true, response["token"]);
             }
             else {
-                return false;
+                callback(false, null);
             }
         }
     };
 
-    xmlhttp.open("GET", "/Account/GetAuthToken", false);
+    xmlhttp.open("GET", "/Account/GetAuthToken", true);
     xmlhttp.send()
 }
 
@@ -48,7 +56,7 @@ function ensureValidToken(){
  * Used for the 'keypress' event, and ensures that the input given is a number
  * @param e
  */
-function numricInput_keypress(e){
+function numericInput_keypress(e){
     // 46 = '.'; 48 = '0'; 57 = '9'
 
     // If it's not a ".", or [0-9], then no-go
@@ -73,41 +81,55 @@ function numricInput_keypress(e){
     }
 }
 
-function invoice_keydown(e, parentRow) {
-    if(e.keyCode >= 37 && e.keyCode <= 40) e.preventDefault();
+/**
+ * Handles the keydown event for invoice inputs
+ * @param e - The original keydown event
+ * @param {HTMLDivElement} parentRow - The parent row for the element that had the key pressed
+ * @param {MiscCharge|Payment|Vehicle} object - The object that owns the field that was modified
+ */
+function invoice_keydown(e, parentRow, object) {
 
-    // Left
-    if (e.keyCode == 37 && e.currentTarget.parentNode.previousElementSibling) {
-        let nodeToFocus = e.currentTarget.parentNode.previousElementSibling.firstElementChild;
+    if(e.altKey) {
+        if (e.keyCode >= 37 && e.keyCode <= 40) e.preventDefault();
 
-        while (nodeToFocus && nodeToFocus.disabled) {
-            nodeToFocus = nodeToFocus.parentNode.previousElementSibling.firstElementChild;
+        // Left
+        if (e.keyCode == 37 && e.currentTarget.parentNode.previousElementSibling) {
+            let nodeToFocus = e.currentTarget.parentNode.previousElementSibling.firstElementChild;
+
+            while (nodeToFocus && nodeToFocus.disabled) {
+                nodeToFocus = nodeToFocus.parentNode.previousElementSibling.firstElementChild;
+            }
+
+            if (nodeToFocus) nodeToFocus.focus();
+        }
+        // Up -- Need to check two up because of header row
+        else if (e.keyCode == 38 && parentRow.previousElementSibling.previousElementSibling) {
+            parentRow.previousElementSibling
+                .getElementsByClassName(e.currentTarget.parentNode.className)[0]
+                .firstElementChild
+                .focus();
+        }
+        // Right
+        else if (e.keyCode == 39 && e.currentTarget.parentNode.nextElementSibling) {
+            let nodeToFocus = e.currentTarget.parentNode.nextElementSibling.firstElementChild;
+
+            while (nodeToFocus && nodeToFocus.disabled) {
+                nodeToFocus = nodeToFocus.parentNode.nextElementSibling.firstElementChild;
+            }
+
+            if (nodeToFocus) nodeToFocus.focus();
+        }
+        // Down
+        else if (e.keyCode == 40 && parentRow.nextElementSibling) {
+            parentRow.nextElementSibling
+                .getElementsByClassName(e.currentTarget.parentNode.className)[0]
+                .firstElementChild
+                .focus();
         }
 
-        if (nodeToFocus) nodeToFocus.focus();
-    }
-    // Up -- Need to check two up because of header row
-    else if (e.keyCode == 38 && parentRow.previousElementSibling.previousElementSibling) {
-        parentRow.previousElementSibling
-            .getElementsByClassName(e.currentTarget.parentNode.className)[0]
-            .firstElementChild
-            .focus();
-    }
-    // Right
-    else if (e.keyCode == 39 && e.currentTarget.parentNode.nextElementSibling) {
-        let nodeToFocus = e.currentTarget.parentNode.nextElementSibling.firstElementChild;
-
-        while (nodeToFocus && nodeToFocus.disabled) {
-            nodeToFocus = nodeToFocus.parentNode.nextElementSibling.firstElementChild;
+        // Delete -- Ensure not the last row
+        else if(e.keyCode == 46 && parentRow.nextElementSibling){
+            object.destroy();
         }
-
-        if (nodeToFocus) nodeToFocus.focus();
-    }
-    // Down
-    else if (e.keyCode == 40 && parentRow.nextElementSibling) {
-        parentRow.nextElementSibling
-            .getElementsByClassName(e.currentTarget.parentNode.className)[0]
-            .firstElementChild
-            .focus();
     }
 }

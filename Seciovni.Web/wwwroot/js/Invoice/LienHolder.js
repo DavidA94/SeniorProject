@@ -43,8 +43,8 @@ class LienHolder{
         this._displayName = document.getElementById("invoiceLienHolder");
 
         // Subscribe to all the buttons that can be clicked
-        document.getElementById("getLienButton").addEventListener('click', this._showBound);
-        document.getElementById("closeLienDialog").addEventListener('click', this._hideBound);
+        document.getElementById(OPEN_LIEN_ID).addEventListener('click', this._showBound);
+        document.getElementById(CLOSE_LIEN_ID).addEventListener('click', this._hideBound);
 
         /**
          * @private
@@ -160,6 +160,8 @@ class LienHolder{
      */
     show(e){
         e.preventDefault();
+        document.getElementById(CLOSE_LIEN_ID).focus();
+
         this._dialog.show();
     }
 

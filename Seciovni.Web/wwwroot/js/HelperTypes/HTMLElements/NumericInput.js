@@ -41,9 +41,10 @@ class NumericInput extends TextInput{
          */
         this._makePretty = makePretty;
 
-        input.addEventListener("keypress", numricInput_keypress);
+        input.addEventListener("keypress", numericInput_keypress);
         input.addEventListener("focus", this.__getBoundFunc(this._makeInputEditable));
-        input.addEventListener("blur", this.__getBoundFunc(this._makeInputPretty));
+        // Not needed because TextInput sets the value, which calls this method
+        // input.addEventListener("blur", this.__getBoundFunc(this._makeInputPretty));
     }
 
     get value() { return this.htmlObj.value == "" ? -1 : this.numberVal; }
@@ -62,6 +63,9 @@ class NumericInput extends TextInput{
 
     _makeInputPretty(){
         const input = this.htmlObj;
+
+        console.trace();
+        console.log(input.value);
 
         // Leave blank if set to as such
         if (input.value === "") {

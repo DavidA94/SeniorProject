@@ -93,7 +93,7 @@ class Vehicle extends SubscribableProperty {
          * @param e
          * @private
          */
-        this._keydownEvent = (e) => invoice_keydown(e, this._parentRow);
+        this._keydownEvent = (e) => invoice_keydown(e, this._parentRow, this);
 
         // Get all the elements that can be bound to
         const elements = divRow.querySelectorAll(BIND_QUERY);

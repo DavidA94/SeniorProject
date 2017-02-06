@@ -84,10 +84,19 @@ class Invoice {
 
         /**
          * The lien holder data
-         * @type {Customer}
+         * @type {LienHolder}
          * @private
          */
         this._lienHolder = new LienHolder(document.getElementById(INVOICE_LIEN_HOLDER_ID));
+
+        /**
+         * The payments data
+         * @type {Payments}
+         * @private
+         */
+        this._payments = new Payments(document.getElementById(INVOICE_PAYMENTS_DATA_ID));
+        this._payments.subscribe(EVENT_DATA_SAVED, () => this._calculateTotal());
+        this._payments.initialize();
 
         /**
          * The event to fire when the last row has an element that changes
@@ -139,14 +148,13 @@ class Invoice {
      * @param {json} json - The JSON data
      */
     initialize_json(json){
-        this.initialize();
-
         this._state.value = json.State;
         this._customer.initialize_json(json.Buyer);
         this._lienHolder.initialize_json(json.LienHolder);
         this._tax.value = json.TaxAmount;
         this._docFee.value = json.DocFee;
         this._downPayment.value = json.DownPayment;
+
 
         for(let vehicle of json.Vehicles){
             this._vehicles[this._vehicles.length - 1].initialize_json(vehicle);
@@ -157,6 +165,7 @@ class Invoice {
         }
 
         this._calculateTotal();
+        this._payments.initialize_json(json.Payments);
     }
 
     /**
@@ -173,6 +182,7 @@ class Invoice {
         properties["TaxAmount"] = this._tax.value;
         properties["DocFee"] = this._docFee.value;
         properties["DownPayment"] = this._downPayment.value;
+        properties["Payments"] = this._payments;
 
         return properties;
     }
@@ -191,13 +201,14 @@ class Invoice {
         // Get the tax, doc fee, and down payment
         let total = Math.max(0, this._tax.value) +
             Math.max(0, this._docFee.value) - // << Subtract the down payment
-            Math.max(0, this._downPayment.value);
+            Math.max(0, this._downPayment.value) - // << Subtract the total payments
+            Math.max(0, this._payments.Total);
 
         // Add the amount for all the vehicles
-        for (let v of this._vehicles) total += Math.max(0, v.Price);
+        for (let v of this._vehicles) total += Math.max(0, v.Price.value);
 
         // Add the amount for all the miscellaneous charges
-        for (let c of this._miscCharges) total += Math.max(0, c.Price);
+        for (let c of this._miscCharges) total += Math.max(0, c.Price.value);
 
         // Update the total
         const prettyTotal = "$ " + total.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

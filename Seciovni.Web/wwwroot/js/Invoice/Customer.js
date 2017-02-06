@@ -62,8 +62,8 @@ class Customer {
         this._displayName = document.getElementById("invoiceCustomer");
 
         // Subscribe to all the buttons that can be clicked
-        document.getElementById("getCustomerButton").addEventListener('click', this._showBound);
-        document.getElementById("closeCustomerDialog").addEventListener('click', this._hideBound);
+        document.getElementById(OPEN_CUSTOMER_ID).addEventListener('click', this._showBound);
+        document.getElementById(CLOSE_CUSTOMER_ID).addEventListener('click', this._hideBound);
         document.getElementById("showContacts").addEventListener('click', this._swapBound);
         document.getElementById("showCustom").addEventListener('click', this._swapBound);
 
@@ -256,6 +256,8 @@ class Customer {
      */
     show(e){
         e.preventDefault();
+        document.getElementById(CLOSE_CUSTOMER_ID).focus();
+
         this._getContactPreviews();
         this._dialog.show();
     }
@@ -383,30 +385,34 @@ class Customer {
      */
     _getContactPreviews() {
 
-        if (!ensureValidToken()) {
-            this._loadContacts([]);
-            return;
-        }
+        this._loadContacts(null);
 
-        const xmlhttp = new XMLHttpRequest();
-
-        xmlhttp.onreadystatechange = () => {
-            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-                if (xmlhttp.status == 200) {
-                    this._loadContacts(JSON.parse(xmlhttp.response.toString()));
-                }
-                else {
-                    this._loadContacts([]);
-                }
+        ensureValidToken((valid, token) => {
+            if(!valid){
+                this._loadContacts([]);
+                return;
             }
-            else if(xmlhttp.readyState == XMLHttpRequest.OPENED){
-                this._loadContacts(null);
-            }
-        };
 
-        xmlhttp.open("GET", "https://localhost:44357/api/User/ContactsPreview", true);
-        xmlhttp.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("AuthorizationToken"));
-        xmlhttp.send();
+            const xmlhttp = new XMLHttpRequest();
+
+            xmlhttp.onreadystatechange = () => {
+                if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                    if (xmlhttp.status == 200) {
+                        this._loadContacts(JSON.parse(xmlhttp.response.toString()));
+                    }
+                    else {
+                        this._loadContacts([]);
+                    }
+                }
+                else if(xmlhttp.readyState == XMLHttpRequest.OPENED){
+                    this._loadContacts(null);
+                }
+            };
+
+            xmlhttp.open("GET", "https://localhost:44357/api/User/ContactsPreview", true);
+            xmlhttp.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("AuthorizationToken"));
+            xmlhttp.send();
+        });
     }
 
     /**
@@ -422,6 +428,7 @@ class Customer {
         if(contacts === null){
             const loading = document.createElement("img");
             loading.src = "/images/loading.svg";
+            loading.className = "loadingSpinner centerSpinner";
             listNode.appendChild(loading);
             return;
         }
@@ -432,6 +439,9 @@ class Customer {
             noContacts.className = "row";
 
             listNode.appendChild(noContacts);
+
+            // Start with the customer instead
+            this.swap(new Event(""));
         }
 
         for (let contact of contacts) {

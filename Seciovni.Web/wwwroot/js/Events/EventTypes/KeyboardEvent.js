@@ -15,7 +15,7 @@ const KeyboardEventType = {
 class KeyboardEvent extends BaseEventType {
     /**
      * Creates a new MouseEvent
-     * @param {KeyboardEventType} event - The mouse event that occurred
+     * @param {KeyboardEventType} event - The keyboard event that occurred
      */
     constructor(event){
         super();
