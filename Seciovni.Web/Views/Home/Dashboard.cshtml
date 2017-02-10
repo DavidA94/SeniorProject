@@ -7,7 +7,7 @@
     @*http://www.istockphoto.com/vector/file-document-icon-set-vector-eps10-gm527795151-53395100?st=86db603*@
     @if (User.HasClaim(c => c.Type == AccessPolicy.EditInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
     {
-        <a href="#" id="dashboardNewInvoice" class="dashboardButton"><p>New Invoice</p></a> 
+        <a asp-controller="Invoice" asp-action="Edit" class="dashboardButton"><p>New Invoice</p></a>
     }
     @if (User.HasClaim(c => c.Type == AccessPolicy.ViewInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
     { 

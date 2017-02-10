@@ -112,15 +112,13 @@ class Payments extends Subscribable {
      * @param {json} payments - The array of JSON payments
      */
     initialize_json(payments){
-        console.log(payments);
-
         // Inject all of the payments
         for(let payment of payments){
             this._payments[this._payments.length - 1].initialize_json(payment);
         }
 
         // This also updates the price stored
-        this._getPrettyTotal();
+        this._totalPaymentsInner.innerHTML = this._totalPaymentsOuter.innerHTML = this._getPrettyTotal();
         this.__dispatchEvent(EVENT_DATA_SAVED, new DataSavedEventArgs(this));
     }
 
@@ -142,6 +140,7 @@ class Payments extends Subscribable {
         e.preventDefault();
         this._dialog.close();
 
+        this._totalPaymentsOuter.innerHTML = this._getPrettyTotal();
         this.__dispatchEvent(EVENT_DATA_SAVED, new DataSavedEventArgs(this));
     }
 

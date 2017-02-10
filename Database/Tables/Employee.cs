@@ -11,6 +11,11 @@ namespace Database.Tables
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int EmployeeID { get; set; }
 
+        /// <summary>
+        /// The foreign key for User
+        /// </summary>
+        public int UserID { get; set; }
+
         public User User { get; set; }
 
         public JobType Job { get; set; }

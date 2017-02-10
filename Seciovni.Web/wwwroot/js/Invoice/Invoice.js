@@ -4,6 +4,30 @@ class Invoice {
 
     constructor() {
 
+        this._saveButton = document.getElementById("saveButton");
+        this._saveButton.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            postToApi("Invoice/Save", JSON.stringify(this), (xmlhttp) =>{
+                if(xmlhttp === null) {
+                    alert("Failed to contact server");
+                    return;
+                }
+                if(xmlhttp.readyState == XMLHttpRequest.DONE){
+                    if(xmlhttp.status === 200){
+                        const response = JSON.parse(xmlhttp.response);
+
+                        const valid = response.successful;
+                        const message = response.message;
+
+                        if(!valid){
+                            alert(message);
+                        }
+                    }
+                }
+            });
+        });
+
         /**
          * Holds the vehicles in this invoice
          * @type {Array<Vehicle>}

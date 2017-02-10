@@ -23,7 +23,7 @@ namespace Database.Tables
 
         public IList<MiscellaneousFee> Fees { get; set; }
         
-        public User SalesPerson { get; set; }
+        public Employee SalesPerson { get; set; }
 
         [Required]
         public decimal DocFee { get; set; }

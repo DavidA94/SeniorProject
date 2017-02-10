@@ -13,6 +13,12 @@ namespace Database.Tables
 {
     public class Address : IValidatableObject
     {
+        public Address()
+        {
+            // Until we support other countries
+            Country = Country.USA;
+        }
+
         [Key]
         [JsonIgnore]
         public int AddressID { get; set; }

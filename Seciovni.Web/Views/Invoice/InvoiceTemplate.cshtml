@@ -4,17 +4,33 @@
 
 
 <form method="post" action="#" id="invoiceForm">
+    <div id="invoiceHeader">
+        <div id="leftHeader">
+            <button id="saveButton"><img src="~/images/save.png" /> Save Invoice</button>
+            @if (Model.InvoiceID > 0)
+            {
+                <button id="deleteButton"><img src="~/images/cancel.png" /> Delete Invoice</button>
+            }
+        </div>
+    </div>
     <div id="invoiceData">
-        <div>Invoice Number: @Model.InvoiceID</div>
-        <div>Invoice Date: @Model.InvoiceDate.ToString("yyyy-MM-dd")</div>
+        @if (Model.InvoiceID > 0)
+        {
+            <p>Invoice @Model.InvoiceID</p>
+        }
+        else
+        {
+            <p>New Invoice</p>
+        }
+        <div><b>Date:</b> @Model.InvoiceDate.ToString("yyyy-MM-dd")</div>
     </div>
     <div id="invoiceState" class="row">
-        <label class="cell" for="invoiceState">Invoice State</label>
+        <label class="cell invoiceTopLeft" for="invoiceState">Invoice State:</label>
         <select class="cell" id="invoicState" asp-items="@Html.GetEnumSelectList<InvoiceState>()"></select>
     </div>
     <div id="invoiceCustomerDiv" class="row">
         <div>
-            <label for="openCustomerButton">Customer Name: </label>
+            <label for="openCustomerButton" class="invoiceTopLeft">Customer Name: </label>
             <input id="invoiceCustomer" disabled="disabled" />
             <button id="openCustomerButton">•••</button>
         </div>
@@ -35,7 +51,7 @@
                 </div>
                 <h2>Contact</h2>
                 <div id="invoiceContact" class="row">
-                    <input data-bind="Email" type="email" autocomplete="email" placeholder-title="Buyer.User.Email" /><input data-bind="PhoneNumber" type="text" autocomplete="tel" placeholder-title="Buyer.PhoneNumbers[0].Number" />
+                    <input data-bind="Email" type="email" autocomplete="email" placeholder-title="Buyer.User.Email" /><input data-bind="Number" type="text" autocomplete="tel" placeholder-title="Buyer.PhoneNumbers[0].Number" />
                 </div>
                 <div id="invoiceAddress">
                     <h2>Address</h2>
@@ -62,29 +78,29 @@
     </div>
     <div id="invoiceLienHolderDiv" class="row">
         <div>
-            <label for="openLienButton">Lien Holder:</label>
+            <label for="openLienButton" class="invoiceTopLeft">Lien Holder:</label>
             <input id="invoiceLienHolder" disabled="disabled" />
             <button id="openLienButton">•••</button>
         </div>
         <dialog id="invoiceLienHolderData" class="invoiceDialog">
             <h1>Lien Holder</h1>
+            <div class="row">
+                <input class="fullWidth" data-bind="Name" type="text" autocomplete="organization" placeholder-title="LienHolder.Name" />
+            </div>
+            <div id="invoiceLienAddress">
                 <div class="row">
-                    <input class="fullWidth" data-bind="Name" type="text" autocomplete="organization" placeholder-title="LienHolder.Name" />
+                    <input class="fullWidth" data-bind="StreetAddress" type="text" autocomplete="street-address" placeholder-title="LienHolder.Address.StreetAddress" />
                 </div>
-                <div id="invoiceLienAddress">
-                    <div class="row">
-                        <input class="fullWidth" data-bind="StreetAddress" type="text" autocomplete="street-address" placeholder-title="LienHolder.Address.StreetAddress" />
-                    </div>
-                    <div class="row">
-                        <input class="invoiceAddrCity" data-bind="City" type="text" autocomplete="address-level2" placeholder-title="LienHolder.Address.City" /><input class="invoiceAddrState" data-bind="State" type="text" autocomplete="address-level1" placeholder-title="LienHolder.Address.State" maxlength="2" /><input class="invoiceAddrZip" data-bind="ZipCode" type="text" autocomplete="postal-code" placeholder-title="LienHolder.Address.ZipCode" maxlength="5" />
-                    </div>
+                <div class="row">
+                    <input class="invoiceAddrCity" data-bind="City" type="text" autocomplete="address-level2" placeholder-title="LienHolder.Address.City" /><input class="invoiceAddrState" data-bind="State" type="text" autocomplete="address-level1" placeholder-title="LienHolder.Address.State" maxlength="2" /><input class="invoiceAddrZip" data-bind="ZipCode" type="text" autocomplete="postal-code" placeholder-title="LienHolder.Address.ZipCode" maxlength="5" />
                 </div>
-                <div id="invoiceBusinessInfo" class="row">
-                    <input class="lienInputFullWidth" data-bind="EIN" type="text" placeholder-title="LienHolder.EIN" />
-                </div>
-                <div class="saveButton">
-                    <button id="closeLienButton">Save Lien Holder</button>
-                </div>
+            </div>
+            <div id="invoiceBusinessInfo" class="row">
+                <input class="lienInputFullWidth" data-bind="EIN" type="text" placeholder-title="LienHolder.EIN" />
+            </div>
+            <div class="saveButton">
+                <button id="closeLienButton">Save Lien Holder</button>
+            </div>
         </dialog>
     </div>
 
@@ -175,11 +191,6 @@
             <div id="invoiceTotalDue">$ 0.00</div>
         </div>
     </div>
-
-    <div>
-        <input type="submit" name="draft" value="Save Draft" />
-        <input type="submit" name="save" value="Save Invoice" />
-    </div>
 </form>
 
 <script src="~/js/Events/EventTypes/EventArgs.js"></script>
@@ -197,6 +208,9 @@
 <script src="~/js/HelperTypes/HTMLElements/MoneyInput.js"></script>
 <script src="~/js/Invoice/Vehicle.js"></script>
 <script src="~/js/Invoice/MiscCharge.js"></script>
+<script src="~/js/Invoice/User.js"></script>
+<script src="~/js/Invoice/Address.js"></script>
+<script src="~/js/Invoice/PhoneNumber.js"></script>
 <script src="~/js/Invoice/Customer.js"></script>
 <script src="~/js/Invoice/LienHolder.js"></script>
 <script src="~/js/Invoice/Payment.js"></script>

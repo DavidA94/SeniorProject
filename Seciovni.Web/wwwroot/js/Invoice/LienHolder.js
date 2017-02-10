@@ -4,14 +4,11 @@
 
 class LienFields {
     static get name() { return "Name"; }
-    static get address() { return "StreetAddress"; }
-    static get city() { return "City"; }
-    static get state() { return "State"; }
-    static get zip() { return "ZipCode"; }
+    static get address() { return "Address"; }
     static get ein() { return "EIN"; }
 }
 
-class LienHolder{
+class LienHolder {
     // region CTOR
 
     constructor(lienDialog){
@@ -54,27 +51,9 @@ class LienHolder{
 
         /**
          * @private
-         * @type {BaseHtmlElement}
+         * @type {Address}
          */
-        this._address = null;
-
-        /**
-         * @private
-         * @type {BaseHtmlElement}
-         */
-        this._city = null;
-
-        /**
-         * @private
-         * @type {BaseHtmlElement}
-         */
-        this._state = null;
-
-        /**
-         * @private
-         * @type {BaseHtmlElement}
-         */
-        this._zip = null;
+        this._address = new Address();
 
         /**
          * @private
@@ -95,17 +74,17 @@ class LienHolder{
                 case LienFields.name:
                     this._name = element = new TextInput(elements[i]);
                     break;
-                case LienFields.address:
-                    this._address = element = new TextInput(elements[i]);
+                case AddressFields.address:
+                    this._address.Address = element = new TextInput(elements[i]);
                     break;
-                case LienFields.city:
-                    this._city = element = new TextInput(elements[i]);
+                case AddressFields.city:
+                    this._address.City = element = new TextInput(elements[i]);
                     break;
-                case LienFields.state:
-                    this._state = element = new TextInput(elements[i]);
+                case AddressFields.state:
+                    this._address.State = element = new TextInput(elements[i]);
                     break;
-                case LienFields.zip:
-                    this._zip = element = new NumericInput(elements[i], "", 0, false);
+                case AddressFields.zip:
+                    this._address.Zip = element = new NumericInput(elements[i], "", 0, false);
                     break;
                 case LienFields.ein:
                     this._ein = element = new TextInput(elements[i]);
@@ -142,13 +121,8 @@ class LienHolder{
      * @param {json} json - The JSON data
      */
     initialize_json(json){
-        const zip = json[LienHolder.zip];
-
         this._name.value = json[LienFields.name];
-        this._address.value = json[LienFields.address];
-        this._city.value = json[LienFields.city];
-        this._state.value = json[LienFields.state];
-        this._zip.htmlObj.value = (isNaN(zip) || zip === "") ? "" : parseInt(zip);
+        this._address.initialize_json(json[LienFields.address]);
         this._ein.value = json[LienFields.ein];
 
         this._updatePreviewField();
@@ -183,10 +157,7 @@ class LienHolder{
     toJSON(){
         const properties = {};
         properties[LienFields.name] = this._name.value;
-        properties[LienFields.address] = this._address.value;
-        properties[LienFields.city] = this._city.value;
-        properties[LienFields.state] = this._state.value;
-        properties[LienFields.zip] = this._zip.htmlObj.value;
+        properties[LienFields.address] = this._address;
         properties[LienFields.ein] = this._ein.value;
 
         return properties;

@@ -64,9 +64,6 @@ class NumericInput extends TextInput{
     _makeInputPretty(){
         const input = this.htmlObj;
 
-        console.trace();
-        console.log(input.value);
-
         // Leave blank if set to as such
         if (input.value === "") {
             return;

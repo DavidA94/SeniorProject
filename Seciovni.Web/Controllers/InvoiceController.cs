@@ -11,15 +11,20 @@ namespace Seciovni.Web.Controllers
 {
     public class InvoiceController : Controller
     {
-        // GET: /<controller>/Edit -- New invoice
-        public IActionResult Edit()
-        {
-            return View();
-        }
-
         // GET: /<controller>/<id> -- Editing an existing invoice
-        public IActionResult Edit(int id)
+        public IActionResult Edit(int id = -1)
         {
+            if(id == -1)
+            {
+                ViewData["Title"] = "New Invoice";
+                return View(new Invoice()
+                {
+                    InvoiceID = -1,
+                    InvoiceDate = DateTime.Now
+                });
+            }
+
+            ViewData["Title"] = "Invoice " + id;
             return View();
         }
 

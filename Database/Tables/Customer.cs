@@ -33,5 +33,10 @@ namespace Database.Tables
         public List<PhoneNumber> PhoneNumbers { get; set; }
 
         public List<EmailAddress> Emails { get; set; }
+
+        /// <summary>
+        /// Foreign key to be able to access who owns a customer
+        /// </summary>
+        public int EmployeeID { get; set; }
     }
 }

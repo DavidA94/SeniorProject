@@ -3,14 +3,9 @@
  */
 
 class CustomerFields {
-    static get firstName() { return "FirstName"; }
-    static get lastName() { return "LastName"; }
-    static get email() { return "Email"; }
-    static get phone() { return "PhoneNumber"; }
-    static get address() { return "StreetAddress"; }
-    static get city() { return "City"; }
-    static get state() { return "State"; }
-    static get zip() { return "ZipCode"; }
+    static get user() { return "User"; }
+    static get address() { return "Address"; }
+    static get phoneNumbers() { return "PhoneNumbers"; }
     static get company() { return "CompanyName"; }
     static get licenseNum() { return "DealerLicenseNumber"; }
     static get mcNum() { return "MCNumber"; }
@@ -81,54 +76,23 @@ class Customer {
          */
         this._showingContacts = true;
 
+        /**
+         * @private
+         * @type {User}
+         */
+        this._user = new User();
 
         /**
          * @private
-         * @type {BaseHtmlElement}
+         * @type {Address}
          */
-        this._firstName = null;
+        this._address = new Address();
 
         /**
          * @private
-         * @type {BaseHtmlElement}
+         * @type {[PhoneNumber]}
          */
-        this._lastName = null;
-
-        /**
-         * @private
-         * @type {BaseHtmlElement}
-         */
-        this._email = null;
-
-        /**
-         * @private
-         * @type {BaseHtmlElement}
-         */
-        this._phone = null;
-
-        /**
-         * @private
-         * @type {BaseHtmlElement}
-         */
-        this._address = null;
-
-        /**
-         * @private
-         * @type {BaseHtmlElement}
-         */
-        this._city = null;
-
-        /**
-         * @private
-         * @type {BaseHtmlElement}
-         */
-        this._state = null;
-
-        /**
-         * @private
-         * @type {BaseHtmlElement}
-         */
-        this._zip = null;
+        this._phoneNumbers = [new PhoneNumber()];
 
         /**
          * @private
@@ -164,29 +128,29 @@ class Customer {
             let element = null;
 
             switch(attribute){
-                case CustomerFields.firstName:
-                    this._firstName = element = new TextInput(elements[i]);
+                case UserFields.firstName:
+                    this._user.FirstName = element = new TextInput(elements[i]);
                     break;
-                case CustomerFields.lastName:
-                    this._lastName = element = new TextInput(elements[i]);
+                case UserFields.lastName:
+                    this._user.LastName = element = new TextInput(elements[i]);
                     break;
-                case CustomerFields.email:
-                    this._email = element = new TextInput(elements[i]);
+                case UserFields.email:
+                    this._user.Email = element = new TextInput(elements[i]);
                     break;
-                case CustomerFields.phone:
-                    this._phone = element = new TextInput(elements[i]);
+                case PhoneFields.number:
+                    this._phoneNumbers[0].Number = element = new TextInput(elements[i]);
                     break;
-                case CustomerFields.address:
-                    this._address = element = new TextInput(elements[i]);
+                case AddressFields.address:
+                    this._address.Address = element = new TextInput(elements[i]);
                     break;
-                case CustomerFields.city:
-                    this._city = element = new TextInput(elements[i]);
+                case AddressFields.city:
+                    this._address.City = element = new TextInput(elements[i]);
                     break;
-                case CustomerFields.state:
-                    this._state = element = new TextInput(elements[i]);
+                case AddressFields.state:
+                    this._address.State = element = new TextInput(elements[i]);
                     break;
-                case CustomerFields.zip:
-                    this._zip = element = new NumericInput(elements[i], "", 0, false);
+                case AddressFields.zip:
+                    this._address.Zip = element = new NumericInput(elements[i], "", 0, false);
                     break;
                 case CustomerFields.company:
                     this._company = element = new TextInput(elements[i]);
@@ -206,34 +170,6 @@ class Customer {
             element.subscribe(EVENT_PROPERTY_CHANGE, this._boundFieldUpdated);
         }
     }
-
-    // endregion
-
-    // region Public Properties
-
-    /**
-     * The customer's first name
-     * @return {string}
-     */
-    get FirstName() { return this._firstName.value; }
-
-    /**
-     * The customer's first name
-     * @param {string} value
-     */
-    set FirstName(value) { this._firstName.value = value; }
-
-    /**
-     * The customer's first name
-     * @return {string}
-     */
-    get LastName() { return this._lastName.value; }
-
-    /**
-     * The customer's first name
-     * @param {string} value
-     */
-    set LastName(value) { this._lastName.value = value; }
 
     // endregion
 
@@ -293,21 +229,19 @@ class Customer {
      * @param {json} json - The JSON data
      */
     initialize_json(json){
-        const zip = json[CustomerFields.zip];
 
-        this._firstName.value = json[CustomerFields.firstName];
-        this._lastName.value = json[CustomerFields.lastName];
-        this._phone.value = json[CustomerFields.email];
-        this._email.value = json[CustomerFields.phone];
-        this._address.value = json[CustomerFields.address];
-        this._city.value = json[CustomerFields.city];
-        this._state.value = json[CustomerFields.state];
-        this._zip.htmlObj.value = (isNaN(zip) || zip === "") ? "" : parseInt(zip);
+        this._contactID = json["CustomerID"];
+        this._user.initialize_json(json[CustomerFields.user]);
+        this._address.initialize_json(json[CustomerFields.address]);
+        this._phoneNumbers[0].initialize_json(json[CustomerFields.phoneNumbers]);
         this._company.value = json[CustomerFields.company];
         this._licenseNum.value = json[CustomerFields.licenseNum];
         this._mcNum.value = json[CustomerFields.mcNum];
         this._resaleNum.value = json[CustomerFields.resaleNum];
-        this._contactID = json["CustomerID"];
+
+        if(this._contactID >= 0){
+            this._getContactPreviews();
+        }
 
         this._updatePreviewField();
         if(this._contactID === -1) this.swap(new Event(""));
@@ -319,19 +253,15 @@ class Customer {
      */
     toJSON(){
         const properties = {};
-        properties[CustomerFields.firstName] = this._firstName.value;
-        properties[CustomerFields.lastName] = this._lastName.value;
-        properties[CustomerFields.email] = this._phone.value;
-        properties[CustomerFields.phone] = this._email.value;
-        properties[CustomerFields.address] = this._address.value;
-        properties[CustomerFields.city] = this._city.value;
-        properties[CustomerFields.state] = this._state.value;
-        properties[CustomerFields.zip] = this._zip.htmlObj.value;
+        properties["CustomerID"] = this._contactID;
+        properties[CustomerFields.user] = this._user;
+        properties[CustomerFields.address] = this._address;
+        properties[CustomerFields.phoneNumbers] = this._phoneNumbers;
+
         properties[CustomerFields.company] = this._company.value;
         properties[CustomerFields.licenseNum] = this._licenseNum.value;
         properties[CustomerFields.mcNum] = this._mcNum.value;
         properties[CustomerFields.resaleNum] = this._resaleNum.value;
-        properties["CustomerID"] = this._contactID;
 
         return properties;
     }
@@ -488,7 +418,7 @@ class Customer {
             this._displayName.value = document.getElementById(CHOSEN_CONTACT_ID).getElementsByTagName("b")[0].innerHTML;
         }
         else{
-            this._displayName.value = this.FirstName + " " + this.LastName;
+            this._displayName.value = this._user.FirstName + " " + this._user.LastName;
         }
     }
 

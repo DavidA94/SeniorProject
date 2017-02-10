@@ -9,9 +9,10 @@ using Shared;
 namespace Seciovni.APIs.Migrations
 {
     [DbContext(typeof(SeciovniContext))]
-    partial class SeciovniContextModelSnapshot : ModelSnapshot
+    [Migration("20170208041758_Adding payment fields")]
+    partial class Addingpaymentfields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
@@ -59,7 +60,7 @@ namespace Seciovni.APIs.Migrations
 
                     b.Property<string>("DealerLicenseNumber");
 
-                    b.Property<int>("EmployeeID");
+                    b.Property<int?>("EmployeeID");
 
                     b.Property<string>("Group");
 
@@ -100,7 +101,7 @@ namespace Seciovni.APIs.Migrations
 
                     b.Property<int>("Job");
 
-                    b.Property<int>("UserID");
+                    b.Property<int?>("UserID");
 
                     b.HasKey("EmployeeID");
 
@@ -125,7 +126,7 @@ namespace Seciovni.APIs.Migrations
 
                     b.Property<int?>("LienHolderLienID");
 
-                    b.Property<int?>("SalesPersonEmployeeID");
+                    b.Property<int?>("SalesPersonUserID");
 
                     b.Property<int>("State");
 
@@ -137,7 +138,7 @@ namespace Seciovni.APIs.Migrations
 
                     b.HasIndex("LienHolderLienID");
 
-                    b.HasIndex("SalesPersonEmployeeID");
+                    b.HasIndex("SalesPersonUserID");
 
                     b.ToTable("Invoices");
                 });
@@ -390,8 +391,7 @@ namespace Seciovni.APIs.Migrations
                 {
                     b.HasOne("Database.Tables.Employee")
                         .WithMany("Contacts")
-                        .HasForeignKey("EmployeeID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("EmployeeID");
 
                     b.HasOne("Database.Tables.User", "User")
                         .WithMany()
@@ -409,8 +409,7 @@ namespace Seciovni.APIs.Migrations
                 {
                     b.HasOne("Database.Tables.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserID");
                 });
 
             modelBuilder.Entity("Database.Tables.Invoice", b =>
@@ -423,9 +422,9 @@ namespace Seciovni.APIs.Migrations
                         .WithMany()
                         .HasForeignKey("LienHolderLienID");
 
-                    b.HasOne("Database.Tables.Employee", "SalesPerson")
+                    b.HasOne("Database.Tables.User", "SalesPerson")
                         .WithMany()
-                        .HasForeignKey("SalesPersonEmployeeID");
+                        .HasForeignKey("SalesPersonUserID");
                 });
 
             modelBuilder.Entity("Database.Tables.InvoicePageTemplate", b =>

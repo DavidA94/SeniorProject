@@ -70,8 +70,8 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #endData{margin:10px 0;overflow:hidden;}
 #endData > div {margin:5px 0;overflow:hidden;}
 #endData .endLabel {width:790px;margin-right:10px;text-align:right;float:left;clear:left;}
-#endData .price {width:100px;float:left;}
-#endData .price input {width:100%;text-align:right;border:1px solid #333;}
+#endData .price {width:93px;float:left;}
+#endData .price input {width:100%;text-align:right;border:1px solid #333;padding:1px 3px;}
 #endData #invoiceTotalDue, #endData #totalPayments {text-align:right;padding-right:5px;width:100px;float:left;}
 
 #paymentEndData {margin:5px 0;overflow:hidden;}
@@ -90,3 +90,16 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 
 .loadingSpinner {width:100px;}
 .centerSpinner {display:block;margin:auto;}
+
+#invoiceHeader {margin:1em 0;overflow:hidden;padding-bottom:.5em;border-bottom:1px solid #bbb;}
+#invoiceHeader #leftHeader {float:left;}
+#invoiceHeader #leftHeader #deleteButton {background:#dadada;border:1px solid #aaa;}
+#invoiceHeader #leftHeader #deleteButton:hover {background:#dfdfdf;border-color:maroon;color:maroon;}
+#invoiceHeader #rightHeader {float:right;}
+#invoiceHeader button {margin-right:.5em;padding:4px;}
+#invoiceHeader button img {position:relative;top:-1px;}
+
+.invoiceTopLeft{float:left;width:125px;}
+
+#invoiceData {margin-bottom:1em;}
+#invoiceData p {font-size:1.7em;font-weight:bold;margin-bottom:0;}

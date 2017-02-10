@@ -268,7 +268,6 @@ class Vehicle extends SubscribableProperty {
                 this.Year.value = "";
             }
             else if (Vehicle._validateVIN(value)) {
-                console.log("VALID");
                 this._vin.error = null;
                 this.Make.value = Vehicle._getMake(value);
                 this.Year.value = Vehicle._getYear(value);

@@ -32,7 +32,7 @@ namespace Database.CustomValidators
             // Loop through and figure out the value of the VIN
             for(int i = 0; i < vin.Length; ++i)
             {
-                int letterVal = (int)vin[i];
+                int letterVal = alphaNum[vin[i]];
                 int weight = posWeight[i];
 
                 vinProduct += letterVal * weight;
