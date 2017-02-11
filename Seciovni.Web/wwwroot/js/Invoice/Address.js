@@ -17,7 +17,7 @@ class Address {
          * @private
          * @type {BaseHtmlElement}
          */
-        this._address = null;
+        this._streetAddress = null;
 
         /**
          * @private
@@ -35,7 +35,7 @@ class Address {
          * @private
          * @type {BaseHtmlElement}
          */
-        this._zip = null;
+        this._zipCode = null;
     }
 
     // endregion
@@ -46,13 +46,13 @@ class Address {
      * The Address
      * @return {BaseHtmlElement}
      */
-    get Address() { return this._address; }
+    get StreetAddress() { return this._streetAddress; }
 
     /**
      * The address
      * @param {BaseHtmlElement} value
      */
-    set Address(value) { this._address = value;}
+    set StreetAddress(value) { this._streetAddress = value;}
 
     /**
      * The City
@@ -82,13 +82,13 @@ class Address {
      * The ZIP
      * @return {BaseHtmlElement}
      */
-    get Zip() { return this._zip; }
+    get Zip() { return this._zipCode; }
 
     /**
      * The ZIP
      * @param {BaseHtmlElement} value
      */
-    set Zip(value) { this._zip = value; }
+    set Zip(value) { this._zipCode = value; }
 
     // endregion
 
@@ -98,18 +98,18 @@ class Address {
         const zip = json[AddressFields.zip];
         console.log(zip);
 
-        this._address.value = json[AddressFields.address];
+        this._streetAddress.value = json[AddressFields.address];
         this._city.value = json[AddressFields.city];
         this._state.value = json[AddressFields.state];
-        this._zip.htmlObj.value = (isNaN(zip) || zip === "") ? "" : parseInt(zip);
+        this._zipCode.htmlObj.value = (isNaN(zip) || zip === "") ? "" : parseInt(zip);
     }
 
     toJSON(){
         const properties = {};
-        properties[AddressFields.address] = this._address.value;
+        properties[AddressFields.address] = this._streetAddress.value;
         properties[AddressFields.city] = this._city.value;
         properties[AddressFields.state] = this._state.value;
-        properties[AddressFields.zip] = this._zip.htmlObj.value;
+        properties[AddressFields.zip] = this._zipCode.htmlObj.value;
 
         return properties;
     }

@@ -75,7 +75,7 @@ class LienHolder {
                     this._name = element = new TextInput(elements[i]);
                     break;
                 case AddressFields.address:
-                    this._address.Address = element = new TextInput(elements[i]);
+                    this._address.StreetAddress = element = new TextInput(elements[i]);
                     break;
                 case AddressFields.city:
                     this._address.City = element = new TextInput(elements[i]);

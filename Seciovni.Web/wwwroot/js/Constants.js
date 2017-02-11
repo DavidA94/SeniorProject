@@ -40,6 +40,7 @@ const EVENT_SCALE_CHANGE = "scalechange";
 const EVENT_BEGIN_CAPTION_RESIZE = "beginCaptionResize";
 const EVENT_END_CAPTION_RESIZE = "endCaptionResize";
 const EVENT_DATA_SAVED = "dataSaved";
+const EVENT_OBJECT_DESTROYED = "objectdestroyed";
 
 // endregion
 

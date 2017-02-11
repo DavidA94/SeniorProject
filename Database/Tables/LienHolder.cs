@@ -9,7 +9,6 @@ namespace Database.Tables
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int LienID { get; set; }
 
-        [Display(Name = "Lien Holder Name")]
         public string Name { get; set; }
         public Address Address { get; set; }
         public string EIN { get; set; }

@@ -141,7 +141,7 @@ class Customer {
                     this._phoneNumbers[0].Number = element = new TextInput(elements[i]);
                     break;
                 case AddressFields.address:
-                    this._address.Address = element = new TextInput(elements[i]);
+                    this._address.StreetAddress = element = new TextInput(elements[i]);
                     break;
                 case AddressFields.city:
                     this._address.City = element = new TextInput(elements[i]);
@@ -300,11 +300,11 @@ class Customer {
             }
         }
         else if(e.propertyName === CustomerFields.zip){
-            if(this._zip.value.length < 5 || this._zip.value.length > 6){
-                this._zip.error = "Invalid ZIP code";
+            if(this._zipCode.value.length < 5 || this._zipCode.value.length > 6){
+                this._zipCode.error = "Invalid ZIP code";
             }
             else{
-                this._zip.error = null;
+                this._zipCode.error = null;
             }
         }
     }
@@ -385,7 +385,7 @@ class Customer {
             nameNode.innerHTML = "<b>" + contact.user.firstName + " " + contact.user.lastName + "</b>";
 
             const addressNode = document.createElement("p");
-            addressNode.innerHTML = contact.address.streetAddress + " " + contact.address.city + ", " +
+            addressNode.innerHTML = contact.address.StreetAddress + " " + contact.address.city + ", " +
                 contact.address.state + " " + contact.address.zipCode;
 
             const emailNode = document.createElement("p");

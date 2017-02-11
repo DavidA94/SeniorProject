@@ -12,6 +12,11 @@ class BaseHtmlElement extends SubscribableProperty {
          */
         this._htmlObj = htmlObj;
 
+        // Clear the error every time the field changes, so we don't have
+        // to worry about errors no longer being valid after things are
+        // flagged from the server
+        htmlObj.addEventListener('change', () => this.error = null, true);
+
         /**
          * @type {object<function, function>}
          * @private
@@ -76,7 +81,7 @@ class BaseHtmlElement extends SubscribableProperty {
     get htmlObj() { return this._htmlObj; }
 
     /**
-     * Indicates if this element has an error on it
+     * The error on this HTML element
      * @param {string|null} value - The error the cell has -- null if no error
      */
     set error(value) {
@@ -89,6 +94,12 @@ class BaseHtmlElement extends SubscribableProperty {
             this.htmlObj.setAttribute("title", value);
         }
     }
+
+    /**
+     * The error on this HTML element
+     * @return {string|null}
+     */
+    get error() { return this.htmlObj.hasAttribute(ERROR_ATTRIB) ? this.htmlObj.getAttribute(ERROR_ATTRIB) : null; }
 
     /**
      * The Value of the field

@@ -75,8 +75,8 @@ namespace Database.Tables
         {
             using (var client = new HttpClient())
             {
-                XElement root = new XElement("AddressValidateRequest", new XAttribute("USERID", ""));
-                root.Add(new XElement("IncludesOptionalElements", false));
+                XElement root = new XElement("AddressValidateRequest", new XAttribute("USERID", "419NA0000090"));
+                root.Add(new XElement("IncludeOptionalElements", false));
                 root.Add(new XElement("ReturnCarrierRoute", false));
 
                 var address = new XElement("Address", new XAttribute("ID", 0));
@@ -98,10 +98,11 @@ namespace Database.Tables
 
                     if (response.IsSuccessStatusCode)
                     {
-                        var xmlResponse = XElement.Parse(response.Content.ReadAsStringAsync().Result);
+                        var result = response.Content.ReadAsStringAsync().Result;
+                        var xmlResponse = XElement.Parse(result);
 
                         // <Error> in the XML indicates an invalid address
-                        return xmlResponse.Descendants().Any(n => n.Name.LocalName.ToLower() == "error");
+                        return !xmlResponse.Descendants().Any(n => n.Name.LocalName.ToLower() == "error");
                     }
                     else return false;
                 }

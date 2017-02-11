@@ -11,9 +11,12 @@ namespace Shared.ApiResponses
         {
             Successful = successful;
             Message = message;
+            Errors = new List<Error>();
         }
 
         public bool Successful { get; private set; }
         public string Message { get; private set; }
+
+        public List<Error> Errors { get; set; }
     }
 }

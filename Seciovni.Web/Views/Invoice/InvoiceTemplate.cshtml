@@ -30,7 +30,7 @@
     </div>
     <div id="invoiceCustomerDiv" class="row">
         <div>
-            <label for="openCustomerButton" class="invoiceTopLeft">Customer Name: </label>
+            <label for="openCustomerButton" class="invoiceTopLeft">Buyer Name: </label>
             <input id="invoiceCustomer" disabled="disabled" />
             <button id="openCustomerButton">•••</button>
         </div>
@@ -183,7 +183,7 @@
             <div class="price"><input type="text" id="downPayment" /></div>
         </div>
         <div>
-            <div class="endLabel">Total Payments <a href="#" id="openPaymentsButton">(Edit)</a>:</div>
+            <div class="endLabel"><a href="#" id="openPaymentsButton">Total Payments</a>:</div>
             <div id="totalPayments">$ 0.00</div>
         </div>
         <div>
@@ -196,6 +196,7 @@
 <script src="~/js/Events/EventTypes/EventArgs.js"></script>
 <script src="~/js/Events/EventTypes/PropertyChangedEventArgs.js"></script>
 <script src="~/js/Events/EventTypes/DataSavedEventArgs.js"></script>
+<script src="~/js/Events/EventTypes/ObjectDestroyedEventArgs.js"></script>
 
 <script src="~/js/Invoice/Constants.js"></script>
 <script src="~/js/Constants.js"></script>

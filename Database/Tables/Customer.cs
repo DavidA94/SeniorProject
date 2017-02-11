@@ -10,8 +10,7 @@ namespace Database.Tables
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CustomerID { get; set; }
-
-
+        
         public User User { get; set; }
 
         public Address Address { get; set; }

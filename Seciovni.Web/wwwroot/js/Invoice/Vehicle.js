@@ -19,6 +19,7 @@ class Vehicle extends SubscribableProperty {
      */
     constructor(divRow) {
         super();
+        this.__addEvent(EVENT_OBJECT_DESTROYED);
 
         /**
          * @private
@@ -112,7 +113,7 @@ class Vehicle extends SubscribableProperty {
                     this._vin = element = new TextInput(elements[i]);
                     break;
                 case VehicleFields.year:
-                    this._year = element = new TextInput(elements[i]);
+                    this._year = element = new NumericInput(elements[i], "", 0, false);
                     break;
                 case VehicleFields.make:
                     this._make = element = new TextInput(elements[i]);
@@ -174,6 +175,8 @@ class Vehicle extends SubscribableProperty {
         for(let field of fields) field.clearEvents();
         this._parentRow.nextElementSibling.getElementsByTagName("input")[0].focus();
         this._parentRow.remove();
+
+        this.__dispatchEvent(EVENT_OBJECT_DESTROYED, new ObjectDestroyedEventArgs(this));
     }
 
     /**
@@ -275,7 +278,7 @@ class Vehicle extends SubscribableProperty {
             else {
                 this._vin.error = "Invalid VIN";
                 this.Make.value = "INVALID";
-                this.Year.value = "INVALID";
+                this.Year.htmlObj.value = "INVALID";
             }
         }
 
