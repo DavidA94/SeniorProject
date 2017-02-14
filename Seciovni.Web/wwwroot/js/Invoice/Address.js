@@ -3,10 +3,10 @@
  */
 
 class AddressFields {
-    static get address() { return "StreetAddress"; }
-    static get city() { return "City"; }
-    static get state() { return "State"; }
-    static get zip() { return "ZipCode"; }
+    static get address() { return "streetAddress"; }
+    static get city() { return "city"; }
+    static get state() { return "state"; }
+    static get zip() { return "zipCode"; }
 }
 
 class Address {
@@ -96,8 +96,6 @@ class Address {
 
     initialize_json(json){
         const zip = json[AddressFields.zip];
-        console.log(zip);
-
         this._streetAddress.value = json[AddressFields.address];
         this._city.value = json[AddressFields.city];
         this._state.value = json[AddressFields.state];

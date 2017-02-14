@@ -3,6 +3,8 @@
  */
 
 class Payments extends Subscribable {
+    // region CTOR
+
     constructor(paymentDialog){
         super();
         this.__addEvent(EVENT_DATA_SAVED);
@@ -35,7 +37,7 @@ class Payments extends Subscribable {
         this._totalPaymentsOuter = document.getElementById(TOTAL_PAYMENTS_ID);
 
         /**
-         * The total amount inside of the dialog (Updated on Price change)
+         * The total amount inside of the dialog (Updated on Amount change)
          * @type {HTMLDivElement}
          * @private
          */
@@ -87,7 +89,16 @@ class Payments extends Subscribable {
          * @private
          */
         this._boundExistingRowChanged = this._existingRowChanged.bind(this);
+
+        /**
+         * The event to fire when a row has `destroy()` called on it
+         * @type {function}
+         * @private
+         */
+        this._boundRowDestroyed = this._rowDestroyed.bind(this);
     }
+
+    // endregion
 
     // region Public Properties
 
@@ -104,6 +115,7 @@ class Payments extends Subscribable {
     initialize(){
         const payment = new Payment(/** @type {HTMLDivElement} */document.getElementById(PAYMENT_TEMPLATE_ID));
         payment.subscribe(EVENT_PROPERTY_CHANGE, this._boundLastRowChanged);
+        payment.subscribe(EVENT_OBJECT_DESTROYED, this._boundRowDestroyed);
         this._payments.push(payment);
     }
 
@@ -117,7 +129,7 @@ class Payments extends Subscribable {
             this._payments[this._payments.length - 1].initialize_json(payment);
         }
 
-        // This also updates the price stored
+        // This also updates the amount stored
         this._totalPaymentsInner.innerHTML = this._totalPaymentsOuter.innerHTML = this._getPrettyTotal();
         this.__dispatchEvent(EVENT_DATA_SAVED, new DataSavedEventArgs(this));
     }
@@ -130,6 +142,13 @@ class Payments extends Subscribable {
         e.preventDefault();
         document.getElementById(CLOSE_PAYMENTS_ID).focus();
         this._dialog.show();
+    }
+
+    reset(){
+        // Skip the last one -- Go backwards because an event will remove them from the list
+        for(let i = this._payments.length - 2; i >= 0; --i) this._payments[i].destroy();
+
+        this._totalPaymentsOuter.innerHTML = this._getPrettyTotal();
     }
 
     /**
@@ -168,7 +187,7 @@ class Payments extends Subscribable {
         let total = 0;
 
         // Add the amount for all the vehicles
-        for (let p of this._payments) total += Math.max(0, p.Price.value);
+        for (let p of this._payments) total += Math.max(0, p.Amount.value);
 
         this._total = total;
 
@@ -194,8 +213,8 @@ class Payments extends Subscribable {
             target.destroy();
         }
 
-        // Otherwise, if it came from a price object, calculate the new total
-        else if (e.propertyName === PaymentFields.price) {
+        // Otherwise, if it came from an amount object, calculate the new total
+        else if (e.propertyName === PaymentFields.amount) {
             this._totalPaymentsInner.innerHTML = this._getPrettyTotal();
         }
 
@@ -217,10 +236,22 @@ class Payments extends Subscribable {
         const newRow = this._paymentTemplate.cloneNode(true);
         const newPayment = new Payment(/** @type {HTMLDivElement} */newRow);
         newPayment.subscribe(EVENT_PROPERTY_CHANGE, this._boundLastRowChanged);
+        newPayment.subscribe(EVENT_OBJECT_DESTROYED, this._boundRowDestroyed);
         this._payments.push(newPayment);
 
         // Append the new row to the container
         this._paymentContainer.appendChild(newRow);
+    }
+
+    /**
+     * Fires when a row has its Destroy() method called
+     * @param {ObjectDestroyedEventArgs} e
+     * @private
+     */
+    _rowDestroyed(e){
+        const row = e.originalTarget;
+
+        this._payments.splice(this._payments.indexOf(row), 1);
     }
 
     // endregion

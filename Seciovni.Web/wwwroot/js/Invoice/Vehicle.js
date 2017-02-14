@@ -1,12 +1,12 @@
 ﻿class VehicleFields {
-    static get stockNum() { return "StockNum"; }
-    static get vin() { return "VIN"; }
-    static get year() { return "Year"; }
-    static get make() { return "Make"; }
-    static get model() { return "Model"; }
-    static get miles() { return "Miles"; }
-    static get location() { return "Location"; }
-    static get price() { return "Price"; }
+    static get stockNum() { return "stockNum"; }
+    static get vin() { return "vin"; }
+    static get year() { return "year"; }
+    static get make() { return "make"; }
+    static get model() { return "model"; }
+    static get miles() { return "miles"; }
+    static get location() { return "location"; }
+    static get price() { return "price"; }
 }
 
 class Vehicle extends SubscribableProperty {

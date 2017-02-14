@@ -3,13 +3,14 @@
  */
 
 class CustomerFields {
-    static get user() { return "User"; }
-    static get address() { return "Address"; }
-    static get phoneNumbers() { return "PhoneNumbers"; }
-    static get company() { return "CompanyName"; }
-    static get licenseNum() { return "DealerLicenseNumber"; }
-    static get mcNum() { return "MCNumber"; }
-    static get resaleNum() { return "ResaleNumber"; }
+    static get customerID() { return "customerID"; }
+    static get user() { return "user"; }
+    static get address() { return "address"; }
+    static get phoneNumbers() { return "phoneNumbers"; }
+    static get company() { return "companyName"; }
+    static get licenseNum() { return "dealerLicenseNumber"; }
+    static get mcNum() { return "mcNumber"; }
+    static get resaleNum() { return "resaleNumber"; }
 }
 
 class Customer {
@@ -63,11 +64,25 @@ class Customer {
         document.getElementById("showCustom").addEventListener('click', this._swapBound);
 
         /**
-         * The ID of the contact chosen
+         * Used for knowning which contact to select when loading data from the server
          * @type {number}
          * @private
          */
-        this._contactID = -1;
+        this._chosenContactID = -1;
+
+        /**
+         * The chosen contact
+         * @type {CustomerPreview}
+         * @private
+         */
+        this._chosenContact = null;
+
+        /**
+         * The customers that have been loaded from the server
+         * @type {Array<CustomerPreview>}
+         * @private
+         */
+        this._loadedContacts = [];
 
         /**
          * Indicates if we're currently showing contacts or contacts
@@ -186,6 +201,52 @@ class Customer {
         this._updatePreviewField();
     }
 
+
+    /**
+     * Initializes this class from a JSON object
+     * @param {json} json - The JSON data
+     */
+    initialize_json(json){
+
+        if(json.hasOwnProperty(CustomerFields.customerID)){
+            this._chosenContactID = json[CustomerFields.customerID];
+            this._getContactPreviews();
+        }
+        else {
+            this._user.initialize_json(json[CustomerFields.user]);
+            this._address.initialize_json(json[CustomerFields.address]);
+            this._phoneNumbers[0].initialize_json(json[CustomerFields.phoneNumbers][0]);
+            this._company.value = json[CustomerFields.company];
+            this._licenseNum.value = json[CustomerFields.licenseNum];
+            this._mcNum.value = json[CustomerFields.mcNum];
+            this._resaleNum.value = json[CustomerFields.resaleNum];
+
+            this.swap(new Event(""));
+            this._updatePreviewField();
+        }
+    }
+
+    reset(){
+        this._address.StreetAddress.value = "";
+        this._address.City.value = "";
+        this._address.State.value = "";
+        this._address.Zip.value = "";
+
+        this._user.Email.value = "";
+        this._user.FirstName.value = "";
+        this._user.LastName.value = "";
+        this._phoneNumbers[0].Number.value = "";
+
+        this._chosenContact = null;
+        this._chosenContactID = -1;
+        this._company.value = "";
+        this._licenseNum.value = "";
+        this._mcNum.value = "";
+        this._resaleNum.value = "";
+
+        this._updatePreviewField();
+    }
+
     /**
      * Shows the dialog
      * @param e
@@ -194,7 +255,11 @@ class Customer {
         e.preventDefault();
         document.getElementById(CLOSE_CUSTOMER_ID).focus();
 
-        this._getContactPreviews();
+        // Get the contacts if we haven't already
+        if(this._loadedContacts.length === 0) {
+            this._getContactPreviews();
+        }
+
         this._dialog.show();
     }
 
@@ -225,45 +290,28 @@ class Customer {
     }
 
     /**
-     * Initializes this class from a JSON object
-     * @param {json} json - The JSON data
-     */
-    initialize_json(json){
-
-        this._contactID = json["CustomerID"];
-        this._user.initialize_json(json[CustomerFields.user]);
-        this._address.initialize_json(json[CustomerFields.address]);
-        this._phoneNumbers[0].initialize_json(json[CustomerFields.phoneNumbers]);
-        this._company.value = json[CustomerFields.company];
-        this._licenseNum.value = json[CustomerFields.licenseNum];
-        this._mcNum.value = json[CustomerFields.mcNum];
-        this._resaleNum.value = json[CustomerFields.resaleNum];
-
-        if(this._contactID >= 0){
-            this._getContactPreviews();
-        }
-
-        this._updatePreviewField();
-        if(this._contactID === -1) this.swap(new Event(""));
-    }
-    
-    /**
      * Gets the JSON data for this class
      * @return {Object<string, *>}
      */
     toJSON(){
-        const properties = {};
-        properties["CustomerID"] = this._contactID;
-        properties[CustomerFields.user] = this._user;
-        properties[CustomerFields.address] = this._address;
-        properties[CustomerFields.phoneNumbers] = this._phoneNumbers;
+        if(this._showingContacts && this._chosenContact){
+            const properties = {};
+            properties[CustomerFields.customerID] = this._chosenContact.customerID;
+            return properties;
+        }
+        else {
+            const properties = {};
+            properties[CustomerFields.user] = this._user;
+            properties[CustomerFields.address] = this._address;
+            properties[CustomerFields.phoneNumbers] = this._phoneNumbers;
 
-        properties[CustomerFields.company] = this._company.value;
-        properties[CustomerFields.licenseNum] = this._licenseNum.value;
-        properties[CustomerFields.mcNum] = this._mcNum.value;
-        properties[CustomerFields.resaleNum] = this._resaleNum.value;
+            properties[CustomerFields.company] = this._company.value;
+            properties[CustomerFields.licenseNum] = this._licenseNum.value;
+            properties[CustomerFields.mcNum] = this._mcNum.value;
+            properties[CustomerFields.resaleNum] = this._resaleNum.value;
 
-        return properties;
+            return properties;
+        }
     }
 
     // endregion
@@ -330,6 +378,8 @@ class Customer {
                     if (xmlhttp.status == 200) {
                         this._loadContacts(JSON.parse(xmlhttp.response.toString()));
                     }
+                    // Because we don't get cookies, this happens for every request
+                    else if(xmlhttp.status === 401){}
                     else {
                         this._loadContacts([]);
                     }
@@ -340,7 +390,7 @@ class Customer {
             };
 
             xmlhttp.open("GET", "https://localhost:44357/api/User/ContactsPreview", true);
-            xmlhttp.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("AuthorizationToken"));
+            xmlhttp.setRequestHeader("Authorization", "Bearer " + token);
             xmlhttp.send();
         });
     }
@@ -353,6 +403,7 @@ class Customer {
     _loadContacts(contacts){
         const listNode = document.getElementById("contactsList");
 
+        // Keep the H1 title
         while (listNode.childElementCount > 1) listNode.removeChild(listNode.lastChild);
 
         if(contacts === null){
@@ -375,36 +426,25 @@ class Customer {
         }
 
         for (let contact of contacts) {
-            const div = document.createElement("div");
-            div.className = "contactPreviewItem row";
-            div.setAttribute(CUSTOMER_ID_ATTRIB, contact.customerID);
+            const cp = CustomerPreview.createFromJSON(contact);
 
-            if(this._contactID == contact.customerID) div.id = CHOSEN_CONTACT_ID;
-
-            const nameNode = document.createElement("p");
-            nameNode.innerHTML = "<b>" + contact.user.firstName + " " + contact.user.lastName + "</b>";
-
-            const addressNode = document.createElement("p");
-            addressNode.innerHTML = contact.address.StreetAddress + " " + contact.address.city + ", " +
-                contact.address.state + " " + contact.address.zipCode;
-
-            const emailNode = document.createElement("p");
-            emailNode.innerHTML = contact.user.email;
-
-            div.appendChild(nameNode);
-            div.appendChild(addressNode);
-            div.appendChild(emailNode);
-
-            listNode.appendChild(div);
-
-            div.addEventListener("click", (e) => {
+            cp.parentElement.addEvent('click', (e) => {
                 e.preventDefault();
                 if (document.getElementById(CHOSEN_CONTACT_ID)) {
                     document.getElementById(CHOSEN_CONTACT_ID).removeAttribute("id")
                 }
                 e.currentTarget.id = CHOSEN_CONTACT_ID;
-                this._contactID = e.currentTarget.getAttribute(CUSTOMER_ID_ATTRIB);
+                this._chosenContact = cp;
+                this._updatePreviewField();
             });
+
+            if(cp.customerID == this._chosenContactID){
+                this._chosenContact = cp;
+                this._chosenContact.parentElement.htmlObj.id = CHOSEN_CONTACT_ID;
+                this._updatePreviewField();
+            }
+
+            listNode.appendChild(cp.parentElement.htmlObj);
         }
     }
 
@@ -413,9 +453,9 @@ class Customer {
      * @private
      */
     _updatePreviewField(){
-        if(this._showingContacts && document.getElementById(CHOSEN_CONTACT_ID)){
+        if(this._showingContacts && this._chosenContact != null){
             // Meh
-            this._displayName.value = document.getElementById(CHOSEN_CONTACT_ID).getElementsByTagName("b")[0].innerHTML;
+            this._displayName.value = this._chosenContact.firstName + " " + this._chosenContact.lastName;
         }
         else{
             this._displayName.value = this._user.FirstName + " " + this._user.LastName;

@@ -143,10 +143,10 @@ function invoice_keydown(e, parentRow, object) {
 /**
  * Posts a call to the API
  * @param {string} url - The relative URL to the API (after /api/)
- * @param {json} data - The JSON data to send to the server
+ * @param {json} data - The JSON data to send to the server -- null for GET request
  * @param {xmlHttpCallback} callback - The callback when the ready state changes
  */
-function postToApi(url, data, callback){
+function sendToApi(url, data, callback){
     ensureValidToken((gotValidResponse, token) => {
 
         if(gotValidResponse) {
@@ -157,10 +157,19 @@ function postToApi(url, data, callback){
                 callback(e.currentTarget);
             };
 
-            xmlhttp.open("POST", "https://localhost:44357/api/" + url, true);
-            xmlhttp.setRequestHeader("Authorization", "Bearer " + token);
-            xmlhttp.setRequestHeader("Content-Type", "application/json");
-            xmlhttp.send(data.toString());
+            // POST
+            if(data){
+                xmlhttp.open("POST", "https://localhost:44357/api/" + url, true);
+                xmlhttp.setRequestHeader("Authorization", "Bearer " + token);
+                xmlhttp.setRequestHeader("Content-Type", "application/json");
+                xmlhttp.send(data.toString());
+            }
+            // GET
+            else{
+                xmlhttp.open("GET", "https://localhost:44357/api/" + url, true);
+                xmlhttp.setRequestHeader("Authorization", "Bearer " + token);
+                xmlhttp.send();
+            }
         }
         else {
             callback(null);

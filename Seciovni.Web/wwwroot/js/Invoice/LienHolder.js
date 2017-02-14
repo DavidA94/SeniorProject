@@ -3,9 +3,9 @@
  */
 
 class LienFields {
-    static get name() { return "Name"; }
-    static get address() { return "Address"; }
-    static get ein() { return "EIN"; }
+    static get name() { return "name"; }
+    static get address() { return "address"; }
+    static get ein() { return "ein"; }
 }
 
 class LienHolder {
@@ -121,11 +121,13 @@ class LienHolder {
      * @param {json} json - The JSON data
      */
     initialize_json(json){
-        this._name.value = json[LienFields.name];
-        this._address.initialize_json(json[LienFields.address]);
-        this._ein.value = json[LienFields.ein];
+        if(json) {
+            this._name.value = json[LienFields.name];
+            this._address.initialize_json(json[LienFields.address]);
+            this._ein.value = json[LienFields.ein];
 
-        this._updatePreviewField();
+            this._updatePreviewField();
+        }
     }
     
     /**
@@ -148,6 +150,15 @@ class LienHolder {
         this._dialog.close();
 
         this._updatePreviewField();
+    }
+
+    reset() {
+        this._name.value = "";
+        this._address.StreetAddress.value = "";
+        this._address.City.value = "";
+        this._address.State.value = "";
+        this._address.Zip.value = "";
+        this._ein.value = "";
     }
 
     /**

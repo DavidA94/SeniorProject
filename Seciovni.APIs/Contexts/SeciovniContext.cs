@@ -12,6 +12,7 @@ namespace Seciovni.APIs.Contexts
         public DbSet<UserLogin> Logins { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<LienHolder> LienHolders { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<InvoicePageTemplate> InvoiceTemplates { get; set; }
         public DbSet<Employee> Employees { get; set; }

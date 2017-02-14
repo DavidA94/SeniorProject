@@ -23,6 +23,8 @@ const TOTAL_PAYMENTS_ID = "totalPayments";
 const TOTAL_PAYMENTS_INNER_ID = "totalPaymentsInner";
 const INVOICE_TOTAL_ID = "invoiceTotalDue";
 
+const CONTACT_PREVIEW_CLASSES = "contactPreviewItem row";
+
 const OPEN_PAYMENTS_ID = "openPaymentsButton";
 const CLOSE_PAYMENTS_ID = "closePaymentsButton";
 

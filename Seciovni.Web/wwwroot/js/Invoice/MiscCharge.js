@@ -3,8 +3,8 @@
  */
 
 class MiscChargeFields {
-    static get description() { return "Description"; }
-    static get price() { return "Price"; }
+    static get description() { return "description"; }
+    static get price() { return "price"; }
 }
 
 class MiscCharge extends SubscribableProperty {

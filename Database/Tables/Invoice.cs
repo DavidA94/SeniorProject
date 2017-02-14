@@ -15,6 +15,7 @@ namespace Database.Tables
 
         public DateTime InvoiceDate { get; set; }
 
+        [Required]
         public Customer Buyer { get; set; }
 
         public IList<VehicleInfo> Vehicles { get; set; }

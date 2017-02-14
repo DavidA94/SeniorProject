@@ -9,9 +9,10 @@ using Shared;
 namespace Seciovni.APIs.Migrations
 {
     [DbContext(typeof(SeciovniContext))]
-    partial class SeciovniContextModelSnapshot : ModelSnapshot
+    [Migration("20170214072241_Adding LienHolder to DbSets")]
+    partial class AddingLienHoldertoDbSets
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")

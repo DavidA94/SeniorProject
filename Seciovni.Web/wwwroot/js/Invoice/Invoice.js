@@ -1,13 +1,14 @@
 class InvoiceFields {
-    static get state() { return "State"; }
-    static get buyer() { return "Buyer"; }
-    static get lienHolder() { return "LienHolder"; }
-    static get vehicles() { return "Vehicles"; }  // The last element will always be empty
-    static get fees() { return "Fees"; }
-    static get taxAmount() { return "TaxAmount"; }
-    static get docFee() { return "DocFee"; }
-    static get downPayment() { return "DownPayment"; }
-    static get payments() { return "Payments"; }
+    static get invoiceID() { return "invoiceID"; }
+    static get state() { return "state"; }
+    static get buyer() { return "buyer"; }
+    static get lienHolder() { return "lienHolder"; }
+    static get vehicles() { return "vehicles"; }  // The last element will always be empty
+    static get fees() { return "fees"; }
+    static get taxAmount() { return "taxAmount"; }
+    static get docFee() { return "docFee"; }
+    static get downPayment() { return "downPayment"; }
+    static get payments() { return "payments"; }
 }
 
 class Invoice {
@@ -19,7 +20,7 @@ class Invoice {
         this._saveButton.addEventListener('click', (e) => {
             e.preventDefault();
 
-            postToApi("Invoice/Save", JSON.stringify(this), (xmlhttp) =>{
+            sendToApi("Invoice/Save", JSON.stringify(this), (xmlhttp) =>{
                 if(xmlhttp === null) {
                     alert("Failed to contact server");
                     return;
@@ -86,10 +87,20 @@ class Invoice {
                                 alert(response.message);
                             }
                         }
+                        else{
+                            location.replace(location.pathname + "/" + response.message.split(":")[1]);
+                        }
                     }
                 }
             });
         });
+
+        /**
+         * The invoice's ID
+         * @type {number}
+         * @private
+         */
+        this._invoiceID = 0;
 
         /**
          * Holds the vehicles in this invoice
@@ -237,6 +248,19 @@ class Invoice {
         miscCharge.subscribe(EVENT_PROPERTY_CHANGE, this._boundLastRowChanged);
         miscCharge.subscribe(EVENT_OBJECT_DESTROYED, this._boundRowDestroyed);
         this._miscCharges.push(miscCharge);
+
+        // Check if we need to load an invoice
+        const invoiceNum = location.pathname.split("/").splice(-1)[0];
+        if(!isNaN(invoiceNum)){
+            // Loading logic....
+
+            sendToApi("Invoice/Get", null, (xmlhttp) => {
+                if(xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200) {
+                    this.reset();
+                    this.initialize_json(JSON.parse(xmlhttp.response))
+                }
+            })
+        }
     }
 
     /**
@@ -244,13 +268,13 @@ class Invoice {
      * @param {json} json - The JSON data
      */
     initialize_json(json){
+        this._invoiceID = json[InvoiceFields.invoiceID];
         this._state.value = json[InvoiceFields.state];
         this._customer.initialize_json(json[InvoiceFields.buyer]);
         this._lienHolder.initialize_json(json[InvoiceFields.lienHolder]);
         this._tax.value = json[InvoiceFields.taxAmount];
         this._docFee.value = json[InvoiceFields.docFee];
         this._downPayment.value = json[InvoiceFields.downPayment];
-
 
         for(let vehicle of json[InvoiceFields.vehicles]){
             this._vehicles[this._vehicles.length - 1].initialize_json(vehicle);
@@ -264,12 +288,31 @@ class Invoice {
         this._payments.initialize_json(json[InvoiceFields.payments]);
     }
 
+    reset(){
+        // Skip the last one -- Go backwards because an event will remove them from the list
+        for(let i = this._vehicles.length - 2; i >= 0; --i) this._vehicles[i].destroy();
+        for(let i = this._miscCharges.length - 2; i >= 0; --i) this._miscCharges[i].destroy();
+
+        this._invoiceID = 0;
+        this._state.value = "0";
+        this._tax.value = "";
+        this._docFee.value = "";
+        this._downPayment.value = "";
+
+        this._customer.reset();
+        this._lienHolder.reset();
+        this._payments.reset();
+
+        this._calculateTotal();
+    }
+
     /**
      * Gets this class as a JSON object
      * @return {Object<string, *>}
      */
     toJSON(){
         const properties = {};
+        properties[InvoiceFields.invoiceID] = this._invoiceID;
         properties[InvoiceFields.state] = this._state.value;
         properties[InvoiceFields.buyer] = this._customer;
         properties[InvoiceFields.lienHolder] = this._lienHolder;
@@ -414,11 +457,11 @@ class Invoice {
             const lastRow = this._miscCharges[this._miscCharges.length - 1];
             lastRow.unsubscribe(EVENT_PROPERTY_CHANGE, this._boundLastRowChanged);
             lastRow.subscribe(EVENT_PROPERTY_CHANGE, this._boundExistingRowChanged);
-            lastRow.subscribe(EVENT_OBJECT_DESTROYED, this._boundRowDestroyed);
 
             const newRow = this._chargeTemplate.cloneNode(true);
             const newCharge = new MiscCharge(/** @type {HTMLDivElement} */newRow);
             newCharge.subscribe(EVENT_PROPERTY_CHANGE, this._boundLastRowChanged);
+            newCharge.subscribe(EVENT_OBJECT_DESTROYED, this._boundRowDestroyed);
             this._miscCharges.push(newCharge);
 
             this._chargeContainer.appendChild(newRow);

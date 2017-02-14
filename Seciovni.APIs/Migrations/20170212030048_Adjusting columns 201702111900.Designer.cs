@@ -9,9 +9,10 @@ using Shared;
 namespace Seciovni.APIs.Migrations
 {
     [DbContext(typeof(SeciovniContext))]
-    partial class SeciovniContextModelSnapshot : ModelSnapshot
+    [Migration("20170212030048_Adjusting columns 201702111900")]
+    partial class Adjustingcolumns201702111900
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
@@ -115,7 +116,7 @@ namespace Seciovni.APIs.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("BuyerCustomerID");
+                    b.Property<int?>("BuyerCustomerID");
 
                     b.Property<decimal>("DocFee");
 
@@ -207,7 +208,7 @@ namespace Seciovni.APIs.Migrations
 
                     b.HasIndex("AddressID");
 
-                    b.ToTable("LienHolders");
+                    b.ToTable("LienHolder");
                 });
 
             modelBuilder.Entity("Database.Tables.ManyManyTables.InvoiceInvoicePageTemplate", b =>
@@ -421,8 +422,7 @@ namespace Seciovni.APIs.Migrations
                 {
                     b.HasOne("Database.Tables.Customer", "Buyer")
                         .WithMany()
-                        .HasForeignKey("BuyerCustomerID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("BuyerCustomerID");
 
                     b.HasOne("Database.Tables.LienHolder", "LienHolder")
                         .WithMany()

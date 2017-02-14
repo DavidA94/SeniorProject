@@ -45,6 +45,27 @@ namespace Database.Tables
         [Required]
         public decimal Price { get; set; }
 
+        public override bool Equals(object obj)
+        {
+            if(obj != null && obj is VehicleInfo)
+            {
+                var rhs = obj as VehicleInfo;
+
+                return rhs.Location == Location &&
+                       rhs.Miles == Miles &&
+                       rhs.Model == Model &&
+                       rhs.Price == Price &&
+                       rhs.StockNum == StockNum &&
+                       rhs.VIN == VIN;
+            }
+
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (new { Location, Miles, Model, Price, StockNum, VIN }).GetHashCode();
+        }
 
         private int getYearFromVIN()
         {

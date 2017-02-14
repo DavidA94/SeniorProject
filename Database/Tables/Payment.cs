@@ -18,5 +18,24 @@ namespace Database.Tables
 
         [Required]
         public decimal Amount { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if(obj != null && obj is Payment)
+            {
+                var rhs = obj as Payment;
+
+                return rhs.Amount == Amount &&
+                       rhs.Date.Date.Equals(Date.Date) &&
+                       rhs.Description == Description;
+            }
+
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (new { Amount, Date.Date, Description }).GetHashCode();
+        }
     }
 }

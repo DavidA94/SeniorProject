@@ -9,9 +9,10 @@ using Shared;
 namespace Seciovni.APIs.Migrations
 {
     [DbContext(typeof(SeciovniContext))]
-    partial class SeciovniContextModelSnapshot : ModelSnapshot
+    [Migration("20170213050417_Reinstate DB 201702122104")]
+    partial class ReinstateDB201702122104
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
@@ -207,7 +208,7 @@ namespace Seciovni.APIs.Migrations
 
                     b.HasIndex("AddressID");
 
-                    b.ToTable("LienHolders");
+                    b.ToTable("LienHolder");
                 });
 
             modelBuilder.Entity("Database.Tables.ManyManyTables.InvoiceInvoicePageTemplate", b =>

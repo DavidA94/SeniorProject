@@ -3,9 +3,9 @@
  */
 
 class UserFields {
-    static get firstName() { return "FirstName"; }
-    static get lastName() { return "LastName"; }
-    static get email() { return "Email"; }
+    static get firstName() { return "firstName"; }
+    static get lastName() { return "lastName"; }
+    static get email() { return "email"; }
 }
 
 class User {

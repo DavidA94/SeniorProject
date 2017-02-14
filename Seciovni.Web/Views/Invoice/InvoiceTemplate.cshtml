@@ -47,27 +47,27 @@
                 <h1>Buyer Information</h1>
                 <h2>Name</h2>
                 <div id="invoiceName" class="row">
-                    <input data-bind="FirstName" type="text" autocomplete="given-name" placeholder-title="Buyer.User.FirstName" /><input data-bind="LastName" type="text" autocomplete="family-name" placeholder-title="Buyer.User.LastName" />
+                    <input data-bind="firstName" type="text" autocomplete="given-name" placeholder-title="Buyer.User.FirstName" /><input data-bind="lastName" type="text" autocomplete="family-name" placeholder-title="Buyer.User.LastName" />
                 </div>
                 <h2>Contact</h2>
                 <div id="invoiceContact" class="row">
-                    <input data-bind="Email" type="email" autocomplete="email" placeholder-title="Buyer.User.Email" /><input data-bind="Number" type="text" autocomplete="tel" placeholder-title="Buyer.PhoneNumbers[0].Number" />
+                    <input data-bind="email" type="email" autocomplete="email" placeholder-title="Buyer.User.Email" /><input data-bind="number" type="text" autocomplete="tel" placeholder-title="Buyer.PhoneNumbers[0].Number" />
                 </div>
                 <div id="invoiceAddress">
                     <h2>Address</h2>
                     <div id="invoiceStreetAddr" class="row">
-                        <input class="fullWidth" data-bind="StreetAddress" type="text" autocomplete="street-address" placeholder-title="Buyer.Address.StreetAddress" />
+                        <input class="fullWidth" data-bind="streetAddress" type="text" autocomplete="street-address" placeholder-title="Buyer.Address.StreetAddress" />
                     </div>
                     <div class="row">
-                        <input class="invoiceAddrCity" data-bind="City" type="text" autocomplete="address-level2" placeholder-title="Buyer.Address.City" /><input class="invoiceAddrState" data-bind="State" type="text" autocomplete="address-level1" placeholder-title="Buyer.Address.State" /><input class="invoiceAddrZip" data-bind="ZipCode" type="text" autocomplete="postal-code" placeholder-title="Buyer.Address.ZipCode" maxlength="5" />
+                        <input class="invoiceAddrCity" data-bind="city" type="text" autocomplete="address-level2" placeholder-title="Buyer.Address.City" /><input class="invoiceAddrState" data-bind="state" type="text" autocomplete="address-level1" placeholder-title="Buyer.Address.State" /><input class="invoiceAddrZip" data-bind="zipCode" type="text" autocomplete="postal-code" placeholder-title="Buyer.Address.ZipCode" maxlength="5" />
                     </div>
                 </div>
                 <div id="invoiceBusinessInfo">
                     <h1>Business Information</h1>
-                    <input class="row" data-bind="CompanyName" type="text" autocomplete="organization" placeholder-title="Buyer.CompanyName" />
-                    <input class="row" data-bind="DealerLicenseNumber" type="text" placeholder-title="Buyer.DealerLicenseNumber" />
-                    <input class="row" data-bind="MCNumber" type="text" placeholder-title="Buyer.MCNumber" />
-                    <input class="row" data-bind="ResaleNumber" type="text" placeholder-title="Buyer.ResaleNumber" />
+                    <input class="row" data-bind="companyName" type="text" autocomplete="organization" placeholder-title="Buyer.CompanyName" />
+                    <input class="row" data-bind="dealerLicenseNumber" type="text" placeholder-title="Buyer.DealerLicenseNumber" />
+                    <input class="row" data-bind="mcNumber" type="text" placeholder-title="Buyer.MCNumber" />
+                    <input class="row" data-bind="resaleNumber" type="text" placeholder-title="Buyer.ResaleNumber" />
                 </div>
             </div>
 
@@ -85,18 +85,18 @@
         <dialog id="invoiceLienHolderData" class="invoiceDialog">
             <h1>Lien Holder</h1>
             <div class="row">
-                <input class="fullWidth" data-bind="Name" type="text" autocomplete="organization" placeholder-title="LienHolder.Name" />
+                <input class="fullWidth" data-bind="name" type="text" autocomplete="organization" placeholder-title="LienHolder.Name" />
             </div>
             <div id="invoiceLienAddress">
                 <div class="row">
-                    <input class="fullWidth" data-bind="StreetAddress" type="text" autocomplete="street-address" placeholder-title="LienHolder.Address.StreetAddress" />
+                    <input class="fullWidth" data-bind="streetAddress" type="text" autocomplete="street-address" placeholder-title="LienHolder.Address.StreetAddress" />
                 </div>
                 <div class="row">
-                    <input class="invoiceAddrCity" data-bind="City" type="text" autocomplete="address-level2" placeholder-title="LienHolder.Address.City" /><input class="invoiceAddrState" data-bind="State" type="text" autocomplete="address-level1" placeholder-title="LienHolder.Address.State" maxlength="2" /><input class="invoiceAddrZip" data-bind="ZipCode" type="text" autocomplete="postal-code" placeholder-title="LienHolder.Address.ZipCode" maxlength="5" />
+                    <input class="invoiceAddrCity" data-bind="city" type="text" autocomplete="address-level2" placeholder-title="LienHolder.Address.City" /><input class="invoiceAddrState" data-bind="state" type="text" autocomplete="address-level1" placeholder-title="LienHolder.Address.State" maxlength="2" /><input class="invoiceAddrZip" data-bind="zipCode" type="text" autocomplete="postal-code" placeholder-title="LienHolder.Address.ZipCode" maxlength="5" />
                 </div>
             </div>
             <div id="invoiceBusinessInfo" class="row">
-                <input class="lienInputFullWidth" data-bind="EIN" type="text" placeholder-title="LienHolder.EIN" />
+                <input class="lienInputFullWidth" data-bind="ein" type="text" placeholder-title="LienHolder.EIN" />
             </div>
             <div class="saveButton">
                 <button id="closeLienButton">Save Lien Holder</button>
@@ -117,15 +117,15 @@
                 <div class="price">Unit Price</div>
             </div>
             <div class="dataRow" id="vehicleTemplate">
-                <div class="stockNo"><input type="text" data-bind="StockNum" /></div>
-                <div class="vin"><input type="text" data-bind="VIN" data-vin /></div>
-                <div class="year disabled"><input type="text" data-bind="Year" disabled="disabled" /></div>
-                <div class="make disabled"><input type="text" data-bind="Make" disabled="disabled" /></div>
+                <div class="stockNo"><input type="text" data-bind="stockNum" /></div>
+                <div class="vin"><input type="text" data-bind="vin" data-vin /></div>
+                <div class="year disabled"><input type="text" data-bind="year" disabled="disabled" /></div>
+                <div class="make disabled"><input type="text" data-bind="make" disabled="disabled" /></div>
 
-                <div class="model"><input type="text" data-bind="Model" /></div>
-                <div class="miles"><input type="text" data-bind="Miles" /></div>
-                <div class="location"><input type="text" data-bind="Location" /></div>
-                <div class="price"><input type="text" data-bind="Price" data-money /></div>
+                <div class="model"><input type="text" data-bind="model" /></div>
+                <div class="miles"><input type="text" data-bind="miles" /></div>
+                <div class="location"><input type="text" data-bind="location" /></div>
+                <div class="price"><input type="text" data-bind="price" data-money /></div>
             </div>
         </div>
     </div>
@@ -137,8 +137,8 @@
                 <div class="price">Price</div>
             </div>
             <div class="dataRow" id="miscChargeTemplate">
-                <div class="miscChargeDesc description"><input type="text" data-bind="Description" /></div>
-                <div class="price"><input type="text" data-bind="Price" /></div>
+                <div class="miscChargeDesc description"><input type="text" data-bind="description" /></div>
+                <div class="price"><input type="text" data-bind="price" /></div>
             </div>
         </div>
     </div>
@@ -150,12 +150,12 @@
                 <div class="dataRow">
                     <div class="paymentDate">Date</div>
                     <div class="paymentDesc description">Description</div>
-                    <div class="price">Price</div>
+                    <div class="price">Amount</div>
                 </div>
                 <div class="dataRow" id="paymentTemplate">
-                    <div class="paymentDate"><input type="date" data-bind="Date" /></div>
-                    <div class="paymentDesc description"><input type="text" data-bind="Description" /></div>
-                    <div class="price"><input type="text" data-bind="Price" /></div>
+                    <div class="paymentDate"><input type="date" data-bind="date" /></div>
+                    <div class="paymentDesc description"><input type="text" data-bind="description" /></div>
+                    <div class="price"><input type="text" data-bind="amount" /></div>
                 </div>
             </div>
         </div>
@@ -204,14 +204,17 @@
 <script src="~/js/Events/SubscribableProperty.js"></script>
 <script src="~/js/helpers.js"></script>
 <script src="~/js/HelperTypes/HTMLElements/BaseHtmlElement.js"></script>
+<script src="~/js/HelperTypes/HTMLElements/SpanElement.js"></script>
 <script src="~/js/HelperTypes/HTMLElements/TextInput.js"></script>
 <script src="~/js/HelperTypes/HTMLElements/NumericInput.js"></script>
 <script src="~/js/HelperTypes/HTMLElements/MoneyInput.js"></script>
+<script src="~/js/HelperTypes/HTMLElements/DateInput.js"></script>
 <script src="~/js/Invoice/Vehicle.js"></script>
 <script src="~/js/Invoice/MiscCharge.js"></script>
 <script src="~/js/Invoice/User.js"></script>
 <script src="~/js/Invoice/Address.js"></script>
 <script src="~/js/Invoice/PhoneNumber.js"></script>
+<script src="~/js/Invoice/CustomerPreview.js"></script>
 <script src="~/js/Invoice/Customer.js"></script>
 <script src="~/js/Invoice/LienHolder.js"></script>
 <script src="~/js/Invoice/Payment.js"></script>

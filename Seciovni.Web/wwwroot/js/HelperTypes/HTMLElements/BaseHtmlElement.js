@@ -12,11 +12,6 @@ class BaseHtmlElement extends SubscribableProperty {
          */
         this._htmlObj = htmlObj;
 
-        // Clear the error every time the field changes, so we don't have
-        // to worry about errors no longer being valid after things are
-        // flagged from the server
-        htmlObj.addEventListener('change', () => this.error = null, true);
-
         /**
          * @type {object<function, function>}
          * @private
@@ -36,6 +31,11 @@ class BaseHtmlElement extends SubscribableProperty {
          * @private
          */
         this._title = htmlObj.hasAttribute("title") ? htmlObj.getAttribute("title") : "";
+
+        // Clear the error every time the field changes, so we don't have
+        // to worry about errors no longer being valid after things are
+        // flagged from the server
+        this.addEvent('change', (e) => this.error = null, true);
     }
 
     /**
@@ -55,9 +55,10 @@ class BaseHtmlElement extends SubscribableProperty {
      * Add an event to this element
      * @param {string} eventName - the name of the event
      * @param {function} eventFunc - The callback for this event
+     * @param {boolean} useCapture - Indicates if the event should be captured during tunneling
      */
-    addEvent(eventName, eventFunc){
-        this.htmlObj.addEventListener(eventName, eventFunc);
+    addEvent(eventName, eventFunc, useCapture = false){
+        this.htmlObj.addEventListener(eventName, eventFunc, useCapture);
         this._events.push([eventName, eventFunc]);
     }
 
@@ -103,14 +104,14 @@ class BaseHtmlElement extends SubscribableProperty {
 
     /**
      * The Value of the field
-     * @return {string|number}
+     * @return {*}
      * @abstract
      */
     get value() {  }
 
     /**
      *
-     * @param {string|number} value - The value to set the field as
+     * @param {*} value - The value to set the field as
      * @abstract
      */
     set value(value) {  }

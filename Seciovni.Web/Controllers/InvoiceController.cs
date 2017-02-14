@@ -25,7 +25,10 @@ namespace Seciovni.Web.Controllers
             }
 
             ViewData["Title"] = "Invoice " + id;
-            return View();
+            return View(new Invoice()
+            {
+                InvoiceID = id,
+            });
         }
 
         // GET: /<controller>/<id> -- View a static invoice

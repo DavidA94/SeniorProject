@@ -10,5 +10,5 @@
 
     public enum PhoneType { Cell, Home, Work }
 
-    public enum JobType { Assistant, Manager, Sales }
+    public enum JobType { Admin, Assistant, Manager, Sales }
 }

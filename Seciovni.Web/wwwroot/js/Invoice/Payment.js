@@ -3,9 +3,9 @@
  */
 
 class PaymentFields {
-    static get date() { return "Date"; }
-    static get description() { return "Description"; }
-    static get price() { return "Price"; }
+    static get date() { return "date"; }
+    static get description() { return "description"; }
+    static get amount() { return "amount"; }
 }
 
 class Payment extends SubscribableProperty {
@@ -18,6 +18,7 @@ class Payment extends SubscribableProperty {
      */
     constructor(divRow){
         super();
+        this.__addEvent(EVENT_OBJECT_DESTROYED);
 
         /**
          * @private
@@ -35,7 +36,7 @@ class Payment extends SubscribableProperty {
          * @private
          * @type {HTMLInputElement}
          */
-        this._price = null;
+        this._amount = null;
 
         /**
          * @private
@@ -75,13 +76,13 @@ class Payment extends SubscribableProperty {
 
             switch (attribute) {
                 case PaymentFields.date:
-                    this._date = element = new TextInput(elements[i]);
+                    this._date = element = new DateInput(elements[i]);
                     break;
                 case PaymentFields.description:
                     this._description = element = new TextInput(elements[i]);
                     break;
-                case MiscChargeFields.price:
-                    this._price = element = new MoneyInput(elements[i]);
+                case PaymentFields.amount:
+                    this._amount = element = new MoneyInput(elements[i]);
                     break;
             }
 
@@ -109,10 +110,10 @@ class Payment extends SubscribableProperty {
     get Description() { return this._description; }
 
     /**
-     * The payment's price
+     * The payment's amount
      * @return {MoneyInput}
      */
-    get Price() { return this._price; }
+    get Amount() { return this._amount; }
 
     // endregion
 
@@ -125,7 +126,7 @@ class Payment extends SubscribableProperty {
     areInputsEmpty() {
         return this._date.value == "" &&
             this._description.value == "" &&
-            this._price.value == -1;
+            this._amount.value == -1;
     }
 
     /**
@@ -136,13 +137,15 @@ class Payment extends SubscribableProperty {
         const fields = [
             this._date,
             this._description,
-            this._price
+            this._amount
         ];
 
         for (let field of fields) field.clearEvents();
 
         this._parentRow.nextElementSibling.getElementsByTagName("input")[0].focus();
         this._parentRow.remove();
+
+        this.__dispatchEvent(EVENT_OBJECT_DESTROYED, new ObjectDestroyedEventArgs(this));
     }
 
     /**
@@ -151,8 +154,8 @@ class Payment extends SubscribableProperty {
      */
     initialize_json(json) {
         this.Date.value = json[PaymentFields.date];
-        this.Description.value = json[MiscChargeFields.description];
-        this.Price.value = json[PaymentFields.price];
+        this.Description.value = json[PaymentFields.description];
+        this.Amount.value = json[PaymentFields.amount];
 
         // Ensure the parent knows something has changed
         this.__sendPropChangeEvent("");
@@ -166,7 +169,7 @@ class Payment extends SubscribableProperty {
         const properties = {};
         properties[PaymentFields.date] = this.Date.value;
         properties[PaymentFields.description] = this.Description.value;
-        properties[PaymentFields.price] = this.Price.value;
+        properties[PaymentFields.amount] = this.Amount.value;
         return properties;
     }
 

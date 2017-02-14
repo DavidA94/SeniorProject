@@ -14,5 +14,23 @@ namespace Database.Tables
 
         [Required]
         public decimal Price { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if(obj != null && obj is MiscellaneousFee)
+            {
+                var rhs = obj as MiscellaneousFee;
+
+                return rhs.Description == Description &&
+                       rhs.Price == Price;
+            }
+
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (new { Description, Price }).GetHashCode();
+        }
     }
 }

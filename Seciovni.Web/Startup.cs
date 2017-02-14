@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Seciovni.Web.WebHelpers;
 using Shared;
 using Shared.Authorization;
@@ -50,7 +51,8 @@ namespace Seciovni.Web
             CanAccessRequirement.AddPolicies(services);
 
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc()
+                    .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
             services.AddSession();
 
             services.AddAuthentication(SharedOptions => SharedOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);

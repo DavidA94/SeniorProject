@@ -38,6 +38,13 @@ namespace Seciovni.APIs.Contexts
                 context.Permissions.AddRange(permissions);
                 context.SaveChanges();
 
+                var devnull = new Employee
+                {
+                    User = User.MakeNewUser("Dev", "Null", "devnull@localhost", new List<Permission> { }),
+                    Job = JobType.Admin
+                };
+
+
                 var defaultUser = new Employee
                 {
                     User = User.MakeNewUser("David", "Antonucci", "dra151994@hotmail.com", permissions),
@@ -52,7 +59,8 @@ namespace Seciovni.APIs.Contexts
                         new List<Permission> { permissions[1], permissions[3] }),
                     Job = JobType.Sales
                 };
-                    
+
+                context.Employees.Add(devnull);
                 context.Employees.Add(defaultUser);
                 context.Employees.Add(otherUser);
                 context.SaveChanges();

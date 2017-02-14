@@ -3,8 +3,8 @@
  */
 
 class PhoneFields {
-    static get number() { return "Number"; }
-    static get type() { return "Type"; }
+    static get number() { return "number"; }
+    static get type() { return "type"; }
 }
 
 class PhoneNumber {
