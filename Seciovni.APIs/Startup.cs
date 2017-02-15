@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Seciovni.APIs.Contexts;
+using System.Data.SqlClient;
 
 namespace Seciovni.APIs
 {
@@ -52,7 +53,11 @@ namespace Seciovni.APIs
             {
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {
-                    serviceScope.ServiceProvider.GetService<SeciovniContext>().Database.Migrate();
+                    try
+                    {
+                        serviceScope.ServiceProvider.GetService<SeciovniContext>().Database.Migrate();
+                    }
+                    catch (SqlException) { }
                     serviceScope.ServiceProvider.GetService<SeciovniContext>().EnsureSeedData();
                 }
             }

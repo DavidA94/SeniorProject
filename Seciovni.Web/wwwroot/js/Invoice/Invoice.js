@@ -71,8 +71,8 @@ class Invoice {
                                         element.error = error.errorMsg;
                                         problemAreas.push(InvoiceFields.lienHolder);
                                     }
-                                    else if(error.element == InvoiceFields.vehicles){
-
+                                    else{
+                                        problemAreas.push(error.element);
                                     }
                                 }
 
@@ -86,6 +86,9 @@ class Invoice {
                             else{
                                 alert(response.message);
                             }
+                        }
+                        else if(this._invoiceID > 0){
+                            alert("Invoice saved successfully");
                         }
                         else{
                             location.replace(location.pathname + "/" + response.message.split(":")[1]);
@@ -268,6 +271,12 @@ class Invoice {
      * @param {json} json - The JSON data
      */
     initialize_json(json){
+
+        if(json.invoiceDate){
+            const d = new Date(json.invoiceDate);
+            document.getElementById("invoiceDate").innerHTML = d.getPrettyUTCDate();
+        }
+
         this._invoiceID = json[InvoiceFields.invoiceID];
         this._state.value = json[InvoiceFields.state];
         this._customer.initialize_json(json[InvoiceFields.buyer]);

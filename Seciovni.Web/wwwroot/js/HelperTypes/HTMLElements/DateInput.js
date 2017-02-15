@@ -15,15 +15,6 @@ class DateInput extends TextInput {
         }
 
         const d = new Date(value);
-        const year = d.getUTCFullYear();
-
-        let month = d.getUTCMonth() + 1;
-        if(month < 10) month = "0" + month;
-
-        let date = d.getUTCDate() + 1;
-        if(date < 10) date = "0" + date;
-
-        this.htmlObj.value = year + "-" + month + "-" + date;
+        this.htmlObj.value = d.getPrettyUTCDate();
     }
-
 }

@@ -208,7 +208,9 @@ class Customer {
      */
     initialize_json(json){
 
-        if(json.hasOwnProperty(CustomerFields.customerID)){
+        if (json.hasOwnProperty(CustomerFields.customerID) &&
+            json[CustomerFields.customerID] &&
+            json[CustomerFields.customerID] > 0) {
             this._chosenContactID = json[CustomerFields.customerID];
             this._getContactPreviews();
         }

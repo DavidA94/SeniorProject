@@ -22,11 +22,11 @@
         {
             <p>New Invoice</p>
         }
-        <div><b>Date:</b> @Model.InvoiceDate.ToString("yyyy-MM-dd")</div>
+        <div><b>Date:</b> <span id="invoiceDate">@Model.InvoiceDate.ToString("yyyy-MM-dd")</span></div>
     </div>
-    <div id="invoiceState" class="row">
+    <div class="row">
         <label class="cell invoiceTopLeft" for="invoiceState">Invoice State:</label>
-        <select class="cell" id="invoicState" asp-items="@Html.GetEnumSelectList<InvoiceState>()"></select>
+        <select class="cell" id="invoiceState" asp-items="@Html.GetEnumSelectList<InvoiceState>()"></select>
     </div>
     <div id="invoiceCustomerDiv" class="row">
         <div>
@@ -198,6 +198,7 @@
 <script src="~/js/Events/EventTypes/DataSavedEventArgs.js"></script>
 <script src="~/js/Events/EventTypes/ObjectDestroyedEventArgs.js"></script>
 
+<script src="~/js/prototypes.js"></script>
 <script src="~/js/Invoice/Constants.js"></script>
 <script src="~/js/Constants.js"></script>
 <script src="~/js/Events/Subscribable.js"></script>

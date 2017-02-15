@@ -7,6 +7,9 @@ namespace Database.Tables
     public class PhoneNumber
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int PhoneID { get; set; }
+
         [Phone]
         // [Index(IsUnique = true)]
         [Display(Name = "Phone Number")]

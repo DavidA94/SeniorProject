@@ -27,8 +27,6 @@ namespace Seciovni.APIs.Migrations
 
                     b.Property<int>("Country");
 
-                    b.Property<int>("CustomerID");
-
                     b.Property<string>("Locality");
 
                     b.Property<string>("State")
@@ -43,9 +41,6 @@ namespace Seciovni.APIs.Migrations
 
                     b.HasKey("AddressID");
 
-                    b.HasIndex("CustomerID")
-                        .IsUnique();
-
                     b.ToTable("Address");
                 });
 
@@ -54,6 +49,8 @@ namespace Seciovni.APIs.Migrations
                     b.Property<int>("CustomerID")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("AddressID");
 
                     b.Property<string>("CompanyName");
 
@@ -70,6 +67,8 @@ namespace Seciovni.APIs.Migrations
                     b.Property<int?>("UserID");
 
                     b.HasKey("CustomerID");
+
+                    b.HasIndex("AddressID");
 
                     b.HasIndex("EmployeeID");
 
@@ -293,14 +292,17 @@ namespace Seciovni.APIs.Migrations
 
             modelBuilder.Entity("Database.Tables.PhoneNumber", b =>
                 {
-                    b.Property<string>("Number")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("PhoneID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int?>("CustomerID");
 
+                    b.Property<string>("Number");
+
                     b.Property<int>("Type");
 
-                    b.HasKey("Number");
+                    b.HasKey("PhoneID");
 
                     b.HasIndex("CustomerID");
 
@@ -382,16 +384,12 @@ namespace Seciovni.APIs.Migrations
                     b.ToTable("VehicleInfo");
                 });
 
-            modelBuilder.Entity("Database.Tables.Address", b =>
-                {
-                    b.HasOne("Database.Tables.Customer")
-                        .WithOne("Address")
-                        .HasForeignKey("Database.Tables.Address", "CustomerID")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("Database.Tables.Customer", b =>
                 {
+                    b.HasOne("Database.Tables.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressID");
+
                     b.HasOne("Database.Tables.Employee")
                         .WithMany("Contacts")
                         .HasForeignKey("EmployeeID")

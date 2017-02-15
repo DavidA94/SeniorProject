@@ -53,7 +53,6 @@ namespace Seciovni.APIs.Controllers
                                         .Include(i => i.Fees)
                                         .Include(i => i.LienHolder)
                                         .Include(i => i.Payments)
-                                        .Include(i => i.SalesPerson).ThenInclude(sp => sp.Contacts)
                                         .Include(i => i.SalesPerson).ThenInclude(sp => sp.User)
                                         .Include(i => i.Vehicles);
 
@@ -194,8 +193,27 @@ namespace Seciovni.APIs.Controllers
                         customer.CompanyName = invoice.Buyer.CompanyName;
                         customer.DealerLicenseNumber = invoice.Buyer.DealerLicenseNumber;
                         customer.MCNumber = invoice.Buyer.MCNumber;
-                        customer.PhoneNumbers = invoice.Buyer.PhoneNumbers;
                         customer.ResaleNumber = invoice.Buyer.ResaleNumber;
+
+                        // If the phone number already exists, but isn't the first one
+                        var invPhone = invoice.Buyer.PhoneNumbers.FirstOrDefault().Number;
+                        if (invPhone != null &&
+                            customer.PhoneNumbers.FirstOrDefault(p => p.Number == invPhone) != null &&
+                            customer.PhoneNumbers[0].Number != invPhone)
+                        {
+                            // Find what index it is
+                            int existingIdx = customer.PhoneNumbers.FindIndex(p => p.Number == invPhone);
+
+                            // And swap them
+                            var temp = customer.PhoneNumbers[0].Number;
+                            customer.PhoneNumbers[0].Number = invPhone;
+                            customer.PhoneNumbers[existingIdx].Number = temp;
+                        }
+
+                        else
+                        {
+                            customer.PhoneNumbers.Insert(0, invoice.Buyer.PhoneNumbers[0]);
+                        }
 
                         customer.User.Email = invoice.Buyer.User.Email;
                         customer.User.FirstName = invoice.Buyer.User.FirstName;
@@ -234,9 +252,9 @@ namespace Seciovni.APIs.Controllers
 
             #endregion
 
-            // Track if we need to add, or just ave
+            // Clear the errors so we can re-validate again shortly
             ModelState.Clear();
-
+            
             // If we're not editing an invoice, make the invoice to be submitted be the one we build up
             if (dbInvoice == null)
             {
@@ -331,7 +349,7 @@ namespace Seciovni.APIs.Controllers
                 dbInvoice.LienHolder = lienHolder;
                 dbInvoice.State = invoice.State;
                 dbInvoice.TaxAmount = invoice.TaxAmount;
-
+                
                 // Force validation on the model
                 Validate(dbInvoice);
             }
@@ -387,6 +405,7 @@ namespace Seciovni.APIs.Controllers
         public Invoice Get(int id)
         {
             var invoices = db.Invoices.Include(i => i.Buyer).ThenInclude(b => b.Address)
+                                      .Include(i => i.Buyer).ThenInclude(b => b.PhoneNumbers)
                                       .Include(i => i.Buyer).ThenInclude(b => b.User)
                                       .Include(i => i.Fees)
                                       .Include(i => i.LienHolder).ThenInclude(l => l.Address)
@@ -395,7 +414,15 @@ namespace Seciovni.APIs.Controllers
                                       .Include(i => i.SalesPerson).ThenInclude(s => s.User)
                                       .Include(i => i.Vehicles);
 
-            return invoices.FirstOrDefault(i => i.InvoiceID == 1);
+            var invoice = invoices.FirstOrDefault(i => i.InvoiceID == 1);
+
+            // Don't make the front end think it's a contact if it belongs to dev-null
+            if(invoice.Buyer.EmployeeID == Constants.DEVNULL_EMPLOYEE_ID)
+            {
+                invoice.Buyer.CustomerID = 0;
+            }
+
+            return invoice;
         }
     }
 }

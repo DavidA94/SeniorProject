@@ -23,9 +23,6 @@ namespace Database.Tables
         [JsonIgnore]
         public int AddressID { get; set; }
 
-        [ForeignKey(nameof(Customer))]
-        public int CustomerID { get; set; }
-
         [Display(Name = "Street Address")]
         [Required]
         public string StreetAddress { get; set; }

@@ -34,14 +34,15 @@ namespace Seciovni.APIs.Controllers
                          .FirstOrDefault(l => l.LoginToken == token)
                         ?.User;
 
-            if (user != null)
+            var employee = db.Employees.FirstOrDefault(e => e.UserID == user.UserID);
+
+            if (employee != null)
             {
-                contacts = db.Employees.Include(e => e.Contacts).ThenInclude(c => c.Address)
-                                       .Include(e => e.Contacts).ThenInclude(c => c.User)
-                                       .Include(e => e.Contacts).ThenInclude(c => c.PhoneNumbers)
-                                       .Include(e => e.Contacts).ThenInclude(c => c.Emails)
-                                       .FirstOrDefault(e => e.User == user)
-                                      ?.Contacts;
+                contacts = db.Customers.Include(c => c.Address)
+                                       .Include(c => c.Emails)
+                                       .Include(c => c.PhoneNumbers)
+                                       .Include(c => c.User)
+                                       .Where(c => c.EmployeeID == employee.EmployeeID).ToList();
             }
 
 

@@ -10,6 +10,24 @@ namespace Seciovni.APIs.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Address",
+                columns: table => new
+                {
+                    AddressID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    City = table.Column<string>(nullable: false),
+                    Country = table.Column<int>(nullable: false),
+                    Locality = table.Column<string>(nullable: true),
+                    State = table.Column<string>(maxLength: 2, nullable: false),
+                    StreetAddress = table.Column<string>(nullable: false),
+                    ZipCode = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Address", x => x.AddressID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Permissions",
                 columns: table => new
                 {
@@ -37,27 +55,44 @@ namespace Seciovni.APIs.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Customers",
+                name: "LienHolders",
                 columns: table => new
                 {
-                    CustomerID = table.Column<int>(nullable: false)
+                    LienID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    CompanyName = table.Column<string>(nullable: true),
-                    DealerLicenseNumber = table.Column<string>(nullable: true),
-                    Group = table.Column<string>(nullable: true),
-                    MCNumber = table.Column<string>(nullable: true),
-                    ResaleNumber = table.Column<string>(nullable: true),
-                    UserID = table.Column<int>(nullable: true)
+                    AddressID = table.Column<int>(nullable: true),
+                    EIN = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Customers", x => x.CustomerID);
+                    table.PrimaryKey("PK_LienHolders", x => x.LienID);
                     table.ForeignKey(
-                        name: "FK_Customers_Users_UserID",
+                        name: "FK_LienHolders_Address_AddressID",
+                        column: x => x.AddressID,
+                        principalTable: "Address",
+                        principalColumn: "AddressID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Employees",
+                columns: table => new
+                {
+                    EmployeeID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Job = table.Column<int>(nullable: false),
+                    UserID = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employees", x => x.EmployeeID);
+                    table.ForeignKey(
+                        name: "FK_Employees_Users_UserID",
                         column: x => x.UserID,
                         principalTable: "Users",
                         principalColumn: "UserID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -107,22 +142,41 @@ namespace Seciovni.APIs.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Address",
+                name: "Customers",
                 columns: table => new
                 {
-                    AddressID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CustomerID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    AddressID = table.Column<int>(nullable: true),
+                    CompanyName = table.Column<string>(nullable: true),
+                    DealerLicenseNumber = table.Column<string>(nullable: true),
+                    EmployeeID = table.Column<int>(nullable: false),
+                    Group = table.Column<string>(nullable: true),
+                    MCNumber = table.Column<string>(nullable: true),
+                    ResaleNumber = table.Column<string>(nullable: true),
+                    UserID = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Address", x => x.AddressID);
+                    table.PrimaryKey("PK_Customers", x => x.CustomerID);
                     table.ForeignKey(
-                        name: "FK_Address_Customers_CustomerID",
-                        column: x => x.CustomerID,
-                        principalTable: "Customers",
-                        principalColumn: "CustomerID",
+                        name: "FK_Customers_Address_AddressID",
+                        column: x => x.AddressID,
+                        principalTable: "Address",
+                        principalColumn: "AddressID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Customers_Employees_EmployeeID",
+                        column: x => x.EmployeeID,
+                        principalTable: "Employees",
+                        principalColumn: "EmployeeID",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Customers_Users_UserID",
+                        column: x => x.UserID,
+                        principalTable: "Users",
+                        principalColumn: "UserID",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -149,11 +203,12 @@ namespace Seciovni.APIs.Migrations
                 {
                     InvoiceID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    BuyerCustomerID = table.Column<int>(nullable: true),
+                    BuyerCustomerID = table.Column<int>(nullable: false),
                     DocFee = table.Column<decimal>(nullable: false),
-                    Downpayment = table.Column<decimal>(nullable: false),
+                    DownPayment = table.Column<decimal>(nullable: false),
                     InvoiceDate = table.Column<DateTime>(nullable: false),
-                    SalesPersonUserID = table.Column<int>(nullable: true),
+                    LienHolderLienID = table.Column<int>(nullable: true),
+                    SalesPersonEmployeeID = table.Column<int>(nullable: true),
                     State = table.Column<int>(nullable: false),
                     TaxAmount = table.Column<decimal>(nullable: false)
                 },
@@ -165,12 +220,18 @@ namespace Seciovni.APIs.Migrations
                         column: x => x.BuyerCustomerID,
                         principalTable: "Customers",
                         principalColumn: "CustomerID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Invoices_LienHolders_LienHolderLienID",
+                        column: x => x.LienHolderLienID,
+                        principalTable: "LienHolders",
+                        principalColumn: "LienID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Invoices_Users_SalesPersonUserID",
-                        column: x => x.SalesPersonUserID,
-                        principalTable: "Users",
-                        principalColumn: "UserID",
+                        name: "FK_Invoices_Employees_SalesPersonEmployeeID",
+                        column: x => x.SalesPersonEmployeeID,
+                        principalTable: "Employees",
+                        principalColumn: "EmployeeID",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -178,12 +239,15 @@ namespace Seciovni.APIs.Migrations
                 name: "PhoneNumber",
                 columns: table => new
                 {
-                    Number = table.Column<string>(nullable: false),
-                    CustomerID = table.Column<int>(nullable: true)
+                    PhoneID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    CustomerID = table.Column<int>(nullable: true),
+                    Number = table.Column<string>(nullable: true),
+                    Type = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PhoneNumber", x => x.Number);
+                    table.PrimaryKey("PK_PhoneNumber", x => x.PhoneID);
                     table.ForeignKey(
                         name: "FK_PhoneNumber_Customers_CustomerID",
                         column: x => x.CustomerID,
@@ -243,6 +307,8 @@ namespace Seciovni.APIs.Migrations
                     PaymentID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Amount = table.Column<decimal>(nullable: false),
+                    Date = table.Column<DateTime>(nullable: false),
+                    Description = table.Column<string>(nullable: false),
                     InvoiceID = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -262,7 +328,10 @@ namespace Seciovni.APIs.Migrations
                 {
                     StockNum = table.Column<string>(nullable: false),
                     InvoiceID = table.Column<int>(nullable: true),
-                    Location = table.Column<string>(nullable: true),
+                    Location = table.Column<string>(nullable: false),
+                    Make = table.Column<string>(nullable: false),
+                    Miles = table.Column<int>(nullable: false),
+                    Model = table.Column<string>(nullable: false),
                     Price = table.Column<decimal>(nullable: false),
                     VIN = table.Column<string>(nullable: true),
                     Year = table.Column<int>(nullable: false)
@@ -327,10 +396,14 @@ namespace Seciovni.APIs.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Address_CustomerID",
-                table: "Address",
-                column: "CustomerID",
-                unique: true);
+                name: "IX_Customers_AddressID",
+                table: "Customers",
+                column: "AddressID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customers_EmployeeID",
+                table: "Customers",
+                column: "EmployeeID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customers_UserID",
@@ -343,14 +416,24 @@ namespace Seciovni.APIs.Migrations
                 column: "CustomerID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Employees_UserID",
+                table: "Employees",
+                column: "UserID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Invoices_BuyerCustomerID",
                 table: "Invoices",
                 column: "BuyerCustomerID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invoices_SalesPersonUserID",
+                name: "IX_Invoices_LienHolderLienID",
                 table: "Invoices",
-                column: "SalesPersonUserID");
+                column: "LienHolderLienID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoices_SalesPersonEmployeeID",
+                table: "Invoices",
+                column: "SalesPersonEmployeeID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InvoiceTemplates_InvoiceID",
@@ -361,6 +444,11 @@ namespace Seciovni.APIs.Migrations
                 name: "IX_InvoiceTemplateBinding_InvoicePageTemplateTemplateID",
                 table: "InvoiceTemplateBinding",
                 column: "InvoicePageTemplateTemplateID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LienHolders_AddressID",
+                table: "LienHolders",
+                column: "AddressID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InvoiceInvoicePageTemplate_TemplateID",
@@ -401,9 +489,6 @@ namespace Seciovni.APIs.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Address");
-
-            migrationBuilder.DropTable(
                 name: "EmailAddress");
 
             migrationBuilder.DropTable(
@@ -441,6 +526,15 @@ namespace Seciovni.APIs.Migrations
 
             migrationBuilder.DropTable(
                 name: "Customers");
+
+            migrationBuilder.DropTable(
+                name: "LienHolders");
+
+            migrationBuilder.DropTable(
+                name: "Employees");
+
+            migrationBuilder.DropTable(
+                name: "Address");
 
             migrationBuilder.DropTable(
                 name: "Users");
