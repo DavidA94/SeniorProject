@@ -73,7 +73,7 @@ namespace Database.Tables
             int parsedYear = -1;
 
 
-            if (int.TryParse(year.ToString(), out parsedYear))
+            if (!int.TryParse(year.ToString(), out parsedYear))
             {
                 if (year == 84)
                 {

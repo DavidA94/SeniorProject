@@ -195,25 +195,7 @@ namespace Seciovni.APIs.Controllers
                         customer.MCNumber = invoice.Buyer.MCNumber;
                         customer.ResaleNumber = invoice.Buyer.ResaleNumber;
 
-                        // If the phone number already exists, but isn't the first one
-                        var invPhone = invoice.Buyer.PhoneNumbers.FirstOrDefault().Number;
-                        if (invPhone != null &&
-                            customer.PhoneNumbers.FirstOrDefault(p => p.Number == invPhone) != null &&
-                            customer.PhoneNumbers[0].Number != invPhone)
-                        {
-                            // Find what index it is
-                            int existingIdx = customer.PhoneNumbers.FindIndex(p => p.Number == invPhone);
-
-                            // And swap them
-                            var temp = customer.PhoneNumbers[0].Number;
-                            customer.PhoneNumbers[0].Number = invPhone;
-                            customer.PhoneNumbers[existingIdx].Number = temp;
-                        }
-
-                        else
-                        {
-                            customer.PhoneNumbers.Insert(0, invoice.Buyer.PhoneNumbers[0]);
-                        }
+                        customer.PhoneNumbers[0].Number = invoice.Buyer.PhoneNumbers[0].Number;
 
                         customer.User.Email = invoice.Buyer.User.Email;
                         customer.User.FirstName = invoice.Buyer.User.FirstName;
@@ -290,6 +272,7 @@ namespace Seciovni.APIs.Controllers
                     if (!invoice.Fees.Contains(fee))
                     {
                         dbInvoice.Fees.Remove(fee);
+                        db.Entry(fee).State = EntityState.Deleted;
                     }
                 }
 
@@ -311,6 +294,7 @@ namespace Seciovni.APIs.Controllers
                     if (!invoice.Vehicles.Contains(vehicle))
                     {
                         dbInvoice.Vehicles.Remove(vehicle);
+                        db.Entry(vehicle).State = EntityState.Deleted;
                     }
                 }
 
@@ -332,6 +316,7 @@ namespace Seciovni.APIs.Controllers
                     if (!invoice.Payments.Contains(payment))
                     {
                         dbInvoice.Payments.Remove(payment);
+                        db.Entry(payment).State = EntityState.Deleted;
                     }
                 }
 
