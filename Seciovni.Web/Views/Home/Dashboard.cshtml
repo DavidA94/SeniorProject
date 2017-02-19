@@ -11,7 +11,7 @@
     }
     @if (User.HasClaim(c => c.Type == AccessPolicy.ViewInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
     { 
-        <a asp-controller="Invoice" asp-action="View" asp-route-id="123" id="dashboardOpenInvoice" class="dashboardButton"><p>View Invoices</p></a> 
+        <a asp-controller="Invoice" asp-action="View" class="dashboardButton"><p>View Invoices</p></a> 
     }
     @if (User.HasClaim(c => c.Type == AccessPolicy.EditInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
     {

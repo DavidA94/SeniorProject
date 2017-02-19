@@ -1,6 +1,7 @@
 ﻿using Database.Tables;
 using Database.Tables.ManyManyTables;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Seciovni.APIs.Contexts
 {
@@ -42,7 +43,7 @@ namespace Seciovni.APIs.Contexts
             builder.Entity<InvoiceInvoicePageTemplate>().HasOne(ii => ii.InvoicePageTempate)
             /**/                                        .WithMany(i => i.IIPT)
             /**/                                        .HasForeignKey(ii => ii.TemplateID);
-
+            
             #endregion
         }
     }

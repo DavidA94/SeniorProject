@@ -142,7 +142,7 @@ class Payment extends SubscribableProperty {
 
         for (let field of fields) field.clearEvents();
 
-        this._parentRow.nextElementSibling.getElementsByTagName("input")[0].focus();
+        if(this._parentRow.nextElementSibling) this._parentRow.nextElementSibling.getElementsByTagName("input")[0].focus();
         this._parentRow.remove();
 
         this.__dispatchEvent(EVENT_OBJECT_DESTROYED, new ObjectDestroyedEventArgs(this));

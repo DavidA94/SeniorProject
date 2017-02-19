@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Seciovni.APIs.Contexts;
 using Seciovni.APIs.WebHelpers;
 using Shared;
@@ -11,9 +9,8 @@ using Shared.ApiResponses;
 using Shared.SecurityTypes;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Net.Http;
 using System.Web.Http;
 
 namespace Seciovni.APIs.Controllers
@@ -32,18 +29,11 @@ namespace Seciovni.APIs.Controllers
         [HttpPost(nameof(Save))]
         public ApiResponse Save([FromBody]Invoice invoice)
         {
-            User validatedUser;
             Invoice dbInvoice = null;
+            Employee employee = validateUser(Request, AccessPolicy.EditInvoicePrivilege);
 
-            // Ensure the request is valid
-            if (!Request.HasValidLogin(db, out validatedUser) || !Request.CanAccess(db, AccessPolicy.EditInvoicePrivilege))
-            {
-                return new ApiResponse(false, "Access Denied.");
-            }
-
-            // Ensure the current employee is valid
-            var employee = db.Employees.FirstOrDefault(e => e.UserID == validatedUser.UserID);
-            if (employee == null) return new ApiResponse(false, "Access Denied");
+            // Stop if they don't have access
+            if (employee == null) return new ApiResponse(false, "Access Denied.");
 
             // Pull all the data we're going to need from the database, so there's not a ton of pegging it
             var dbInvoices = db.Invoices.Include(i => i.Buyer).ThenInclude(b => b.Address)
@@ -61,8 +51,12 @@ namespace Seciovni.APIs.Controllers
                                           .Include(c => c.PhoneNumbers)
                                           .Include(c => c.User);
 
-            // Clean up the phone numbers we got, to just be the digits
-            invoice.Buyer.PhoneNumbers.ForEach(p => new string(p.Number.Where(char.IsDigit).ToArray()));
+            // There won't be phone numbers if we have a contact
+            if (invoice.Buyer.PhoneNumbers != null)
+            {
+                // Clean up the phone numbers we got, to just be the digits
+                invoice.Buyer.PhoneNumbers.ForEach(p => new string(p.Number.Where(char.IsDigit).ToArray()));
+            }
 
             // If this isn't a new invoice
             if (invoice.InvoiceID != 0)
@@ -135,6 +129,7 @@ namespace Seciovni.APIs.Controllers
             #region Check if the customer is already in the database
 
             Customer customer;
+            bool usingDbCust = false;
 
             // If we were given a customer ID, then find it and make that the customer
             if (invoice.Buyer.CustomerID != 0)
@@ -148,6 +143,7 @@ namespace Seciovni.APIs.Controllers
                 }
 
                 customer = dbCust;
+                usingDbCust = true;
             }
             // Otherwise, we must have had one inputted
             else
@@ -165,7 +161,7 @@ namespace Seciovni.APIs.Controllers
 
                 // Grab the last one -- we'll assume that all others are somehow different
                 var matchingCustomer = customers.LastOrDefault();
-                
+
                 // Assuming we actually found something
                 if (matchingCustomer != null)
                 {
@@ -177,12 +173,13 @@ namespace Seciovni.APIs.Controllers
 
                     // No matches (maybe deleted?) = no problem, it is the customer
                     // No changes = no problem, it can be reused
-                    if(numOwnedInvoices == 0 || matchingCustomer.SoftEquals(invoice.Buyer))
+                    if (numOwnedInvoices == 0 || matchingCustomer.SoftEquals(invoice.Buyer))
                     {
                         customer = matchingCustomer;
                     }
                     // One match, and its this invoice
-                    else if(numOwnedInvoices == 1 && ownedInvoices.First().InvoiceID == invoice.InvoiceID){
+                    else if (numOwnedInvoices == 1 && ownedInvoices.First().InvoiceID == invoice.InvoiceID)
+                    {
                         // Assing everything we got from the invoice to ensure it's up to date
                         customer = matchingCustomer;
                         customer.Address.City = invoice.Buyer.Address.City;
@@ -236,7 +233,7 @@ namespace Seciovni.APIs.Controllers
 
             // Clear the errors so we can re-validate again shortly
             ModelState.Clear();
-            
+
             // If we're not editing an invoice, make the invoice to be submitted be the one we build up
             if (dbInvoice == null)
             {
@@ -246,7 +243,8 @@ namespace Seciovni.APIs.Controllers
                     DocFee = invoice.DocFee,
                     DownPayment = invoice.DownPayment,
                     Fees = invoice.Fees,
-                    InvoiceDate = invoice.InvoiceDate == DateTime.MinValue ? DateTime.Now : invoice.InvoiceDate,
+                    InvoiceDate = DateTime.Now,
+                    ModifiedDate = DateTime.Now,
                     LienHolder = lienHolder,
                     PagesUsed = invoice.PagesUsed,
                     Payments = invoice.Payments,
@@ -265,7 +263,7 @@ namespace Seciovni.APIs.Controllers
                 #region Fees
 
                 // Delete old ones
-                for(int i = dbInvoice.Fees.Count - 1; i >= 0; --i)
+                for (int i = dbInvoice.Fees.Count - 1; i >= 0; --i)
                 {
                     var fee = dbInvoice.Fees[i];
 
@@ -277,7 +275,7 @@ namespace Seciovni.APIs.Controllers
                 }
 
                 // Add new ones
-                foreach(var fee in invoice.Fees)
+                foreach (var fee in invoice.Fees)
                 {
                     if (!dbInvoice.Fees.Contains(fee)) dbInvoice.Fees.Add(fee);
                 }
@@ -334,11 +332,24 @@ namespace Seciovni.APIs.Controllers
                 dbInvoice.LienHolder = lienHolder;
                 dbInvoice.State = invoice.State;
                 dbInvoice.TaxAmount = invoice.TaxAmount;
-                
+
+                dbInvoice.ModifiedDate = DateTime.Now;
+
                 // Force validation on the model
                 Validate(dbInvoice);
             }
-            
+
+            if (usingDbCust)
+            {
+                foreach(var error in ModelState)
+                {
+                    if (error.Key.StartsWith(nameof(Invoice.Buyer)) ||
+                        error.Key.StartsWith(nameof(Invoice.SalesPerson)))
+                    {
+                        ModelState.Remove(error.Key);
+                    }
+                }
+            }
 
             // Ensure the model is valid
             if (!ModelState.IsValid)
@@ -375,7 +386,7 @@ namespace Seciovni.APIs.Controllers
             catch (Exception ex)
             {
                 string message = "An error occurred while saving the invoice: " + ex.Message;
-                if(ex.InnerException != null)
+                if (ex.InnerException != null)
                 {
                     message += "\n\n" + ex.InnerException.Message;
                 }
@@ -383,10 +394,94 @@ namespace Seciovni.APIs.Controllers
                 return new ApiResponse(false, message);
             }
 
-            return new ApiResponse(false, "Failed to save draft");
+            return new ApiResponse(false, "Failed to save invoice");
         }
 
-        [HttpGet(nameof(Get))]
+        [HttpDelete(nameof(Delete) + "/{id}")]
+        public ApiResponse Delete(int id)
+        {
+            Invoice dbInvoice = null;
+            Employee employee = validateUser(Request, AccessPolicy.EditInvoicePrivilege);
+
+            // Stop if they don't have access
+            if (employee == null) return new ApiResponse(false, "Access Denied.");
+
+            // Pull all the data we're going to need from the database, so there's not a ton of pegging it
+            var dbInvoices = db.Invoices.Include(i => i.Buyer).ThenInclude(b => b.Address)
+                                        .Include(i => i.Buyer).ThenInclude(b => b.Emails)
+                                        .Include(i => i.Buyer).ThenInclude(b => b.PhoneNumbers)
+                                        .Include(i => i.Buyer).ThenInclude(b => b.User)
+                                        .Include(i => i.Fees)
+                                        .Include(i => i.IIPT)
+                                        .Include(i => i.LienHolder)
+                                        .Include(i => i.Payments)
+                                        .Include(i => i.SalesPerson).ThenInclude(sp => sp.User)
+                                        .Include(i => i.Vehicles);
+            
+            // Find the invoice in the database
+            dbInvoice = dbInvoices.FirstOrDefault(i => i.InvoiceID == id);
+
+            // If we can't find the invoice, there's a problem
+            if (dbInvoice == null)
+            {
+                return new ApiResponse(false, "Invalid Invoice ID");
+            }
+            // If the employee isn't and admin, and they don't own this invoice, don't let them delete it
+            else if (employee.Job != JobType.Admin && dbInvoice.SalesPerson.EmployeeID != employee.EmployeeID)
+            {
+                string firstName = dbInvoice.SalesPerson.User.FirstName;
+                string lastName = dbInvoice.SalesPerson.User.LastName;
+
+                return new ApiResponse(false, $"This invoice is owned by {firstName} {lastName}. " +
+                                                "You do not have permission to modify it.");
+            }
+
+            // Check if the customer should be deleted from the database
+            bool shouldDelCust = dbInvoice.Buyer.EmployeeID == Constants.DEVNULL_EMPLOYEE_ID &&
+                                 dbInvoices.Count(i => i.Buyer.CustomerID == dbInvoice.Buyer.CustomerID) < 2;
+
+            // Delete everything that should be
+            db.Entry(dbInvoice).State = EntityState.Deleted;
+            foreach (var fee in dbInvoice.Fees) db.Entry(fee).State = EntityState.Deleted;
+            foreach (var iipt in dbInvoice.IIPT) db.Entry(iipt).State = EntityState.Deleted;
+            if (dbInvoice.LienHolder != null)
+            {
+                db.Entry(dbInvoice.LienHolder).State = EntityState.Deleted;
+                db.Entry(dbInvoice.LienHolder.Address).State = EntityState.Deleted;
+            }
+            foreach (var payment in dbInvoice.Payments) db.Entry(payment).State = EntityState.Deleted;
+            foreach (var vehicle in dbInvoice.Vehicles) db.Entry(vehicle).State = EntityState.Deleted;
+
+            if (shouldDelCust)
+            {
+                db.Entry(dbInvoice.Buyer).State = EntityState.Deleted;
+                db.Entry(dbInvoice.Buyer.Address).State = EntityState.Deleted;
+            }
+            
+            try
+            {
+                if (db.SaveChanges() > 0)
+                {
+                    return new ApiResponse(true, "Sucessfully deleted invoice " + dbInvoice.InvoiceID.ToString());
+                }
+                else
+                {
+                    return new ApiResponse(true, "Failed to delete invoice " + dbInvoice.InvoiceID.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                string message = "An error occurred while deleting the invoice: " + ex.Message;
+                if (ex.InnerException != null)
+                {
+                    message += "\n\n" + ex.InnerException.Message;
+                }
+
+                return new ApiResponse(false, message);
+            }
+        }
+
+        [HttpGet(nameof(Get) + "/{id}")]
         public Invoice Get(int id)
         {
             var invoices = db.Invoices.Include(i => i.Buyer).ThenInclude(b => b.Address)
@@ -399,15 +494,78 @@ namespace Seciovni.APIs.Controllers
                                       .Include(i => i.SalesPerson).ThenInclude(s => s.User)
                                       .Include(i => i.Vehicles);
 
-            var invoice = invoices.FirstOrDefault(i => i.InvoiceID == 1);
+            var invoice = invoices.FirstOrDefault(i => i.InvoiceID == id);
 
             // Don't make the front end think it's a contact if it belongs to dev-null
-            if(invoice.Buyer.EmployeeID == Constants.DEVNULL_EMPLOYEE_ID)
+            if (invoice != null && invoice.Buyer.EmployeeID == Constants.DEVNULL_EMPLOYEE_ID)
             {
                 invoice.Buyer.CustomerID = 0;
             }
 
             return invoice;
+        }
+
+        [HttpGet(nameof(GetRecent))]
+        public IEnumerable<InvoicePreview> GetRecent()
+        {
+            const int NUM_TO_GET = 20;
+
+            var employee = validateUser(Request, AccessPolicy.ViewInvoicePrivilege);
+            if (employee == null) yield break;
+
+            var dbInvoices = db.Invoices.Include(i => i.Buyer).ThenInclude(b => b.User)
+                                        .Include(i => i.Fees)
+                                        .Include(i => i.Payments)
+                                        .Include(i => i.SalesPerson).ThenInclude(sp => sp.User)
+                                        .Include(i => i.Vehicles);
+
+            IEnumerable<Invoice> invoicesToUse;
+
+            if(employee.Job != JobType.Admin && employee.Job != JobType.Assistant)
+            {
+                invoicesToUse = dbInvoices.Where(i => i.SalesPerson.EmployeeID == employee.EmployeeID)
+                                          .OrderBy(i => i.ModifiedDate)
+                                          .Take(NUM_TO_GET);
+            }
+            else
+            {
+                invoicesToUse = dbInvoices.OrderBy(i => i.ModifiedDate).Take(NUM_TO_GET);
+            }
+
+            foreach(var invoice in invoicesToUse)
+            {
+                yield return new InvoicePreview()
+                {
+                    BuyerName = invoice.Buyer.User.FirstName + " " + invoice.Buyer.User.LastName,
+                    CreatedDate = invoice.InvoiceDate,
+                    InvoiceNumber = invoice.InvoiceID,
+                    InvoiceTotal = invoice.GetTotal(),
+                    ModifiedDate = invoice.ModifiedDate,
+                    TotalDue = invoice.GetDue()
+                };
+            }
+        }
+
+
+        /// <summary>
+        /// Checks if the current user has permission to access this section
+        /// </summary>
+        /// <param name="request">The request gotten from the user</param>
+        /// <returns>The employee, or null if the user is not validated</returns>
+        private Employee validateUser(HttpRequestMessage request, string requiredPriviledge)
+        {
+            User validatedUser;
+
+            // Ensure the request is valid
+            if (!request.HasValidLogin(db, out validatedUser) || !request.CanAccess(db, requiredPriviledge))
+            {
+                return null;
+            }
+
+            // Ensure the current employee is valid
+            var employee = db.Employees.FirstOrDefault(e => e.UserID == validatedUser.UserID);
+
+            return employee;
         }
     }
 }

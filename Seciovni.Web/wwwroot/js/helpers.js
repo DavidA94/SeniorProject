@@ -143,10 +143,11 @@ function invoice_keydown(e, parentRow, object) {
 /**
  * Posts a call to the API
  * @param {string} url - The relative URL to the API (after /api/)
+ * @param {string} method - The type of method to use when sending to the server
  * @param {json} data - The JSON data to send to the server -- null for GET request
  * @param {xmlHttpCallback} callback - The callback when the ready state changes
  */
-function sendToApi(url, data, callback){
+function sendToApi(url, method, data, callback){
     ensureValidToken((gotValidResponse, token) => {
 
         if(gotValidResponse) {
@@ -157,17 +158,13 @@ function sendToApi(url, data, callback){
                 callback(e.currentTarget);
             };
 
-            // POST
-            if(data){
-                xmlhttp.open("POST", "https://localhost:44357/api/" + url, true);
-                xmlhttp.setRequestHeader("Authorization", "Bearer " + token);
+            xmlhttp.open(method, "https://localhost:44357/api/" + url, true);
+            xmlhttp.setRequestHeader("Authorization", "Bearer " + token);
+            if(data) {
                 xmlhttp.setRequestHeader("Content-Type", "application/json");
                 xmlhttp.send(data.toString());
             }
-            // GET
-            else{
-                xmlhttp.open("GET", "https://localhost:44357/api/" + url, true);
-                xmlhttp.setRequestHeader("Authorization", "Bearer " + token);
+            else {
                 xmlhttp.send();
             }
         }
@@ -175,4 +172,24 @@ function sendToApi(url, data, callback){
             callback(null);
         }
     });
+}
+
+/**
+ * Makes a number be pretty, such as "$ 0.00"
+ * @param {number} value - The value to parse
+ * @param {string} prefix - The prefix for the value
+ * @param {number} fixedPlaces - The number of decimal places
+ * @return {string}
+ */
+function prettifyNumber(value, prefix, fixedPlaces){
+    // Fix the decimal points
+    let tempVal = value.toFixed(fixedPlaces);
+
+    // Add commas
+    tempVal = tempVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    // Add the prefix
+    tempVal = prefix + tempVal;
+
+    return tempVal;
 }

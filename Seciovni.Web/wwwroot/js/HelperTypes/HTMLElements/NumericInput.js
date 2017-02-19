@@ -6,7 +6,7 @@ class NumericInput extends TextInput{
     /**
      * Creates a new Numeric Input
      * @param {HTMLInputElement} input - The input element to use
-     * @param {string} prefix - The prefix used when making the number pretty
+     * @param {string|null} prefix - The prefix used when making the number pretty
      * @param {number} fixedPlaces - The number of fixed decimal places (<= 0 === ignore)
      * @param {boolean} makePretty - Indicates if commas should be put in the thousands place
      */
@@ -22,7 +22,7 @@ class NumericInput extends TextInput{
 
         /**
          * The prefix to put before the number when making the number pretty
-         * @type {string}
+         * @type {string|null}
          * @private
          */
         this._prettyPrefix = prefix;
@@ -41,10 +41,15 @@ class NumericInput extends TextInput{
          */
         this._makePretty = makePretty;
 
+        /**
+         * Indiates if the input has already been prettified
+         * @type {boolean}
+         */
+        this._isPretty = false;
+
         input.addEventListener("keypress", numericInput_keypress);
         input.addEventListener("focus", this.__getBoundFunc(this._makeInputEditable));
-        // Not needed because TextInput sets the value, which calls this method
-        // input.addEventListener("blur", this.__getBoundFunc(this._makeInputPretty));
+        input.addEventListener("blur", this.__getBoundFunc(this._makeInputPretty));
     }
 
     get value() { return this.htmlObj.value == "" ? -1 : this.numberVal; }
@@ -54,18 +59,21 @@ class NumericInput extends TextInput{
 
         this.htmlObj.value = value;
         this.numberVal = parseFloat(value);
+        this._isPretty = false;
         this._makeInputPretty();
     }
 
     _makeInputEditable(){
         if(this.numberVal >= 0) this.htmlObj.value = this.numberVal;
+        this._isPretty = false;
+        this.htmlObj.select();
     }
 
     _makeInputPretty(){
         const input = this.htmlObj;
 
-        // Leave blank if set to as such
-        if (input.value === "") {
+        // Leave blank if set to as such, or don't do anything if it's already been prettified
+        if (input.value === "" || this._isPretty) {
             return;
         }
 
@@ -77,6 +85,12 @@ class NumericInput extends TextInput{
         // Get the number with a fixed amount of decimal places
         let tempVal = this.numberVal;
 
+        // If zero, and the prefix is null, then make it be displayed as "-"
+        if(tempVal === 0 && this._prettyPrefix === null){
+            input.value = "-";
+            return;
+        }
+
         // Fix the decimal points, if necessary
         if(this._fixedPlaces > 0){
             tempVal = tempVal.toFixed(this._fixedPlaces);
@@ -87,8 +101,11 @@ class NumericInput extends TextInput{
             tempVal = tempVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
-        tempVal = this._prettyPrefix + tempVal;
+        // Add the prefix if there is one
+        if(this._prettyPrefix) tempVal = this._prettyPrefix + tempVal;
 
         input.value = tempVal;
+
+        this._isPretty = true;
     }
 }

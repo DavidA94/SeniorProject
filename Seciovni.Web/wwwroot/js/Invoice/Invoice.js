@@ -20,7 +20,7 @@ class Invoice {
         this._saveButton.addEventListener('click', (e) => {
             e.preventDefault();
 
-            sendToApi("Invoice/Save", JSON.stringify(this), (xmlhttp) =>{
+            sendToApi("Invoice/Save", "POST", JSON.stringify(this), (xmlhttp) =>{
                 if(xmlhttp === null) {
                     alert("Failed to contact server");
                     return;
@@ -91,12 +91,38 @@ class Invoice {
                             alert("Invoice saved successfully");
                         }
                         else{
-                            location.replace(location.pathname + "/" + response.message.split(":")[1]);
+                            location.replace(location.pathname.replace(/\/?$/, "") + "/" + response.message.split(":")[1]);
                         }
                     }
                 }
             });
         });
+
+        this._deleteButton = document.getElementById("deleteButton");
+        if(this._deleteButton) {
+            this._deleteButton.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                sendToApi("Invoice/Delete/" + this._invoiceID, "DELETE", null, (xmlhttp) => {
+                    if (xmlhttp === null) {
+                        alert("Failed to contact server");
+                        return;
+                    }
+                    if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                        if (xmlhttp.status === 200) {
+                            const response = /** @type {ApiResponse} */JSON.parse(xmlhttp.response);
+
+                            if (response.successful) {
+                                location.replace("/");
+                            }
+                            else {
+                                alert(response.message);
+                            }
+                        }
+                    }
+                });
+            });
+        }
 
         /**
          * The invoice's ID
@@ -254,13 +280,29 @@ class Invoice {
 
         // Check if we need to load an invoice
         const invoiceNum = location.pathname.split("/").splice(-1)[0];
-        if(!isNaN(invoiceNum)){
+        if(!isNaN(invoiceNum) && invoiceNum > 0){
             // Loading logic....
-
-            sendToApi("Invoice/Get", null, (xmlhttp) => {
+            sendToApi("Invoice/Get/" + invoiceNum, "GET", null, (xmlhttp) => {
                 if(xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200) {
                     this.reset();
                     this.initialize_json(JSON.parse(xmlhttp.response))
+
+                    // Lock it down, if necessary
+                    if(document.getElementById("viewInvoice")){
+                        for(const input of document.getElementsByTagName("input")){
+                            input.disabled = true;
+                        }
+
+                        for(const input of document.querySelectorAll("dialog .saveButton button")){
+                            input.innerHTML = "Close";
+                        }
+
+                        this._state.htmlObj.disabled = true;
+                        this._vehicles[this._vehicles.length - 1].destroy();
+                        this._miscCharges[this._miscCharges.length - 1].destroy();
+                        //noinspection JSAccessibilityCheck
+                        this._payments._payments[this._payments._payments.length - 1].destroy();
+                    }
                 }
             })
         }

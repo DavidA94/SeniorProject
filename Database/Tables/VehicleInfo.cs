@@ -37,7 +37,7 @@ namespace Database.Tables
         public string Model { get; set; }
 
         [Required]
-        public int Miles { get; set; }
+        public int Miles { get; set; } = 0;
 
         [Required]
         public string Location { get; set; }

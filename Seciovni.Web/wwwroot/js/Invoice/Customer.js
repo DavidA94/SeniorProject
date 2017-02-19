@@ -41,6 +41,19 @@ class Customer {
          * @private
          * @type {function}
          */
+        this._searchBound = this._search.bind(this);
+
+        /**
+         * @private
+         * @type {function}
+         */
+        this._keyPressedBound = this._keyReleased.bind(this);
+
+
+        /**
+         * @private
+         * @type {function}
+         */
         this._boundFieldUpdated = this._fieldUpdated.bind(this);
 
         /**
@@ -49,6 +62,10 @@ class Customer {
          * @type {HTMLDialogElement}
          */
         this._dialog = customerDialog;
+
+        this._enterKeyPressedFunc = this._hideBound;
+        this._escKeyPressedFunc = this._hideBound;
+
 
         /**
          * The place where the name is shown when the dialog is closed
@@ -60,8 +77,19 @@ class Customer {
         // Subscribe to all the buttons that can be clicked
         document.getElementById(OPEN_CUSTOMER_ID).addEventListener('click', this._showBound);
         document.getElementById(CLOSE_CUSTOMER_ID).addEventListener('click', this._hideBound);
-        document.getElementById("showContacts").addEventListener('click', this._swapBound);
-        document.getElementById("showCustom").addEventListener('click', this._swapBound);
+        document.getElementById(SHOW_CONTACTS_ID).addEventListener('click', this._swapBound);
+        document.getElementById(SHOW_CUSTOM_ID).addEventListener('click', this._swapBound);
+
+        // Setup Searching
+        document.getElementById(CONTACT_SEARCH_BUTTON_ID).addEventListener('click', () => this._searchBound());
+        document.getElementById(CONTACT_SEARCH_INPUT_ID).addEventListener('input', this._searchBound);
+        document.getElementById(CONTACT_SEARCH_INPUT_ID).addEventListener('keypress', (e) => {
+            // If [Enter]
+            if(e.keyCode === 13){
+                this._searchBound(null);
+            }
+        });
+
 
         /**
          * Used for knowning which contact to select when loading data from the server
@@ -197,10 +225,10 @@ class Customer {
     hide(e){
         e.preventDefault();
         this._dialog.close();
+        // document.removeEventListener('keyup', this._keyPressedBound);
 
         this._updatePreviewField();
     }
-
 
     /**
      * Initializes this class from a JSON object
@@ -228,6 +256,9 @@ class Customer {
         }
     }
 
+    /**
+     * Resets the current data
+     */
     reset(){
         this._address.StreetAddress.value = "";
         this._address.City.value = "";
@@ -246,6 +277,10 @@ class Customer {
         this._mcNum.value = "";
         this._resaleNum.value = "";
 
+        if(document.getElementById(CHOSEN_CONTACT_ID)){
+            document.getElementById(CHOSEN_CONTACT_ID).removeAttribute("id");
+        }
+
         this._updatePreviewField();
     }
 
@@ -255,7 +290,11 @@ class Customer {
      */
     show(e){
         e.preventDefault();
-        document.getElementById(CLOSE_CUSTOMER_ID).focus();
+
+        // Do the right things on keypress
+        // this._enterKeyPressedFunc = this._hideBound;
+        // this._escKeyPressedFunc = this._hideBound;
+        // document.addEventListener('keyup', this._keyPressedBound);
 
         // Get the contacts if we haven't already
         if(this._loadedContacts.length === 0) {
@@ -273,19 +312,18 @@ class Customer {
         e.preventDefault();
 
         if(this._showingContacts){
-            document.getElementById("newCustomer").style.display = "block";
-            document.getElementById("showContacts").style.display = "block";
+            document.getElementById(NEW_CUSTOMER_ID).style.display = "block";
+            document.getElementById(SHOW_CONTACTS_ID).style.display = "block";
 
-            document.getElementById("contactsList").style.display = "none";
-            document.getElementById("showCustom").style.display = "none";
+            document.getElementById(CONTACTS_LIST_OUTER_ID).style.display = "none";
+            document.getElementById(SHOW_CUSTOM_ID).style.display = "none";
         }
         else {
-            document.getElementById("newCustomer").style.display = "none";
-            document.getElementById("showContacts").style.display = "none";
+            document.getElementById(NEW_CUSTOMER_ID).style.display = "none";
+            document.getElementById(SHOW_CONTACTS_ID).style.display = "none";
 
-            document.getElementById("contactsList").style.display = "block";
-            document.getElementById("showCustom").style.display = "block";
-
+            document.getElementById(CONTACTS_LIST_OUTER_ID).style.display = "block";
+            document.getElementById(SHOW_CUSTOM_ID).style.display = "block";
         }
 
         this._showingContacts = !this._showingContacts;
@@ -403,10 +441,9 @@ class Customer {
      * @private
      */
     _loadContacts(contacts){
-        const listNode = document.getElementById("contactsList");
+        const listNode = document.getElementById(CONTACTS_LIST_ID);
 
-        // Keep the H1 title
-        while (listNode.childElementCount > 1) listNode.removeChild(listNode.lastChild);
+        while (listNode.childElementCount > 0) listNode.removeChild(listNode.lastChild);
 
         if(contacts === null){
             const loading = document.createElement("img");
@@ -427,10 +464,12 @@ class Customer {
             this.swap(new Event(""));
         }
 
+        this._loadedContacts = [];
+
         for (let contact of contacts) {
             const cp = CustomerPreview.createFromJSON(contact);
 
-            cp.parentElement.addEvent('click', (e) => {
+            const selectCustomer = (e) => {
                 e.preventDefault();
                 if (document.getElementById(CHOSEN_CONTACT_ID)) {
                     document.getElementById(CHOSEN_CONTACT_ID).removeAttribute("id")
@@ -438,7 +477,11 @@ class Customer {
                 e.currentTarget.id = CHOSEN_CONTACT_ID;
                 this._chosenContact = cp;
                 this._updatePreviewField();
-            });
+            }
+
+            cp.parentElement.htmlObj.setAttribute("tabindex", "0");
+            cp.parentElement.addEvent('click', selectCustomer);
+            cp.parentElement.addEvent('keypress', selectCustomer);
 
             if(cp.customerID == this._chosenContactID){
                 this._chosenContact = cp;
@@ -447,6 +490,7 @@ class Customer {
             }
 
             listNode.appendChild(cp.parentElement.htmlObj);
+            this._loadedContacts.push(cp);
         }
     }
 
@@ -461,6 +505,109 @@ class Customer {
         }
         else{
             this._displayName.value = this._user.FirstName + " " + this._user.LastName;
+        }
+    }
+
+    /**
+     * Fires when a key is released
+     * @param e
+     * @private
+     */
+    _keyReleased(e){
+        // Enter
+        if(e.keyCode === 13) {
+            e.preventDefault();
+            this._enterKeyPressedFunc(e)
+        }
+        // ESC
+        else if(e.keyCode === 27){
+            e.preventDefault();
+            this._escKeyPressedFunc(e);
+        }
+    }
+
+    /**
+     * Fires when the user starts searching
+     * @private
+     */
+    _search(){
+        const searchTerm = document.getElementById(CONTACT_SEARCH_INPUT_ID).value;
+        const contactsListElem = document.getElementById(CONTACTS_LIST_ID);
+        const contactsHeader = document.getElementById(CONTACTS_LIST_HEADER_ID);
+
+        if(searchTerm === ""){
+
+            // Clear everything out
+            while(contactsListElem.firstElementChild) contactsListElem.removeChild(contactsListElem.firstElementChild);
+
+            // And re-add them so they're ordered correctly
+            for(const contact of this._loadedContacts){
+                contact.parentElement.htmlObj.removeAttribute(SEARCH_FOUND_ATTRIB);
+                contactsListElem.appendChild(contact.parentElement.htmlObj);
+            }
+
+            // Remove that we're in search mode, and update the header
+            contactsListElem.removeAttribute(SEARCH_ATTRIB);
+            contactsHeader.innerHTML = "Contacts";
+            return;
+        }
+
+        const runNum = Math.random();
+        this._search.runNum = runNum;
+        contactsListElem.setAttribute(SEARCH_ATTRIB, "");
+
+        // Change the title
+        contactsHeader.innerHTML = "Search Results";
+
+        const results = [];
+
+        for(const contact of this._loadedContacts){
+            // If it's been called again, stop
+            if(this._search.runNum !== runNum) return;
+
+            /**
+             * @type {Array<Object<likelihood, contact>>}
+             */
+            const liklihood = [];
+
+            const searchWords = searchTerm.split(' ');
+            for(const word of searchWords) {
+                const values = [
+                    contact.firstName,
+                    contact.lastName,
+                    contact.streetAddress,
+                    contact.city,
+                    contact.state,
+                    contact.zip,
+                    contact.email
+                ];
+
+                for(const value of values){
+                    const likeliness = getLikeliness(value.toString().toLowerCase(), word.toLowerCase());
+                    if(likeliness >= .5){
+                        liklihood.push(likeliness);
+                        break;
+                    }
+                }
+            }
+
+            if(liklihood.length > 0) {
+                const average = liklihood.reduce((a, b) => a + b) / liklihood.length;
+                console.log(contact.firstName + "   " + average);
+                results.push({likelihood: average, contact: contact});
+            }
+            else{
+                contact.parentElement.htmlObj.removeAttribute(SEARCH_FOUND_ATTRIB);
+            }
+        }
+
+        results.sort((l, r) => l.likelihood < r.likelihood);
+
+        // If it's been called again, stop
+        if(this._search.runNum !== runNum) return;
+
+        for(const result of results){
+            result.contact.parentElement.htmlObj.setAttribute(SEARCH_FOUND_ATTRIB, "");
         }
     }
 

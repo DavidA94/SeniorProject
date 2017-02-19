@@ -1,6 +1,7 @@
 ﻿using Database.Tables;
 using Microsoft.EntityFrameworkCore;
 using Seciovni.APIs.Contexts;
+using Shared.SecurityTypes;
 using System.Linq;
 using System.Net.Http;
 
@@ -31,7 +32,8 @@ namespace Seciovni.APIs.WebHelpers
             
             // Check if the permission has the user
             var permission = db.Permissions.Include(p => p.UserPermissions)
-                                .FirstOrDefault(p => p.PermissionType == neededPermission)
+                                .FirstOrDefault(p => p.PermissionType == neededPermission || 
+                                                p.PermissionType == AccessPolicy.AdminPrivilege)
                                 .UserPermissions.FirstOrDefault(up => up.UserID == user?.UserID);
 
             return permission != null;

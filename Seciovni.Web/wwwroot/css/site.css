@@ -10,7 +10,9 @@
     padding-right: 15px;
 }
 
-input {height:20px;line-height:20px;box-sizing:content-box;}
+select[disabled]{background:#ebebe4;}
+input, select {height:20px;line-height:20px;box-sizing:content-box;border:1px solid #a9a9a9;padding:2px 1px;}
+input:focus, select:focus {box-shadow:0 0 0 #5394ff;}
 dialog {padding:15px;}
 dialog div.saveButton {margin:10px -15px -15px;padding:7px 15px;background:#f0f0f0;border-top:1px solid #bbb;overflow:hidden;}
 dialog div.saveButton button {float:right;}
@@ -105,3 +107,25 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 
 #invoiceData {margin-bottom:1em;}
 #invoiceData p {font-size:1.7em;font-weight:bold;margin-bottom:0;}
+
+#contactSearchBar {position:relative;}
+#contactSearchBar input {width:100%;height:28px;margin-right:10px;padding-right:42px;}
+#contactSearchBar input:focus + div {background:linear-gradient(#699ae9, #5494ff);}
+#contactSearchBar input:focus + div > svg path{fill:#fafafa!important;}
+#contactSearchBar div {width:40px;height:28px;text-align:center;padding-top:6px;background:linear-gradient(#d0d0d0, #c4c4c4);
+                       position:absolute;right:0;cursor:pointer;}
+
+#contactsList[data-search] > div {display:none}
+#contactsList[data-search] > div[data-foundResult] {display:block;}
+
+#recentInvoicesList {border-collapse:collapse}
+#recentInvoicesList td, #recentInvoicesList th {border:1px solid #d0d0d0;padding:0 10px;font-size:14px;line-height:24px;}
+#recentInvoicesList th {background:#eee;cursor:pointer}
+#recentInvoicesList th#sorted::after {display:inline-block;content:'';width:10px;height:12px;background-image:url('/images/sortArrow.svg');
+                                      background-repeat:no-repeat;background-size:10px 5px;background-position:center;margin-left:4px;}
+#recentInvoicesList th#sorted.desc::after {transform:scaleY(-1);height:8px;}
+#recentInvoicesList td {cursor:pointer;}
+#recentInvoicesList tr:hover {background:#f5fcff}
+.right {text-align:right;}
+
+#viewInvoice #invoiceHeader {display:none;}

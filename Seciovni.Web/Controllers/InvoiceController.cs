@@ -24,7 +24,8 @@ namespace Seciovni.Web.Controllers
                 });
             }
 
-            ViewData["Title"] = "Invoice " + id;
+            ViewData["Title"] = "Edit Invoice " + id.ToString("D4");
+            ViewData["ShowSearch"] = true;
             return View(new Invoice()
             {
                 InvoiceID = id,
@@ -34,12 +35,19 @@ namespace Seciovni.Web.Controllers
         // GET: /<controller>/<id> -- View a static invoice
         public IActionResult View(int id)
         {
-            return View(new Invoice()
+            ViewData["ShowSearch"] = false;
+
+            if (id > 0)
             {
-                InvoiceID = id,
-                InvoiceDate = DateTime.Now,
-                Vehicles = new List<VehicleInfo> { new VehicleInfo() { Miles = 0 } }
-            });
+                return View(new Invoice()
+                {
+                    InvoiceID = id
+                });
+            }
+            else
+            {
+                return View("RecentInvoices");
+            }
         }
     }
 }
