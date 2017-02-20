@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Database.Tables;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Database.Tables;
-
-// For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+using Shared.SecurityTypes;
+using System;
 
 namespace Seciovni.Web.Controllers
 {
+    [Authorize]
     public class InvoiceController : Controller
     {
-        // GET: /<controller>/<id> -- Editing an existing invoice
+        [Authorize(Policy = AccessPolicy.EditInvoicePrivilege)]
         public IActionResult Edit(int id = -1)
         {
             if(id == -1)
@@ -32,7 +30,7 @@ namespace Seciovni.Web.Controllers
             });
         }
 
-        // GET: /<controller>/<id> -- View a static invoice
+        [Authorize(Policy = AccessPolicy.ViewInvoicePrivilege)]
         public IActionResult View(int id)
         {
             ViewData["ShowSearch"] = false;

@@ -70,7 +70,7 @@ class Payment extends SubscribableProperty {
 
         // Get all the elements and remember them
         for (let i = 0; i < elements.length; ++i) {
-            const attribute = elements[i].getAttribute(BIND_ATTRIB);
+            const attribute = elements[i].getAttribute(ATTRIBUTE_BIND);
 
             let element = null;
 

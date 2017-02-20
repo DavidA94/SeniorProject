@@ -1,50 +1,60 @@
+// region Callbacks
+
 /**
- * Created by David on 10/04/16.
+ * Mouse event callback
+ * @callback MouseEventCallback
+ * @param {MouseEvent} e
  */
 
-// region HTML constants
-
-const CANVAS_HOLDER = "canvasHolder";
-const CANVAS_ID = "dnd";
-const CANVAS_CONTEXT_MENU_ID = "canvasContextMenu";
-const CANVAS_CONTEXT_SEPARATOR = "canvasContextSeparator";
-const CANVAS_CONTEXT_CUSTOM = "custom";
-const FORM_BUILDER_ID = "formBuilder";
-const PROPERTIES = "properties";
-const PROPERTIES_FORM = "propForm";
-const ZOOM_ID = "zoom";
-const SHAPES_ID = "shapes";
+const do_not_use = "this is here to make things stop auto-indenting after this section";
 
 // endregion
 
-// region Keyboard Keys
+// region Classes
 
-const ESCAPE_KEY = 27;
+const CONTACT_PREVIEW_CLASSES = "contactPreviewItem row";
 
-// endregion
-
-// region Page Properties
-
-const PAGE_HEIGHT = 300 * 11;
-const PAGE_WIDTH  = 300 * 8.5;
-const PAGE_MODE_L = "landscape";
-const PAGE_MODE_P = "portrait";
+const CONTEXT_MENU_SEPARATOR_CLASS = "contextSeparator";
 
 // endregion
 
-// region Custom Subscribable Names
+// region Custom Subscribable Event names
 
+const EVENT_DATA_SAVED = "dataSaved";
 const EVENT_OBJECT_CHANGE = "shapechange";
+const EVENT_OBJECT_DESTROYED = "objectdestroyed";
 const EVENT_PROPERTY_CHANGE = "propertychange";
 const EVENT_SCALE_CHANGE = "scalechange";
-const EVENT_BEGIN_CAPTION_RESIZE = "beginCaptionResize";
-const EVENT_END_CAPTION_RESIZE = "endCaptionResize";
-const EVENT_DATA_SAVED = "dataSaved";
-const EVENT_OBJECT_DESTROYED = "objectdestroyed";
+
+// endregion
+
+// region data-* attributes
+
+const ATTRIBUTE_BIND = "data-bind";
+const ATTRIBUTE_COLUMN = "data-column";
+const ATTRIBUTE_ERROR = "data-error";
+const ATTRIBUTE_FOUND_RESULT = "data-foundResult";
+const ATTRIBUTE_SEARCH = "data-search";
+
+// endregion
+
+// region data-* CSS Queries
+
+const BIND_QUERY = "*[" + ATTRIBUTE_BIND + "]";
 
 // endregion
 
 // region Enums
+
+/**
+ * Font alignment options
+ * @enum {string}
+ */
+const Alignment = {
+    Left: "Left",
+    Right: "Right",
+    Center: "Center"
+};
 
 /**
  * Represents Anchor handles
@@ -56,42 +66,6 @@ const Anchor = {
     BottomLeft: 2,
     BottomRight: 3
 };
-
-/**
- * Represents what types a property can be
- * @enum {string}
- */
-const PropertyType = {
-    ABS: "abs",
-    Number: "number",
-    Color: "color",
-    Text: "text",
-    FontFamily: "family",
-    Checkbox: "checkbox",
-    Location: "location",
-    Alignment: "alignment",
-    File: "text"
-};
-
-const FIRST_IDX_AFTER_ANCHORS = 4;
-
-/**
- * Represents valid locations for a caption
- * @enum {int}
- */
-let Location = {
-    Top: 1,
-    Right: 4,
-    Bottom: 2,
-    Left: 8,
-    Center: 16,
-    None: 0
-};
-
-const CAPTION_TOP_BOTTOM = 3;  // Used for binary operations with Location
-const CAPTION_LEFT_RIGHT = 12; // Ditto
-const CAPTION_NONE = 0;
-const CAPTION_CENTER = 16;
 
 /**
  * Represents the types of cursors that can be returned
@@ -112,16 +86,6 @@ const Cursor = {
 };
 
 /**
- * Font alignment options
- * @enum {string}
- */
-const Alignment = {
-    Left: "Left",
-    Right: "Right",
-    Center: "Center"
-};
-
-/**
  * Valid web-safe font-families
  * @enum {string}
  */
@@ -134,46 +98,150 @@ const FontFamilies = {
     "Verdana" : "Verdana",
 };
 
+/**
+ * Represents valid locations for a caption
+ * @enum {int}
+ */
+const Location = {
+    Top: 1,
+    Right: 4,
+    Bottom: 2,
+    Left: 8,
+    Center: 16,
+    None: 0
+};
+
+/**
+ * Represents what types a property can be
+ * @enum {string}
+ */
+const PropertyType = {
+    ABS: "abs",
+    Number: "number",
+    Color: "color",
+    Text: "text",
+    FontFamily: "family",
+    Checkbox: "checkbox",
+    Location: "location",
+    Alignment: "alignment",
+    File: "text"
+};
+
+// endregion
+
+// region IDs
+
+const CONTEXT_MENU_ID = "contextMenu";
+
+const INVOICE_CHOSEN_CONTACT_ID = "chosenContact";
+const INVOICE_CONTACTS_LIST_HEADER_ID = "contactsListHeader";
+const INVOICE_CONTACTS_LIST_ID = "contactsList";
+const INVOICE_CONTACTS_LIST_OUTER_ID = "contactsListOuter";
+const INVOICE_CONTACTS_SEARCH_INPUT_ID = "contactSearchInput";
+const INVOICE_CUSTOMER_CLOSE_ID = "hideCustomerButton";
+const INVOICE_CUSTOMER_DATA_ID = "invoiceCustomerData";
+const INVOICE_CUSTOMER_NEW_ID = "newCustomer";
+const INVOICE_CUSTOMER_OPEN_ID = "openCustomerButton";
+const INVOICE_CUSTOMER_SHOW_CONTACTS_ID = "showContacts";
+const INVOICE_DOC_FEE_ID = "docFee";
+const INVOICE_DOWN_PAYMENT_ID = "downPayment";
+const INVOICE_LIEN_CLOSE_ID = "closeLienButton";
+const INVOICE_LIEN_DATA_ID = "invoiceLienHolderData";
+const INVOICE_LIEN_OPEN_ID = "openLienButton";
+const INVOICE_MISC_CHARGE_ID = "miscChargeTemplate";
+const INVOICE_PAYMENT_TEMPLATE_ID = "paymentTemplate";
+const INVOICE_PAYMENTS_CLOSE_ID = "closePaymentsButton";
+const INVOICE_PAYMENTS_DATA_ID = "paymentsData";
+const INVOICE_PAYMENTS_OPEN_ID = "openPaymentsButton";
+const INVOICE_RECENT_INVOICES_TABLE_ID = "recentInvoicesList";
+const INVOICE_SHOW_CUSTOM_ID = "showCustom";
+const INVOICE_STATE_ID = "invoiceState";
+const INVOICE_TAX_ID = "tax";
+const INVOICE_TOTAL_ID = "invoiceTotalDue";
+const INVOICE_TOTAL_PAYMENTS_ID = "totalPayments";
+const INVOICE_TOTAL_PAYMENTS_INNER_ID = "totalPaymentsInner";
+const INVOICE_VEHICLE_TEMPLATE_ID = "vehicleTemplate";
+
+const WYSIWYG_CANVAS_HOLDER_ID = "canvasHolder";
+const WYSIWYG_CANVAS_ID = "editor";
+const WYSIWYG_PROPERTIES_FORM_ID = "propForm";
+const WYSIWYG_PROPERTIES_ID = "properties";
+const WYSIWYG_SHAPES_ID = "shapes";
+const WYSIWYG_ZOOM_ID = "zoom";
+
+// endregion
+
+// region Keyboard Keys
+
+const ESCAPE_KEY = 27;
+const ENTER_KEY = 13;
+
 // endregion
 
 // region Miscellaneous
+
+/**
+ * The key used for the authorization token in the local data
+ * @type {string}
+ */
+const AUTH_TOKEN = "AuthorizationToken";
+
+/**
+ * The key used for the authorization token expiration time in the local data
+ * @type {string}
+ */
+const AUTH_TOKEN_TIME = "AuthorizationTokenTime";
+
+// region WYSIWYG
+
+const WYSIWYG_ANCHOR_COUNT = 4;
+const WYSIWYG_PAGE_HEIGHT = 300 * 11;
+const WYSIWYG_PAGE_WIDTH  = 300 * 8.5;
+const WYSIWYG_PAGE_MODE_L = "landscape";
+const WYSIWYG_PAGE_MODE_P = "portrait";
+
+const WYSIWYG_CAPTION_TOP_BOTTOM = 3;  // Used for binary operations with @see Location
+const WYSIWYG_CAPTION_LEFT_RIGHT = 12; // Ditto
+const WYSIWYG_CAPTION_CENTER = 16;     // Ditto
+
+const WYSIWYG_DRAG_CHECKBOX = "Checkbox";
+const WYSIWYG_DRAG_BOX = "Box";
+const WYSIWYG_DRAG_TABLE = "Table";
+const WYSIWYG_DRAG_ELLIPSE = "Ellipse";
+const WYSIWYG_DRAG_TEXT = "Text";
+const WYSIWYG_DRAG_IMAGE = "Image";
 
 /**
  * Have a constant padding away from the shape so that the caption
  * will not butt up against it -- five seems like a nice number.
  * @type {number}
  */
-const CAPTION_PADDING = 5;
-
-/**
- * Font Line Height ratio
- * @type {number}
- */
-const FLH_RATIO = 1.4;
-
-/**
- * The border size for the table
- * @type {number}
- */
-const TABLE_BORDER_SIZE = 1;
+const WYSIWYG_CAPTION_PADDING = 5;
 
 /**
  * The key used for dragging shapes onto the canvas
  * @type {string}
  */
-const DRAG_DATA = "shape";
+const WYSIWYG_DRAG_DATA = "shape";
 
-const DRAG_CHECKBOX = "Checkbox";
-const DRAG_BOX = "Box";
-const DRAG_TABLE = "Table";
-const DRAG_ELLIPSE = "Ellipse";
-const DRAG_TEXT = "Text";
-const DRAG_IMAGE = "Image";
+/**
+ * Font Line Height ratio
+ * @type {number}
+ */
+const WYSIWYG_FLH_RATIO = 1.4;
 
+/**
+ * The border size for the table
+ * @type {number}
+ */
+const WYSIWYG_TABLE_BORDER_SIZE = 1;
 
-const DEFAULT_IMG = "/CanvasDnD/Images/image.svg";
+/**
+ * The default image for when an image is being added to the WYSIWYG form
+ * @type {string}
+ */
+const WYSIWYG_DEFAULT_IMG = "/images/FormBuilder/image.svg";
 
-const AUTH_TOKEN = "AuthorizationToken";
-const AUTH_TOKEN_TIME = "AuthorizationTokenTime";
+// endregion
 
 // endregion

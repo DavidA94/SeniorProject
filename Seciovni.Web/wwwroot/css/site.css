@@ -129,3 +129,28 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 .right {text-align:right;}
 
 #viewInvoice #invoiceHeader {display:none;}
+
+
+
+#canvasHolder {position:relative;height:80vh;width:600px;box-sizing:border-box;border:1px solid black;float:left;overflow:auto;}
+#contextMenu {position:absolute;left:-999px;z-index:999;list-style:none;font-family:Arial,sans-serif;
+              border:1px solid darkgray;margin:0;padding:5px 0;font-size:14px;line-height:24px;
+              box-shadow: 3px 5px 10px darkgray;min-width:125px;user-select:none;-webkit-user-select:none;
+              background:white;}
+#contextMenu li {padding:0 20px 0 10px;cursor:default;}
+#contextMenu li:hover {color:white;background:#0066aa;}
+#contextMenu .contextSeparator {border-top:1px solid #777;border-bottom:1px solid #ddd;}
+#zoom {float:left;clear:left;width:600px;text-align: center}
+#zoom #zoomIn {width:30px;margin:10px;background:url('/images/FormBuilder/zoomIn.svg');background-size:100%;cursor:pointer;}
+#zoom #zoomOut {width:30px;margin:10px;background:url('/images/FormBuilder/zoomOut.svg');background-size:100%;cursor:pointer;}
+#zoom #zoomAmt {}
+#zoom div {display:inline-block;text-align:center;height:30px;line-height:30px;vertical-align:middle;}
+#editor {border:1px solid black;}
+#shapes {padding:5px;overflow-x:hidden;width:290px;height:calc(25vh - 30px);margin-bottom:16px;border:1px solid black;}
+#shapes h3 {text-align:center;margin-top:.2em;}
+#shapes div {float:left;width:130px;margin:0 10px 5px 0;}
+#shapes img {width:20px;height:20px;margin-right:10px;float:left;}
+#shapes span {line-height:20px;float:left;}
+#properties {float:left;width:300px;height:55vh;overflow:auto;border:1px solid black;}
+#properties label {float:left;clear:left;margin:5px 10px 5px 0;line-height:20px;}
+#properties input, #properties select {height:20px;float:left;margin:5px 0;}

@@ -87,11 +87,11 @@ class BaseHtmlElement extends SubscribableProperty {
      */
     set error(value) {
         if(value === null){
-            this.htmlObj.removeAttribute(ERROR_ATTRIB);
+            this.htmlObj.removeAttribute(ATTRIBUTE_ERROR);
             this.htmlObj.setAttribute("title", this._title);
         }
         else{
-            this.htmlObj.setAttribute(ERROR_ATTRIB, value);
+            this.htmlObj.setAttribute(ATTRIBUTE_ERROR, value);
             this.htmlObj.setAttribute("title", value);
         }
     }
@@ -100,7 +100,7 @@ class BaseHtmlElement extends SubscribableProperty {
      * The error on this HTML element
      * @return {string|null}
      */
-    get error() { return this.htmlObj.hasAttribute(ERROR_ATTRIB) ? this.htmlObj.getAttribute(ERROR_ATTRIB) : null; }
+    get error() { return this.htmlObj.hasAttribute(ATTRIBUTE_ERROR) ? this.htmlObj.getAttribute(ATTRIBUTE_ERROR) : null; }
 
     /**
      * The Value of the field

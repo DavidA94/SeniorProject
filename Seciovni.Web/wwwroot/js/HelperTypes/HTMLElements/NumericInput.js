@@ -42,7 +42,7 @@ class NumericInput extends TextInput{
         this._makePretty = makePretty;
 
         /**
-         * Indiates if the input has already been prettified
+         * Indicates if the input has already been prettified
          * @type {boolean}
          */
         this._isPretty = false;

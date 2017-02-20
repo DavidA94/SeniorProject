@@ -1,0 +1,59 @@
+﻿@{
+    ViewData["Title"] = "Form Editor";
+}
+
+<div id="formBuilder">
+    <div id="canvasHolder">
+        <canvas id="editor" tabindex="0"></canvas>
+    </div>
+    <ul id="canvasContextMenu"></ul>
+    <div id="shapes">
+        <h3>Shapes</h3>
+    </div>
+    <div id="properties"></div>
+    <div id="zoom"></div>
+</div>
+
+
+<script type="text/javascript" src="~/js/prototypes.js"></script>
+<script type="text/javascript" src="~/js/Constants.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/BaseEventType.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/KeyboardEvent.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/MouseEvent.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/EventArgs.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/MouseEventArgs.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/KeyboardEventArgs.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/ObjectChangedEventArgs.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/PropertyChangedEventArgs.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/ScaleChangeEventArgs.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/Statics/Keyboard.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/Statics/Mouse.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/Statics/HtmlTextBox.js"></script>
+<script type="text/javascript" src="~/js/ContextMenu.js"></script>
+<script type="text/javascript" src="~/js/Events/Subscribable.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/Properties/BaseTypes/SubscribableProperty.js"></script>
+<script type="text/javascript" src="~/js/Events/EventPropagator.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/FBObjects/bases/Shape.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/AnchorHandle.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/Properties/Appearance.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/Properties/Border.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/Properties/Font.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/Canvas.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/Properties/Caption.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/Properties/Layout.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/Properties/TRBL.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/FBObjects/bases/FBObject.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/FBObjects/bases/TextBlock.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/FBObjects/BasicShape.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/FBObjects/Box.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/FBObjects/Ellipse.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/FBObjects/Cell.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/FBObjects/FBTextBlock.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/FBObjects/CheckBox.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/FBObjects/Table.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/FBObjects/FBImage.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/FormBuilder.js"></script>
+
+<script type="text/javascript">
+    const fb = new FormBuilder();
+</script>

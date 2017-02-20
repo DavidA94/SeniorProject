@@ -24,7 +24,7 @@
     }
 
     initialize(){
-        this._tableParent = document.getElementById(RECENT_INVOICES_TABLE_ID);
+        this._tableParent = document.getElementById(INVOICE_RECENT_INVOICES_TABLE_ID);
 
         for(const th of this._tableParent.getElementsByTagName("th"))
         {
@@ -39,7 +39,7 @@
 
             if(xmlhttp.readyState == XMLHttpRequest.DONE){
                 if(xmlhttp.status === 200){
-                    for(const invoice_json of JSON.parse(xmlhttp.response)){
+                    for(const invoice_json of JSON.parse(xmlhttp.response.toString())){
                         const ip = new InvoicePreview();
                         ip.initialize_json(invoice_json);
                         this._invoices.push(ip);
@@ -60,18 +60,18 @@
         e.preventDefault();
 
         const element = e.currentTarget;
-        const sortDesc = element.getAttribute(SORT_ATTRIB) === this._currentSort;
+        const sortDesc = element.getAttribute(ATTRIBUTE_COLUMN) === this._currentSort;
 
-        this._currentSort = element.getAttribute(SORT_ATTRIB);
+        this._currentSort = element.getAttribute(ATTRIBUTE_COLUMN);
 
         if(sortDesc){
-            this._invoices.sort((l, r) => l[this._currentSort] < r[this._currentSort])
+            this._invoices.sort((l, r) => l[this._currentSort] < r[this._currentSort]);
             element.className = "desc";
             // So it will sort asc next time.
             this._currentSort = "";
         }
         else{
-            this._invoices.sort((l, r) => l[this._currentSort] > r[this._currentSort])
+            this._invoices.sort((l, r) => l[this._currentSort] > r[this._currentSort]);
             element.className = "";
         }
 

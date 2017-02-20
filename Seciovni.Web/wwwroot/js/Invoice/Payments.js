@@ -34,18 +34,18 @@ class Payments extends Subscribable {
          * @type {HTMLDivElement}
          * @private
          */
-        this._totalPaymentsOuter = document.getElementById(TOTAL_PAYMENTS_ID);
+        this._totalPaymentsOuter = document.getElementById(INVOICE_TOTAL_PAYMENTS_ID);
 
         /**
          * The total amount inside of the dialog (Updated on Amount change)
          * @type {HTMLDivElement}
          * @private
          */
-        this._totalPaymentsInner = document.getElementById(TOTAL_PAYMENTS_INNER_ID);
+        this._totalPaymentsInner = document.getElementById(INVOICE_TOTAL_PAYMENTS_INNER_ID);
 
         // Subscribe to all the buttons that can be clicked
-        document.getElementById(OPEN_PAYMENTS_ID).addEventListener('click', this._showBound);
-        document.getElementById(CLOSE_PAYMENTS_ID).addEventListener('click', this._hideBound);
+        document.getElementById(INVOICE_PAYMENTS_OPEN_ID).addEventListener('click', this._showBound);
+        document.getElementById(INVOICE_PAYMENTS_CLOSE_ID).addEventListener('click', this._hideBound);
 
         /**
          * The payments that have been made
@@ -66,7 +66,7 @@ class Payments extends Subscribable {
          * @type {HTMLDivElement}
          * @private
          */
-        this._paymentTemplate = document.getElementById(PAYMENT_TEMPLATE_ID).cloneNode(true);
+        this._paymentTemplate = document.getElementById(INVOICE_PAYMENT_TEMPLATE_ID).cloneNode(true);
         this._paymentTemplate.removeAttribute("id");
 
         /**
@@ -74,7 +74,7 @@ class Payments extends Subscribable {
          * @type {HTMLDivElement}
          * @private
          */
-        this._paymentContainer = document.getElementById(PAYMENT_TEMPLATE_ID).parentNode;
+        this._paymentContainer = document.getElementById(INVOICE_PAYMENT_TEMPLATE_ID).parentNode;
 
         /**
          * The event to fire when the last row has an element that changes
@@ -113,7 +113,7 @@ class Payments extends Subscribable {
     // region Public Methods
 
     initialize(){
-        const payment = new Payment(/** @type {HTMLDivElement} */document.getElementById(PAYMENT_TEMPLATE_ID));
+        const payment = new Payment(/** @type {HTMLDivElement} */document.getElementById(INVOICE_PAYMENT_TEMPLATE_ID));
         payment.subscribe(EVENT_PROPERTY_CHANGE, this._boundLastRowChanged);
         payment.subscribe(EVENT_OBJECT_DESTROYED, this._boundRowDestroyed);
         this._payments.push(payment);
@@ -140,7 +140,7 @@ class Payments extends Subscribable {
      */
     show(e){
         e.preventDefault();
-        document.getElementById(CLOSE_PAYMENTS_ID).focus();
+        document.getElementById(INVOICE_PAYMENTS_CLOSE_ID).focus();
         this._dialog.show();
     }
 
@@ -222,7 +222,6 @@ class Payments extends Subscribable {
 
     /**
      * Fires when the last row / dummy row has something entered into it
-     * @param e
      * @private
      */
     _lastRowChanged() {
@@ -249,7 +248,7 @@ class Payments extends Subscribable {
      * @private
      */
     _rowDestroyed(e){
-        const row = e.originalTarget;
+        const row = /** @type{Payment} */e.originalTarget;
 
         this._payments.splice(this._payments.indexOf(row), 1);
     }

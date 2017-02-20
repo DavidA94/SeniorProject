@@ -3,7 +3,7 @@
  */
 
 /**
- * Holds informatino about a keyboard event
+ * Holds information about a keyboard event
  */
 class KeyboardEventArgs extends EventArgs {
     /**

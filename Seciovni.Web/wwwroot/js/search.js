@@ -11,10 +11,10 @@ function search(search, targets){
     const bestMatches = [];
 
     for(const target of targets){
-        const likliness = getLikeliness(target.toString(), search);
-        console.log(search + "  in  " + target + "  =  " + likliness);
-        if(likliness > 0){
-            target.dlSearchVal = likliness;
+        const likeliness = getLikeliness(target.toString(), search);
+        console.log(search + "  in  " + target + "  =  " + likeliness);
+        if(likeliness > 0){
+            target.dlSearchVal = likeliness;
             bestMatches.push(target);
         }
     }

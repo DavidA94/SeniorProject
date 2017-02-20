@@ -167,11 +167,11 @@ class CustomerPreview {
 
         // --------------------------------------------------
 
-        const firstNameElement = document.createElement("span");
+        const firstNameElement = /** @type{HTMLSpanElement} */document.createElement("span");
         cp._firstName = new SpanElement(firstNameElement);
         cp.firstName.value = json.user.firstName;
 
-        const lastNameElement = document.createElement("span");
+        const lastNameElement = /** @type{HTMLSpanElement} */document.createElement("span");
         cp._lastName = new SpanElement(lastNameElement);
         cp.lastName.value = json.user.lastName;
 
@@ -181,19 +181,19 @@ class CustomerPreview {
 
         // --------------------------------------------------
 
-        const streetAddressElement = document.createElement("span");
+        const streetAddressElement = /** @type{HTMLSpanElement} */document.createElement("span");
         cp._streetAddress = new SpanElement(streetAddressElement);
-        cp.streetAddress.value = json.address.streetAddress;
+        cp.streetAddress.value = /** @type{string} */json.address.streetAddress;
 
-        const cityElement = document.createElement("span");
+        const cityElement = /** @type{HTMLSpanElement} */document.createElement("span");
         cp._city = new SpanElement(cityElement);
         cp.city.value = json.address.city;
 
-        const stateElement = document.createElement("span");
+        const stateElement = /** @type{HTMLSpanElement} */document.createElement("span");
         cp._state = new SpanElement(stateElement);
         cp.state.value = json.address.state;
 
-        const zipElement = document.createElement("span");
+        const zipElement = /** @type{HTMLSpanElement} */document.createElement("span");
         cp._zip = new SpanElement(zipElement);
         cp.zip.value = json.address.zipCode;
 
@@ -207,7 +207,7 @@ class CustomerPreview {
 
         // --------------------------------------------------
 
-        const emailElement = document.createElement("span");
+        const emailElement = /** @type{HTMLSpanElement} */document.createElement("span");
         cp._email = new SpanElement(emailElement);
         cp.email.value = json.user.email;
 

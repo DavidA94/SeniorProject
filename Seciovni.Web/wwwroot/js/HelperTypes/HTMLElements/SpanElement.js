@@ -33,5 +33,5 @@ class SpanElement extends BaseHtmlElement {
      * The value
      * @param {boolean} value
      */
-    set bold(value) { this.htmlObj.style.fontWeight = "bold"; }
+    set bold(value) { this.htmlObj.style.fontWeight = value ? "bold" : "normal"; }
 }

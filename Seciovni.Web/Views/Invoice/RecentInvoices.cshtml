@@ -6,20 +6,21 @@
 
 <table id="recentInvoicesList">
     <tr>
-        <th data-sort="createdDate">Date</th>
-        <th data-sort="invoiceNumber">Invoice Num</th>
-        <th data-sort="buyerName">Buyer Name</th>
-        <th data-sort="invoiceTotal">Invoice Total</th>
-        <th data-sort="totalDue">Total Due</th>
+        <th data-column="createdDate">Date</th>
+        <th data-column="invoiceNumber">Invoice Num</th>
+        <th data-column="buyerName">Buyer Name</th>
+        <th data-column="invoiceTotal">Invoice Total</th>
+        <th data-column="totalDue">Total Due</th>
     </tr>
 </table>
 
+<script type="text/javascript" src="~/js/Events/EventTypes/MouseEvent.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/KeyboardEvent.js"></script>
 <script type="text/javascript" src="~/js/helpers.js"></script>
 <script type="text/javascript" src="~/js/Constants.js"></script>
 <script type="text/javascript" src="~/js/prototypes.js"></script>
 <script type="text/javascript" src="~/js/Events/Subscribable.js"></script>
 <script type="text/javascript" src="~/js/Events/SubscribableProperty.js"></script>
 <script type="text/javascript" src="~/js/HelperTypes/HTMLElements/BaseHtmlElement.js"></script>
-<script type="text/javascript" src="~/js/Invoice/Constants.js"></script>
 <script type="text/javascript" src="~/js/Invoice/InvoicePreview.js"></script>
 <script type="text/javascript" src="~/js/Invoice/RecentInvoices.js"></script>

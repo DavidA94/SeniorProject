@@ -101,7 +101,7 @@ class Vehicle extends SubscribableProperty {
 
         // And put them in their proper member variable
         for (let i = 0; i < elements.length; ++i) {
-            const attribute = elements[i].getAttribute(BIND_ATTRIB);
+            const attribute = elements[i].getAttribute(ATTRIBUTE_BIND);
 
             let element = null;
 

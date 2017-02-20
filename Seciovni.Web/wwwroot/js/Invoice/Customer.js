@@ -75,24 +75,23 @@ class Customer {
         this._displayName = document.getElementById("invoiceCustomer");
 
         // Subscribe to all the buttons that can be clicked
-        document.getElementById(OPEN_CUSTOMER_ID).addEventListener('click', this._showBound);
-        document.getElementById(CLOSE_CUSTOMER_ID).addEventListener('click', this._hideBound);
-        document.getElementById(SHOW_CONTACTS_ID).addEventListener('click', this._swapBound);
-        document.getElementById(SHOW_CUSTOM_ID).addEventListener('click', this._swapBound);
+        document.getElementById(INVOICE_CUSTOMER_OPEN_ID).addEventListener('click', this._showBound);
+        document.getElementById(INVOICE_CUSTOMER_CLOSE_ID).addEventListener('click', this._hideBound);
+        document.getElementById(INVOICE_CUSTOMER_SHOW_CONTACTS_ID).addEventListener('click', this._swapBound);
+        document.getElementById(INVOICE_SHOW_CUSTOM_ID).addEventListener('click', this._swapBound);
 
         // Setup Searching
-        document.getElementById(CONTACT_SEARCH_BUTTON_ID).addEventListener('click', () => this._searchBound());
-        document.getElementById(CONTACT_SEARCH_INPUT_ID).addEventListener('input', this._searchBound);
-        document.getElementById(CONTACT_SEARCH_INPUT_ID).addEventListener('keypress', (e) => {
+        document.getElementById(INVOICE_CONTACTS_SEARCH_INPUT_ID).addEventListener('input', this._searchBound);
+        document.getElementById(INVOICE_CONTACTS_SEARCH_INPUT_ID).addEventListener('keypress', (e) => {
             // If [Enter]
-            if(e.keyCode === 13){
+            if(e.keyCode === ENTER_KEY){
                 this._searchBound(null);
             }
         });
 
 
         /**
-         * Used for knowning which contact to select when loading data from the server
+         * Used for knowing which contact to select when loading data from the server
          * @type {number}
          * @private
          */
@@ -166,7 +165,7 @@ class Customer {
 
         // And then assign them to the proper member variables
         for(let i = 0; i < elements.length; ++i){
-            const attribute = elements[i].getAttribute(BIND_ATTRIB);
+            const attribute = elements[i].getAttribute(ATTRIBUTE_BIND);
 
             let element = null;
 
@@ -277,8 +276,8 @@ class Customer {
         this._mcNum.value = "";
         this._resaleNum.value = "";
 
-        if(document.getElementById(CHOSEN_CONTACT_ID)){
-            document.getElementById(CHOSEN_CONTACT_ID).removeAttribute("id");
+        if(document.getElementById(INVOICE_CHOSEN_CONTACT_ID)){
+            document.getElementById(INVOICE_CHOSEN_CONTACT_ID).removeAttribute("id");
         }
 
         this._updatePreviewField();
@@ -312,18 +311,18 @@ class Customer {
         e.preventDefault();
 
         if(this._showingContacts){
-            document.getElementById(NEW_CUSTOMER_ID).style.display = "block";
-            document.getElementById(SHOW_CONTACTS_ID).style.display = "block";
+            document.getElementById(INVOICE_CUSTOMER_NEW_ID).style.display = "block";
+            document.getElementById(INVOICE_CUSTOMER_SHOW_CONTACTS_ID).style.display = "block";
 
-            document.getElementById(CONTACTS_LIST_OUTER_ID).style.display = "none";
-            document.getElementById(SHOW_CUSTOM_ID).style.display = "none";
+            document.getElementById(INVOICE_CONTACTS_LIST_OUTER_ID).style.display = "none";
+            document.getElementById(INVOICE_SHOW_CUSTOM_ID).style.display = "none";
         }
         else {
-            document.getElementById(NEW_CUSTOMER_ID).style.display = "none";
-            document.getElementById(SHOW_CONTACTS_ID).style.display = "none";
+            document.getElementById(INVOICE_CUSTOMER_NEW_ID).style.display = "none";
+            document.getElementById(INVOICE_CUSTOMER_SHOW_CONTACTS_ID).style.display = "none";
 
-            document.getElementById(CONTACTS_LIST_OUTER_ID).style.display = "block";
-            document.getElementById(SHOW_CUSTOM_ID).style.display = "block";
+            document.getElementById(INVOICE_CONTACTS_LIST_OUTER_ID).style.display = "block";
+            document.getElementById(INVOICE_SHOW_CUSTOM_ID).style.display = "block";
         }
 
         this._showingContacts = !this._showingContacts;
@@ -365,34 +364,35 @@ class Customer {
      */
     _fieldUpdated(e) {
         // Ensure the phone, email, and zip are valid
-        if(e.propertyName == CustomerFields.phone){
-            const phone = this._phone.value;
+        if(e.propertyName == PhoneFields.number){
+            const phone = this._phoneNumbers[0].Number.value;
             const phoneRegEx = new RegExp(/^(1[.\-])?[0-9]{3}[.\-]?[0-9]{3}[.\-]?[0-9]{4}$/);
 
             if(phone != "" && !phone.match(phoneRegEx)){
-                this._phone.error = "Invalid Phone Number. Expecting format 1-111-111-1111";
+                this._phoneNumbers[0].Number.error = "Invalid Phone Number. Expecting format 1-111-111-1111";
             }
             else{
-                this._phone.error = null;
+                this._phoneNumbers[0].error = null;
             }
         }
-        else if(e.propertyName === CustomerFields.email){
-            const email = this._email.value;
+        else if(e.propertyName === UserFields.email){
+            const email = this._user.Email.value;
 
             // This is weak, but should work well enough
             if(email != "" && !email.match(/^.+@.+\..{2,}$/)) {
-                this._email.error = "Invalid Email Address";
+                this._user.Email.error = "Invalid Email Address";
             }
             else{
-                this._email.error = null;
+                this._user.Email.error = null;
             }
         }
-        else if(e.propertyName === CustomerFields.zip){
-            if(this._zipCode.value.length < 5 || this._zipCode.value.length > 6){
-                this._zipCode.error = "Invalid ZIP code";
+        else if(e.propertyName === AddressFields.zip){
+            const zip = this._address.Zip.htmlObj.value;
+            if(zip.length != 5){
+                this._address.Zip.error = "Invalid ZIP code";
             }
             else{
-                this._zipCode.error = null;
+                this._address.Zip.error = null;
             }
         }
     }
@@ -441,7 +441,7 @@ class Customer {
      * @private
      */
     _loadContacts(contacts){
-        const listNode = document.getElementById(CONTACTS_LIST_ID);
+        const listNode = document.getElementById(INVOICE_CONTACTS_LIST_ID);
 
         while (listNode.childElementCount > 0) listNode.removeChild(listNode.lastChild);
 
@@ -471,13 +471,13 @@ class Customer {
 
             const selectCustomer = (e) => {
                 e.preventDefault();
-                if (document.getElementById(CHOSEN_CONTACT_ID)) {
-                    document.getElementById(CHOSEN_CONTACT_ID).removeAttribute("id")
+                if (document.getElementById(INVOICE_CHOSEN_CONTACT_ID)) {
+                    document.getElementById(INVOICE_CHOSEN_CONTACT_ID).removeAttribute("id")
                 }
-                e.currentTarget.id = CHOSEN_CONTACT_ID;
+                e.currentTarget.id = INVOICE_CHOSEN_CONTACT_ID;
                 this._chosenContact = cp;
                 this._updatePreviewField();
-            }
+            };
 
             cp.parentElement.htmlObj.setAttribute("tabindex", "0");
             cp.parentElement.addEvent('click', selectCustomer);
@@ -485,7 +485,7 @@ class Customer {
 
             if(cp.customerID == this._chosenContactID){
                 this._chosenContact = cp;
-                this._chosenContact.parentElement.htmlObj.id = CHOSEN_CONTACT_ID;
+                this._chosenContact.parentElement.htmlObj.id = INVOICE_CHOSEN_CONTACT_ID;
                 this._updatePreviewField();
             }
 
@@ -515,12 +515,12 @@ class Customer {
      */
     _keyReleased(e){
         // Enter
-        if(e.keyCode === 13) {
+        if(e.keyCode === ENTER_KEY) {
             e.preventDefault();
             this._enterKeyPressedFunc(e)
         }
         // ESC
-        else if(e.keyCode === 27){
+        else if(e.keyCode === ESCAPE_KEY){
             e.preventDefault();
             this._escKeyPressedFunc(e);
         }
@@ -531,9 +531,9 @@ class Customer {
      * @private
      */
     _search(){
-        const searchTerm = document.getElementById(CONTACT_SEARCH_INPUT_ID).value;
-        const contactsListElem = document.getElementById(CONTACTS_LIST_ID);
-        const contactsHeader = document.getElementById(CONTACTS_LIST_HEADER_ID);
+        const searchTerm = document.getElementById(INVOICE_CONTACTS_SEARCH_INPUT_ID).value;
+        const contactsListElem = document.getElementById(INVOICE_CONTACTS_LIST_ID);
+        const contactsHeader = document.getElementById(INVOICE_CONTACTS_LIST_HEADER_ID);
 
         if(searchTerm === ""){
 
@@ -542,19 +542,19 @@ class Customer {
 
             // And re-add them so they're ordered correctly
             for(const contact of this._loadedContacts){
-                contact.parentElement.htmlObj.removeAttribute(SEARCH_FOUND_ATTRIB);
+                contact.parentElement.htmlObj.removeAttribute(ATTRIBUTE_FOUND_RESULT);
                 contactsListElem.appendChild(contact.parentElement.htmlObj);
             }
 
             // Remove that we're in search mode, and update the header
-            contactsListElem.removeAttribute(SEARCH_ATTRIB);
+            contactsListElem.removeAttribute(ATTRIBUTE_SEARCH);
             contactsHeader.innerHTML = "Contacts";
             return;
         }
 
         const runNum = Math.random();
         this._search.runNum = runNum;
-        contactsListElem.setAttribute(SEARCH_ATTRIB, "");
+        contactsListElem.setAttribute(ATTRIBUTE_SEARCH, "");
 
         // Change the title
         contactsHeader.innerHTML = "Search Results";
@@ -597,7 +597,7 @@ class Customer {
                 results.push({likelihood: average, contact: contact});
             }
             else{
-                contact.parentElement.htmlObj.removeAttribute(SEARCH_FOUND_ATTRIB);
+                contact.parentElement.htmlObj.removeAttribute(ATTRIBUTE_FOUND_RESULT);
             }
         }
 
@@ -607,7 +607,7 @@ class Customer {
         if(this._search.runNum !== runNum) return;
 
         for(const result of results){
-            result.contact.parentElement.htmlObj.setAttribute(SEARCH_FOUND_ATTRIB, "");
+            result.contact.parentElement.htmlObj.setAttribute(ATTRIBUTE_FOUND_RESULT, "");
         }
     }
 

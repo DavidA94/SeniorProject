@@ -5,7 +5,7 @@
 class Error {
     constructor() {
         /**
-         * The elemenet that has the error
+         * The element that has the error
          * @type {string}
          */
         this.element = "";

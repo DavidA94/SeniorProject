@@ -27,7 +27,7 @@ class Invoice {
                 }
                 if(xmlhttp.readyState == XMLHttpRequest.DONE){
                     if(xmlhttp.status === 200){
-                        const response = /** @type {ApiResponse} */JSON.parse(xmlhttp.response);
+                        const response = /** @type {ApiResponse} */JSON.parse(xmlhttp.response.toString());
 
                         if(!response.successful){
                             if(response.errors.length > 0){
@@ -110,7 +110,7 @@ class Invoice {
                     }
                     if (xmlhttp.readyState == XMLHttpRequest.DONE) {
                         if (xmlhttp.status === 200) {
-                            const response = /** @type {ApiResponse} */JSON.parse(xmlhttp.response);
+                            const response = /** @type {ApiResponse} */JSON.parse(xmlhttp.response.toString());
 
                             if (response.successful) {
                                 location.replace("/");
@@ -150,7 +150,7 @@ class Invoice {
          * @type {HTMLDivElement}
          * @private
          */
-        this._vehicleTemplate = document.getElementById(VEHICLE_TEMPLATE_ID).cloneNode(true);
+        this._vehicleTemplate = document.getElementById(INVOICE_VEHICLE_TEMPLATE_ID).cloneNode(true);
         this._vehicleTemplate.removeAttribute("id");
 
         /**
@@ -158,7 +158,7 @@ class Invoice {
          * @type {HTMLDivElement}
          * @private
          */
-        this._chargeTemplate = document.getElementById(MISC_CHARGE_ID).cloneNode(true);
+        this._chargeTemplate = document.getElementById(INVOICE_MISC_CHARGE_ID).cloneNode(true);
         this._chargeTemplate.removeAttribute("id");
 
         /**
@@ -166,14 +166,14 @@ class Invoice {
          * @type {HTMLDivElement}
          * @private
          */
-        this._vehicleContainer = document.getElementById(VEHICLE_TEMPLATE_ID).parentNode;
+        this._vehicleContainer = document.getElementById(INVOICE_VEHICLE_TEMPLATE_ID).parentNode;
 
         /**
          * The parent to insert new miscellaneous charges into
          * @type {HTMLDivElement}
          * @private
          */
-        this._chargeContainer = document.getElementById(MISC_CHARGE_ID).parentNode;
+        this._chargeContainer = document.getElementById(INVOICE_MISC_CHARGE_ID).parentNode;
 
         /**
          * The Invoice State dropdown
@@ -186,21 +186,21 @@ class Invoice {
          * @type {MoneyInput}
          * @private
          */
-        this._tax = new MoneyInput(document.getElementById(TAX_ID));
+        this._tax = new MoneyInput(document.getElementById(INVOICE_TAX_ID));
 
         /**
          * The Doc Fee field
          * @type {MoneyInput}
          * @private
          */
-        this._docFee = new MoneyInput(document.getElementById(DOC_FEE_ID));
+        this._docFee = new MoneyInput(document.getElementById(INVOICE_DOC_FEE_ID));
 
         /**
          * The Down Payment field
          * @type {MoneyInput}
          * @private
          */
-        this._downPayment = new MoneyInput(document.getElementById(DOWN_PYMT_ID));
+        this._downPayment = new MoneyInput(document.getElementById(INVOICE_DOWN_PAYMENT_ID));
 
         /**
          * The customer data
@@ -214,7 +214,7 @@ class Invoice {
          * @type {LienHolder}
          * @private
          */
-        this._lienHolder = new LienHolder(document.getElementById(INVOICE_LIEN_HOLDER_ID));
+        this._lienHolder = new LienHolder(document.getElementById(INVOICE_LIEN_DATA_ID));
 
         /**
          * The payments data
@@ -268,12 +268,12 @@ class Invoice {
      * Initialize the default document
      */
     initialize() {
-        const vehicle = new Vehicle(/** @type {HTMLDivElement} */document.getElementById(VEHICLE_TEMPLATE_ID));
+        const vehicle = new Vehicle(/** @type {HTMLDivElement} */document.getElementById(INVOICE_VEHICLE_TEMPLATE_ID));
         vehicle.subscribe(EVENT_PROPERTY_CHANGE, this._boundLastRowChanged);
         vehicle.subscribe(EVENT_OBJECT_DESTROYED, this._boundRowDestroyed);
         this._vehicles.push(vehicle);
 
-        const miscCharge = new MiscCharge(/** @type {HTMLDivElement} */document.getElementById(MISC_CHARGE_ID));
+        const miscCharge = new MiscCharge(/** @type {HTMLDivElement} */document.getElementById(INVOICE_MISC_CHARGE_ID));
         miscCharge.subscribe(EVENT_PROPERTY_CHANGE, this._boundLastRowChanged);
         miscCharge.subscribe(EVENT_OBJECT_DESTROYED, this._boundRowDestroyed);
         this._miscCharges.push(miscCharge);
@@ -285,7 +285,7 @@ class Invoice {
             sendToApi("Invoice/Get/" + invoiceNum, "GET", null, (xmlhttp) => {
                 if(xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200) {
                     this.reset();
-                    this.initialize_json(JSON.parse(xmlhttp.response))
+                    this.initialize_json(JSON.parse(xmlhttp.response.toString()));
 
                     // Lock it down, if necessary
                     if(document.getElementById("viewInvoice")){
@@ -401,8 +401,7 @@ class Invoice {
         for (let c of this._miscCharges) total += Math.max(0, c.Price.value);
 
         // Update the total
-        const prettyTotal = "$ " + total.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        document.getElementById(INVOICE_TOTAL_ID).innerHTML = prettyTotal;
+        document.getElementById(INVOICE_TOTAL_ID).innerHTML = "$ " + total.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
     /**
