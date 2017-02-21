@@ -2,6 +2,10 @@
  * Created by David on 11/25/16.
  */
 
+class FBTextBlockFields {
+    static get textBlock() { return "textBlock"; }
+}
+
 /**
  * A wrapper for TextBlock to be used as a FormBuilder object
  */
@@ -21,7 +25,8 @@ class FBTextBlock extends FBObject {
         // Override the base-class layout to be the right one
         this._layout = this._textBlock.layout;
 
-        this.__init(x, y, width, height);
+        // If we were given good data, call init (bad data given from @see from_json)
+        if(x) this.__init(x, y, width, height);
 
         /**
          * Used to ignore a property change on the layout of `this` for when we change it on the textBlock
@@ -157,6 +162,32 @@ class FBTextBlock extends FBObject {
         this._ignoreLayoutChange = true;
         this._textBlock.draw(context);
         this._ignoreLayoutChange = false;
+    }
+
+    // endregion
+
+    // region JSON
+
+    /**
+     * Gets the JSON data for this class
+     * @return {Object<string, *>}
+     */
+    toJSON() {
+        const properties = this.__toJSON();
+        properties[FBTextBlockFields.textBlock] = this._textBlock;
+        return properties;
+    }
+
+    /**
+     * Creates a new object from the provided JSON
+     * @param {json} json - The JSON to use
+     * @return {FBImage}
+     */
+    static from_json(json){
+        const textBlock = new FBTextBlock(null, null, null, null);
+        textBlock.__init_json(json);
+        textBlock._textBlock.initialize_json(json[FBTextBlockFields.textBlock]);
+        return textBlock;
     }
 
     // endregion

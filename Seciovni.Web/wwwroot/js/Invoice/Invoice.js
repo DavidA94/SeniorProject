@@ -124,6 +124,15 @@ class Invoice {
             });
         }
 
+        this._editButton = document.getElementById("editButton");
+        if(this._editButton) {
+            this._editButton.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                location.assign("/Invoice/Edit/" + this._invoiceID);
+            });
+        }
+
         /**
          * The invoice's ID
          * @type {number}

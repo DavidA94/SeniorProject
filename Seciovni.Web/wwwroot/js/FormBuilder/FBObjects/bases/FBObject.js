@@ -6,17 +6,12 @@
  * @typedef {{width:number, height: number, textLines: string[]}} TextProperties
  */
 
-/**
- * @callback StringValueConverter
- * @param {string} - The value to be converted
- * @returns {*}
- */
-
-/**
- * @callback ValueToStringConverter
- * @param {*} - The value to be converted
- * @returns {string}
- */
+class FBObjectFields {
+    static get appearance() { return "appearance"; }
+    static get border() { return "border"; }
+    static get caption() { return "caption"; }
+    static get layout() { return "layout"; }
+}
 
 /**
  * Represents a form-builder object
@@ -188,8 +183,8 @@ class FBObject extends EventPropagator {
     set captionReserve(value) {
 
         // Zero is special, and means auto
-        if(value === 0){
-            this.caption.reserve = 0;
+        if(value === WYSIWYG_CAPTION_AUTO){
+            this.caption.reserve = WYSIWYG_CAPTION_AUTO;
             return;
         }
 
@@ -197,7 +192,8 @@ class FBObject extends EventPropagator {
         // which makes all the logic be able to stay in one place
 
         let downX = 1, downY = 1;
-        if(this.caption.reserve === 0){
+        if(this.caption.reserve === WYSIWYG_CAPTION_AUTO){
+            this.caption.reserve = this.caption.height;
             const val = this.caption.location & WYSIWYG_CAPTION_TOP_BOTTOM ? this.caption.height : this.caption.width;
             downX = downY = val + 1 + WYSIWYG_CAPTION_PADDING;
         }
@@ -287,7 +283,7 @@ class FBObject extends EventPropagator {
         let caption = 0;
 
         if(this.caption.location == Location.Left) {
-            caption = (this.caption.reserve === 0 ? this.caption.width : this.caption.reserve) + WYSIWYG_CAPTION_PADDING;
+            caption = (this.caption.reserve === WYSIWYG_CAPTION_AUTO ? this.caption.width : this.caption.reserve) + WYSIWYG_CAPTION_PADDING;
         }
 
         return x - border - caption - margin;
@@ -313,7 +309,7 @@ class FBObject extends EventPropagator {
         let caption = 0;
 
         if(this.caption.location == Location.Top) {
-            caption = (this.caption.reserve === 0 ? this.caption.height : this.caption.reserve) + WYSIWYG_CAPTION_PADDING;
+            caption = (this.caption.reserve === WYSIWYG_CAPTION_AUTO ? this.caption.height : this.caption.reserve) + WYSIWYG_CAPTION_PADDING;
         }
 
         return y - border - caption - margin;
@@ -339,7 +335,7 @@ class FBObject extends EventPropagator {
         let caption = 0;
 
         if(this.caption.location == Location.Left || this.caption.location == Location.Right) {
-            caption = (this.caption.reserve === 0 ? this.caption.width : this.caption.reserve) + WYSIWYG_CAPTION_PADDING;
+            caption = (this.caption.reserve === WYSIWYG_CAPTION_AUTO ? this.caption.width : this.caption.reserve) + WYSIWYG_CAPTION_PADDING;
         }
 
         return width + border + caption + margin;
@@ -365,7 +361,7 @@ class FBObject extends EventPropagator {
         let caption = 0;
 
         if(this.caption.location & WYSIWYG_CAPTION_TOP_BOTTOM) {
-            caption = (this.caption.reserve === 0 ? this.caption.height : this.caption.reserve) + WYSIWYG_CAPTION_PADDING;
+            caption = (this.caption.reserve === WYSIWYG_CAPTION_AUTO ? this.caption.height : this.caption.reserve) + WYSIWYG_CAPTION_PADDING;
         }
 
         return height + border + caption + margin;
@@ -607,6 +603,46 @@ class FBObject extends EventPropagator {
 
     // endregion
 
+    // region JSON
+
+    /**
+     * Gets the JSON data for this class
+     * @return {Object<string, *>}
+     */
+    toJSON(){
+        throw new Error("Cannot stringify base type FBObject");
+    }
+
+    /**
+     * Gets the base JSON data for this class
+     * @return {Object<string, *>}
+     * @protected
+     */
+    __toJSON(){
+        const properties = {};
+        properties[FBObjectFields.appearance]  = this.appearance;
+        properties[FBObjectFields.border] = this.border;
+        properties[FBObjectFields.caption] = this.caption;
+        properties[FBObjectFields.layout] = this.layout;
+        return properties;
+    }
+
+    /**
+     * Initializes from JSON
+     * @param {json} json
+     * @protected
+     */
+    __init_json(json){
+        this.appearance.initialize_json(json[FBObjectFields.appearance]);
+        this.border.initialize_json(json[FBObjectFields.border]);
+        this.caption.initialize_json(json[FBObjectFields.caption]);
+        this.layout.initialize_json(json[FBObjectFields.layout]);
+
+        this.__init(this.layout.x, this.layout.y, this.layout.width, this.layout.height);
+    }
+
+    // endregion
+
     // region Object Properties
 
     // region HTML
@@ -681,33 +717,33 @@ class FBObject extends EventPropagator {
     getHtmlPropertyModelDict(){
 
         const retVal = {};
-        retVal.layout_x = this.__makeHtmlPropertyModel(this, "visualX", parseInt, parseInt);
-        retVal.layout_y = this.__makeHtmlPropertyModel(this, "visualY", parseInt, parseInt);
-        retVal.layout_width = this.__makeHtmlPropertyModel(this, "visualWidth", parseInt, parseInt);
-        retVal.layout_height = this.__makeHtmlPropertyModel(this, "visualHeight", parseInt, parseInt);
-        retVal.margin_top = this.__makeHtmlPropertyModel(this.layout.margin, "top");
-        retVal.margin_right = this.__makeHtmlPropertyModel(this.layout.margin, "right");
-        retVal.margin_bottom = this.__makeHtmlPropertyModel(this.layout.margin, "bottom");
-        retVal.margin_left = this.__makeHtmlPropertyModel(this.layout.margin, "left");
-        retVal.padding_top = this.__makeHtmlPropertyModel(this.layout.padding, "top");
-        retVal.padding_right = this.__makeHtmlPropertyModel(this.layout.padding, "right");
-        retVal.padding_bottom = this.__makeHtmlPropertyModel(this.layout.padding, "bottom");
-        retVal.padding_left = this.__makeHtmlPropertyModel(this.layout.padding, "left");
+        retVal.layout_x = this.__makeHtmlPropertyModel(this, "visualX", ptToPx, pxToPt);
+        retVal.layout_y = this.__makeHtmlPropertyModel(this, "visualY", ptToPx, pxToPt);
+        retVal.layout_width = this.__makeHtmlPropertyModel(this, "visualWidth", ptToPx, pxToPt);
+        retVal.layout_height = this.__makeHtmlPropertyModel(this, "visualHeight", ptToPx, pxToPt);
+        retVal.margin_top = this.__makeHtmlPropertyModel(this.layout.margin, "top", ptToPx, pxToPt);
+        retVal.margin_right = this.__makeHtmlPropertyModel(this.layout.margin, "right", ptToPx, pxToPt);
+        retVal.margin_bottom = this.__makeHtmlPropertyModel(this.layout.margin, "bottom", ptToPx, pxToPt);
+        retVal.margin_left = this.__makeHtmlPropertyModel(this.layout.margin, "left", ptToPx, pxToPt);
+        retVal.padding_top = this.__makeHtmlPropertyModel(this.layout.padding, "top", ptToPx, pxToPt);
+        retVal.padding_right = this.__makeHtmlPropertyModel(this.layout.padding, "right", ptToPx, pxToPt);
+        retVal.padding_bottom = this.__makeHtmlPropertyModel(this.layout.padding, "bottom", ptToPx, pxToPt);
+        retVal.padding_left = this.__makeHtmlPropertyModel(this.layout.padding, "left", ptToPx, pxToPt);
         retVal.appearance_back = this.__makeHtmlPropertyModel(this.appearance, "background");
         retVal.appearance_fore = this.__makeHtmlPropertyModel(this.appearance, "foreground");
         retVal.appearance_strokeColor = this.__makeHtmlPropertyModel(this.appearance, "strokeColor");
-        retVal.appearance_strokeThickness = this.__makeHtmlPropertyModel(this.appearance, "strokeThickness", parseInt, Math.floor);
-        retVal.border_top = this.__makeHtmlPropertyModel(this.border, "top");
-        retVal.border_right = this.__makeHtmlPropertyModel(this.border, "right");
-        retVal.border_bottom = this.__makeHtmlPropertyModel(this.border, "bottom");
-        retVal.border_left = this.__makeHtmlPropertyModel(this.border, "left");
+        retVal.appearance_strokeThickness = this.__makeHtmlPropertyModel(this.appearance, "strokeThickness", ptToPx, pxToPt);
+        retVal.border_top = this.__makeHtmlPropertyModel(this.border, "top", ptToPx, pxToPt);
+        retVal.border_right = this.__makeHtmlPropertyModel(this.border, "right", ptToPx, pxToPt);
+        retVal.border_bottom = this.__makeHtmlPropertyModel(this.border, "bottom", ptToPx, pxToPt);
+        retVal.border_left = this.__makeHtmlPropertyModel(this.border, "left", ptToPx, pxToPt);
         retVal.border_color = this.__makeHtmlPropertyModel(this.border, "color");
         retVal.caption_text = this.__makeHtmlPropertyModel(this.caption, "text");
-        retVal.caption_reserve = this.__makeHtmlPropertyModel(this, "captionReserve", parseInt,
-            (value) => { if(value > 0) return value.toString(); else return "Auto"; });
+        retVal.caption_reserve = this.__makeHtmlPropertyModel(this, "captionReserve", ptToPx,
+            (value) => { if(value >= 0) return pxToPt(value); else return "Auto"; });
         retVal.caption_location = this.__makeHtmlPropertyModel(this.caption, "location", parseInt);
         retVal.caption_font_family = this.__makeHtmlPropertyModel(this.caption.font, "family");
-        retVal.caption_font_size = this.__makeHtmlPropertyModel(this.caption.font, "size");
+        retVal.caption_font_size = this.__makeHtmlPropertyModel(this.caption.font, "size", ptToPx, pxToPt);
         retVal.caption_font_bold = this.__makeHtmlPropertyModel(this.caption.font, "bold");
         retVal.caption_font_italic = this.__makeHtmlPropertyModel(this.caption.font, "italic");
         retVal.caption_font_color = this.__makeHtmlPropertyModel(this.caption.font, "color");
@@ -764,7 +800,7 @@ class FBObject extends EventPropagator {
 
         // If the caption is at the top or bottom, add it in
         if(this.caption.location === Location.Top || this.caption.location === Location.Bottom){
-            minHeight += this.caption.reserve === 0 ? this.caption.width : this.caption.reserve;
+            minHeight += this.caption.reserve === WYSIWYG_CAPTION_AUTO ? this.caption.width : this.caption.reserve;
         }
 
         return minHeight;
@@ -781,7 +817,7 @@ class FBObject extends EventPropagator {
 
         // If the caption is on the left or right, add that in
         if(this.caption.location === Location.Left || this.caption.location === Location.Right){
-            minWidth += this.caption.reserve === 0 ? this.caption.width : this.caption.reserve;
+            minWidth += this.caption.reserve === WYSIWYG_CAPTION_AUTO ? this.caption.width : this.caption.reserve;
         }
 
         return minWidth;
@@ -878,7 +914,7 @@ class FBObject extends EventPropagator {
         this._dragStartX = e.x;
         this._dragStartY = e.y;
 
-        if(this.caption.reserve === 0){
+        if(this.caption.reserve === WYSIWYG_CAPTION_AUTO){
             if(this.caption.location & WYSIWYG_CAPTION_TOP_BOTTOM) {
                 this._backupCaptionReserve = this.caption.height + WYSIWYG_CAPTION_PADDING;
             }
@@ -932,8 +968,6 @@ class FBObject extends EventPropagator {
                 lowerBound = Math.max(WYSIWYG_CAPTION_PADDING, this.minHeight);
             }
 
-            // +1 on the below ones to prevent it from going into auto-mode
-
             if(capLoc === Location.Top){
                 upperBound = this._backupLayout.height + this._backupCaptionReserve - WYSIWYG_CAPTION_PADDING;
 
@@ -942,19 +976,19 @@ class FBObject extends EventPropagator {
 
                 this.layout.height = newHeight;
                 this.layout.y = newY;
-                this.caption.reserve = upperBound - this.layout.height + 1;
+                this.caption.reserve = upperBound - this.layout.height;
             }
             else if(capLoc == Location.Right){
                 upperBound = this._backupLayout.width + this._backupCaptionReserve - WYSIWYG_CAPTION_PADDING;
 
                 this.layout.width = Math.clip(this._backupLayout.width + moveDist, lowerBound, upperBound);
-                this.caption.reserve = upperBound - this.layout.width + 1;
+                this.caption.reserve = upperBound - this.layout.width;
             }
             else if(capLoc == Location.Bottom){
                 upperBound = this._backupLayout.height + this._backupCaptionReserve - WYSIWYG_CAPTION_PADDING;
 
                 this.layout.height = Math.clip(this._backupLayout.height + moveDist, lowerBound, upperBound);
-                this.caption.reserve = upperBound - this.layout.height + 1;
+                this.caption.reserve = upperBound - this.layout.height;
             }
             else if(capLoc === Location.Left){
                 upperBound = this._backupLayout.width + this._backupCaptionReserve - WYSIWYG_CAPTION_PADDING;
@@ -964,7 +998,7 @@ class FBObject extends EventPropagator {
 
                 this.layout.width = newWidth;
                 this.layout.x = newX;
-                this.caption.reserve = upperBound - this.layout.width + 1;
+                this.caption.reserve = upperBound - this.layout.width;
             }
         }
     }

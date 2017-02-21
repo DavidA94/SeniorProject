@@ -10,6 +10,8 @@ class ContextMenu {
         this._menu.style.position = "absolute";
         this._menu.style.top = "-999px";
         this._menu.style.left = "-999px";
+
+        document.documentElement.appendChild(this._menu);
     }
 
     /**
@@ -35,7 +37,7 @@ class ContextMenu {
      */
     show(x, y){
         this._menu.style.top = y + "px";
-        this._menu.style.tleft = x + "px";
+        this._menu.style.left = x + "px";
     }
 
     /**

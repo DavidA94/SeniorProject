@@ -12,7 +12,9 @@ namespace Seciovni.Web.Controllers
         [Authorize(Policy = AccessPolicy.EditInvoicePrivilege)]
         public IActionResult Edit(int id = -1)
         {
-            if(id == -1)
+            ViewData["IsEdit"] = true;
+
+            if (id == -1)
             {
                 ViewData["Title"] = "New Invoice";
                 return View(new Invoice()
@@ -33,7 +35,7 @@ namespace Seciovni.Web.Controllers
         [Authorize(Policy = AccessPolicy.ViewInvoicePrivilege)]
         public IActionResult View(int id)
         {
-            ViewData["ShowSearch"] = false;
+            ViewData["IsEdit"] = false;
 
             if (id > 0)
             {

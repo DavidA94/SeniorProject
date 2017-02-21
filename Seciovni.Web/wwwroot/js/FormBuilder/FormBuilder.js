@@ -53,7 +53,7 @@ class FormBuilder{
 
         let propertyChangedEventHandler = (e) => {
             if (Keyboard.focusedElement) {
-                const box = e.originalTarget;
+                const box = e.currentTarget;
                 let newData = null;
 
                 if (box.nodeName.toLowerCase() === "input") {
@@ -71,7 +71,7 @@ class FormBuilder{
                     newData = box.value;
                 }
 
-                this._htmlObjDict[e.originalTarget.id].set(newData);
+                this._htmlObjDict[e.currentTarget.id].set(newData);
             }
         };
         /**

@@ -2,7 +2,14 @@
  * Created by David on 11/26/16.
  */
 
+class CellFields {
+    static get background() { return "background"; }
+    static get borderColor() { return "borderColor"; }
+}
+
 class Cell extends TextBlock {
+    // region CTOR
+
     constructor(text){
         super(text);
 
@@ -30,11 +37,19 @@ class Cell extends TextBlock {
         this.background = "#ffffff";
     }
 
+    // endregion
+
+    // region Public Properties
+
     get borderColor() { return this._border.color; }
     set borderColor(value) { return this._border.color = value; }
 
     get background() { return this._appearance.background; }
     set background(value) { return this._appearance.background = value; }
+
+    // endregion
+
+    // region Public Methods
 
     draw(context) {
         context.save();
@@ -61,4 +76,32 @@ class Cell extends TextBlock {
                 this.layout.width - (2 * shiftAmt), this.layout.height - (2 * shiftAmt));
         }
     }
+
+    // endregion
+
+    // region JSON
+
+    /**
+     * Gets the JSON data for this class
+     * @return {Object<string, *>}
+     */
+    toJSON() {
+        const properties = super.toJSON();
+        properties[CellFields.background] = this.background;
+        properties[CellFields.borderColor] = this.borderColor;
+
+        return properties;
+    }
+
+    /**
+     * Initializes the object from the provided JSON
+     * @param {json} json - The JSON to use
+     */
+    initialize_json(json){
+        super.initialize_json(json);
+        this.background = json[CellFields.background];
+        this.borderColor = json[CellFields.borderColor];
+    }
+
+    // endregion
 }

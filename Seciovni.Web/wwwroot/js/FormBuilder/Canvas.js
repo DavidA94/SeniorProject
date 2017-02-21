@@ -2,6 +2,22 @@
  * Created by David on 10/04/16.
  */
 
+class CanvasFields {
+    static get gridSize() { return "gridSize"; }
+    static get scale() { return "scale"; }
+    static get shapes() { return "shapes"; }
+    static get showGrid() { return "showGrid"; }
+    static get snap() { return "span"; }
+}
+
+class CanvasShapeTypes {
+    static get fbImage() { return "FBImage"; }
+    static get checkBox() { return "CheckBox"; }
+    static get fbTextBlock() { return "FBTextBlock"; }
+    static get basicShape() { return "BasicShape"; }
+    static get table() { return "Table"; }
+}
+
 /**
  * Represents an HTML5 Canvas object
  */
@@ -373,7 +389,7 @@ class Canvas extends EventPropagator {
             e.preventDefault();
 
             // Drop any old elements
-            for (const li in this._contextMenuItems["custom"]) {
+            for (const li of this._contextMenuItems["custom"]) {
                 this._contextMenu.removeItem(li);
             }
             this._contextMenuItems["custom"] = [];
@@ -389,6 +405,7 @@ class Canvas extends EventPropagator {
                     li.innerHTML = item.text;
                     li.addEventListener("mouseup", item.callback);
                     this._contextMenu.addItem(li);
+                    this._contextMenuItems["custom"].push(li);
                 }
             }
 
@@ -406,6 +423,64 @@ class Canvas extends EventPropagator {
     }
 
     toString() { return "Canvas"; }
+
+    // endregion
+
+    // region JSON
+
+    /**
+     * Initializes this class from a JSON object
+     * @param {json} json - The JSON data
+     */
+    initialize_json(json) {
+        this.gridSize = json[CanvasFields.gridSize];
+        this.scale = json[CanvasFields.scale];
+        this.showGrid = json[CanvasFields.showGrid];
+        this.snapToGrid = json[CanvasFields.snap];
+
+        for(const shape of json[CanvasFields.shapes]){
+            let child;
+            if(shape[0] === CanvasShapeTypes.fbImage) child = FBImage.from_json(shape[1]);
+            else if(shape[0] == CanvasShapeTypes.checkBox) child = CheckBox.from_json(shape[1]);
+            else if(shape[0] == CanvasShapeTypes.fbTextBlock) child = FBTextBlock.from_json(shape[1]);
+            else if(shape[0] == CanvasShapeTypes.basicShape) child = BasicShape.from_json(shape[1]);
+            else if(shape[0] == CanvasShapeTypes.table) child = Table.from_json(shape[1]);
+
+            this.__addChild(child)
+        }
+    }
+
+    /**
+     * Gets the JSON data for this class
+     * @return {Object<string, *>}
+     */
+    toJSON(){
+        const properties = {};
+        properties[CanvasFields.gridSize] = this.gridSize;
+        properties[CanvasFields.scale] = this.scale;
+        properties[CanvasFields.showGrid] = this.showGrid;
+        properties[CanvasFields.snap] = this.snapToGrid;
+
+        properties[CanvasFields.shapes] = [];
+
+        for(let i = WYSIWYG_ANCHOR_COUNT; i < this.children.length; ++i){
+            const child = this.children[i];
+            let key;
+
+            if(child instanceof FBImage) key = CanvasShapeTypes.fbImage;
+            else if(child instanceof CheckBox) key = CanvasShapeTypes.checkBox;
+            else if(child instanceof FBTextBlock) key = CanvasShapeTypes.fbTextBlock;
+            else if(child instanceof BasicShape) key = CanvasShapeTypes.basicShape;
+            else if(child instanceof Table) key = CanvasShapeTypes.table;
+
+            const shape = [];
+            shape.push(key);
+            shape.push(child);
+            properties[CanvasFields.shapes].push(shape);
+        }
+
+        return properties;
+    }
 
     // endregion
 
@@ -451,7 +526,7 @@ class Canvas extends EventPropagator {
         document.getElementsByTagName("html")[0].addEventListener("click", () => this.hideContextMenu());
 
         // Listen for the desire to open the context menu (right click / keyboard press)
-        this._canvas.addEventListener("contextmenu", (e) => this._canvas.showContextMenu(e));
+        this._canvas.addEventListener("contextmenu", (e) => this.showContextMenu(e));
     }
 
 
@@ -1026,7 +1101,6 @@ class Canvas extends EventPropagator {
     }
 
     _anchor_MouseEnter(e){
-        console.log("Enter");
         if(!Keyboard.focusedElement) return;
         if(e.sender === this.anchors[Anchor.TopLeft]) Mouse.setCursor(Cursor.TopLeft);
         else if(e.sender === this.anchors[Anchor.TopRight]) Mouse.setCursor(Cursor.TopRight);

@@ -2,6 +2,15 @@
  * Created by David on 09/26/16.
  */
 
+class LayoutFields {
+    static get x() { return "x"; }
+    static get y() { return "y"; }
+    static get height() { return "height"; }
+    static get width() { return "width"; }
+    static get margin() { return "margin"; }
+    static get padding() { return "padding"; }
+}
+
 /**
  * Represents the Layout properties of an object
  */
@@ -162,6 +171,39 @@ class Layout extends SubscribableProperty {
      */
     equals(rhs){
         return this.x === rhs.x && this.y === rhs.y && this.width === rhs.width && this.height === rhs.height;
+    }
+
+    // endregion
+
+    // region JSON
+
+    /**
+     * Gets the JSON data for this class
+     * @return {Object<string, *>}
+     */
+    toJSON() {
+        const properties = {};
+        properties[LayoutFields.x] = this.x;
+        properties[LayoutFields.y] = this.y;
+        properties[LayoutFields.height] = this.height;
+        properties[LayoutFields.width] = this.width;
+        properties[LayoutFields.margin] = this.margin;
+        properties[LayoutFields.padding] = this.padding;
+
+        return properties;
+    }
+
+    /**
+     * Initializes the object from the provided JSON
+     * @param {json} json - The JSON to use
+     */
+    initialize_json(json){
+        this.x = json[LayoutFields.x];
+        this.y = json[LayoutFields.y];
+        this.height = json[LayoutFields.height];
+        this.width = json[LayoutFields.width];
+        this.margin.initialize_json(json[LayoutFields.margin]);
+        this.padding.initialize_json(json[LayoutFields.padding]);
     }
 
     // endregion

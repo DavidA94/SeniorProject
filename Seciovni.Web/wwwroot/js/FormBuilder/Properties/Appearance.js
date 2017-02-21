@@ -2,6 +2,13 @@
  * Created by David on 09/26/16.
  */
 
+class AppearanceFields {
+    static get background() { return "background"; }
+    static get foreground() { return "foreground"; }
+    static get strokeColor() { return "strokeColor"; }
+    static get strokeThickness() { return "strokeThickness"; }
+}
+
 /**
  * Represents the base appearance of an object
  */
@@ -106,6 +113,33 @@ class Appearance extends SubscribableProperty {
     }
 
     // endregion
+    
+    // region JSON
 
+    /**
+     * Gets the JSON data for this class
+     * @return {Object<string, *>}
+     */
+    toJSON() {
+        const properties = {};
+        properties[AppearanceFields.background] = this.background;
+        properties[AppearanceFields.foreground] = this.foreground;
+        properties[AppearanceFields.strokeColor] = this.strokeColor;
+        properties[AppearanceFields.strokeThickness] = this.strokeThickness;
+        
+        return properties;
+    }
 
+    /**
+     * Initializes the object from the provided JSON
+     * @param {json} json - The JSON to use
+     */
+    initialize_json(json){
+        this.background = json[AppearanceFields.background];
+        this.foreground = json[AppearanceFields.foreground];
+        this.strokeColor = json[AppearanceFields.strokeColor];
+        this.strokeThickness = json[AppearanceFields.strokeThickness];
+    }
+    
+    // endregion
 }

@@ -2,6 +2,15 @@
  * Created by David on 11/26/16.
  */
 
+class TableFields {
+    static get cells() { return "cells"; }
+    static get columnWidths() { return "columnWidths"; }
+    static get contentHeight() { return "contentHeight"; }
+    static get headerHeight() { return "headerHeight"; }
+    static get height() { return "height"; }
+    static get width() { return "width"; }
+}
+
 class Table extends FBObject {
 
     // region CTOR
@@ -54,6 +63,11 @@ class Table extends FBObject {
         horizontalSep.subscribe(MouseEventType.MouseMove, this.__getBoundFunc(this._separator_MouseMove));
         horizontalSep.subscribe(MouseEventType.MouseUp, this.__getBoundFunc(this._separator_MouseUp));
 
+        /**
+         * The spearators between the columns
+         * @type {Box[]}
+         * @private
+         */
         this._separators = [horizontalSep];
         this.children.push(horizontalSep);
 
@@ -222,11 +236,16 @@ class Table extends FBObject {
         }
 
         if(hasFocusedCell){
-            return [
+            const retVal = [
                 {text: "Add Column Before", callback: () => { console.log("HI"); this.addCol(i); }},
-                {text: "Add Column After", callback: () => { this.addCol(i + 1); }},
-                {text: "Remove Column", callback: () => { this.deleteColumn(i); }}
+                {text: "Add Column After", callback: () => { this.addCol(i + 1); }}
             ];
+
+            if(this._cells.length > 1){
+                retVal.push({text: "Remove Column", callback: () => { this.deleteColumn(i); }});
+            }
+
+            return retVal;
         }
 
         return null;
@@ -273,6 +292,61 @@ class Table extends FBObject {
     }
 
     toString(){ return "Table"; }
+
+    // endregion
+
+    // region JSON
+
+    /**
+     * Gets the JSON data for this class
+     * @return {Object<string, *>}
+     */
+    toJSON() {
+        const properties = this.__toJSON();
+        properties[TableFields.cells] = this._cells;
+        properties[TableFields.columnWidths] = this._columnWidths;
+        properties[TableFields.contentHeight] = this.contentHeight;
+        properties[TableFields.headerHeight] = this.headerHeight;
+        properties[TableFields.height] = this.height;
+        properties[TableFields.width] = this.width;
+
+        return properties;
+    }
+
+    /**
+     * Creates a new object from the provided JSON
+     * @param {json} json - The JSON to use
+     * @return {Table}
+     */
+    static from_json(json){
+        const table = new Table(0, 0, json[TableFields.width], json[TableFields.height]);
+        table.__init_json(json);
+        table.headerHeight = json[TableFields.headerHeight];
+        table.contentHeight = json[TableFields.contentHeight];
+
+        // Remove the first column
+        table.deleteColumn(0);
+
+        // Then set the widths
+        table._columnWidths = json[TableFields.columnWidths];
+
+        // Then add teh cells
+        for(let i = 0; i < json[TableFields.cells].length; ++i){
+            /**
+             *
+             * @type {{header: Cell, content: Cell}}
+             * @private
+             */
+            const column = json[TableFields.cells];
+
+            table._addSeparator(i);
+            table._cells.splice(i, 0, {header: column.header, content: column.content});
+            this.__addChild(column.header);
+            this.__addChild(column.content);
+        }
+
+        return table;
+    }
 
     // endregion
 
@@ -360,7 +434,6 @@ class Table extends FBObject {
     }
 
     // endregion
-
 
     // region Event Handlers
 

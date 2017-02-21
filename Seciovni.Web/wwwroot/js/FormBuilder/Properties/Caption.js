@@ -2,6 +2,11 @@
  * Created by David on 09/26/16.
  */
 
+class CaptionFields {
+    static get location() { return "location"; }
+    static get reserve() { return "reserve"; }
+    static get textBlock() { return "textBlock"; }
+}
 
 /**
  * Holds data about a caption
@@ -25,7 +30,7 @@ class Caption extends SubscribableProperty {
          * @private
          * @type {number}
          */
-        this._reserve = 0;
+        this._reserve = WYSIWYG_CAPTION_AUTO;
 
         /**
          * @private
@@ -128,6 +133,8 @@ class Caption extends SubscribableProperty {
 
     // endregion
 
+    // region Public Methods
+
     /**
      * Draws the caption
      * @param {CanvasRenderingContext2D} context
@@ -152,7 +159,7 @@ class Caption extends SubscribableProperty {
             this._textBlock.autoWidth = this._textBlock.autoHeight = false;
 
             // And if we're to auto-size
-            if(this.reserve === 0){
+            if(this.reserve === WYSIWYG_CAPTION_AUTO){
                 // Then set the correct side to auto
                 if(this.location & WYSIWYG_CAPTION_TOP_BOTTOM) this._textBlock.autoHeight = true;
                 else if(this.location & WYSIWYG_CAPTION_LEFT_RIGHT) this._textBlock.autoWidth = true;
@@ -193,4 +200,33 @@ class Caption extends SubscribableProperty {
 
         this._textBlock.draw(context);
     }
+
+    // endregion
+
+    // region JSON
+
+    /**
+     * Gets the JSON data for this class
+     * @return {Object<string, *>}
+     */
+    toJSON() {
+        const properties = {};
+        properties[CaptionFields.location] = this.location;
+        properties[CaptionFields.reserve] = this.reserve;
+        properties[CaptionFields.textBlock] = this._textBlock;
+
+        return properties;
+    }
+
+    /**
+     * Initializes the object from the provided JSON
+     * @param {json} json - The JSON to use
+     */
+    initialize_json(json){
+        this.location = json[AppearanceFields.background];
+        this.reserve = json[AppearanceFields.foreground];
+        this._textBlock.initialize_json(json[CaptionFields.textBlock]);
+    }
+
+    // endregion
 }

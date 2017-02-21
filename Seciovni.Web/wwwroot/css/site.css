@@ -10,6 +10,8 @@
     padding-right: 15px;
 }
 
+footer {clear:both;}
+
 select[disabled]{background:#ebebe4;}
 input, select {height:20px;line-height:20px;box-sizing:content-box;border:1px solid #a9a9a9;padding:2px 1px;}
 input:focus, select:focus {box-shadow:0 0 0 #5394ff;}
@@ -128,7 +130,7 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #recentInvoicesList tr:hover {background:#f5fcff}
 .right {text-align:right;}
 
-#viewInvoice #invoiceHeader {display:none;}
+#viewInvoice #invoiceHeader #saveButton, #viewInvoice #invoiceHeader #deleteButton {display:none;}
 
 
 
@@ -151,6 +153,6 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #shapes div {float:left;width:130px;margin:0 10px 5px 0;}
 #shapes img {width:20px;height:20px;margin-right:10px;float:left;}
 #shapes span {line-height:20px;float:left;}
-#properties {float:left;width:300px;height:55vh;overflow:auto;border:1px solid black;}
+#properties {float:left;width:300px;height:55vh;overflow:auto;border:1px solid black;padding:5px;}
 #properties label {float:left;clear:left;margin:5px 10px 5px 0;line-height:20px;}
 #properties input, #properties select {height:20px;float:left;margin:5px 0;}

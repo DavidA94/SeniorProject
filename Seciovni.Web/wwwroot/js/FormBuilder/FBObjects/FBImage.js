@@ -2,6 +2,11 @@
  * Created by David on 11/28/16.
  */
 
+class FBImageFields {
+    static get imgSrc() { return "imgSrc"; }
+    static get preserveRatio() { return "preserveRatio"; }
+}
+
 class FBImage extends FBObject {
     constructor(x, y, width, height, imageURL = null){
         super(x, y, width, height);
@@ -48,7 +53,6 @@ class FBImage extends FBObject {
      * @param {string} value
      */
     set src(value){
-        console.log("Setting src");
         this._canDraw = false;
         this._image.src = value;
     }
@@ -84,6 +88,36 @@ class FBImage extends FBObject {
         retVal.src = this.__makeHtmlPropertyModel(this, "src");
 
         return retVal;
+    }
+
+    // endregion
+
+    // region JSON
+
+    /**
+     * Gets the JSON data for this class
+     * @return {Object<string, *>}
+     */
+    toJSON() {
+        const properties = this.__toJSON();
+        properties[FBImageFields.imgSrc] = this.src;
+        properties[FBImageFields.preserveRatio] = this.preserveRatio;
+
+        return properties;
+    }
+
+    /**
+     * Creates a new object from the provided JSON
+     * @param {json} json - The JSON to use
+     * @return {FBImage}
+     */
+    static from_json(json){
+        const fbImage = new FBImage(null, null, null, null);
+        fbImage.__init_json(json);
+        fbImage.preserveRatio = json[FBImageFields.preserveRatio];
+        fbImage.src = json[FBImageFields.imgSrc];
+
+        return fbImage;
     }
 
     // endregion

@@ -9,7 +9,14 @@
             @if (Model.InvoiceID > 0)
             {
                 <button id="deleteButton"><img src="~/images/cancel.png" /> Delete Invoice</button>
+
+                if (!(bool)ViewData["IsEdit"])
+                {
+                    <button id="editButton"><img src="~/images/edit.png" /> Edit Invoice</button>
+                }
             }
+        </div>
+        <div id="rightHeader">
         </div>
     </div>
     <div id="invoiceData">

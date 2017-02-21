@@ -17,7 +17,6 @@ class CheckBox extends FBObject {
         super.resize(resizeX, resizeY, anchor, true, keepCenter);
     }
 
-
     _doDraw(context){
 
         const scaleAmt = this.width / 10;
@@ -53,4 +52,28 @@ class CheckBox extends FBObject {
         context.stroke();
         context.closePath();
     }
+
+    // region JSON
+
+    /**
+     * Gets the JSON data for this class
+     * @return {Object<string, *>}
+     */
+    toJSON() {
+        const properties = this.__toJSON();
+        return properties;
+    }
+
+    /**
+     * Creates a new object from the provided JSON
+     * @param {json} json - The JSON to use
+     * @return {FBImage}
+     */
+    static from_json(json){
+        const checkbox = new CheckBox(null, null, null);
+        checkbox.__init_json(json);
+        return checkbox;
+    }
+
+    // endregion
 }

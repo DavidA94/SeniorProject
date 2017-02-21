@@ -1,9 +1,20 @@
 // region Callbacks
 
 /**
- * Mouse event callback
  * @callback MouseEventCallback
  * @param {MouseEvent} e
+ */
+
+/**
+ * @callback StringValueConverter
+ * @param {string} - The value to be converted
+ * @returns {*}
+ */
+
+/**
+ * @callback ValueToStringConverter
+ * @param {*} - The value to be converted
+ * @returns {string}
  */
 
 const do_not_use = "this is here to make things stop auto-indenting after this section";
@@ -195,8 +206,8 @@ const AUTH_TOKEN_TIME = "AuthorizationTokenTime";
 // region WYSIWYG
 
 const WYSIWYG_ANCHOR_COUNT = 4;
-const WYSIWYG_PAGE_HEIGHT = 300 * 11;
-const WYSIWYG_PAGE_WIDTH  = 300 * 8.5;
+const WYSIWYG_PAGE_HEIGHT = 72 * 11;
+const WYSIWYG_PAGE_WIDTH  = 72 * 8.5;
 const WYSIWYG_PAGE_MODE_L = "landscape";
 const WYSIWYG_PAGE_MODE_P = "portrait";
 
@@ -210,6 +221,8 @@ const WYSIWYG_DRAG_TABLE = "Table";
 const WYSIWYG_DRAG_ELLIPSE = "Ellipse";
 const WYSIWYG_DRAG_TEXT = "Text";
 const WYSIWYG_DRAG_IMAGE = "Image";
+
+const WYSIWYG_CAPTION_AUTO = -1;
 
 /**
  * Have a constant padding away from the shape so that the caption

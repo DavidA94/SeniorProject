@@ -2,6 +2,15 @@
  * Created by David on 09/24/16.
  */
 
+class FontFields {
+    static get alignment() { return "alignment"; }
+    static get bold() { return "bold"; }
+    static get color() { return "color"; }
+    static get family() { return "family"; }
+    static get italic() { return "italic"; }
+    static get size() { return "size"; }
+}
+
 /**
  * Represents the different aspects text can take
  */
@@ -42,7 +51,7 @@ class Font extends SubscribableProperty {
          * @private
          * @type {number}
          */
-        this._font = 12;
+        this._size = 12;
 
         /**
          * @private
@@ -50,11 +59,11 @@ class Font extends SubscribableProperty {
          */
         this._italic = false;
 
-        /**
-         * @private
-         * @type {boolean}
-         */
-        this._underline = false;
+        // /**
+        //  * @private
+        //  * @type {boolean}
+        //  */
+        // this._underline = false;
     }
 
     // endregion
@@ -117,13 +126,13 @@ class Font extends SubscribableProperty {
      * Gets the size of the font
      * @returns {number}
      */
-    get size() { return this._font; }
+    get size() { return this._size; }
 
     /**
      * Sets the size of the font
      * @param {number} value
      */
-    set size(value) { this._font = value; this.__sendPropChangeEvent("size"); }
+    set size(value) { this._size = value; this.__sendPropChangeEvent("size"); }
 
 
     /**
@@ -151,6 +160,40 @@ class Font extends SubscribableProperty {
     //  * @param {boolean} value
     //  */
     // set underline(value) { this._underline = value; }
+
+    // endregion
+
+    // region JSON
+
+    /**
+     * Gets the JSON data for this class
+     * @return {Object<string, *>}
+     */
+    toJSON() {
+        const properties = {};
+        properties[FontFields.alignment] = this.alignment;
+        properties[FontFields.bold] = this.bold;
+        properties[FontFields.color] = this.color;
+        properties[FontFields.family] = this.family;
+        properties[FontFields.italic] = this.italic;
+        properties[FontFields.size] = this.size;
+
+
+        return properties;
+    }
+
+    /**
+     * Initializes the object from the provided JSON
+     * @param {json} json - The JSON to use
+     */
+    initialize_json(json){
+        this.alignment = json[FontFields.alignment];
+        this.bold = json[FontFields.bold];
+        this.color = json[FontFields.color];
+        this.family = json[FontFields.family];
+        this.italic = json[FontFields.italic];
+        this.size = json[FontFields.size];
+    }
 
     // endregion
 }

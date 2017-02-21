@@ -193,3 +193,11 @@ function prettifyNumber(value, prefix, fixedPlaces){
 
     return tempVal;
 }
+
+function pxToPt(data){
+    return (parseFloat(data) * .75).toFixed(3);
+}
+
+function ptToPx(data){
+    return parseFloat(data) / .75;
+}

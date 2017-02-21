@@ -2,6 +2,17 @@
  * Created by David on 11/14/16.
  */
 
+class TextBlockFields {
+    static get layout() { return "layout"; }
+    static get font() { return "font"; }
+    static get text() { return "text"; }
+    static get maxWidth() { return "maxWidth"; }
+    static get maxHeight() { return "maxHeight"; }
+    static get verticallyCenter() { return "verticallyCenter"; }
+
+
+}
+
 class TextBlock extends EventPropagator {
     /**
      * Creates a new TextBlock object
@@ -20,7 +31,7 @@ class TextBlock extends EventPropagator {
          * @private
          * @type {Font}
          */
-        this._font = new Font();
+        this._size = new Font();
 
         this.font.alignment = Alignment.Center;
 
@@ -69,6 +80,10 @@ class TextBlock extends EventPropagator {
          * @private
          */
         this._verticallyCenter = false;
+
+        this._measuringBox = document.createElement("pre");
+        this._measuringBox.style.float = "left";
+        document.documentElement.appendChild(this._measuringBox);
 
         // TODO: Use this
         this._bindings = [];
@@ -139,7 +154,7 @@ class TextBlock extends EventPropagator {
      * The font
      * @returns {Font}
      */
-    get font(){ return this._font; }
+    get font(){ return this._size; }
 
     /**
      * The layout
@@ -250,10 +265,43 @@ class TextBlock extends EventPropagator {
 
     // endregion
 
+    // region JSON
+
+    /**
+     * Gets the JSON data for this class
+     * @return {Object<string, *>}
+     */
+    toJSON() {
+        const properties = {};
+        properties[TextBlockFields.font] = this.font;
+        properties[TextBlockFields.layout] = this.layout;
+        properties[TextBlockFields.maxHeight] = this.maxHeight;
+        properties[TextBlockFields.maxWidth] = this.maxWidth;
+        properties[TextBlockFields.text] = this.text;
+        properties[TextBlockFields.verticallyCenter] = this.verticallyCenter;
+
+        return properties;
+    }
+
+    /**
+     * Initializes the object from the provided JSON
+     * @param {json} json - The JSON to use
+     */
+    initialize_json(json){
+        this.font.initialize_json(json[TextBlockFields.font]);
+        this.layout.initialize_json(json[TextBlockFields.layout]);
+        this.maxHeight = json[TextBlockFields.maxHeight];
+        this.maxWidth = json[TextBlockFields.maxWidth];
+        this.text = json[TextBlockFields.text];
+        this.verticallyCenter = json[TextBlockFields.verticallyCenter];
+    }
+
+    // endregion
+
     // region Event Handlers
 
     _textArea_Blur(e){
-        const box = e.originalTarget;
+        const box = e.target;
 
         // Go out of edit mode
         this._inEditMode = false;
@@ -267,13 +315,14 @@ class TextBlock extends EventPropagator {
     }
 
     _textArea_Change(e){
-        const box = e.originalTarget;
+        const box = e.target;
 
         if(this.autoWidth){
+            this._measuringBox.innerHTML = box.value;
             box.style.whiteSpace = "pre";
             box.style.width = "auto";
 
-            let width = box.scrollWidth;
+            let width = this._measuringBox.scrollWidth;
 
             if(this._maxWidth > 0) width = Math.min(this._maxWidth, width);
 
@@ -305,6 +354,11 @@ class TextBlock extends EventPropagator {
         this._inEditMode = true;
         const textarea = HtmlTextBox.makeTextBox(this.layout, this.text, this.font.family, this.font.size,
             this.font.alignment, this.font.bold, this.font.italic);
+
+        this._measuringBox.style.fontFamily = this.font.family;
+        this._measuringBox.style.fontSize = this.font.size;
+        this._measuringBox.style.textAlign = this.font.alignment;
+
 
         textarea.onblur = (e) => this._textArea_Blur(e);
         textarea.onchange = (e) => this._textArea_Change(e);

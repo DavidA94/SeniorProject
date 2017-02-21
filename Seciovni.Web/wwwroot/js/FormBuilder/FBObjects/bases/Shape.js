@@ -2,10 +2,17 @@
  * Created by David on 10/10/16.
  */
 
+class ShapeFields{
+    static get appearance() { return "appearance"; }
+    static get layout() { return "layout"; }
+}
+
 /**
  * Base class for Shapes to allow them to be passed into the BasicShape CTOR
  */
 class Shape extends EventPropagator {
+
+    // region CTOR
 
     constructor(x, y, width, height){
         super();
@@ -28,6 +35,10 @@ class Shape extends EventPropagator {
         this._layout.width = width;
         this._layout.height = height;
     }
+
+    // endregion
+
+    // region Public Properties
 
     /**
      * Gets the appearance properties of the object
@@ -77,6 +88,10 @@ class Shape extends EventPropagator {
      */
     get height() { return this.layout.height; }
 
+    // endregion
+
+    // region Public Methods
+
     toString() { return "Shape"; }
 
     /**
@@ -97,4 +112,30 @@ class Shape extends EventPropagator {
     isPointInShape(x, y){
         throw Error("isPointInShape function not implemented");
     }
+
+    // endregion
+
+    // region JSON
+
+    /**
+     * Gets the JSON data for this class
+     * @return {Object<string, *>}
+     */
+    toJSON() {
+        const properties = {};
+        properties[ShapeFields.appearance] = this.appearance;
+        properties[ShapeFields.layout] = this.layout;
+        return properties;
+    }
+
+    /**
+     * Initializes the object from the provided JSON
+     * @param {json} json - The JSON to use
+     */
+    initialize_json(json){
+        this.appearance.initialize_json(json[ShapeFields.appearance]);
+        this.layout.initialize_json(json[ShapeFields.layout]);
+    }
+
+    // endregion
 }

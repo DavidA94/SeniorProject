@@ -2,6 +2,11 @@
  * Created by David on 09/26/16.
  */
 
+class BorderFields {
+    static get color() { return "color"; }
+    static get thickness() { return "thickness"; }
+}
+
 /**
  * Represents a border
  */
@@ -118,6 +123,30 @@ class Border {
      */
     equals(rhs){
         return this._thickness.equals(rhs._thickness) && this._color == rhs._color;
+    }
+
+    // endregion
+
+    // region JSON
+
+    /**
+     * Gets the JSON data for this class
+     * @return {Object<string, *>}
+     */
+    toJSON() {
+        const properties = {};
+        properties[BorderFields.color] = this.color;
+        properties[BorderFields.thickness] = this._thickness;
+        return properties;
+    }
+
+    /**
+     * Initializes the object from the provided JSON
+     * @param {json} json - The JSON to use
+     */
+    initialize_json(json){
+        this.color = json[BorderFields.color];
+        this._thickness.initialize_json(json[BorderFields.thickness]);
     }
 
     // endregion
