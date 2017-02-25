@@ -183,9 +183,10 @@ class EventPropagator extends SubscribableProperty {
      * Adds a child
      * @param {EventPropagator} child
      * @param {boolean} addToBack - Indicates if the child should be added to the opposite side
+     * @param {number} pos - The position from the back to add at (e.g. 1 will put it as element 1
      * @protected
      */
-    __addChild(child, addToBack = false){
+    __addChild(child, addToBack = false, pos = -1){
         if(child.parent  && child.parent != this){
             throw Error(child.toString() + " is already a child of " + child.parent.toString())
         }
@@ -193,7 +194,12 @@ class EventPropagator extends SubscribableProperty {
         if(child.parent != this){
             child._parent = this;
             if(addToBack){
-                this._children.unshift(child);
+                if(pos > 0) {
+                    this._children.splice(pos, 0, child);
+                }
+                else {
+                    this._children.unshift(child);
+                }
             }
             else {
                 this._children.push(child)

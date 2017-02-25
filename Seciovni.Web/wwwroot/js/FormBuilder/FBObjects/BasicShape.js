@@ -75,7 +75,8 @@ class BasicShape extends FBObject {
         let key;
 
         if(this._shape instanceof Box) key = BasicShapeTypes.box;
-        else if(this._shape instanceof Ellipse) key = BasicShapeFields.ellipse;
+        else if(this._shape instanceof Ellipse) key = BasicShapeTypes.ellipse;
+        else { console.trace(); }
 
         const shape = [];
         shape.push(key);

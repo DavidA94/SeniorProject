@@ -52,27 +52,25 @@ class FormBuilder{
         this._canvas.subscribe(EVENT_PROPERTY_CHANGE, this._canvas_propertychange.bind(this));
 
         let propertyChangedEventHandler = (e) => {
-            if (Keyboard.focusedElement) {
-                const box = e.currentTarget;
-                let newData = null;
+            const box = e.currentTarget;
+            let newData = null;
 
-                if (box.nodeName.toLowerCase() === "input") {
-                    if (box.type.toLowerCase() === "number") {
-                        newData = parseInt(box.value);
-                    }
-                    else if (box.type.toLowerCase() === "checkbox") {
-                        newData = box.checked;
-                    }
-                    else {
-                        newData = box.value;
-                    }
+            if (box.nodeName.toLowerCase() === "input") {
+                if (box.type.toLowerCase() === "number") {
+                    newData = parseFloat(box.value);
                 }
-                else if (box.nodeName.toLowerCase() === "select") {
+                else if (box.type.toLowerCase() === "checkbox") {
+                    newData = box.checked;
+                }
+                else {
                     newData = box.value;
                 }
-
-                this._htmlObjDict[e.currentTarget.id].set(newData);
             }
+            else if (box.nodeName.toLowerCase() === "select") {
+                newData = box.value;
+            }
+
+            this._htmlObjDict[e.currentTarget.id].set(newData);
         };
         /**
          * The event handler for when an HTML object has it's value changed
@@ -95,12 +93,12 @@ class FormBuilder{
     _initializeCanvas(){
         // Get the canvas HTML element, and setup it's width and height
         const _canvas = document.getElementById(WYSIWYG_CANVAS_ID);
-        _canvas.width = this.pageMode == WYSIWYG_PAGE_MODE_P ? WYSIWYG_PAGE_WIDTH : WYSIWYG_PAGE_HEIGHT;
-        _canvas.height = this.pageMode == WYSIWYG_PAGE_MODE_L ? WYSIWYG_PAGE_WIDTH : WYSIWYG_PAGE_HEIGHT;
+
 
         // Initialize the canvas object
         this._canvas = new Canvas(WYSIWYG_CANVAS_ID);
         this._canvas.scale = 1;
+        this._canvas.orientation = Orientation.Portrait;
 
         // Initialize the static Mouse class -- Suppress warning because no other way to get to the object
         // noinspection JSAccessibilityCheck
@@ -286,161 +284,229 @@ class FormBuilder{
      * @private
      */
     _canvas_shapechange(e){
+        let propertyData;
+        let bindingData = null;
+
         if(!e.focusedObject){
-            this._htmlObjDict = null;
-            document.getElementById(WYSIWYG_PROPERTIES_FORM_ID).reset();
-            document.getElementById(WYSIWYG_PROPERTIES_FORM_ID).style.display = "none";
+            propertyData = this._canvas.getHtmlPropertyData();
+            this._htmlObjDict = this._canvas.getHtmlPropertyModelDict();
         }
         else{
-            const propForm = document.getElementById(WYSIWYG_PROPERTIES_FORM_ID);
+            propertyData = e.focusedObject.getHtmlPropertyData();
+            bindingData = e.focusedObject.getBindings();
+            this._htmlObjDict = e.focusedObject.getHtmlPropertyModelDict();
+        }
 
-            // Clear the old stuff
+        // Get the form element
+        const propForm = document.getElementById(WYSIWYG_PROPERTIES_FORM_ID);
 
-            const nodes = propForm.getElementsByTagName("*");
-            for(let i = nodes.length - 1; i >= 0; --i){
-                const node = nodes[i];
-                node.removeEventListener("change", this._propertyChangedEventHandler);
-                node.parentNode.removeChild(node);
+        // Clear the old stuff
+        const nodes = propForm.getElementsByTagName("*");
+        for(let i = nodes.length - 1; i >= 0; --i){
+            const node = nodes[i];
+            node.removeEventListener("change", this._propertyChangedEventHandler);
+        }
+        while(propForm.firstChild) propForm.removeChild(propForm.firstChild);
+
+        // Put the new stuff
+        for(let key of Object.keys(propertyData)){
+            const prop = propertyData[key];
+
+            const groupID = prop.Group.replace(/ /g, "");
+
+            let groupBox = document.getElementById(groupID);
+            if(!groupBox){
+                const newGroup = document.createElement("fieldset");
+                newGroup.id = groupID;
+
+                const legend = document.createElement("legend");
+                legend.innerHTML = prop.Group;
+
+                newGroup.appendChild(legend);
+                propForm.appendChild(newGroup);
+                groupBox = document.getElementById(groupID);
             }
 
-            // Put the new stuff
+            let parentOfElem = groupBox;
 
-            const propData = e.focusedObject.getHtmlPropertyData();
-
-            for(let key of Object.keys(propData)){
-                const prop = propData[key];
-
-                let groupBox = document.getElementById(prop.Group);
-                if(!groupBox){
-                    const newGroup = document.createElement("fieldset");
-                    newGroup.id = prop.Group.replace(/ /g, "");
+            if(prop.SubGroup) {
+                const subGroupId = (prop.Group + "_" + prop.SubGroup).replace(/ /g, "");
+                let subGroupBox = document.getElementById(subGroupId);
+                if(!subGroupBox){
+                    const newSubGroup = document.createElement("fieldset");
+                    newSubGroup.id = subGroupId;
+                    newSubGroup.className = "subgroup";
 
                     const legend = document.createElement("legend");
-                    legend.innerHTML = prop.Group;
+                    legend.innerHTML = prop.SubGroup;
 
-                    newGroup.appendChild(legend);
-                    propForm.appendChild(newGroup);
-                    groupBox = document.getElementById(prop.Group);
+                    newSubGroup.appendChild(legend);
+                    groupBox.appendChild(newSubGroup);
+                    subGroupBox = document.getElementById(subGroupId);
                 }
 
-                let parentOfElem = groupBox;
+                parentOfElem = subGroupBox;
+            }
 
-                if(prop.SubGroup) {
-                    const subGroupId = (prop.Group + "_" + prop.SubGroup).replace(/ /g, "");
-                    let subGroupBox = document.getElementById(subGroupId);
-                    if(!subGroupBox){
-                        const newSubGroup = document.createElement("fieldset");
-                        newSubGroup.id = subGroupId;
-                        newSubGroup.className = "subgroup";
+            const label = document.createElement("label");
+            label.innerHTML = prop.Name;
+            label.htmlFor = key;
+            parentOfElem.appendChild(label);
 
-                        const legend = document.createElement("legend");
-                        legend.innerHTML = prop.SubGroup;
+            let propElement;
 
-                        newSubGroup.appendChild(legend);
-                        groupBox.appendChild(newSubGroup);
-                        subGroupBox = document.getElementById(subGroupId);
+            switch(prop.Type){
+                case PropertyType.FontFamily: {
+                    propElement = document.createElement("select");
+                    propElement.id = key;
+
+                    for (let font of Object.keys(FontFamilies)) {
+                        const option = document.createElement("option");
+                        option.value = FontFamilies[font];
+                        option.innerHTML = FontFamilies[font];
+                        propElement.appendChild(option);
                     }
 
-                    parentOfElem = subGroupBox;
+                    parentOfElem.appendChild(propElement);
+
+                    break;
                 }
+                case PropertyType.Location: {
+                    propElement = document.createElement("select");
+                    propElement.id = key;
+
+                    for (let loc of Object.keys(Location)) {
+                        const option = document.createElement("option");
+                        option.value = Location[loc];
+                        option.innerHTML = loc;
+                        propElement.appendChild(option);
+                    }
+
+                    parentOfElem.appendChild(propElement);
+
+                    break;
+                }
+                case PropertyType.Alignment: {
+                    propElement = document.createElement("select");
+                    propElement.id = key;
+
+                    for (let align of Object.keys(Alignment)) {
+                        const option = document.createElement("option");
+                        option.value = Alignment[align];
+                        option.innerHTML = Alignment[align];
+                        propElement.appendChild(option);
+                    }
+
+                    parentOfElem.appendChild(propElement);
+
+                    break;
+                }
+                case PropertyType.Orientation: {
+                    propElement = document.createElement("select");
+                    propElement.id = key;
+
+                    for (let orientation of Object.keys(Orientation)) {
+                        const option = document.createElement("option");
+                        option.value = Orientation[orientation];
+                        option.innerHTML = orientation;
+                        propElement.appendChild(option);
+                    }
+
+                    parentOfElem.appendChild(propElement);
+
+                    break;
+                }
+
+                case PropertyType.DocumentType: {
+                    propElement = document.createElement("select");
+                    propElement.id = key;
+
+                    for (let docType of Object.keys(DocumentType)) {
+                        const option = document.createElement("option");
+                        option.value = DocumentType[docType];
+                        option.innerHTML = docType;
+                        propElement.appendChild(option);
+                    }
+
+                    parentOfElem.appendChild(propElement);
+
+                    break;
+                }
+
+                case PropertyType.ABS:
+                    propElement = document.createElement("input");
+                    propElement.id = key;
+                    propElement.type = "number";
+                    propElement.min = "0";
+                    parentOfElem.appendChild(propElement);
+                    break;
+                case PropertyType.Checkbox:
+                case PropertyType.Color:
+                case PropertyType.Number:
+                case PropertyType.Text:
+                case PropertyType.File:
+                    propElement = document.createElement("input");
+                    propElement.id = key;
+                    propElement.type = prop.Type;
+                    parentOfElem.appendChild(propElement);
+                    break;
+            }
+
+            if(propElement){
+                propElement.addEventListener("change", this._propertyChangedEventHandler);
+            }
+        }
+
+        // Load in the data
+        for(let id of Object.keys(this._htmlObjDict)){
+            const element = document.getElementById(id);
+            const value = this._htmlObjDict[id].get();
+
+            if(element.nodeName.toLowerCase() === "input" && element.type.toLowerCase() === "checkbox"){
+                element.checked = value;
+            }
+            else{
+                // Set the value and the placeholder, because some numeric values can
+                // have a text representation such as "Auto" for some numbers.
+                element.value = value;
+                element.placeholder = value;
+            }
+        }
+
+        if(bindingData) {
+            const groupBox = document.createElement("fieldset");
+            const legend = document.createElement("legend");
+            legend.innerHTML = "Bindings";
+
+            groupBox.appendChild(legend);
+            propForm.appendChild(groupBox);
+
+            const labels = [];
+            let labelWidth = 0;
+
+            for (let binding of bindingData) {
+                const div = document.createElement("div");
+                div.className = "row";
 
                 const label = document.createElement("label");
-                label.innerHTML = prop.Name;
-                label.htmlFor = key;
-                parentOfElem.appendChild(label);
+                label.innerHTML = binding.id;
+                label.htmlFor = binding.id.replace(/ /g, "");
+                label.className = "cell";
+                div.appendChild(label);
+                labels.push(label);
 
-                let propElement;
+                binding.options.htmlObj.className = "cell";
+                binding.options.htmlObj.id = binding.id.replace(/ /g, "");
+                div.appendChild(binding.options.htmlObj);
 
-                switch(prop.Type){
-                    case PropertyType.FontFamily: {
-                        propElement = document.createElement("select");
-                        propElement.id = key;
+                groupBox.appendChild(div);
 
-                        for (let font of Object.keys(FontFamilies)) {
-                            const option = document.createElement("option");
-                            option.value = FontFamilies[font];
-                            option.innerHTML = FontFamilies[font];
-                            propElement.appendChild(option);
-                        }
-
-                        parentOfElem.appendChild(propElement);
-
-                        break;
-                    }
-                    case PropertyType.Location: {
-                        propElement = document.createElement("select");
-                        propElement.id = key;
-
-                        for (let loc of Object.keys(Location)) {
-                            const option = document.createElement("option");
-                            option.value = Location[loc];
-                            option.innerHTML = loc;
-                            propElement.appendChild(option);
-                        }
-
-                        parentOfElem.appendChild(propElement);
-
-                        break;
-                    }
-                    case PropertyType.Alignment: {
-                        propElement = document.createElement("select");
-                        propElement.id = key;
-
-                        for (let align of Object.keys(Alignment)) {
-                            const option = document.createElement("option");
-                            option.value = Alignment[align];
-                            option.innerHTML = Alignment[align];
-                            propElement.appendChild(option);
-                        }
-
-                        parentOfElem.appendChild(propElement);
-
-                        break;
-                    }
-
-                    case PropertyType.ABS:
-                        propElement = document.createElement("input");
-                        propElement.id = key;
-                        propElement.type = "number";
-                        propElement.min = "0";
-                        parentOfElem.appendChild(propElement);
-                        break;
-                    case PropertyType.Checkbox:
-                    case PropertyType.Color:
-                    case PropertyType.Number:
-                    case PropertyType.Text:
-                    case PropertyType.File:
-                        propElement = document.createElement("input");
-                        propElement.id = key;
-                        propElement.type = prop.Type;
-                        parentOfElem.appendChild(propElement);
-                        break;
-                }
-
-                if(propElement){
-                    propElement.addEventListener("change", this._propertyChangedEventHandler);
-                }
+                labelWidth = Math.max(labelWidth, label.offsetWidth);
             }
 
-            // Load in the data
-
-            this._htmlObjDict = e.focusedObject.getHtmlPropertyModelDict();
-            for(let id of Object.keys(this._htmlObjDict)){
-                const element = document.getElementById(id);
-                const value = this._htmlObjDict[id].get();
-
-                if(element.nodeName.toLowerCase() === "input" && element.type.toLowerCase() === "checkbox"){
-                    element.checked = value;
-                }
-                else{
-                    // Set the value and the placeholder, because some numeric values can
-                    // have a text representation such as "Auto" for some numbers.
-                    element.value = value;
-                    element.placeholder = value;
-                }
+            for(const label of labels){
+                label.style.width = (labelWidth + 5) + "px";
             }
-
-            document.getElementById(WYSIWYG_PROPERTIES_FORM_ID).style.display = "block";
         }
     }
 
@@ -450,6 +516,7 @@ class FormBuilder{
 
     _dragstart(e){
         if(e.target.className === "draggable") {
+            e.target.scrollIntoView(false);
             e.dataTransfer.setData(WYSIWYG_DRAG_DATA, e.target.getElementsByTagName("span")[0].innerHTML);
             e.dataTransfer.setDragImage(e.target, 0, 0);
         }
@@ -485,7 +552,7 @@ class FormBuilder{
                 this._canvas.addObject(ellipse);
             }
             else if(data === WYSIWYG_DRAG_TEXT){
-                const text = new FBTextBlock(x, y, 0, 0, "Your text here");
+                const text = new FBTextBlock(x, y, 0, 0, "Your |_text_| here");
                 this._canvas.addObject(text);
             }
             else if(data === WYSIWYG_DRAG_TABLE){

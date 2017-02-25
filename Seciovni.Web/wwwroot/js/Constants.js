@@ -79,6 +79,16 @@ const Anchor = {
 };
 
 /**
+ * Represents the different types of binding fields
+ * @enum {number}
+ */
+const BindingContext = {
+    Both: 0,
+    Repeating: 1,
+    Single: 2
+}
+
+/**
  * Represents the types of cursors that can be returned
  * @enum {string}
  */
@@ -95,6 +105,18 @@ const Cursor = {
     Default: "default",
     Text: "text",
 };
+
+/**
+ * Represents the types of documents there can be
+ * @enum {int}
+ */
+const DocumentType = {
+    "One per Invoice": 0,
+    "One per Vehicle": 1
+};
+
+const DOC_ONE_PER_INV = DocumentType["One per Invoice"];
+const DOC_ONE_PER_VEH = DocumentType["One per Vehicle"];
 
 /**
  * Valid web-safe font-families
@@ -123,6 +145,15 @@ const Location = {
 };
 
 /**
+ * Represents page orientation options
+ * @enum {number}
+ */
+const Orientation = {
+    Landscape: 0,
+    Portrait: 1
+};
+
+/**
  * Represents what types a property can be
  * @enum {string}
  */
@@ -135,7 +166,9 @@ const PropertyType = {
     Checkbox: "checkbox",
     Location: "location",
     Alignment: "alignment",
-    File: "text"
+    File: "text",
+    Orientation: "orientation",
+    DocumentType: "documentType",
 };
 
 // endregion

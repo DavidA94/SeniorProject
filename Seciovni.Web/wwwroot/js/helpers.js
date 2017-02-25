@@ -194,10 +194,60 @@ function prettifyNumber(value, prefix, fixedPlaces){
     return tempVal;
 }
 
+/**
+ * Converts a pixel measure to points
+ * @param {string} data - The original pixel data
+ * @return {string}
+ */
 function pxToPt(data){
     return (parseFloat(data) * .75).toFixed(3);
 }
 
+/**
+ * Converts a point measurement to pixels
+ * @param {string} data - The original pixel data
+ * @return {number}
+ */
 function ptToPx(data){
     return parseFloat(data) / .75;
+}
+
+/**
+ * Gets the binding options for the current context
+ * @param {BindingContext} bindingContext - The binding context
+ * @return {{category: string display: string, value: string}[]}
+ */
+function getBindingOptions(bindingContext){
+
+    return [
+        { category: "Vehicle", display: "Stock Number", value: "Vehicle.StockNum" },
+        { category: "Vehicle", display: "VIN", value: "Vehicle.VIN" },
+        { category: "Vehicle", display: "Year", value: "Vehicle.Year" },
+        { category: "Vehicle", display: "Make", value: "Vehicle.Make" },
+        { category: "Vehicle", display: "Model", value: "Vehicle.Model" },
+        { category: "Vehicle", display: "Miles", value: "Vehicle.Miles" },
+        { category: "Vehicle", display: "Location", value: "Vehicle.Location" },
+        { category: "Vehicle", display: "Price", value: "Vehicle.Price" },
+    ];
+
+    if(!getBindingOptions[bindingContext]){
+        let hasResponse = false;
+        let response = null;
+
+        sendToApi("FormBuilder/BindingOptions/" + bindingContext, "GET", null, (xmlhttp) => {
+            if(xmlhttp.readyState === XMLHttpRequest.DONE) {
+                if (xmlhttp.status === 200) {
+                    response = xmlhttp.response;
+                }
+
+                hasResponse = true;
+            }
+        });
+
+        while(!hasResponse);
+
+        getBindingOptions[bindingContext] = JSON.parse(response);
+    }
+
+    return getBindingOptions[bindingContext];
 }

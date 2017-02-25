@@ -358,13 +358,14 @@ class FBObject extends EventPropagator {
         const height = this.height;
         const border = this._border.top + this._border.bottom;
         const margin = this._layout.margin.top + this._layout.margin.bottom;
+        const padding = this._layout.padding.top + this._layout.padding.bottom;
         let caption = 0;
 
         if(this.caption.location & WYSIWYG_CAPTION_TOP_BOTTOM) {
             caption = (this.caption.reserve === WYSIWYG_CAPTION_AUTO ? this.caption.height : this.caption.reserve) + WYSIWYG_CAPTION_PADDING;
         }
 
-        return height + border + caption + margin;
+        return height + border + caption + margin + padding;
     }
 
     /**
@@ -645,6 +646,16 @@ class FBObject extends EventPropagator {
 
     // region Object Properties
 
+    // region Bindings
+
+    /**
+     * Gets the bindings for the given object
+     * @return {Binding[]}
+     */
+    getBindings() { return null; }
+
+    // endregion
+
     // region HTML
 
     /**
@@ -654,56 +665,43 @@ class FBObject extends EventPropagator {
     getHtmlPropertyData(){
         const retVal = {};
 
-        retVal.layout_x = this.__makePropertyData("Layout", "X", PropertyType.Number, "Size and Position");
-        retVal.layout_y = this.__makePropertyData("Layout", "Y", PropertyType.Number, "Size and Position");
-        retVal.layout_width = this.__makePropertyData("Layout", "Width", PropertyType.ABS, "Size and Position");
-        retVal.layout_height = this.__makePropertyData("Layout", "Height", PropertyType.ABS, "Size and Position");
+        retVal.layout_x = ObjProp.makePropertyData("Layout", "X", PropertyType.Number, "Size and Position");
+        retVal.layout_y = ObjProp.makePropertyData("Layout", "Y", PropertyType.Number, "Size and Position");
+        retVal.layout_width = ObjProp.makePropertyData("Layout", "Width", PropertyType.ABS, "Size and Position");
+        retVal.layout_height = ObjProp.makePropertyData("Layout", "Height", PropertyType.ABS, "Size and Position");
 
-        retVal.margin_top = this.__makePropertyData("Layout", "Top", PropertyType.ABS, "Margin");
-        retVal.margin_right = this.__makePropertyData("Layout", "Right", PropertyType.ABS, "Margin");
-        retVal.margin_bottom = this.__makePropertyData("Layout", "Bottom", PropertyType.ABS, "Margin");
-        retVal.margin_left = this.__makePropertyData("Layout", "Left", PropertyType.ABS, "Margin");
+        retVal.margin_top = ObjProp.makePropertyData("Layout", "Top", PropertyType.ABS, "Margin");
+        retVal.margin_right = ObjProp.makePropertyData("Layout", "Right", PropertyType.ABS, "Margin");
+        retVal.margin_bottom = ObjProp.makePropertyData("Layout", "Bottom", PropertyType.ABS, "Margin");
+        retVal.margin_left = ObjProp.makePropertyData("Layout", "Left", PropertyType.ABS, "Margin");
 
-        retVal.padding_top = this.__makePropertyData("Layout", "Top", PropertyType.ABS, "Padding");
-        retVal.padding_right = this.__makePropertyData("Layout", "Right", PropertyType.ABS, "Padding");
-        retVal.padding_bottom = this.__makePropertyData("Layout", "Bottom", PropertyType.ABS, "Padding");
-        retVal.padding_left = this.__makePropertyData("Layout", "Left", PropertyType.ABS, "Padding");
+        retVal.padding_top = ObjProp.makePropertyData("Layout", "Top", PropertyType.ABS, "Padding");
+        retVal.padding_right = ObjProp.makePropertyData("Layout", "Right", PropertyType.ABS, "Padding");
+        retVal.padding_bottom = ObjProp.makePropertyData("Layout", "Bottom", PropertyType.ABS, "Padding");
+        retVal.padding_left = ObjProp.makePropertyData("Layout", "Left", PropertyType.ABS, "Padding");
 
-        retVal.appearance_back = this.__makePropertyData("Appearance", "Background", PropertyType.Color);
-        retVal.appearance_fore = this.__makePropertyData("Appearance", "Foreground", PropertyType.Color);
-        retVal.appearance_strokeColor = this.__makePropertyData("Appearance", "Stroke Color", PropertyType.Color);
-        retVal.appearance_strokeThickness = this.__makePropertyData("Appearance", "Stroke Thickness", PropertyType.ABS);
+        retVal.appearance_back = ObjProp.makePropertyData("Appearance", "Background", PropertyType.Color);
+        retVal.appearance_fore = ObjProp.makePropertyData("Appearance", "Foreground", PropertyType.Color);
+        retVal.appearance_strokeColor = ObjProp.makePropertyData("Appearance", "Stroke Color", PropertyType.Color);
+        retVal.appearance_strokeThickness = ObjProp.makePropertyData("Appearance", "Stroke Thickness", PropertyType.ABS);
 
-        retVal.border_top = this.__makePropertyData("Border", "Top", PropertyType.ABS);
-        retVal.border_right = this.__makePropertyData("Border", "Right", PropertyType.ABS);
-        retVal.border_bottom = this.__makePropertyData("Border", "Bottom", PropertyType.ABS);
-        retVal.border_left = this.__makePropertyData("Border", "Left", PropertyType.ABS);
-        retVal.border_color = this.__makePropertyData("Border", "Color", PropertyType.Color);
+        retVal.border_top = ObjProp.makePropertyData("Border", "Top", PropertyType.ABS);
+        retVal.border_right = ObjProp.makePropertyData("Border", "Right", PropertyType.ABS);
+        retVal.border_bottom = ObjProp.makePropertyData("Border", "Bottom", PropertyType.ABS);
+        retVal.border_left = ObjProp.makePropertyData("Border", "Left", PropertyType.ABS);
+        retVal.border_color = ObjProp.makePropertyData("Border", "Color", PropertyType.Color);
 
-        retVal.caption_text = this.__makePropertyData("Text", "Text", PropertyType.Text, "Caption");
-        retVal.caption_reserve = this.__makePropertyData("Text", "Reserve", PropertyType.ABS, "Caption");
-        retVal.caption_location = this.__makePropertyData("Text", "Location", PropertyType.Location, "Caption");
-        retVal.caption_font_family = this.__makePropertyData("Text", "Font Family", PropertyType.FontFamily, "Caption");
-        retVal.caption_font_size = this.__makePropertyData("Text", "Font Size", PropertyType.ABS, "Caption");
-        retVal.caption_font_color = this.__makePropertyData("Text", "Font Color", PropertyType.Color, "Caption");
-        retVal.caption_font_color = this.__makePropertyData("Text", "Alignment", PropertyType.Alignment, "Caption");
-        retVal.caption_font_bold = this.__makePropertyData("Text", "Bold", PropertyType.Checkbox, "Caption");
-        retVal.caption_font_italic = this.__makePropertyData("Text", "Italic", PropertyType.Checkbox, "Caption");
+        retVal.caption_text = ObjProp.makePropertyData("Text", "Text", PropertyType.Text, "Caption");
+        retVal.caption_reserve = ObjProp.makePropertyData("Text", "Reserve", PropertyType.ABS, "Caption");
+        retVal.caption_location = ObjProp.makePropertyData("Text", "Location", PropertyType.Location, "Caption");
+        retVal.caption_font_family = ObjProp.makePropertyData("Text", "Font Family", PropertyType.FontFamily, "Caption");
+        retVal.caption_font_size = ObjProp.makePropertyData("Text", "Font Size", PropertyType.ABS, "Caption");
+        retVal.caption_font_color = ObjProp.makePropertyData("Text", "Font Color", PropertyType.Color, "Caption");
+        retVal.caption_font_color = ObjProp.makePropertyData("Text", "Alignment", PropertyType.Alignment, "Caption");
+        retVal.caption_font_bold = ObjProp.makePropertyData("Text", "Bold", PropertyType.Checkbox, "Caption");
+        retVal.caption_font_italic = ObjProp.makePropertyData("Text", "Italic", PropertyType.Checkbox, "Caption");
 
         return retVal;
-    }
-
-    /**
-     *
-     * @param {string} group - The group this object belongs is
-     * @param {string} name - The name to be put in the label
-     * @param {PropertyType} type - The type of content this property is
-     * @param {string|null} subGroup - The subgroup, if any for this property
-     * @returns {{Group: string, SubGroup: string|null, Name: string, Type: PropertyType}}
-     * @protected
-     */
-    __makePropertyData(group, name, type, subGroup = null){
-        return {Group: group, SubGroup: subGroup, Name: name, Type: type};
     }
 
     // endregion
@@ -717,57 +715,39 @@ class FBObject extends EventPropagator {
     getHtmlPropertyModelDict(){
 
         const retVal = {};
-        retVal.layout_x = this.__makeHtmlPropertyModel(this, "visualX", ptToPx, pxToPt);
-        retVal.layout_y = this.__makeHtmlPropertyModel(this, "visualY", ptToPx, pxToPt);
-        retVal.layout_width = this.__makeHtmlPropertyModel(this, "visualWidth", ptToPx, pxToPt);
-        retVal.layout_height = this.__makeHtmlPropertyModel(this, "visualHeight", ptToPx, pxToPt);
-        retVal.margin_top = this.__makeHtmlPropertyModel(this.layout.margin, "top", ptToPx, pxToPt);
-        retVal.margin_right = this.__makeHtmlPropertyModel(this.layout.margin, "right", ptToPx, pxToPt);
-        retVal.margin_bottom = this.__makeHtmlPropertyModel(this.layout.margin, "bottom", ptToPx, pxToPt);
-        retVal.margin_left = this.__makeHtmlPropertyModel(this.layout.margin, "left", ptToPx, pxToPt);
-        retVal.padding_top = this.__makeHtmlPropertyModel(this.layout.padding, "top", ptToPx, pxToPt);
-        retVal.padding_right = this.__makeHtmlPropertyModel(this.layout.padding, "right", ptToPx, pxToPt);
-        retVal.padding_bottom = this.__makeHtmlPropertyModel(this.layout.padding, "bottom", ptToPx, pxToPt);
-        retVal.padding_left = this.__makeHtmlPropertyModel(this.layout.padding, "left", ptToPx, pxToPt);
-        retVal.appearance_back = this.__makeHtmlPropertyModel(this.appearance, "background");
-        retVal.appearance_fore = this.__makeHtmlPropertyModel(this.appearance, "foreground");
-        retVal.appearance_strokeColor = this.__makeHtmlPropertyModel(this.appearance, "strokeColor");
-        retVal.appearance_strokeThickness = this.__makeHtmlPropertyModel(this.appearance, "strokeThickness", ptToPx, pxToPt);
-        retVal.border_top = this.__makeHtmlPropertyModel(this.border, "top", ptToPx, pxToPt);
-        retVal.border_right = this.__makeHtmlPropertyModel(this.border, "right", ptToPx, pxToPt);
-        retVal.border_bottom = this.__makeHtmlPropertyModel(this.border, "bottom", ptToPx, pxToPt);
-        retVal.border_left = this.__makeHtmlPropertyModel(this.border, "left", ptToPx, pxToPt);
-        retVal.border_color = this.__makeHtmlPropertyModel(this.border, "color");
-        retVal.caption_text = this.__makeHtmlPropertyModel(this.caption, "text");
-        retVal.caption_reserve = this.__makeHtmlPropertyModel(this, "captionReserve", ptToPx,
+        retVal.layout_x = ObjProp.makeHtmlPropertyModel(this, "visualX", ptToPx, pxToPt);
+        retVal.layout_y = ObjProp.makeHtmlPropertyModel(this, "visualY", ptToPx, pxToPt);
+        retVal.layout_width = ObjProp.makeHtmlPropertyModel(this, "visualWidth", ptToPx, pxToPt);
+        retVal.layout_height = ObjProp.makeHtmlPropertyModel(this, "visualHeight", ptToPx, pxToPt);
+        retVal.margin_top = ObjProp.makeHtmlPropertyModel(this.layout.margin, "top", ptToPx, pxToPt);
+        retVal.margin_right = ObjProp.makeHtmlPropertyModel(this.layout.margin, "right", ptToPx, pxToPt);
+        retVal.margin_bottom = ObjProp.makeHtmlPropertyModel(this.layout.margin, "bottom", ptToPx, pxToPt);
+        retVal.margin_left = ObjProp.makeHtmlPropertyModel(this.layout.margin, "left", ptToPx, pxToPt);
+        retVal.padding_top = ObjProp.makeHtmlPropertyModel(this.layout.padding, "top", ptToPx, pxToPt);
+        retVal.padding_right = ObjProp.makeHtmlPropertyModel(this.layout.padding, "right", ptToPx, pxToPt);
+        retVal.padding_bottom = ObjProp.makeHtmlPropertyModel(this.layout.padding, "bottom", ptToPx, pxToPt);
+        retVal.padding_left = ObjProp.makeHtmlPropertyModel(this.layout.padding, "left", ptToPx, pxToPt);
+        retVal.appearance_back = ObjProp.makeHtmlPropertyModel(this.appearance, "background");
+        retVal.appearance_fore = ObjProp.makeHtmlPropertyModel(this.appearance, "foreground");
+        retVal.appearance_strokeColor = ObjProp.makeHtmlPropertyModel(this.appearance, "strokeColor");
+        retVal.appearance_strokeThickness = ObjProp.makeHtmlPropertyModel(this.appearance, "strokeThickness", ptToPx, pxToPt);
+        retVal.border_top = ObjProp.makeHtmlPropertyModel(this.border, "top", ptToPx, pxToPt);
+        retVal.border_right = ObjProp.makeHtmlPropertyModel(this.border, "right", ptToPx, pxToPt);
+        retVal.border_bottom = ObjProp.makeHtmlPropertyModel(this.border, "bottom", ptToPx, pxToPt);
+        retVal.border_left = ObjProp.makeHtmlPropertyModel(this.border, "left", ptToPx, pxToPt);
+        retVal.border_color = ObjProp.makeHtmlPropertyModel(this.border, "color");
+        retVal.caption_text = ObjProp.makeHtmlPropertyModel(this.caption, "text");
+        retVal.caption_reserve = ObjProp.makeHtmlPropertyModel(this, "captionReserve", ptToPx,
             (value) => { if(value >= 0) return pxToPt(value); else return "Auto"; });
-        retVal.caption_location = this.__makeHtmlPropertyModel(this.caption, "location", parseInt);
-        retVal.caption_font_family = this.__makeHtmlPropertyModel(this.caption.font, "family");
-        retVal.caption_font_size = this.__makeHtmlPropertyModel(this.caption.font, "size", ptToPx, pxToPt);
-        retVal.caption_font_bold = this.__makeHtmlPropertyModel(this.caption.font, "bold");
-        retVal.caption_font_italic = this.__makeHtmlPropertyModel(this.caption.font, "italic");
-        retVal.caption_font_color = this.__makeHtmlPropertyModel(this.caption.font, "color");
-        retVal.caption_font_color = this.__makeHtmlPropertyModel(this.caption.font, "alignment");
+        retVal.caption_location = ObjProp.makeHtmlPropertyModel(this.caption, "location", parseInt);
+        retVal.caption_font_family = ObjProp.makeHtmlPropertyModel(this.caption.font, "family");
+        retVal.caption_font_size = ObjProp.makeHtmlPropertyModel(this.caption.font, "size", ptToPx, pxToPt);
+        retVal.caption_font_bold = ObjProp.makeHtmlPropertyModel(this.caption.font, "bold");
+        retVal.caption_font_italic = ObjProp.makeHtmlPropertyModel(this.caption.font, "italic");
+        retVal.caption_font_color = ObjProp.makeHtmlPropertyModel(this.caption.font, "color");
+        retVal.caption_font_color = ObjProp.makeHtmlPropertyModel(this.caption.font, "alignment");
 
         return retVal;
-    }
-
-    /**
-     *
-     * @param {*} object - The object to target
-     * @param {string} property - The property on the object to get the get/set for
-     * @param {StringValueConverter} setConverter - A method which converts a string to the correct type
-     * @param {ValueToStringConverter} getConverter - A method which converts a string to the correct type
-     * @returns {{get: (function()), set: (function({string}): boolean)}}
-     * @protected
-     */
-    __makeHtmlPropertyModel(object, property,
-                            setConverter = (value) => { return value; },
-                            getConverter = (value) => { return value; }){
-        return {
-            get: () => getConverter(Reflect.get(object, property)),
-            set: (value) => Reflect.set(object, property, setConverter(value)),
-        };
     }
 
     // endregion

@@ -81,19 +81,34 @@ class TextBlock extends EventPropagator {
          */
         this._verticallyCenter = false;
 
-        this._measuringBox = document.createElement("pre");
-        this._measuringBox.style.float = "left";
-        document.documentElement.appendChild(this._measuringBox);
+        /**
+         * Indicates if there is a binding error (Something that is unassigned)
+         * @type {boolean}
+         * @private
+         */
+        this._hasBindingError = false;
 
-        // TODO: Use this
-        this._bindings = [];
+        /**
+         * The bindings for the text
+         * @type {Object<string, Binding>}
+         * @private
+         */
+        this._bindings = {};
 
         this.subscribe(MouseEventType.DblClick, (e) => this._dblClick(e));
         this.subscribe(MouseEventType.MouseDown, (e) => this._mouseDown(e));
         this.subscribe(MouseEventType.MouseMove, (e) => this._mouseMove(e));
+        this.subscribe(KeyboardEventType.GotFocus, () => this.processBindings());
 
         // Forward any event from layout
         this.layout.subscribe(EVENT_PROPERTY_CHANGE, (e) => this.__sendPropChangeEvent(e.propertyName));
+
+        const w = new Warning(0, 0, 16, 16, "Invalid Binding(s)");
+        w.visible = true;
+        this.__addChild(w);
+
+        this._boundProcessBindings = this.processBindings.bind(this);
+        this.processBindings();
     }
 
     // region Public Properties
@@ -109,6 +124,13 @@ class TextBlock extends EventPropagator {
      * @param {string} value
      */
     set text(value) { this._text = value; this.__sendPropChangeEvent("text"); }
+
+
+    /**
+     * The bindings for this text block
+     * @return {Object.<string, Binding>}
+     */
+    get bindings() { return this._bindings; }
 
 
     /**
@@ -195,11 +217,12 @@ class TextBlock extends EventPropagator {
 
         // If we're auto-sizing
         if(this.autoWidth) this.layout.width = textProps.width;
-        if(this.autoHeight) { this.layout.height = textProps.height; } // console.log("Height set to " + textProps.height); }
+        if(this.autoHeight) { this.layout.height = textProps.height; }
 
         // e.g. If a font size of 20, then with WYSIWYG_FLH_RATIO=1.5 the line height will be 30.
         const lineHeight = (this.font.size * WYSIWYG_FLH_RATIO);
-        let yShiftAmt = ((lineHeight - this.font.size) / 2) + this.layout.padding.top;
+        this.layout.padding.top = ((lineHeight - this.font.size) / 2)
+        let yShiftAmt = this.layout.padding.top;
 
         // If we want things vertically centered, increase the yShiftAmt
         if(this.verticallyCenter){
@@ -223,6 +246,18 @@ class TextBlock extends EventPropagator {
             const yPos = lineIdx * lineHeight;
 
             context.fillText(line, 0, yPos);
+        }
+
+        // Go back so we can put the error at the top left
+        context.restore();
+
+        if(this._hasBindingError){
+            for(const child of this.children){
+                child.layout.x = this.layout.x;
+                child.layout.y = this.layout.y;
+                context.translate(0, 0);
+                child.draw(context);
+            }
         }
     }
 
@@ -312,17 +347,15 @@ class TextBlock extends EventPropagator {
 
         // Close the box
         HtmlTextBox.closeTextBox();
+
+        this.processBindings()
     }
 
     _textArea_Change(e){
         const box = e.target;
 
         if(this.autoWidth){
-            this._measuringBox.innerHTML = box.value;
-            box.style.whiteSpace = "pre";
-            box.style.width = "auto";
-
-            let width = this._measuringBox.scrollWidth;
+            let width = HtmlTextBox.getWidth();
 
             if(this._maxWidth > 0) width = Math.min(this._maxWidth, width);
 
@@ -333,15 +366,11 @@ class TextBlock extends EventPropagator {
         }
 
         if(this.autoHeight){
-            box.style.height = "auto";
-
-            let height = box.scrollHeight;
+            let height = HtmlTextBox.getHeight();
 
             if(this._maxHeight > 0) height = Math.min(this._maxHeight, width);
 
             box.style.height = height + "px";
-
-            this.layout.height = height;
         }
     }
 
@@ -355,17 +384,14 @@ class TextBlock extends EventPropagator {
         const textarea = HtmlTextBox.makeTextBox(this.layout, this.text, this.font.family, this.font.size,
             this.font.alignment, this.font.bold, this.font.italic);
 
-        this._measuringBox.style.fontFamily = this.font.family;
-        this._measuringBox.style.fontSize = this.font.size;
-        this._measuringBox.style.textAlign = this.font.alignment;
-
-
         textarea.onblur = (e) => this._textArea_Blur(e);
         textarea.onchange = (e) => this._textArea_Change(e);
         textarea.oncut = (e) => this._textArea_DelayedChange(e);
         textarea.onpaste = (e) => this._textArea_DelayedChange(e);
         textarea.ondrop = (e) => this._textArea_DelayedChange(e);
         textarea.onkeydown = (e) => this._textArea_DelayedChange(e);
+
+        this._textArea_DelayedChange({target: textarea});
     }
 
     _mouseDown(e){
@@ -381,6 +407,8 @@ class TextBlock extends EventPropagator {
     }
 
     // endregion
+
+    // region Helper Methods
 
     /**
      * Gets the text properties based on the size it must fit in
@@ -507,4 +535,33 @@ class TextBlock extends EventPropagator {
             textLines: outputText
         };
     }
+
+    processBindings(){
+        const re = /\|_([a-zA-Z0-9]+)_\|/g;
+        const matches = [];
+
+        let match;
+        while((match = re.exec(this.text)) != null) matches.push(match[1]);
+
+        for(const m of matches) {
+            if(!this._bindings[m]) this._bindings[m] = null;
+        }
+
+        // Remove those that don't belong
+        for(const id of Object.keys(this._bindings)){
+            if(matches.indexOf(id) < 0){
+                this._bindings[id].destroy();
+                delete this._bindings[id];
+            }
+        }
+
+        this._hasBindingError = false;
+        for(const key of Object.keys(this._bindings)){
+            if(this._bindings[key] === null || this._bindings[key].value === ""){
+                this._hasBindingError = true;
+            }
+        }
+    }
+
+    // endregion
 }

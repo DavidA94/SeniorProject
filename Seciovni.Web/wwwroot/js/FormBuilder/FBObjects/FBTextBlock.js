@@ -118,34 +118,57 @@ class FBTextBlock extends FBObject {
 
     toString() { return "FBTextBlock"; }
 
+    /**
+     * Gets the bindings for the given object
+     * @return {Binding[]}
+     */
+    getBindings() {
+        const bindings = this._textBlock.bindings;
+
+        const retBindings = [];
+
+        for(const id of Object.keys(bindings)){
+            if(bindings[id] === null){
+                const currentContext = this.parent.documentType == DOC_ONE_PER_INV ? BindingContext.Single :
+                        BindingContext.Repeating;
+                bindings[id] = new Binding(id, currentContext);
+                bindings[id].options.addEvent('change', () => this._textBlock.processBindings());
+            }
+
+            retBindings.push(bindings[id]);
+        }
+
+        return retBindings;
+    }
+
     getHtmlPropertyData(){
         const retVal = super.getHtmlPropertyData();
 
-        retVal.text = this.__makePropertyData("Text", "Text", PropertyType.Text, "Text Block");
-        retVal.font_family = this.__makePropertyData("Text", "Font Family", PropertyType.FontFamily, "Text Block");
-        retVal.font_size = this.__makePropertyData("Text", "Font Size", PropertyType.ABS, "Text Block");
-        retVal.font_color = this.__makePropertyData("Text", "Font Color", PropertyType.Color, "Text Block");
-        retVal.font_color = this.__makePropertyData("Text", "Alignment", PropertyType.Alignment, "Text Block");
-        retVal.font_bold = this.__makePropertyData("Text", "Bold", PropertyType.Checkbox, "Text Block");
-        retVal.font_italic = this.__makePropertyData("Text", "Italic", PropertyType.Checkbox, "Text Block");
-        retVal.maxHeight = this.__makePropertyData("Text", "Max Height", PropertyType.Number, "Text Block");
-        retVal.maxWidth = this.__makePropertyData("Text", "Max Width", PropertyType.Number, "Text Block");
+        retVal.text = ObjProp.makePropertyData("Text", "Text", PropertyType.Text, "Text Block");
+        retVal.font_family = ObjProp.makePropertyData("Text", "Font Family", PropertyType.FontFamily, "Text Block");
+        retVal.font_size = ObjProp.makePropertyData("Text", "Font Size", PropertyType.ABS, "Text Block");
+        retVal.font_color = ObjProp.makePropertyData("Text", "Font Color", PropertyType.Color, "Text Block");
+        retVal.font_color = ObjProp.makePropertyData("Text", "Alignment", PropertyType.Alignment, "Text Block");
+        retVal.font_bold = ObjProp.makePropertyData("Text", "Bold", PropertyType.Checkbox, "Text Block");
+        retVal.font_italic = ObjProp.makePropertyData("Text", "Italic", PropertyType.Checkbox, "Text Block");
+        retVal.maxHeight = ObjProp.makePropertyData("Text", "Max Height", PropertyType.Number, "Text Block");
+        retVal.maxWidth = ObjProp.makePropertyData("Text", "Max Width", PropertyType.Number, "Text Block");
 
         return retVal;
     }
 
     getHtmlPropertyModelDict(){
         const retVal = super.getHtmlPropertyModelDict();
-        retVal.text = this.__makeHtmlPropertyModel(this, "text");
-        retVal.font_family = this.__makeHtmlPropertyModel(this.font, "family");
-        retVal.font_size = this.__makeHtmlPropertyModel(this.font, "size");
-        retVal.font_bold = this.__makeHtmlPropertyModel(this.font, "bold");
-        retVal.font_italic = this.__makeHtmlPropertyModel(this.font, "italic");
-        retVal.font_color = this.__makeHtmlPropertyModel(this.font, "color");
-        retVal.font_color = this.__makeHtmlPropertyModel(this.font, "alignment");
-        retVal.maxHeight = this.__makeHtmlPropertyModel(this, "maxHeight", parseInt,
+        retVal.text = ObjProp.makeHtmlPropertyModel(this, "text");
+        retVal.font_family = ObjProp.makeHtmlPropertyModel(this.font, "family");
+        retVal.font_size = ObjProp.makeHtmlPropertyModel(this.font, "size");
+        retVal.font_bold = ObjProp.makeHtmlPropertyModel(this.font, "bold");
+        retVal.font_italic = ObjProp.makeHtmlPropertyModel(this.font, "italic");
+        retVal.font_color = ObjProp.makeHtmlPropertyModel(this.font, "color");
+        retVal.font_color = ObjProp.makeHtmlPropertyModel(this.font, "alignment");
+        retVal.maxHeight = ObjProp.makeHtmlPropertyModel(this, "maxHeight", parseInt,
             (value) => { if(!value) return "None"; else return value; });
-        retVal.maxWidth = this.__makeHtmlPropertyModel(this, "maxWidth", parseInt,
+        retVal.maxWidth = ObjProp.makeHtmlPropertyModel(this, "maxWidth", parseInt,
             (value) => { if(!value) return "None"; else return value; });
 
         return retVal;

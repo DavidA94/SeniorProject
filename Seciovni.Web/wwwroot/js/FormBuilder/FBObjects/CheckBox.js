@@ -18,16 +18,27 @@ class CheckBox extends FBObject {
     }
 
     _doDraw(context){
-
-        const scaleAmt = this.width / 10;
+        const scaleAmt = Math.min(this.width, this.height) / 10;
         const cornerAmt = 2 * scaleAmt;
-
         const lineWidth = Math.floor(scaleAmt);
-        const width = this.width - lineWidth;
-        const height = this.height - lineWidth;
+        let width = this.width - lineWidth;
+        let height = this.height - lineWidth;
+        let shiftX = 0;
+        let shiftY = 0;
+
+        if(width > height) {
+            shiftX = (width - height) / 2.0;
+            width = height;
+
+        }
+        if(width < height){
+            shiftY = (height - width) / 2.0;
+            height = width;
+        }
+
 
         // Shift so we'll draw within the bounds
-        context.translate(this.x + (lineWidth / 2), this.y + (lineWidth / 2));
+        context.translate(this.x + (lineWidth / 2) + shiftX, this.y + (lineWidth / 2) + shiftY);
 
         context.lineWidth = Math.floor(scaleAmt);
         context.lineCap = "round";

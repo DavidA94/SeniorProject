@@ -76,16 +76,16 @@ class FBImage extends FBObject {
     getHtmlPropertyData(){
         const retVal = super.getHtmlPropertyData();
 
-        retVal.preserveRatio = this.__makePropertyData("Image", "Preserve Ratio", PropertyType.Checkbox);
-        retVal.src = this.__makePropertyData("Image", "Image", PropertyType.File);
+        retVal.preserveRatio = ObjProp.makePropertyData("Image", "Preserve Ratio", PropertyType.Checkbox);
+        retVal.src = ObjProp.makePropertyData("Image", "Image", PropertyType.File);
 
         return retVal;
     }
 
     getHtmlPropertyModelDict(){
         const retVal = super.getHtmlPropertyModelDict();
-        retVal.preserveRatio = this.__makeHtmlPropertyModel(this, "preserveRatio");
-        retVal.src = this.__makeHtmlPropertyModel(this, "src");
+        retVal.preserveRatio = ObjProp.makeHtmlPropertyModel(this, "preserveRatio");
+        retVal.src = ObjProp.makeHtmlPropertyModel(this, "src");
 
         return retVal;
     }

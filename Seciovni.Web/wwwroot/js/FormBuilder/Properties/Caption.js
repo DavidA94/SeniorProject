@@ -223,8 +223,8 @@ class Caption extends SubscribableProperty {
      * @param {json} json - The JSON to use
      */
     initialize_json(json){
-        this.location = json[AppearanceFields.background];
-        this.reserve = json[AppearanceFields.foreground];
+        this.location = json[CaptionFields.location];
+        this.reserve = json[CaptionFields.reserve];
         this._textBlock.initialize_json(json[CaptionFields.textBlock]);
     }
 

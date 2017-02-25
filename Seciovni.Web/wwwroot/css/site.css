@@ -156,3 +156,6 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #properties {float:left;width:300px;height:55vh;overflow:auto;border:1px solid black;padding:5px;}
 #properties label {float:left;clear:left;margin:5px 10px 5px 0;line-height:20px;}
 #properties input, #properties select {height:20px;float:left;margin:5px 0;}
+
+#formBuilderToolTip {position:absolute;top:-999px;left:-999px;border:1px solid #767676;background:#fff;padding:1px 4px;
+                     box-shadow:rgba(0, 0, 0, .4) 3px 3px 4px;color:#575757;font-family:Tahoma;font-size:12px;}

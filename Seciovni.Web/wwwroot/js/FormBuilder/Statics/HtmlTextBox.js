@@ -12,6 +12,20 @@ class HtmlTextBox {
         HtmlTextBox._canvas.subscribe(EVENT_SCALE_CHANGE, HtmlTextBox._shiftBox);
         HtmlTextBox._isActive = false;
         HtmlTextBox._textArea = null;
+
+        // Used for sizing
+        HtmlTextBox._preArea = document.createElement("pre");
+        HtmlTextBox._preArea.style.whiteSpace = "pre";
+        HtmlTextBox._preArea.style.position = "absolute";
+        HtmlTextBox._preArea.style.top = "-999px";
+        HtmlTextBox._preArea.style.left = "-999px";
+        HtmlTextBox._preArea.style.visibility = "hidden";
+        HtmlTextBox._preArea.style.float = "left";
+        HtmlTextBox._preArea.style.padding = "0";
+        HtmlTextBox._preArea.style.margin = "0";
+        HtmlTextBox._preArea.style.border = "0";
+
+        document.documentElement.appendChild(HtmlTextBox._preArea);
     }
 
     /**
@@ -36,25 +50,30 @@ class HtmlTextBox {
 
         if(HtmlTextBox._textArea === null) {
             HtmlTextBox._textArea = document.createElement("textarea");
-            HtmlTextBox._textArea.innerHTML = text;
-            HtmlTextBox._textArea.style.fontFamily = fontFamily;
-            HtmlTextBox._textArea.style.fontSize = fontSize + "px";
-            HtmlTextBox._textArea.style.fontWeight = bold ? "bold" : "normal";
-            HtmlTextBox._textArea.style.fontStyle = italic ? "italic" : "normal";
-            HtmlTextBox._textArea.style.textAlign = alignment;
+            HtmlTextBox._preArea.innerHTML = HtmlTextBox._textArea.innerHTML = text;
+            HtmlTextBox._preArea.style.fontFamily = HtmlTextBox._textArea.style.fontFamily = fontFamily;
+            HtmlTextBox._preArea.style.fontSize = HtmlTextBox._textArea.style.fontSize = fontSize + "px";
+            HtmlTextBox._preArea.style.fontWeight = HtmlTextBox._textArea.style.fontWeight = (bold ? "bold" : "normal");
+            HtmlTextBox._preArea.style.fontStyle = HtmlTextBox._textArea.style.fontStyle = italic ? "italic" : "normal";
+            HtmlTextBox._preArea.style.testAlign = HtmlTextBox._textArea.style.textAlign = alignment;
             HtmlTextBox._textArea.style.position = "absolute";
             HtmlTextBox._textArea.style.top = (layout.y * scale) + "px";
-            HtmlTextBox._textArea.style.left = ((layout.x + 2) * scale) + "px";
+            HtmlTextBox._textArea.style.left = ((layout.x + 2) * scale) - 2 + "px";
             HtmlTextBox._textArea.style.width = layout.width + "px";
             HtmlTextBox._textArea.style.height = layout.height + "px";
-            HtmlTextBox._textArea.style.transform = "scale(" + scale + ", " + scale + ")";
-            HtmlTextBox._textArea.style.transformOrigin = "left top";
+            HtmlTextBox._preArea.style.transform = HtmlTextBox._textArea.style.transform = "scale(" + scale + ", " + scale + ")";
+            HtmlTextBox._preArea.style.transformOrigin = HtmlTextBox._textArea.style.transformOrigin = "left top";
             HtmlTextBox._textArea.style.resize = "none";
             HtmlTextBox._textArea.style.overflow = "hidden";
             HtmlTextBox._textArea.style.background = "transparent";
             HtmlTextBox._textArea.style.border = "0";
             HtmlTextBox._textArea.style.lineHeight = (fontSize * WYSIWYG_FLH_RATIO) + "px";
             HtmlTextBox._textArea.style.padding = "0";
+
+            const inputCallback = () => {
+                HtmlTextBox._preArea.innerHTML = HtmlTextBox._textArea.value
+            };
+            HtmlTextBox._textArea.addEventListener('input', inputCallback);
 
             document.getElementById(WYSIWYG_CANVAS_HOLDER_ID).appendChild(HtmlTextBox._textArea);
             HtmlTextBox._textArea.focus();
@@ -107,8 +126,16 @@ class HtmlTextBox {
             const y = parseInt(HtmlTextBox._textArea.style.top) / e.oldScale;
 
             HtmlTextBox._textArea.style.top = (y * e.scale) + "px";
-            HtmlTextBox._textArea.style.left = ((x + 2) * e.scale) + "px";
+            HtmlTextBox._textArea.style.left = ((x + 2) * e.scale) - 2 + "px";
             HtmlTextBox._textArea.style.transform = "scale(" + e.scale + ", " + e.scale + ")";
         }
+    }
+
+    static getWidth() {
+        return parseInt(HtmlTextBox._preArea.scrollWidth) + 4;
+    }
+
+    static getHeight() {
+        return HtmlTextBox._preArea.scrollHeight;
     }
 }

@@ -254,17 +254,17 @@ class Table extends FBObject {
     getHtmlPropertyData(){
         const retVal = super.getHtmlPropertyData();
 
-        retVal.headerHeight = this.__makePropertyData("Layout", "Header", PropertyType.ABS, "Row Heights");
-        retVal.contentHeight = this.__makePropertyData("Layout", "Content", PropertyType.ABS, "Row Heights");
+        retVal.headerHeight = ObjProp.makePropertyData("Layout", "Header", PropertyType.ABS, "Row Heights");
+        retVal.contentHeight = ObjProp.makePropertyData("Layout", "Content", PropertyType.ABS, "Row Heights");
 
         if(this.__focusedChild && this.__focusedChild instanceof Cell) {
-            retVal.cell_text = this.__makePropertyData("Text", "Text", PropertyType.Text, "Cell");
-            retVal.cell_font_family = this.__makePropertyData("Text", "Font Family", PropertyType.FontFamily, "Cell");
-            retVal.cell_font_size = this.__makePropertyData("Text", "Font Size", PropertyType.ABS, "Cell");
-            retVal.cell_font_color = this.__makePropertyData("Text", "Font Color", PropertyType.Color, "Cell");
-            retVal.cell_font_color = this.__makePropertyData("Text", "Alignment", PropertyType.Alignment, "Cell");
-            retVal.cell_font_bold = this.__makePropertyData("Text", "Bold", PropertyType.Checkbox, "Cell");
-            retVal.cell_font_italic = this.__makePropertyData("Text", "Italic", PropertyType.Checkbox, "Cell");
+            retVal.cell_text = ObjProp.makePropertyData("Text", "Text", PropertyType.Text, "Cell");
+            retVal.cell_font_family = ObjProp.makePropertyData("Text", "Font Family", PropertyType.FontFamily, "Cell");
+            retVal.cell_font_size = ObjProp.makePropertyData("Text", "Font Size", PropertyType.ABS, "Cell");
+            retVal.cell_font_color = ObjProp.makePropertyData("Text", "Font Color", PropertyType.Color, "Cell");
+            retVal.cell_font_color = ObjProp.makePropertyData("Text", "Alignment", PropertyType.Alignment, "Cell");
+            retVal.cell_font_bold = ObjProp.makePropertyData("Text", "Bold", PropertyType.Checkbox, "Cell");
+            retVal.cell_font_italic = ObjProp.makePropertyData("Text", "Italic", PropertyType.Checkbox, "Cell");
         }
 
         return retVal;
@@ -324,25 +324,27 @@ class Table extends FBObject {
         table.headerHeight = json[TableFields.headerHeight];
         table.contentHeight = json[TableFields.contentHeight];
 
-        // Remove the first column
-        table.deleteColumn(0);
+        // Update the first column
+        const firstCol = json[TableFields.cells][0];
+        table._cells[0].header.initialize_json(firstCol.header);
+        table._cells[0].content.initialize_json(firstCol.content);
 
         // Then set the widths
         table._columnWidths = json[TableFields.columnWidths];
 
         // Then add teh cells
-        for(let i = 0; i < json[TableFields.cells].length; ++i){
+        for(let i = 1; i < json[TableFields.cells].length; ++i){
             /**
              *
              * @type {{header: Cell, content: Cell}}
              * @private
              */
-            const column = json[TableFields.cells];
+            const column = json[TableFields.cells][i];
 
             table._addSeparator(i);
             table._cells.splice(i, 0, {header: column.header, content: column.content});
-            this.__addChild(column.header);
-            this.__addChild(column.content);
+            table.__addChild(column.header);
+            table.__addChild(column.content);
         }
 
         return table;

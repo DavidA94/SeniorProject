@@ -134,6 +134,20 @@ class Canvas extends EventPropagator {
          */
         this._boundMethods = {};
 
+        /**
+         * The page's orientation
+         * @type {Orientation}
+         * @private
+         */
+        this._orientation = Orientation.Portrait;
+
+        /**
+         * The type of document
+         * @type {DocumentType}
+         * @private
+         */
+        this._docType = DOC_ONE_PER_INV;
+
         this.anchors = {};
         this.anchors[Anchor.TopLeft] = new Box(0,0,0,0);
         this.anchors[Anchor.TopRight] = new Box(0,0,0,0);
@@ -155,9 +169,6 @@ class Canvas extends EventPropagator {
             this.anchors[anchor].subscribe(MouseEventType.MouseUp, this._getBoundFunc(this._anchor_MouseUp));
 
         }
-
-        this._mousePoint = new Box(0, 0, 1, 1);
-        this.__addChild(this._mousePoint);
 
         // Subscribe to the events we need for the canvas
         // dragover is a flat-out hack for dragging shapes onto the canvas
@@ -244,6 +255,43 @@ class Canvas extends EventPropagator {
 
 
     /**
+     * The page's orientation
+     * @return {Orientation}
+     */
+    get orientation() { return this._orientation; }
+
+    /**
+     * The page's orientation
+     * @param {Orientation} value
+     */
+    set orientation(value) {
+        this._orientation = value;
+
+        if(value == Orientation.Portrait){
+            this.height = WYSIWYG_PAGE_HEIGHT * this.scale;
+            this.width = WYSIWYG_PAGE_WIDTH * this.scale;
+        }
+        else if(value == Orientation.Landscape){
+            this.height = WYSIWYG_PAGE_WIDTH * this.scale;
+            this.width = WYSIWYG_PAGE_HEIGHT * this.scale;
+        }
+    }
+
+
+    /**
+     * The document's type
+     * @return {DocumentType}
+     */
+    get documentType() { return this._docType; }
+
+    /**
+     * The document's type
+     * @param {DocumentType} value
+     */
+    set documentType(value) { this._docType = value; }
+
+
+    /**
      * Indicates if the elements should be snapped to the grid when moving
      * @returns {boolean}
      */
@@ -283,7 +331,7 @@ class Canvas extends EventPropagator {
             throw new TypeError("Argument shape must be a Shape type");
         }
 
-        this.children.splice(WYSIWYG_ANCHOR_COUNT, 0, object);
+        this.__addChild(object, true, WYSIWYG_ANCHOR_COUNT);
 
         object.subscribe(MouseEventType.MouseDown, this._getBoundFunc(this._shapeMouseDown));
         object.subscribe(MouseEventType.MouseDown, this._getBoundFunc(this._shapeMouseDownCapture), true);
@@ -426,6 +474,52 @@ class Canvas extends EventPropagator {
 
     // endregion
 
+    // region Object Properties
+
+    // region HTML
+
+    getHtmlPropertyData() {
+        const retVal = {};
+
+        retVal.orientation = ObjProp.makePropertyData("Page Properties", "Orientation", PropertyType.Orientation);
+        retVal.docType = ObjProp.makePropertyData("Page Properties", "Document Type", PropertyType.DocumentType);
+        // retVal.margin_top = ObjProp.makePropertyData("Page Properties", "Top", PropertyType.ABS, "Margin");
+        // retVal.margin_right = ObjProp.makePropertyData("Page Properties", "Right", PropertyType.ABS, "Margin");
+        // retVal.margin_bottom = ObjProp.makePropertyData("Page Properties", "Bottom", PropertyType.ABS, "Margin");
+        // retVal.margin_left = ObjProp.makePropertyData("Page Properties", "Left", PropertyType.ABS, "Margin");
+
+        retVal.showGrid = ObjProp.makePropertyData("Visual Properties", "Show Grid", PropertyType.Checkbox);
+        retVal.snapGrid = ObjProp.makePropertyData("Visual Properties", "Snap to Grid", PropertyType.Checkbox);
+        retVal.gridSize = ObjProp.makePropertyData("Visual Properties", "Grid Size", PropertyType.ABS);
+
+        return retVal;
+    }
+
+    // endregion
+
+    // region Model
+
+    /**
+     *
+     * @returns {object<string, {get: (function()), set: (function({string}): boolean)}>}
+     */
+    getHtmlPropertyModelDict() {
+
+        const retVal = {};
+        retVal.orientation = ObjProp.makeHtmlPropertyModel(this, "orientation");
+        retVal.docType = ObjProp.makeHtmlPropertyModel(this, "documentType");
+
+        retVal.showGrid = ObjProp.makeHtmlPropertyModel(this, "showGrid");
+        retVal.snapGrid = ObjProp.makeHtmlPropertyModel(this, "snapToGrid");
+        retVal.gridSize = ObjProp.makeHtmlPropertyModel(this, "gridSize");
+
+        return retVal;
+    }
+
+    // endregion
+
+    // endregion
+
     // region JSON
 
     /**
@@ -446,7 +540,7 @@ class Canvas extends EventPropagator {
             else if(shape[0] == CanvasShapeTypes.basicShape) child = BasicShape.from_json(shape[1]);
             else if(shape[0] == CanvasShapeTypes.table) child = Table.from_json(shape[1]);
 
-            this.__addChild(child)
+            this.addObject(child)
         }
     }
 
@@ -957,10 +1051,6 @@ class Canvas extends EventPropagator {
                 Mouse.setCursor(Cursor.Default);
             }
         }
-
-        this._mousePoint.layout.x = e.x;
-        this._mousePoint.layout.y = e.y;
-
     }
 
     _mouseUp(e){
