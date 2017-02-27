@@ -218,20 +218,8 @@ function ptToPx(data){
  * @return {{category: string display: string, value: string}[]}
  */
 function getBindingOptions(bindingContext){
-
-    return [
-        { category: "Vehicle", display: "Stock Number", value: "Vehicle.StockNum" },
-        { category: "Vehicle", display: "VIN", value: "Vehicle.VIN" },
-        { category: "Vehicle", display: "Year", value: "Vehicle.Year" },
-        { category: "Vehicle", display: "Make", value: "Vehicle.Make" },
-        { category: "Vehicle", display: "Model", value: "Vehicle.Model" },
-        { category: "Vehicle", display: "Miles", value: "Vehicle.Miles" },
-        { category: "Vehicle", display: "Location", value: "Vehicle.Location" },
-        { category: "Vehicle", display: "Price", value: "Vehicle.Price" },
-    ];
-
-    if(!getBindingOptions[bindingContext]){
-        let hasResponse = false;
+    console.log(bindingContext);
+   if(!getBindingOptions[bindingContext]){
         let response = null;
 
         sendToApi("FormBuilder/BindingOptions/" + bindingContext, "GET", null, (xmlhttp) => {
@@ -240,13 +228,9 @@ function getBindingOptions(bindingContext){
                     response = xmlhttp.response;
                 }
 
-                hasResponse = true;
+                getBindingOptions[bindingContext] = JSON.parse(response);
             }
         });
-
-        while(!hasResponse);
-
-        getBindingOptions[bindingContext] = JSON.parse(response);
     }
 
     return getBindingOptions[bindingContext];

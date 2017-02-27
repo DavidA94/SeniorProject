@@ -237,7 +237,7 @@ class Table extends FBObject {
 
         if(hasFocusedCell){
             const retVal = [
-                {text: "Add Column Before", callback: () => { console.log("HI"); this.addCol(i); }},
+                {text: "Add Column Before", callback: () => { this.addCol(i); }},
                 {text: "Add Column After", callback: () => { this.addCol(i + 1); }}
             ];
 
@@ -246,6 +246,27 @@ class Table extends FBObject {
             }
 
             return retVal;
+        }
+
+        return null;
+    }
+
+    getBindings(){
+        if(this.__focusedChild && this.__focusedChild instanceof Cell) {
+            const bindings = this.__focusedChild.bindings;
+
+            const retBindings = [];
+
+            for (const id of Object.keys(bindings)) {
+                if (bindings[id] === null) {
+                    bindings[id] = new Binding(id, BindingContext.Repeating);
+                    bindings[id].options.addEvent('change', () => this.__focusedChild.processBindings());
+                }
+
+                retBindings.push(bindings[id]);
+            }
+
+            return retBindings;
         }
 
         return null;
@@ -273,19 +294,19 @@ class Table extends FBObject {
     getHtmlPropertyModelDict(){
         const retVal = super.getHtmlPropertyModelDict();
 
-        retVal.headerHeight = this.__makeHtmlPropertyModel(this, "headerHeight");
-        retVal.contentHeight = this.__makeHtmlPropertyModel(this, "contentHeight");
+        retVal.headerHeight = ObjProp.makeHtmlPropertyModel(this, "headerHeight");
+        retVal.contentHeight = ObjProp.makeHtmlPropertyModel(this, "contentHeight");
 
 
         if(this.__focusedChild && this.__focusedChild instanceof Cell) {
 
-            retVal.cell_text = this.__makeHtmlPropertyModel(this.__focusedChild, "text");
-            retVal.cell_font_family = this.__makeHtmlPropertyModel(this.__focusedChild.font, "family");
-            retVal.cell_font_size = this.__makeHtmlPropertyModel(this.__focusedChild.font, "size");
-            retVal.cell_font_bold = this.__makeHtmlPropertyModel(this.__focusedChild.font, "bold");
-            retVal.cell_font_italic = this.__makeHtmlPropertyModel(this.__focusedChild.font, "italic");
-            retVal.cell_font_color = this.__makeHtmlPropertyModel(this.__focusedChild.font, "color");
-            retVal.cell_font_color = this.__makeHtmlPropertyModel(this.__focusedChild.font, "alignment");
+            retVal.cell_text = ObjProp.makeHtmlPropertyModel(this.__focusedChild, "text");
+            retVal.cell_font_family = ObjProp.makeHtmlPropertyModel(this.__focusedChild.font, "family");
+            retVal.cell_font_size = ObjProp.makeHtmlPropertyModel(this.__focusedChild.font, "size");
+            retVal.cell_font_bold = ObjProp.makeHtmlPropertyModel(this.__focusedChild.font, "bold");
+            retVal.cell_font_italic = ObjProp.makeHtmlPropertyModel(this.__focusedChild.font, "italic");
+            retVal.cell_font_color = ObjProp.makeHtmlPropertyModel(this.__focusedChild.font, "color");
+            retVal.cell_font_color = ObjProp.makeHtmlPropertyModel(this.__focusedChild.font, "alignment");
         }
 
         return retVal;

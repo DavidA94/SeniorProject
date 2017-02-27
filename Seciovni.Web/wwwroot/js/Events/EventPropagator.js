@@ -241,7 +241,7 @@ class EventPropagator extends SubscribableProperty {
     get isFocused() {
 
         if(this.parent) return this.parent._focusedElement === this && this.parent.isFocused;
-        else return this === Keyboard.focusedElement;
+        else return (this === Keyboard.focusedElement || this instanceof Canvas);
     }
 
     /**

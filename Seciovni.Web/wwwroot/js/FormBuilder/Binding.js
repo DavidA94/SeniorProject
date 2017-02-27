@@ -10,6 +10,7 @@ class Binding {
      */
     constructor(id, bindingContext){
         this._id = id;
+        this._bindingContext = bindingContext;
 
         const options = getBindingOptions(bindingContext);
 
@@ -61,5 +62,27 @@ class Binding {
     destroy(){
         this._select.clearEvents();
         this._select.htmlObj.parentNode.removeChild(this._select.htmlObj);
+    }
+
+    toJSON() {
+        return {
+            "context": this._bindingContext,
+            "id": this.id,
+            "value": this.value
+        };
+    }
+
+    static from_json(json){
+        // If a binding was never chosen
+        if(json === null) return null;
+
+
+        const context = json["context"];
+        const id = json["id"];
+
+        const b = new Binding(id, context);
+        b.value = json["value"];
+
+        return b;
     }
 }

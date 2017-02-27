@@ -9,7 +9,7 @@ class TextBlockFields {
     static get maxWidth() { return "maxWidth"; }
     static get maxHeight() { return "maxHeight"; }
     static get verticallyCenter() { return "verticallyCenter"; }
-
+    static get bindings() { return "bindings"; }
 
 }
 
@@ -314,6 +314,7 @@ class TextBlock extends EventPropagator {
         properties[TextBlockFields.maxWidth] = this.maxWidth;
         properties[TextBlockFields.text] = this.text;
         properties[TextBlockFields.verticallyCenter] = this.verticallyCenter;
+        properties[TextBlockFields.bindings] = this.bindings;
 
         return properties;
     }
@@ -329,6 +330,12 @@ class TextBlock extends EventPropagator {
         this.maxWidth = json[TextBlockFields.maxWidth];
         this.text = json[TextBlockFields.text];
         this.verticallyCenter = json[TextBlockFields.verticallyCenter];
+
+        for(const key of Object.keys(json[TextBlockFields.bindings])){
+            this.bindings[key] = Binding.from_json(json[TextBlockFields.bindings][key]);
+        }
+
+        this.processBindings();
     }
 
     // endregion

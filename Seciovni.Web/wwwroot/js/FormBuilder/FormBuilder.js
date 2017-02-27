@@ -10,6 +10,11 @@ class FormBuilder{
     // region Constructor
 
     constructor(){
+        getBindingOptions(BindingContext.Repeating);
+        getBindingOptions(BindingContext.Single);
+        getBindingOptions(BindingContext.Both);
+
+
         // Filled in by initializers
 
         /**
@@ -473,7 +478,7 @@ class FormBuilder{
             }
         }
 
-        if(bindingData) {
+        if(bindingData && bindingData.length > 0) {
             const groupBox = document.createElement("fieldset");
             const legend = document.createElement("legend");
             legend.innerHTML = "Bindings";

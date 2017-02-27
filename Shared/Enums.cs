@@ -11,4 +11,6 @@
     public enum PhoneType { Cell, Home, Work }
 
     public enum JobType { Admin, Assistant, Manager, Sales }
+
+    public enum BindingOption { BOTH, REPEATING, SINGLE }
 }

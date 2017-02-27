@@ -130,7 +130,7 @@ class FBTextBlock extends FBObject {
         for(const id of Object.keys(bindings)){
             if(bindings[id] === null){
                 const currentContext = this.parent.documentType == DOC_ONE_PER_INV ? BindingContext.Single :
-                        BindingContext.Repeating;
+                        BindingContext.Both;
                 bindings[id] = new Binding(id, currentContext);
                 bindings[id].options.addEvent('change', () => this._textBlock.processBindings());
             }
