@@ -238,17 +238,17 @@ const AUTH_TOKEN_TIME = "AuthorizationTokenTime";
 
 // region WYSIWYG
 
+const WYSIWYG_PAGE_PPI = 72;
 const WYSIWYG_ANCHOR_COUNT = 4;
-const WYSIWYG_PAGE_HEIGHT = 72 * 11;
-const WYSIWYG_PAGE_WIDTH  = 72 * 8.5;
-const WYSIWYG_PAGE_MODE_L = "landscape";
-const WYSIWYG_PAGE_MODE_P = "portrait";
+const WYSIWYG_PAGE_HEIGHT = WYSIWYG_PAGE_PPI * 11;
+const WYSIWYG_PAGE_WIDTH  = WYSIWYG_PAGE_PPI * 8.5;
+const WYSIWYG_TITLE_ID = "builderTitle";
 
 const WYSIWYG_CAPTION_TOP_BOTTOM = 3;  // Used for binary operations with @see Location
 const WYSIWYG_CAPTION_LEFT_RIGHT = 12; // Ditto
 const WYSIWYG_CAPTION_CENTER = 16;     // Ditto
 
-const WYSIWYG_DRAG_CHECKBOX = "Checkbox";
+const WYSIWYG_DRAG_CHECKBOX = "Check";
 const WYSIWYG_DRAG_BOX = "Box";
 const WYSIWYG_DRAG_TABLE = "Table";
 const WYSIWYG_DRAG_ELLIPSE = "Ellipse";

@@ -110,7 +110,7 @@ namespace Seciovni.APIs.Controllers
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
 

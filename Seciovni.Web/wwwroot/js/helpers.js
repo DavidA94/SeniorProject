@@ -218,7 +218,6 @@ function ptToPx(data){
  * @return {{category: string display: string, value: string}[]}
  */
 function getBindingOptions(bindingContext){
-    console.log(bindingContext);
    if(!getBindingOptions[bindingContext]){
         let response = null;
 

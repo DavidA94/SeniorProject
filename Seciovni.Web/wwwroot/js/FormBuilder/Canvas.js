@@ -4,6 +4,8 @@
 
 class CanvasFields {
     static get gridSize() { return "gridSize"; }
+    static get numPages() { return "numPages"; }
+    static get orientation() { return "orientation"; }
     static get scale() { return "scale"; }
     static get shapes() { return "shapes"; }
     static get showGrid() { return "showGrid"; }
@@ -77,7 +79,7 @@ class Canvas extends EventPropagator {
          * @private
          * @type {number}
          */
-        this._gridSize = 0.025;
+        this._gridSize = 0.1;
 
         /**
          * Indicates if the grid should be drawn
@@ -147,6 +149,13 @@ class Canvas extends EventPropagator {
          * @private
          */
         this._docType = DOC_ONE_PER_INV;
+
+        /**
+         * The number of pages
+         * @type {number}
+         * @private
+         */
+        this._numPages = 1;
 
         this.anchors = {};
         this.anchors[Anchor.TopLeft] = new Box(0,0,0,0);
@@ -268,11 +277,11 @@ class Canvas extends EventPropagator {
         this._orientation = value;
 
         if(value == Orientation.Portrait){
-            this.height = WYSIWYG_PAGE_HEIGHT * this.scale;
+            this.height = WYSIWYG_PAGE_HEIGHT * this.scale * this.numPages;
             this.width = WYSIWYG_PAGE_WIDTH * this.scale;
         }
         else if(value == Orientation.Landscape){
-            this.height = WYSIWYG_PAGE_WIDTH * this.scale;
+            this.height = WYSIWYG_PAGE_WIDTH * this.scale * this.numPages;
             this.width = WYSIWYG_PAGE_HEIGHT * this.scale;
         }
     }
@@ -289,6 +298,26 @@ class Canvas extends EventPropagator {
      * @param {DocumentType} value
      */
     set documentType(value) { this._docType = value; }
+
+
+    /**
+     * The number of pages
+     * @return {Number}
+     */
+    get numPages() { return this._numPages; }
+
+    /**
+     * The number of pages
+     * @param {Number} value
+     */
+    set numPages(value) {
+        if(this._numPages != value){
+            this._numPages = value;
+
+            this.height = (this.orientation == Orientation.Landscape ? WYSIWYG_PAGE_WIDTH : WYSIWYG_PAGE_HEIGHT) *
+                this.scale * this.numPages;
+        }
+    }
 
 
     /**
@@ -483,6 +512,7 @@ class Canvas extends EventPropagator {
 
         retVal.orientation = ObjProp.makePropertyData("Page Properties", "Orientation", PropertyType.Orientation);
         retVal.docType = ObjProp.makePropertyData("Page Properties", "Document Type", PropertyType.DocumentType);
+        retVal.numPages = ObjProp.makePropertyData("Page Properties", "# of Pages", PropertyType.ABS);
         // retVal.margin_top = ObjProp.makePropertyData("Page Properties", "Top", PropertyType.ABS, "Margin");
         // retVal.margin_right = ObjProp.makePropertyData("Page Properties", "Right", PropertyType.ABS, "Margin");
         // retVal.margin_bottom = ObjProp.makePropertyData("Page Properties", "Bottom", PropertyType.ABS, "Margin");
@@ -508,6 +538,9 @@ class Canvas extends EventPropagator {
         const retVal = {};
         retVal.orientation = ObjProp.makeHtmlPropertyModel(this, "orientation");
         retVal.docType = ObjProp.makeHtmlPropertyModel(this, "documentType");
+        retVal.numPages = ObjProp.makeHtmlPropertyModel(this, "numPages", (s) => {
+            let i = parseInt(s); if(i <= 0) i = 1; return i;
+        });
 
         retVal.showGrid = ObjProp.makeHtmlPropertyModel(this, "showGrid");
         retVal.snapGrid = ObjProp.makeHtmlPropertyModel(this, "snapToGrid");
@@ -528,6 +561,8 @@ class Canvas extends EventPropagator {
      */
     initialize_json(json) {
         this.gridSize = json[CanvasFields.gridSize];
+        this.numPages = json[CanvasFields.numPages];
+        this.orientation = json[CanvasFields.orientation];
         this.scale = json[CanvasFields.scale];
         this.showGrid = json[CanvasFields.showGrid];
         this.snapToGrid = json[CanvasFields.snap];
@@ -551,6 +586,8 @@ class Canvas extends EventPropagator {
     toJSON(){
         const properties = {};
         properties[CanvasFields.gridSize] = this.gridSize;
+        properties[CanvasFields.numPages] = this.numPages;
+        properties[CanvasFields.orientation] = this.orientation;
         properties[CanvasFields.scale] = this.scale;
         properties[CanvasFields.showGrid] = this.showGrid;
         properties[CanvasFields.snap] = this.snapToGrid;
@@ -662,44 +699,60 @@ class Canvas extends EventPropagator {
     _drawPage(){
 
         // TODO: Move to page properties
-        const margin = (.25 * 300) * this.scale;
+        const margin = (.25 * WYSIWYG_PAGE_PPI) * this.scale;
 
         // Save the context so anything we do here doesn't affect later drawing
         this._context.save();
-        this._context.strokeStyle = "#777";
+
+        // Only draw the grid if we're not zoomed out too far
+        if(this.scale >= .5 && this.showGrid) {
+
+            // Setup for drawing the grid
+            this._context.beginPath();
+            this._context.strokeStyle = "#ddd";
+            this._context.lineWidth = .5;
+            this._context.moveTo(0, 0);
+
+            // Get the grid size at the right DPI and scaling
+            const gridSize = this.scale * this._gridSize * WYSIWYG_PAGE_PPI;
+
+            // Draw the horizontal lines
+            for (let xPos = gridSize; xPos < this.width; xPos += gridSize) {
+                this._context.moveTo(xPos, 0);
+                this._context.lineTo(xPos, this.height);
+            }
+
+            // Draw the vertical lines
+            for (let yPos = gridSize; yPos < this.height; yPos += gridSize) {
+                this._context.moveTo(0, yPos);
+                this._context.lineTo(this.width, yPos);
+            }
+
+            // Stroke all the lines
+            this._context.stroke();
+            this._context.closePath();
+        }
+
+
+        // Make the margin borders
         this._context.lineWidth = 1;
-        this._context.strokeRect(margin, margin, this.width - (2 * margin), this.height - (2 * margin));
+        this._context.strokeStyle = "#777";
 
-        // If the scale is too small, or we don't need to draw the grid, stop here.
-        if(this.scale <= .51 || !this.showGrid) {
-            this._context.restore();
-            return;
+        for(let i = 0; i < this.numPages; ++i) {
+            const singlePageHeight = (this.orientation == Orientation.Portrait ? WYSIWYG_PAGE_HEIGHT : WYSIWYG_PAGE_WIDTH) * this.scale;
+            const height = singlePageHeight - (2 * margin);
+
+            const x = margin;
+            const y = margin + (i * singlePageHeight);
+
+            this._context.strokeRect(x, y, this.width - (2 * margin), height);
+
+            if(i > 0){
+                this._context.strokeStyle = "#000";
+                this._context.fillRect(0, y - 1 - margin, this.width, 2);
+                this._context.strokeStyle = "#777";
+            }
         }
-
-        // Setup for drawing the grid
-        this._context.beginPath();
-        this._context.strokeStyle = "#ddd";
-        this._context.lineWidth = .5;
-        this._context.moveTo(0, 0);
-
-        // Get the grid size at the right DPI and scaling
-        const gridSize = this.scale * this._gridSize * 300;
-
-        // Draw the horizontal lines
-        for(let xPos = gridSize; xPos < this.width; xPos += gridSize){
-            this._context.moveTo(xPos, 0);
-            this._context.lineTo(xPos, this.height);
-        }
-
-        // Draw the vertical lines
-        for(let yPos = gridSize; yPos < this.height; yPos += gridSize){
-            this._context.moveTo(0, yPos);
-            this._context.lineTo(this.width, yPos);
-        }
-
-        // Stroke all the lines
-        this._context.stroke();
-        this._context.closePath();
 
         // Restore what the drawing settings were before
         this._context.restore();
@@ -1154,7 +1207,7 @@ class Canvas extends EventPropagator {
 
             // snap to grid, if necessary
             if (this.snapToGrid) {
-                const gridSize = this.scale * this.gridSize * 300;
+                const gridSize = this.scale * this.gridSize * WYSIWYG_PAGE_PPI;
                 x = Math.round(x / gridSize) * gridSize;
                 y = Math.round(y / gridSize) * gridSize;
             }

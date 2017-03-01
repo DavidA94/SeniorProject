@@ -21,7 +21,7 @@ class FormBuilder{
          * @private
          * @type {Canvas}
          */
-        this._canvas = null;
+        this._canvas = [];
 
         /**
          * @private
@@ -30,12 +30,6 @@ class FormBuilder{
         this._zoomAmt = null;
 
         this._htmlObjDict = null;
-
-        /**
-         * @private
-         * Default page mode is portrait
-         */
-        this.pageMode = WYSIWYG_PAGE_MODE_P;
 
         /**
          * Holds the last place the mouse was on the canvas for drop operations
@@ -50,7 +44,7 @@ class FormBuilder{
         this._initializeShapes();
         this._initializeZoom();
 
-
+        this._title = new TextInput(document.getElementById(WYSIWYG_TITLE_ID));
 
         // Subscribe to the canvas shapeChange event
         this._canvas.subscribe(EVENT_OBJECT_CHANGE, this._canvas_shapechange.bind(this));
@@ -83,6 +77,29 @@ class FormBuilder{
          * @private
          */
         this._propertyChangedEventHandler = propertyChangedEventHandler.bind(this);
+
+        document.getElementById("saveButton").addEventListener('click', () => {
+            const json = JSON.stringify(this);
+
+            console.log(json);
+        });
+    }
+
+    // endregion
+
+    // region Public Methods
+
+    toJSON(){
+        const properties = {};
+        properties["title"] = this._title.value;
+        properties["canvas"] = this._canvas;
+
+        return properties;
+    }
+
+    initialize_json(json){
+        this._title.value = json["title"];
+        this._canvas.initialize_json(json["canvas"]);
     }
 
     // endregion
@@ -96,13 +113,9 @@ class FormBuilder{
      * @private
      */
     _initializeCanvas(){
-        // Get the canvas HTML element, and setup it's width and height
-        const _canvas = document.getElementById(WYSIWYG_CANVAS_ID);
-
-
         // Initialize the canvas object
         this._canvas = new Canvas(WYSIWYG_CANVAS_ID);
-        this._canvas.scale = 1;
+        this._canvas.scale = .6;
         this._canvas.orientation = Orientation.Portrait;
 
         // Initialize the static Mouse class -- Suppress warning because no other way to get to the object
@@ -255,8 +268,10 @@ class FormBuilder{
         this._zoomAmt.innerHTML = (this._canvas.scale * 100).toFixed(2) + "%";
 
         // And change the physical size of the canvas so it still is the size of one page
-        this._canvas.width = (this.pageMode == WYSIWYG_PAGE_MODE_P ? WYSIWYG_PAGE_WIDTH : WYSIWYG_PAGE_HEIGHT) * this._canvas.scale;
-        this._canvas.height = (this.pageMode == WYSIWYG_PAGE_MODE_L ? WYSIWYG_PAGE_WIDTH : WYSIWYG_PAGE_HEIGHT) * this._canvas.scale;
+        this._canvas.width = (this._canvas.orientation == Orientation.Portrait ? WYSIWYG_PAGE_WIDTH : WYSIWYG_PAGE_HEIGHT)
+            * this._canvas.scale;
+        this._canvas.height = (this._canvas.orientation == Orientation.Landscape ? WYSIWYG_PAGE_WIDTH : WYSIWYG_PAGE_HEIGHT) *
+                                this._canvas.scale * this._canvas.numPages;
     }
 
     // endregion

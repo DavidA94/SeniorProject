@@ -194,6 +194,9 @@ class TextBlock extends EventPropagator {
      */
     draw(context){
 
+        // Save so the binding error triangle works
+        context.save();
+
         // If we're in edit mode, don't draw the text, as the TextArea has it currently
         if(this._inEditMode){
             return;
@@ -216,8 +219,8 @@ class TextBlock extends EventPropagator {
         const textProps = this.getTextProperties(context);
 
         // If we're auto-sizing
-        if(this.autoWidth) this.layout.width = textProps.width;
-        if(this.autoHeight) { this.layout.height = textProps.height; }
+        if(this.autoWidth) this.layout.width = textProps.width + this.layout.padding.left + this.layout.padding.right;
+        if(this.autoHeight)  this.layout.height = textProps.height + this.layout.padding.top + this.layout.padding.bottom;
 
         // e.g. If a font size of 20, then with WYSIWYG_FLH_RATIO=1.5 the line height will be 30.
         const lineHeight = (this.font.size * WYSIWYG_FLH_RATIO);

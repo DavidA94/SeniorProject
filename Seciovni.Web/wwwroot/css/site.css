@@ -97,13 +97,15 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 .loadingSpinner {width:100px;}
 .centerSpinner {display:block;margin:auto;}
 
-#invoiceHeader {margin:1em 0;overflow:hidden;padding-bottom:.5em;border-bottom:1px solid #bbb;}
-#invoiceHeader #leftHeader {float:left;}
-#invoiceHeader #leftHeader #deleteButton {background:#dadada;border:1px solid #aaa;}
-#invoiceHeader #leftHeader #deleteButton:hover {background:#dfdfdf;border-color:maroon;color:maroon;}
-#invoiceHeader #rightHeader {float:right;}
-#invoiceHeader button {margin-right:.5em;padding:4px;}
-#invoiceHeader button img {position:relative;top:-1px;}
+#appHeader {margin:1em 0;overflow:hidden;padding-bottom:.5em;border-bottom:1px solid #bbb;}
+#appHeader #leftHeader {float:left;}
+#appHeader #leftHeader #deleteButton {background:#dadada;border:1px solid #aaa;}
+#appHeader #leftHeader #deleteButton:hover {background:#dfdfdf;border-color:maroon;color:maroon;}
+#appHeader #rightHeader {float:right;}
+#appHeader button {margin-right:.5em;padding:4px;}
+#appHeader button img {position:relative;top:-1px;}
+
+#appHeader.builderPageHeader {position:fixed;right:0;left:0;border-bottom:2px solid black;z-index:7;margin:10px 0;padding-bottom:5px;}
 
 .invoiceTopLeft{float:left;width:125px;}
 
@@ -130,11 +132,19 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #recentInvoicesList tr:hover {background:#f5fcff}
 .right {text-align:right;}
 
-#viewInvoice #invoiceHeader #saveButton, #viewInvoice #invoiceHeader #deleteButton {display:none;}
+#viewInvoice #appHeader #saveButton, #viewInvoice #appHeader #deleteButton {display:none;}
 
+#builderBottom{position:fixed;bottom:0;left:0;right:300px;background:white;z-index:10;border-top:2px solid black;}
+#builderRight{position:fixed;right:0;top:100px;bottom:0;z-index:10;border-left:1px solid black;}
+#builderMain{position:fixed;top:100px;right:300px;bottom:50px;left:0;overflow:auto;}
 
+#builderTitleEdit {position:relative;float:left;margin-left:1em;}
+#builderTitle {float:left;font-size:24px;font-weight:bold;margin-left:-20px;font-style:italic;width:calc(100vw - 400px);
+               border-width:0 0 1px 0;padding-left:30px;}
 
-#canvasHolder {position:relative;height:80vh;width:600px;box-sizing:border-box;border:1px solid black;float:left;overflow:auto;}
+#canvasHolder {position:relative;box-sizing:border-box;
+               z-index:5;}
+#canvasHolder .spacer {height:7px;width:100%;}
 #contextMenu {position:absolute;left:-999px;z-index:999;list-style:none;font-family:Arial,sans-serif;
               border:1px solid darkgray;margin:0;padding:5px 0;font-size:14px;line-height:24px;
               box-shadow: 3px 5px 10px darkgray;min-width:125px;user-select:none;-webkit-user-select:none;
@@ -142,20 +152,22 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #contextMenu li {padding:0 20px 0 10px;cursor:default;}
 #contextMenu li:hover {color:white;background:#0066aa;}
 #contextMenu .contextSeparator {border-top:1px solid #777;border-bottom:1px solid #ddd;}
-#zoom {float:left;clear:left;width:600px;text-align: center}
+#zoom {text-align:center;height:50px;}
 #zoom #zoomIn {width:30px;margin:10px;background:url('/images/FormBuilder/zoomIn.svg');background-size:100%;cursor:pointer;}
 #zoom #zoomOut {width:30px;margin:10px;background:url('/images/FormBuilder/zoomOut.svg');background-size:100%;cursor:pointer;}
-#zoom #zoomAmt {}
 #zoom div {display:inline-block;text-align:center;height:30px;line-height:30px;vertical-align:middle;}
-#editor {border:1px solid black;}
-#shapes {padding:5px;overflow-x:hidden;width:290px;height:calc(25vh - 30px);margin-bottom:16px;border:1px solid black;}
-#shapes h3 {text-align:center;margin-top:.2em;}
-#shapes div {float:left;width:130px;margin:0 10px 5px 0;}
+#editor {display:block;margin:auto;border:1px solid black;}
+
+#shapes {padding:5px;overflow-x:hidden;width:300px;height:20vh;border:1px solid black;}
+#formBuilder h3 {text-align:left;margin-top:.2em;}
+#shapes div {float:left;width:90px;margin:0 0 5px 0;}
 #shapes img {width:20px;height:20px;margin-right:10px;float:left;}
 #shapes span {line-height:20px;float:left;}
-#properties {float:left;width:300px;height:55vh;overflow:auto;border:1px solid black;padding:5px;}
+#properties {float:left;width:300px;height:calc(80vh - 100px);overflow:auto;border:1px solid black;padding:5px;}
 #properties label {float:left;clear:left;margin:5px 10px 5px 0;line-height:20px;}
 #properties input, #properties select {height:20px;float:left;margin:5px 0;}
+#properties fieldset legend {font-size:18px;}
+#properties fieldset fieldset legend {font-size:14px;font-weight:bold;}
 
 #formBuilderToolTip {position:absolute;top:-999px;left:-999px;border:1px solid #767676;background:#fff;padding:1px 4px;
                      box-shadow:rgba(0, 0, 0, .4) 3px 3px 4px;color:#575757;font-family:Tahoma;font-size:12px;}

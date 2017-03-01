@@ -21,8 +21,6 @@ namespace Seciovni.APIs.Contexts
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<InvoiceTemplateBinding>().HasKey(b => new { b.UniqueBindingID, b.BindingID });
-
             #region Many-to-Many Relationships
             builder.Entity<UserPermission>().HasKey(up => new { up.UserID, up.PermissionType });
 

@@ -49,6 +49,8 @@ class HtmlTextBox {
         const scale = HtmlTextBox._canvas.scale;
 
         if(HtmlTextBox._textArea === null) {
+            const canvas = document.getElementById(WYSIWYG_CANVAS_ID);
+
             HtmlTextBox._textArea = document.createElement("textarea");
             HtmlTextBox._preArea.innerHTML = HtmlTextBox._textArea.innerHTML = text;
             HtmlTextBox._preArea.style.fontFamily = HtmlTextBox._textArea.style.fontFamily = fontFamily;
@@ -57,8 +59,8 @@ class HtmlTextBox {
             HtmlTextBox._preArea.style.fontStyle = HtmlTextBox._textArea.style.fontStyle = italic ? "italic" : "normal";
             HtmlTextBox._preArea.style.testAlign = HtmlTextBox._textArea.style.textAlign = alignment;
             HtmlTextBox._textArea.style.position = "absolute";
-            HtmlTextBox._textArea.style.top = (layout.y * scale) + "px";
-            HtmlTextBox._textArea.style.left = ((layout.x + 2) * scale) - 2 + "px";
+            HtmlTextBox._textArea.style.top = (layout.y * scale) + canvas.offsetTop + "px";
+            HtmlTextBox._textArea.style.left = (((layout.x + 2) * scale) - 2) + canvas.offsetLeft + "px";
             HtmlTextBox._textArea.style.width = layout.width + "px";
             HtmlTextBox._textArea.style.height = layout.height + "px";
             HtmlTextBox._preArea.style.transform = HtmlTextBox._textArea.style.transform = "scale(" + scale + ", " + scale + ")";

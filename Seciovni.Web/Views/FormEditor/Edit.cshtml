@@ -2,16 +2,35 @@
     ViewData["Title"] = "Form Editor";
 }
 
+<div id="appHeader" class="builderPageHeader">
+    <div id="leftHeader">
+        <img id="builderTitleEdit" src="~/images/edit.png" alt="Click to Edit" />
+        <input type="text" id="builderTitle" value="Title" />
+    </div>
+    <div id="rightHeader">
+        <button id="saveButton"><img src="~/images/save.png" /> Save Invoice</button>
+    </div>
+</div>
+
 <div id="formBuilder">
-    <div id="canvasHolder">
-        <canvas id="editor" tabindex="0"></canvas>
+    <div id="builderRight">
+        <div id="shapes">
+            <h3>Shapes</h3>
+        </div>
+        <div id="properties">
+            <h3>Properties</h3>
+        </div>
     </div>
-    <ul id="canvasContextMenu"></ul>
-    <div id="shapes">
-        <h3>Shapes</h3>
+    <div id="builderMain">
+        <div id="canvasHolder">
+            <div class="spacer"></div>
+            <canvas id="editor" tabindex="0"></canvas>
+            <div class="spacer"></div>
+        </div>
     </div>
-    <div id="properties"></div>
-    <div id="zoom"></div>
+    <div id="builderBottom">
+        <div id="zoom"></div>
+    </div>
 </div>
 
 <script type="text/javascript" src="~/js/prototypes.js"></script>

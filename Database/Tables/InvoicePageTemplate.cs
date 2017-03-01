@@ -16,12 +16,6 @@ namespace Database.Tables
 
         public string TemplateJSON { get; set; }
 
-        public HashSet<InvoiceTemplateBinding> Bindings { get; set; }
-
-        public int NumPages { get; set; }
-
-        public PageOrientation Orientation { get; set; }
-
         public List<InvoiceInvoicePageTemplate> IIPT { get; set; }
     }
 }
