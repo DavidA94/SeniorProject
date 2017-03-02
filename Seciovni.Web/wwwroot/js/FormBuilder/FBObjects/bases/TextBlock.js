@@ -193,14 +193,13 @@ class TextBlock extends EventPropagator {
      * @param {CanvasRenderingContext2D} context
      */
     draw(context){
-
-        // Save so the binding error triangle works
-        context.save();
-
         // If we're in edit mode, don't draw the text, as the TextArea has it currently
         if(this._inEditMode){
             return;
         }
+
+        // Save so the binding error triangle works
+        context.save();
 
         // Get if bold/italic -- Italic must be first because that's how they designed it
         let fontProps = this.font.italic ? "italic" : "";

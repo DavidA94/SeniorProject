@@ -11,6 +11,7 @@ class FBObjectFields {
     static get border() { return "border"; }
     static get caption() { return "caption"; }
     static get layout() { return "layout"; }
+    static get objectName() { return "$type"; }
 }
 
 /**
@@ -621,6 +622,7 @@ class FBObject extends EventPropagator {
      */
     __toJSON(){
         const properties = {};
+        properties[FBObjectFields.objectName] = this.toString();
         properties[FBObjectFields.appearance]  = this.appearance;
         properties[FBObjectFields.border] = this.border;
         properties[FBObjectFields.caption] = this.caption;

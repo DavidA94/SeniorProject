@@ -90,6 +90,10 @@ class FBImage extends FBObject {
         return retVal;
     }
 
+    toString() {
+        return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.FBImage, Seciovni.APIs";
+    }
+
     // endregion
 
     // region JSON

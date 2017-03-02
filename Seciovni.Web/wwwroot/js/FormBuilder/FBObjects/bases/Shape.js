@@ -5,6 +5,7 @@
 class ShapeFields{
     static get appearance() { return "appearance"; }
     static get layout() { return "layout"; }
+    static get shapeName() { return "shapeName"; }
 }
 
 /**
@@ -125,6 +126,7 @@ class Shape extends EventPropagator {
         const properties = {};
         properties[ShapeFields.appearance] = this.appearance;
         properties[ShapeFields.layout] = this.layout;
+        properties[ShapeFields.shapeName] = this.toString();
         return properties;
     }
 

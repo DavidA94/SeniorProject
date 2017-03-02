@@ -13,11 +13,11 @@ class CanvasFields {
 }
 
 class CanvasShapeTypes {
-    static get fbImage() { return "FBImage"; }
-    static get checkBox() { return "CheckBox"; }
-    static get fbTextBlock() { return "FBTextBlock"; }
-    static get basicShape() { return "BasicShape"; }
-    static get table() { return "Table"; }
+    static get fbImage() { return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.FBImage, Seciovni.APIs"; }
+    static get checkBox() { return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.CheckBox, Seciovni.APIs"; }
+    static get fbTextBlock() { return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.FBTextBlock, Seciovni.APIs"; }
+    static get basicShape() { return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.BasicShape, Seciovni.APIs"; }
+    static get table() { return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.Table, Seciovni.APIs"; }
 }
 
 /**
@@ -569,11 +569,12 @@ class Canvas extends EventPropagator {
 
         for(const shape of json[CanvasFields.shapes]){
             let child;
-            if(shape[0] === CanvasShapeTypes.fbImage) child = FBImage.from_json(shape[1]);
-            else if(shape[0] == CanvasShapeTypes.checkBox) child = CheckBox.from_json(shape[1]);
-            else if(shape[0] == CanvasShapeTypes.fbTextBlock) child = FBTextBlock.from_json(shape[1]);
-            else if(shape[0] == CanvasShapeTypes.basicShape) child = BasicShape.from_json(shape[1]);
-            else if(shape[0] == CanvasShapeTypes.table) child = Table.from_json(shape[1]);
+            const shapeName = shape[FBObjectFields.objectName];
+            if(shapeName === CanvasShapeTypes.fbImage) child = FBImage.from_json(shape);
+            else if(shapeName === CanvasShapeTypes.checkBox) child = CheckBox.from_json(shape);
+            else if(shapeName === CanvasShapeTypes.fbTextBlock) child = FBTextBlock.from_json(shape);
+            else if(shapeName === CanvasShapeTypes.basicShape) child = BasicShape.from_json(shape);
+            else if(shapeName === CanvasShapeTypes.table) child = Table.from_json(shape);
 
             this.addObject(child)
         }
@@ -595,19 +596,7 @@ class Canvas extends EventPropagator {
         properties[CanvasFields.shapes] = [];
 
         for(let i = WYSIWYG_ANCHOR_COUNT; i < this.children.length; ++i){
-            const child = this.children[i];
-            let key;
-
-            if(child instanceof FBImage) key = CanvasShapeTypes.fbImage;
-            else if(child instanceof CheckBox) key = CanvasShapeTypes.checkBox;
-            else if(child instanceof FBTextBlock) key = CanvasShapeTypes.fbTextBlock;
-            else if(child instanceof BasicShape) key = CanvasShapeTypes.basicShape;
-            else if(child instanceof Table) key = CanvasShapeTypes.table;
-
-            const shape = [];
-            shape.push(key);
-            shape.push(child);
-            properties[CanvasFields.shapes].push(shape);
+            properties[CanvasFields.shapes].push(this.children[i]);
         }
 
         return properties;

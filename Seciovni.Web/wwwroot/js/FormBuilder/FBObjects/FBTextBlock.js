@@ -116,7 +116,7 @@ class FBTextBlock extends FBObject {
         this._ignoreLayoutChange = false;
     }
 
-    toString() { return "FBTextBlock"; }
+    toString() { return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.FBTextBlock, Seciovni.APIs"; }
 
     /**
      * Gets the bindings for the given object

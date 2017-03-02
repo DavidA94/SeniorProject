@@ -64,6 +64,10 @@ class CheckBox extends FBObject {
         context.closePath();
     }
 
+    toString(){
+        return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.CheckBox, Seciovni.APIs";
+    }
+
     // region JSON
 
     /**

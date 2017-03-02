@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Seciovni.APIs.Contexts;
 using System.Data.SqlClient;
 
@@ -39,7 +40,11 @@ namespace Seciovni.APIs
             services.AddDbContext<SeciovniContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SeciovniDb")));
             
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc()
+                    .AddJsonOptions(opt =>
+                    {
+                        opt.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
+                    });
             
         }
 

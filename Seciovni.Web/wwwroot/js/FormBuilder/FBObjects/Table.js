@@ -312,7 +312,7 @@ class Table extends FBObject {
         return retVal;
     }
 
-    toString(){ return "Table"; }
+    toString(){ return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.Table, Seciovni.APIs"; }
 
     // endregion
 

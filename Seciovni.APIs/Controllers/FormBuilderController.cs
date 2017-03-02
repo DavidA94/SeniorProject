@@ -7,18 +7,53 @@ using System.Web.Http;
 using Shared;
 using Shared.ApiResponses;
 using Database.Tables;
+using Microsoft.AspNetCore.Http;
+using Seciovni.APIs.WebHelpers;
+using Seciovni.APIs.WebHelpers.FormBuilder;
+using Seciovni.APIs.WebHelpers.FormBuilder.FBObjects;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Seciovni.APIs.Controllers
 {
     [Route("api/[controller]")]
     public class FormBuilderController : ApiController
     {
+        [HttpPost(nameof(Save))]
+        public ApiResponse Save([FromBody]FormBuilder fb)
+        {
+            bool hasBindingError = false;
+
+            foreach (var shape in fb.Canvas.Shapes)
+            {
+                if (shape is Table)
+                {
+                    foreach (var col in (shape as Table).Cells)
+                    {
+                        hasBindingError |= col["header"].HasBindingError;
+                        hasBindingError |= col["content"].HasBindingError;
+                    }
+                }
+                if (shape is FBTextBlock)
+                {
+                    hasBindingError |= (shape as FBTextBlock).TextBlock.HasBindingError;
+                }
+            }
+
+            if (hasBindingError)
+            {
+                return new ApiResponse(false, "One or more binding errors have been found");
+            }
+
+            return new ApiResponse(true, "");
+        }
+
         [HttpGet(nameof(BindingOptions) + "/{option}")]
         public IEnumerable<BindingOptionData> BindingOptions(BindingOption option)
         {
             List<BindingOptionData> retVal = new List<BindingOptionData>();
-            
-            if(option == BindingOption.BOTH || option == BindingOption.REPEATING)
+
+            if (option == BindingOption.BOTH || option == BindingOption.REPEATING)
             {
                 const string MISC_CHARGE = "Miscellaneous Charge";
                 const string MISC_FEE = nameof(MiscellaneousFee);

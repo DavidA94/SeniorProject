@@ -7,8 +7,8 @@ class BasicShapeFields {
 }
 
 class BasicShapeTypes {
-    static get box() { return "box"; }
-    static get ellipse() { return "ellipse"; }
+    static get box() { return "Box"; }
+    static get ellipse() { return "Ellipse"; }
 }
 
 class BasicShape extends FBObject {
@@ -49,7 +49,7 @@ class BasicShape extends FBObject {
 
     // region Public Methods
 
-    toString() { return "BasicShape"; }
+    toString() { return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.BasicShape, Seciovni.APIs"; }
 
     // endregion
 
@@ -72,17 +72,7 @@ class BasicShape extends FBObject {
      */
     toJSON() {
         const properties = this.__toJSON();
-        let key;
-
-        if(this._shape instanceof Box) key = BasicShapeTypes.box;
-        else if(this._shape instanceof Ellipse) key = BasicShapeTypes.ellipse;
-        else { console.trace(); }
-
-        const shape = [];
-        shape.push(key);
-        shape.push(this._shape);
-        properties[BasicShapeFields.shape] = shape;
-
+        properties[BasicShapeFields.shape] = this._shape;
         return properties;
     }
 
@@ -95,10 +85,10 @@ class BasicShape extends FBObject {
         const shape_json = json[BasicShapeFields.shape];
 
         let shape;
-        if(shape_json[0] === BasicShapeTypes.box) shape = new Box(0, 0, 0, 0);
-        else if(shape_json[0] === BasicShapeTypes.ellipse) shape = new Ellipse(0, 0, 0);
+        if(shape_json[ShapeFields.shapeName] === BasicShapeTypes.box) shape = new Box(0, 0, 0, 0);
+        else if(shape_json[ShapeFields.shapeName] === BasicShapeTypes.ellipse) shape = new Ellipse(0, 0, 0);
 
-        shape.initialize_json(shape_json[1]);
+        shape.initialize_json(shape_json);
 
         const basicShape = new BasicShape(shape);
         basicShape.__init_json(json);
