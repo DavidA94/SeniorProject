@@ -123,7 +123,21 @@ class TextBlock extends EventPropagator {
      * The text
      * @param {string} value
      */
-    set text(value) { this._text = value; this.__sendPropChangeEvent("text"); }
+    set text(value) {
+        this._text = value;
+        this.__sendPropChangeEvent("text");
+        this.processBindings();
+
+        // Auto-update the bindings list in the properties -- Hacky, but it works
+        if(this.isFocused){
+            let parent = this.parent;
+            while(parent && !(parent instanceof Canvas)) parent = parent.parent;
+
+            if(parent){
+                parent.__dispatchEvent(EVENT_OBJECT_CHANGE, new ObjectChangedEventArgs(this, Keyboard.focusedElement));
+            }
+        }
+    }
 
 
     /**

@@ -1,51 +1,147 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Database.Tables;
 using Microsoft.AspNetCore.Mvc;
-using System.Web.Http;
-using Shared;
-using Shared.ApiResponses;
-using Database.Tables;
-using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Seciovni.APIs.Contexts;
 using Seciovni.APIs.WebHelpers;
 using Seciovni.APIs.WebHelpers.FormBuilder;
 using Seciovni.APIs.WebHelpers.FormBuilder.FBObjects;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using Shared;
+using Shared.ApiResponses;
+using Shared.SecurityTypes;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Web.Http;
 
 namespace Seciovni.APIs.Controllers
 {
     [Route("api/[controller]")]
     public class FormBuilderController : ApiController
     {
-        [HttpPost(nameof(Save))]
-        public ApiResponse Save([FromBody]FormBuilder fb)
-        {
-            bool hasBindingError = false;
+        private SeciovniContext db;
 
-            foreach (var shape in fb.Canvas.Shapes)
+        public FormBuilderController(SeciovniContext context)
+        {
+            db = context;
+        }
+
+        [HttpPost(nameof(Save))]
+        public ApiResponse Save()
+        {
+            if (!Request.HasValidLogin(db) || !Request.CanAccess(db, AccessPolicy.FormEditorPrivilege))
             {
-                if (shape is Table)
+                return new ApiResponse(false, "Permission Denied");
+            }
+
+
+
+            InvoicePageTemplate template = null;
+            bool overwrite = false;
+
+            // Parse the JSON so we can get the Title, and check for binding errors
+            var requestJSON = Request.Content.ReadAsStringAsync().Result;
+            FormBuilder fb = JsonConvert.DeserializeObject<FormBuilder>(requestJSON,
+                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+
+            // Ensure there are no binding errors
+            if (hasBindingError(fb)) return new ApiResponse(false, "One or more binding errors have been found");
+
+            // Get the "page" that submitted this -- [null = new template]
+            var pageName = WebUtility.UrlDecode(Request.Headers.Referrer.Segments.Last());
+            if (pageName.Trim().ToLower() == "edit") pageName = null;
+
+            // Try to get the template from the database
+            
+            if(pageName != null)
+            {
+                template = db.InvoiceTemplates
+                             .Include(t => t.IIPT)
+                             .LastOrDefault(t => t.TemplateTitle.ToLower() == pageName.ToLower());
+            }
+
+            // New Template
+            if(pageName == null)
+            {
+                // Duplicate Name
+                if (template != null)
                 {
-                    foreach (var col in (shape as Table).Cells)
+                    // No header = Prompt User
+                    if (!Request.Headers.Contains(Constants.OVERWRITE_HEADER))
                     {
-                        hasBindingError |= col["header"].HasBindingError;
-                        hasBindingError |= col["content"].HasBindingError;
+                        return new ApiResponse(false, "Overwrite?");
+                    }
+                    // Has header to overwrite
+                    else
+                    {
+                        overwrite = true;
                     }
                 }
-                if (shape is FBTextBlock)
+            }
+            // Edit Template
+            else
+            {
+                // No template = ERROR
+                if (template == null) return new ApiResponse(false, "Bad Request");
+                else
                 {
-                    hasBindingError |= (shape as FBTextBlock).TextBlock.HasBindingError;
+                    overwrite = true;
                 }
             }
 
-            if (hasBindingError)
+            // If we're set to overwerite, but there are things already using the template, then don't overwrite
+            if (overwrite && template.IIPT.Count > 0)
             {
-                return new ApiResponse(false, "One or more binding errors have been found");
+                overwrite = false;
             }
 
-            return new ApiResponse(true, "");
+            // Create new
+            if (!overwrite)
+            {
+                db.InvoiceTemplates.Add(new InvoicePageTemplate
+                {
+                    TemplateTitle = fb.Title,
+                    TemplateJSON = requestJSON
+                });
+            }
+            // Edit what's already there
+            else
+            {
+                template.TemplateTitle = fb.Title;
+                template.TemplateJSON = requestJSON;
+            }
+            
+            // To to save the changes
+            try
+            {
+                if (db.SaveChanges() > 0)
+                {
+                    return new ApiResponse(true, "Successfully Saved");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                string message = "An error occurred while saving the invoice: " + ex.Message;
+                if (ex.InnerException != null)
+                {
+                    message += "\n\n" + ex.InnerException.Message;
+                }
+
+                return new ApiResponse(false, message);
+            }
+
+            return new ApiResponse(false, "Failed to save the template");
+        }
+
+        [HttpGet(nameof(Get) + "/{pageName}")]
+        public string Get(string pageName)
+        {
+            // If we don't have a valid request, then no-go
+            if (!Request.HasValidLogin(db) || !Request.CanAccess(db, AccessPolicy.FormEditorPrivilege)) return null;
+
+            return db.InvoiceTemplates.LastOrDefault(t => t.TemplateTitle.ToLower() == pageName.ToLower())?.TemplateJSON;
         }
 
         [HttpGet(nameof(BindingOptions) + "/{option}")]
@@ -105,7 +201,7 @@ namespace Seciovni.APIs.Controllers
 
                     new BindingOptionData(BUYER, "First Name", $"{INVOICE}.{BUYER}.{USER}.{nameof(Database.Tables.User.FirstName)}"),
                     new BindingOptionData(BUYER, "Last Name", $"{INVOICE}.{BUYER}.{USER}.{nameof(Database.Tables.User.LastName)}"),
-                    new BindingOptionData(BUYER, "Phone Number", $"{INVOICE}.{BUYER}.{nameof(Customer.CompanyName)}"),
+                    new BindingOptionData(BUYER, "Company", $"{INVOICE}.{BUYER}.{nameof(Customer.CompanyName)}"),
                     new BindingOptionData(BUYER, "E-Mail", $"{INVOICE}.{BUYER}.{USER}.{nameof(Database.Tables.User.Email)}"),
                     new BindingOptionData(BUYER, "Phone Number", $"{INVOICE}.{BUYER}.{nameof(Customer.PhoneNumbers)}[0]"),
                     new BindingOptionData(BUYER, "Street Address", $"{INVOICE}.{BUYER}.{ADDRESS}.{nameof(Address.StreetAddress)}"),
@@ -126,6 +222,30 @@ namespace Seciovni.APIs.Controllers
             }
 
             return retVal;
+        }
+
+        private bool hasBindingError(FormBuilder fb)
+        {
+            // Check if there are any binding errors
+            bool hasBindingError = false;
+
+            foreach (var shape in fb.Canvas.Shapes)
+            {
+                if (shape is Table)
+                {
+                    foreach (var col in (shape as Table).Cells)
+                    {
+                        hasBindingError |= col["header"].HasBindingError;
+                        hasBindingError |= col["content"].HasBindingError;
+                    }
+                }
+                if (shape is FBTextBlock)
+                {
+                    hasBindingError |= (shape as FBTextBlock).TextBlock.HasBindingError;
+                }
+            }
+
+            return hasBindingError;
         }
     }
 }

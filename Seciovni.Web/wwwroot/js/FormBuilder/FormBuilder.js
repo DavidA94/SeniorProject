@@ -81,8 +81,40 @@ class FormBuilder{
         document.getElementById("saveButton").addEventListener('click', () => {
             const json = JSON.stringify(this);
 
-            console.log(json);
+            sendToApi("FormBuilder/Save", "POST", json, (xmlhttp) => {
+                if (xmlhttp.readyState === XMLHttpRequest.DONE && xmlhttp.status === 200) {
+                    const response = /** @type{ApiResponse} */JSON.parse(xmlhttp.response);
+
+                    // If successful, redirect if necessary
+                    if(response.successful){
+                        const title = location.pathname.split("/").splice(-1)[0];
+                        if(title != this._title.value) {
+                            location.replace("/FormEditor/Edit/" + this._title.value);
+                        }
+                    }
+                }
+            });
         });
+
+        // Check if we need to load
+        const pageName = location.pathname.split("/").splice(-1)[0].toLowerCase();
+        if(pageName && pageName != "" && pageName != "edit"){
+            sendToApi("FormBuilder/Get/" + pageName, "GET", null, (xmlhttp) => {
+                if (xmlhttp.readyState === XMLHttpRequest.DONE && xmlhttp.status === 200) {
+
+                    if (!xmlhttp.response || xmlhttp.response == "") {
+                        return;
+                    }
+
+                    // Clear anything that is present
+                    for (let i = this._canvas.children.length - 1; i >= WYSIWYG_ANCHOR_COUNT; --i) {
+                        this._canvas.removeObject(this._canvas.children[i]);
+                    }
+
+                    this.initialize_json(JSON.parse(xmlhttp.response.toString()));
+                }
+            });
+        }
     }
 
     // endregion
@@ -115,8 +147,9 @@ class FormBuilder{
     _initializeCanvas(){
         // Initialize the canvas object
         this._canvas = new Canvas(WYSIWYG_CANVAS_ID);
-        this._canvas.scale = .6;
+        this._canvas.scale = 1;
         this._canvas.orientation = Orientation.Portrait;
+        this._canvas.subscribe(EVENT_SCALE_CHANGE, () => this._updateZoomAmt());
 
         // Initialize the static Mouse class -- Suppress warning because no other way to get to the object
         // noinspection JSAccessibilityCheck
@@ -572,7 +605,7 @@ class FormBuilder{
                 this._canvas.addObject(ellipse);
             }
             else if(data === WYSIWYG_DRAG_TEXT){
-                const text = new FBTextBlock(x, y, 0, 0, "Your |_text_| here");
+                const text = new FBTextBlock(x, y, 0, 0, "Your text here");
                 this._canvas.addObject(text);
             }
             else if(data === WYSIWYG_DRAG_TABLE){

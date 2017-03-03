@@ -1196,7 +1196,7 @@ class Canvas extends EventPropagator {
 
             // snap to grid, if necessary
             if (this.snapToGrid) {
-                const gridSize = this.scale * this.gridSize * WYSIWYG_PAGE_PPI;
+                const gridSize = this.gridSize * WYSIWYG_PAGE_PPI;
                 x = Math.round(x / gridSize) * gridSize;
                 y = Math.round(y / gridSize) * gridSize;
             }
@@ -1255,7 +1255,7 @@ class Canvas extends EventPropagator {
             else if(e.sender === this.anchors[Anchor.BottomLeft]) anchor = Anchor.BottomLeft;
             else if(e.sender === this.anchors[Anchor.BottomRight]) anchor = Anchor.BottomRight;
 
-            Keyboard.focusedElement.resize(x, y, anchor, e.shiftKey, e.altKey);
+            Keyboard.focusedElement.resize(x, y, anchor, e.shiftKey, e.altKey, this.snapToGrid);
         }
     }
 

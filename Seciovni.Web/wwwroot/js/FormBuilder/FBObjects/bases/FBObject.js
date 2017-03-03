@@ -501,8 +501,9 @@ class FBObject extends EventPropagator {
      * @param {Anchor} anchor - The anchor being dragged
      * @param {boolean} preserveRatio - Indicates if the ratio of the shape should be preserved
      * @param {boolean} keepCenter - Indicates if the shape should resize on both side, therefore keep its center
+     * @param {boolean} snapToGrid - Indicates if resizing should snap to the grid
      */
-    resize(resizeX, resizeY, anchor, preserveRatio = false, keepCenter = false) {
+    resize(resizeX, resizeY, anchor, preserveRatio = false, keepCenter = false, snapToGrid = false) {
 
         // If we didn't get a valid anchor, throw out
         if (anchor < Anchor.TopLeft || anchor > Anchor.BottomRight) {
@@ -535,16 +536,26 @@ class FBObject extends EventPropagator {
 
         // The adjustment scale needs to be twice as much if we're keeping the center
         const adjScale = keepCenter ? 2 : 1;
+        const gridSize = this.parent.gridSize * WYSIWYG_PAGE_PPI;
+
 
         // If we're on the left side
         if (anchor === Anchor.TopLeft || anchor === Anchor.BottomLeft) {
             newX = this._backupLayout.x + resizeX;
             newW = this._backupLayout.width - (resizeX * adjScale);
+
+            if(snapToGrid){
+                const tempX = Math.round(newX / gridSize) * gridSize;
+                newW += (newX - tempX);
+                newX = tempX;
+            }
         }
         // Otherwise, it must be the right
         else {
             newX = this._backupLayout.x - (keepCenter ? resizeX : 0);
             newW = this._backupLayout.width + (resizeX * adjScale);
+
+            if(snapToGrid) newW = (Math.round((newX + newW) / gridSize) * gridSize) - newX;
         }
 
 
@@ -552,11 +563,19 @@ class FBObject extends EventPropagator {
         if (anchor === Anchor.TopLeft || anchor === Anchor.TopRight) {
             newY = this._backupLayout.y + resizeY;
             newH = this._backupLayout.height - (resizeY * adjScale);
+
+            if(snapToGrid){
+                const tempY = Math.round(newY / gridSize) * gridSize;
+                newH += (newY - tempY);
+                newY = tempY;
+            }
         }
         // Otherwise, it must be the bottom
         else {
             newY = this._backupLayout.y - (keepCenter ? resizeY : 0);
             newH = this._backupLayout.height + (resizeY * adjScale);
+
+            if(snapToGrid) newH = (Math.round((newY + newH) / gridSize) * gridSize) - newY;
         }
 
         // If we have a minimum width, and it has been exceeded, then make it the minimum

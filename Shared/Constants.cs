@@ -15,5 +15,7 @@
         /// ensure data-consistency
         /// </summary>
         public const int DEVNULL_EMPLOYEE_ID = 1;
+
+        public const string OVERWRITE_HEADER = "Overwrite";
     }
 }

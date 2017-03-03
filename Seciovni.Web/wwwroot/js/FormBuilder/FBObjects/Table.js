@@ -185,16 +185,20 @@ class Table extends FBObject {
             if(column > 0){
                 widthToUse = Math.min(suggestedWidth, this._columnWidths[column - 1] / 2);
                 this._columnWidths[column - 1] -= widthToUse;
+                this._cells[column - 1].content.layout.width -= widthToUse;
+                this._cells[column - 1].header.layout.width -= widthToUse;
             }
 
-            // If it's not the last one
-            if(column < this._cells.length) {
-                // If we didn't already set this above
-                if(!widthToUse){
-                    widthToUse = Math.min(suggestedWidth, this._columnWidths[column] / 2);
-                    this._columnWidths[column] -= widthToUse;
-                }
+            // If it's not the last one and we didn't already set this above
+            if(column < this._cells.length && !widthToUse) {
+                widthToUse = Math.min(suggestedWidth, this._columnWidths[column] / 2);
+                this._columnWidths[column] -= widthToUse;
+                this._cells[column].content.layout.width -= widthToUse;
+                this._cells[column].header.layout.width -= widthToUse;
             }
+
+            headerCell.layout.width = widthToUse;
+            contentCell.layout.width = widthToUse;
 
             this._addSeparator(column);
 
@@ -251,25 +255,44 @@ class Table extends FBObject {
         return null;
     }
 
-    getBindings(){
-        if(this.__focusedChild && this.__focusedChild instanceof Cell) {
-            const bindings = this.__focusedChild.bindings;
+    getBindings() {
+        /*if(this.__focusedChild && this.__focusedChild instanceof Cell) {
+         const bindings = this.__focusedChild.bindings;
 
-            const retBindings = [];
+         const retBindings = [];
 
-            for (const id of Object.keys(bindings)) {
-                if (bindings[id] === null) {
-                    bindings[id] = new Binding(id, BindingContext.Repeating);
-                    bindings[id].options.addEvent('change', () => this.__focusedChild.processBindings());
+         for (const id of Object.keys(bindings)) {
+         if (bindings[id] === null) {
+         bindings[id] = new Binding(id, BindingContext.Repeating);
+         bindings[id].options.addEvent('change', () => this.__focusedChild.processBindings());
+         }
+
+         retBindings.push(bindings[id]);
+         }
+
+         return retBindings;
+         }
+         else{*/
+        const retBindings = [];
+        for (const col of this._cells) {
+            let bindings = col.header.bindings;
+
+            for (let i = 0; i < 2; ++i) {
+                for (const id of Object.keys(bindings)) {
+                    if (bindings[id] === null) {
+                        bindings[id] = new Binding(id, BindingContext.Repeating);
+                        bindings[id].options.addEvent('change', () => this.__focusedChild.processBindings());
+                    }
+
+                    retBindings.push(bindings[id]);
                 }
 
-                retBindings.push(bindings[id]);
+                bindings = col.content.bindings;
             }
-
-            return retBindings;
         }
 
-        return null;
+        return retBindings;
+        // }
     }
 
     getHtmlPropertyData(){
@@ -355,17 +378,16 @@ class Table extends FBObject {
 
         // Then add teh cells
         for(let i = 1; i < json[TableFields.cells].length; ++i){
-            /**
-             *
-             * @type {{header: Cell, content: Cell}}
-             * @private
-             */
-            const column = json[TableFields.cells][i];
+            const header = new Cell("");
+            header.initialize_json(json[TableFields.cells][i]["header"]);
+
+            const content = new Cell("");
+            content.initialize_json(json[TableFields.cells][i]["content"]);
 
             table._addSeparator(i);
-            table._cells.splice(i, 0, {header: column.header, content: column.content});
-            table.__addChild(column.header);
-            table.__addChild(column.content);
+            table._cells.splice(i, 0, {header: header, content: content});
+            table.__addChild(header);
+            table.__addChild(content);
         }
 
         return table;
@@ -441,7 +463,7 @@ class Table extends FBObject {
             currentXPos = 0;
 
             for (let i = 1; i < this._separators.length; ++i) {
-                currentXPos = this._columnWidths[i - 1];
+                currentXPos += this._columnWidths[i - 1];
 
                 this._separators[i].layout.x = this.x + currentXPos - WYSIWYG_TABLE_BORDER_SIZE;
                 this._separators[i].layout.y = this.y;

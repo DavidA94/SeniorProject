@@ -13,10 +13,6 @@ class CheckBox extends FBObject {
         this._checked = false;
     }
 
-    resize(resizeX, resizeY, anchor, preserveRatio = false, keepCenter = false){
-        super.resize(resizeX, resizeY, anchor, true, keepCenter);
-    }
-
     _doDraw(context){
         const scaleAmt = Math.min(this.width, this.height) / 10;
         const cornerAmt = 2 * scaleAmt;
