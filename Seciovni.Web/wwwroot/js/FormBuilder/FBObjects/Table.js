@@ -100,7 +100,8 @@ class Table extends FBObject {
                     }
                 }
 
-                this.contentHeight = this.height - this._headerHeight;
+                this._contentHeight = this.height - this._headerHeight;
+                this.__sendPropChangeEvent("contentHeight");
             }
         });
 
@@ -136,7 +137,14 @@ class Table extends FBObject {
      * The height of the header row
      * @param {number} value
      */
-    set headerHeight(value) { this._headerHeight = value; this.__sendPropChangeEvent("headerHeight"); }
+    set headerHeight(value) {
+
+        const moveDist = (value - this._headerHeight);
+        this._headerHeight = Math.clip((this.headerHeight + moveDist), 5, this.height - 5);
+        this._contentHeight = (this.height - this.headerHeight);
+
+        this.__sendPropChangeEvent("headerHeight");
+    }
 
 
     /**
@@ -149,7 +157,13 @@ class Table extends FBObject {
      * The height of the content row
      * @param {number} value
      */
-    set contentHeight(value) { this._contentHeight = value; this.__sendPropChangeEvent("contentHeight"); }
+    set contentHeight(value) {
+        if(this._contentHeight != value) {
+            this.layout.height -= (this._contentHeight - value);
+            //this._contentHeight = value;
+            this.__sendPropChangeEvent("contentHeight");
+        }
+    }
 
     // endregion
 
@@ -317,15 +331,15 @@ class Table extends FBObject {
     getHtmlPropertyModelDict(){
         const retVal = super.getHtmlPropertyModelDict();
 
-        retVal.headerHeight = ObjProp.makeHtmlPropertyModel(this, "headerHeight");
-        retVal.contentHeight = ObjProp.makeHtmlPropertyModel(this, "contentHeight");
+        retVal.headerHeight = ObjProp.makeHtmlPropertyModel(this, "headerHeight", ptToPx, pxToPt);
+        retVal.contentHeight = ObjProp.makeHtmlPropertyModel(this, "contentHeight", ptToPx, pxToPt);
 
 
         if(this.__focusedChild && this.__focusedChild instanceof Cell) {
 
             retVal.cell_text = ObjProp.makeHtmlPropertyModel(this.__focusedChild, "text");
             retVal.cell_font_family = ObjProp.makeHtmlPropertyModel(this.__focusedChild.font, "family");
-            retVal.cell_font_size = ObjProp.makeHtmlPropertyModel(this.__focusedChild.font, "size");
+            retVal.cell_font_size = ObjProp.makeHtmlPropertyModel(this.__focusedChild.font, "size", ptToPx, pxToPt);
             retVal.cell_font_bold = ObjProp.makeHtmlPropertyModel(this.__focusedChild.font, "bold");
             retVal.cell_font_italic = ObjProp.makeHtmlPropertyModel(this.__focusedChild.font, "italic");
             retVal.cell_font_color = ObjProp.makeHtmlPropertyModel(this.__focusedChild.font, "color");

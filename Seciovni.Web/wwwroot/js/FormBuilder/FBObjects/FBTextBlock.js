@@ -161,15 +161,15 @@ class FBTextBlock extends FBObject {
         const retVal = super.getHtmlPropertyModelDict();
         retVal.text = ObjProp.makeHtmlPropertyModel(this, "text");
         retVal.font_family = ObjProp.makeHtmlPropertyModel(this.font, "family");
-        retVal.font_size = ObjProp.makeHtmlPropertyModel(this.font, "size");
+        retVal.font_size = ObjProp.makeHtmlPropertyModel(this.font, "size", ptToPx, pxToPt);
         retVal.font_bold = ObjProp.makeHtmlPropertyModel(this.font, "bold");
         retVal.font_italic = ObjProp.makeHtmlPropertyModel(this.font, "italic");
         retVal.font_color = ObjProp.makeHtmlPropertyModel(this.font, "color");
         retVal.font_color = ObjProp.makeHtmlPropertyModel(this.font, "alignment");
-        retVal.maxHeight = ObjProp.makeHtmlPropertyModel(this, "maxHeight", parseInt,
-            (value) => { if(!value) return "None"; else return value; });
-        retVal.maxWidth = ObjProp.makeHtmlPropertyModel(this, "maxWidth", parseInt,
-            (value) => { if(!value) return "None"; else return value; });
+        retVal.maxHeight = ObjProp.makeHtmlPropertyModel(this, "maxHeight", ptToPx,
+            (value) => { if(!value) return "None"; else return pxToPt(value); });
+        retVal.maxWidth = ObjProp.makeHtmlPropertyModel(this, "maxWidth", ptToPx,
+            (value) => { if(!value) return "None"; else return pxToPt(value); });
 
         return retVal;
     }

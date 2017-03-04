@@ -488,10 +488,20 @@ class FBObject extends EventPropagator {
      * Moves the object
      * @param {number} relativeX - The relative X distance to move the object
      * @param {number} relativeY - The relative Y distance to move the object
+     * @param {boolean} snapToGrid - Indicates if moving should snap to the grid
      */
-    move(relativeX, relativeY){
-        this.layout.x = this._backupLayout._x + relativeX;
-        this.layout.y = this._backupLayout._y + relativeY;
+    move(relativeX, relativeY, snapToGrid){
+        let x = this._backupLayout._x + relativeX;
+        let y = this._backupLayout._y + relativeY;
+
+        if(snapToGrid){
+            const gridSize = this.parent.gridSize * WYSIWYG_PAGE_PPI;
+            x = Math.round(x / gridSize) * gridSize;
+            y = Math.round(y / gridSize) * gridSize;
+        }
+
+        this.layout.x = x;
+        this.layout.y = y;
     }
 
     /**

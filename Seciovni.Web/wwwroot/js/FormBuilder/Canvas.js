@@ -1194,15 +1194,8 @@ class Canvas extends EventPropagator {
                 }
             }
 
-            // snap to grid, if necessary
-            if (this.snapToGrid) {
-                const gridSize = this.gridSize * WYSIWYG_PAGE_PPI;
-                x = Math.round(x / gridSize) * gridSize;
-                y = Math.round(y / gridSize) * gridSize;
-            }
-
             // And finally, tell the object to move
-            this._objectToDrag.move(x, y);
+            this._objectToDrag.move(x, y, this.snapToGrid);
         }
     }
 
