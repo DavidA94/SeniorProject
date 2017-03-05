@@ -1,7 +1,7 @@
-﻿using Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.Bases;
+﻿using Shared.FormBuilderObjects.FBObjects.Bases;
 using System.Collections.Generic;
 
-namespace Seciovni.APIs.WebHelpers.FormBuilder
+namespace Shared.FormBuilderObjects
 {
     public class Canvas
     {

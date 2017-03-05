@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Seciovni.APIs.Contexts;
 using Seciovni.APIs.WebHelpers;
-using Seciovni.APIs.WebHelpers.FormBuilder;
-using Seciovni.APIs.WebHelpers.FormBuilder.FBObjects;
 using Shared;
 using Shared.ApiResponses;
+using Shared.FormBuilderObjects;
+using Shared.FormBuilderObjects.FBObjects;
 using Shared.SecurityTypes;
 using System;
 using System.Collections.Generic;
@@ -53,8 +53,8 @@ namespace Seciovni.APIs.Controllers
             if (pageName.Trim().ToLower() == "edit") pageName = null;
 
             // Try to get the template from the database
-            
-            if(pageName != null)
+
+            if (pageName != null)
             {
                 template = db.InvoiceTemplates
                              .Include(t => t.IIPT)
@@ -62,7 +62,7 @@ namespace Seciovni.APIs.Controllers
             }
 
             // New Template
-            if(pageName == null)
+            if (pageName == null)
             {
                 // Duplicate Name
                 if (template != null)
@@ -111,7 +111,7 @@ namespace Seciovni.APIs.Controllers
                 template.TemplateTitle = fb.Title;
                 template.TemplateJSON = requestJSON;
             }
-            
+
             // To to save the changes
             try
             {
@@ -188,36 +188,36 @@ namespace Seciovni.APIs.Controllers
 
                 retVal.InsertRange(0, new List<BindingOptionData>
                 {
-                    new BindingOptionData(INVOICE, "Invoice Number", INVOICE + "." + nameof(Invoice.InvoiceID)),
-                    new BindingOptionData(INVOICE, "Invoice Date", INVOICE + "." + nameof(Invoice.InvoiceDate)),
-                    new BindingOptionData(INVOICE, "Invoice State", INVOICE + "." + nameof(Invoice.State)),
-                    new BindingOptionData(INVOICE, "Sales Person", INVOICE + "." + nameof(Invoice.SalesPerson)),
-                    new BindingOptionData(INVOICE, "Tax", INVOICE + "." + nameof(Invoice.TaxAmount)),
-                    new BindingOptionData(INVOICE, "Doc Fee", INVOICE + "." + nameof(Invoice.DocFee)),
-                    new BindingOptionData(INVOICE, "Down Payment", INVOICE + "." + nameof(Invoice.DownPayment)),
-                    new BindingOptionData(INVOICE, "Invoice Total", INVOICE + "." + "Total"),
-                    new BindingOptionData(INVOICE, "Amount Due", INVOICE + "." + "Due"),
+                    new BindingOptionData(INVOICE, "Invoice Number", nameof(Invoice.InvoiceID)),
+                    new BindingOptionData(INVOICE, "Invoice Date", nameof(Invoice.InvoiceDate)),
+                    new BindingOptionData(INVOICE, "Invoice State", nameof(Invoice.State)),
+                    new BindingOptionData(INVOICE, "Sales Person", nameof(Invoice.SalesPerson)),
+                    new BindingOptionData(INVOICE, "Tax", nameof(Invoice.TaxAmount)),
+                    new BindingOptionData(INVOICE, "Doc Fee", nameof(Invoice.DocFee)),
+                    new BindingOptionData(INVOICE, "Down Payment", nameof(Invoice.DownPayment)),
+                    new BindingOptionData(INVOICE, "Invoice Total", "Total"),
+                    new BindingOptionData(INVOICE, "Amount Due", "Due"),
 
 
-                    new BindingOptionData(BUYER, "First Name", $"{INVOICE}.{BUYER}.{USER}.{nameof(Database.Tables.User.FirstName)}"),
-                    new BindingOptionData(BUYER, "Last Name", $"{INVOICE}.{BUYER}.{USER}.{nameof(Database.Tables.User.LastName)}"),
-                    new BindingOptionData(BUYER, "Company", $"{INVOICE}.{BUYER}.{nameof(Customer.CompanyName)}"),
-                    new BindingOptionData(BUYER, "E-Mail", $"{INVOICE}.{BUYER}.{USER}.{nameof(Database.Tables.User.Email)}"),
-                    new BindingOptionData(BUYER, "Phone Number", $"{INVOICE}.{BUYER}.{nameof(Customer.PhoneNumbers)}[0]"),
-                    new BindingOptionData(BUYER, "Street Address", $"{INVOICE}.{BUYER}.{ADDRESS}.{nameof(Address.StreetAddress)}"),
-                    new BindingOptionData(BUYER, "City", $"{INVOICE}.{BUYER}.{ADDRESS}.{nameof(Address.City)}"),
-                    new BindingOptionData(BUYER, "State", $"{INVOICE}.{BUYER}.{ADDRESS}.{nameof(Address.State)}"),
-                    new BindingOptionData(BUYER, "ZIP", $"{INVOICE}.{BUYER}.{ADDRESS}.{nameof(Address.ZipCode)}"),
-                    new BindingOptionData(BUYER, "Dealer License Number", $"{INVOICE}.{BUYER}.{nameof(Customer.DealerLicenseNumber)}"),
-                    new BindingOptionData(BUYER, "MC Number", $"{INVOICE}.{BUYER}.{nameof(Customer.MCNumber)}"),
-                    new BindingOptionData(BUYER, "Resale Number", $"{INVOICE}.{BUYER}.{nameof(Customer.ResaleNumber)}"),
+                    new BindingOptionData(BUYER, "First Name", $"{BUYER}.{USER}.{nameof(Database.Tables.User.FirstName)}"),
+                    new BindingOptionData(BUYER, "Last Name", $"{BUYER}.{USER}.{nameof(Database.Tables.User.LastName)}"),
+                    new BindingOptionData(BUYER, "Company", $"{BUYER}.{nameof(Customer.CompanyName)}"),
+                    new BindingOptionData(BUYER, "E-Mail", $"{BUYER}.{USER}.{nameof(Database.Tables.User.Email)}"),
+                    new BindingOptionData(BUYER, "Phone Number", $"{BUYER}.{nameof(Customer.PhoneNumbers)}[0]"),
+                    new BindingOptionData(BUYER, "Street Address", $"{BUYER}.{ADDRESS}.{nameof(Address.StreetAddress)}"),
+                    new BindingOptionData(BUYER, "City", $"{BUYER}.{ADDRESS}.{nameof(Address.City)}"),
+                    new BindingOptionData(BUYER, "State", $"{BUYER}.{ADDRESS}.{nameof(Address.State)}"),
+                    new BindingOptionData(BUYER, "ZIP", $"{BUYER}.{ADDRESS}.{nameof(Address.ZipCode)}"),
+                    new BindingOptionData(BUYER, "Dealer License Number", $"{BUYER}.{nameof(Customer.DealerLicenseNumber)}"),
+                    new BindingOptionData(BUYER, "MC Number", $"{BUYER}.{nameof(Customer.MCNumber)}"),
+                    new BindingOptionData(BUYER, "Resale Number", $"{BUYER}.{nameof(Customer.ResaleNumber)}"),
 
-                    new BindingOptionData("Lien Holder", "Name", $"{INVOICE}.{LIEN_HOLDER}.{nameof(LienHolder.Name)}"),
-                    new BindingOptionData("Lien Holder", "Street Address", $"{INVOICE}.{LIEN_HOLDER}.{ADDRESS}.{nameof(Address.StreetAddress)}"),
-                    new BindingOptionData("Lien Holder", "City", $"{INVOICE}.{LIEN_HOLDER}.{ADDRESS}.{nameof(Address.City)}"),
-                    new BindingOptionData("Lien Holder", "State", $"{INVOICE}.{LIEN_HOLDER}.{ADDRESS}.{nameof(Address.State)}"),
-                    new BindingOptionData("Lien Holder", "ZIP", $"{INVOICE}.{LIEN_HOLDER}.{ADDRESS}.{nameof(Address.ZipCode)}"),
-                    new BindingOptionData("Lien Holder", "EIN", $"{INVOICE}.{LIEN_HOLDER}.{nameof(LienHolder.EIN)}"),
+                    new BindingOptionData("Lien Holder", "Name", $"{LIEN_HOLDER}.{nameof(LienHolder.Name)}"),
+                    new BindingOptionData("Lien Holder", "Street Address", $"{LIEN_HOLDER}.{ADDRESS}.{nameof(Address.StreetAddress)}"),
+                    new BindingOptionData("Lien Holder", "City", $"{LIEN_HOLDER}.{ADDRESS}.{nameof(Address.City)}"),
+                    new BindingOptionData("Lien Holder", "State", $"{LIEN_HOLDER}.{ADDRESS}.{nameof(Address.State)}"),
+                    new BindingOptionData("Lien Holder", "ZIP", $"{LIEN_HOLDER}.{ADDRESS}.{nameof(Address.ZipCode)}"),
+                    new BindingOptionData("Lien Holder", "EIN", $"{LIEN_HOLDER}.{nameof(LienHolder.EIN)}"),
                 });
             }
 

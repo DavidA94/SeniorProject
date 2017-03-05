@@ -3,6 +3,8 @@
  */
 
 class TextBlockFields {
+    static get autoWidth() { return "autoWidth"; }
+    static get autoHeight() { return "autoHeight"; }
     static get layout() { return "layout"; }
     static get font() { return "font"; }
     static get text() { return "text"; }
@@ -59,13 +61,13 @@ class TextBlock extends EventPropagator {
          * Indicates if the height should be auto-sized
          * @type {boolean}
          */
-        this.autoHeight = true;
+        this._autoHeight = true;
 
         /**
          * Indicates if the width should be auto-sized
          * @type {boolean}
          */
-        this.autoWidth = true;
+        this._autoWidth = true;
 
         /**
          * Indicates if the text block is in edit mode
@@ -226,18 +228,18 @@ class TextBlock extends EventPropagator {
         context.font = fontProps + " " + fontSize + "px " + this.font.family;
         context.fillStyle = this.font.color;
         context.textAlign = this.font.alignment.toLowerCase();
-        context.textBaseline = "top"; // Y value is where the top of the text will be
+        context.textBaseline = "top"; // layout.Y property is where the top of the text will be
 
         // Get the properties of the text
         const textProps = this.getTextProperties(context);
 
         // If we're auto-sizing
-        if(this.autoWidth) this.layout.width = textProps.width + this.layout.padding.left + this.layout.padding.right;
-        if(this.autoHeight)  this.layout.height = textProps.height + this.layout.padding.top + this.layout.padding.bottom;
+        if(this._autoWidth) this.layout.width = textProps.width + this.layout.padding.left + this.layout.padding.right;
+        if(this._autoHeight)  this.layout.height = textProps.height + this.layout.padding.top + this.layout.padding.bottom;
 
         // e.g. If a font size of 20, then with WYSIWYG_FLH_RATIO=1.5 the line height will be 30.
         const lineHeight = (this.font.size * WYSIWYG_FLH_RATIO);
-        this.layout.padding.top = ((lineHeight - this.font.size) / 2)
+        this.layout.padding.top = ((lineHeight - this.font.size) / 2);
         let yShiftAmt = this.layout.padding.top;
 
         // If we want things vertically centered, increase the yShiftAmt
@@ -283,12 +285,12 @@ class TextBlock extends EventPropagator {
      * @returns {TextProperties|null}
      */
     getTextProperties(context){
-        let width = this.autoWidth ? (this.maxWidth > 0 ? this.maxWidth : null) : this.layout.width;
+        let width = this._autoWidth ? (this.maxWidth > 0 ? this.maxWidth : null) : this.layout.width;
         if(width) {
             width -= (this.layout.padding.left + this.layout.padding.right);
         }
 
-        let height = this.autoHeight ? (this.maxHeight > 0 ? this.maxHeight : null) : this.layout.height;
+        let height = this._autoHeight ? (this.maxHeight > 0 ? this.maxHeight : null) : this.layout.height;
         if(height) {
             height -= (this.layout.padding.top + this.layout.padding.bottom);
         }
@@ -324,6 +326,8 @@ class TextBlock extends EventPropagator {
      */
     toJSON() {
         const properties = {};
+        properties[TextBlockFields.autoWidth] = this._autoWidth;
+        properties[TextBlockFields.autoHeight] = this._autoHeight;
         properties[TextBlockFields.font] = this.font;
         properties[TextBlockFields.layout] = this.layout;
         properties[TextBlockFields.maxHeight] = this.maxHeight;
@@ -340,6 +344,8 @@ class TextBlock extends EventPropagator {
      * @param {json} json - The JSON to use
      */
     initialize_json(json){
+        this._autoWidth = json[TextBlockFields.autoWidth];
+        this._autoHeight = json[TextBlockFields.autoHeight];
         this.font.initialize_json(json[TextBlockFields.font]);
         this.layout.initialize_json(json[TextBlockFields.layout]);
         this.maxHeight = json[TextBlockFields.maxHeight];
@@ -377,7 +383,7 @@ class TextBlock extends EventPropagator {
     _textArea_Change(e){
         const box = e.target;
 
-        if(this.autoWidth){
+        if(this._autoWidth){
             let width = HtmlTextBox.getWidth();
 
             if(this._maxWidth > 0) width = Math.min(this._maxWidth, width);
@@ -388,7 +394,7 @@ class TextBlock extends EventPropagator {
             this.layout.width = width;
         }
 
-        if(this.autoHeight){
+        if(this._autoHeight){
             let height = HtmlTextBox.getHeight();
 
             if(this._maxHeight > 0) height = Math.min(this._maxHeight, width);

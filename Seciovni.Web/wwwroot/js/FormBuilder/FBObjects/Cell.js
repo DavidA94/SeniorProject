@@ -31,8 +31,8 @@ class Cell extends TextBlock {
             this.layout.padding.bottom = this.layout.padding.left = WYSIWYG_TABLE_BORDER_SIZE;
 
         this.verticallyCenter = true;
-        this.autoWidth = false;
-        this.autoHeight = false;
+        this._autoWidth = false;
+        this._autoHeight = false;
 
         this.background = "#ffffff";
     }

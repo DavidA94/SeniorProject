@@ -61,7 +61,7 @@ class CheckBox extends FBObject {
     }
 
     toString(){
-        return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.CheckBox, Seciovni.APIs";
+        return "Shared.FormBuilderObjects.FBObjects.CheckBox, Shared";
     }
 
     // region JSON

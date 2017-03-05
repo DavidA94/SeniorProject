@@ -1,6 +1,6 @@
-﻿using Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.Bases;
+﻿using Shared.FormBuilderObjects.FBObjects.Bases;
 
-namespace Seciovni.APIs.WebHelpers.FormBuilder.FBObjects
+namespace Shared.FormBuilderObjects.FBObjects
 {
     public class Cell : TextBlock
     {

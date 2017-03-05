@@ -1,6 +1,6 @@
-﻿using Seciovni.APIs.WebHelpers.FormBuilder.Properties;
+﻿using Shared.FormBuilderObjects.Properties;
 
-namespace Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.Bases
+namespace Shared.FormBuilderObjects.FBObjects.Bases
 {
     public class Shape
     {

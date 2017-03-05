@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System;
 
 namespace Database.Tables
 {
@@ -22,7 +23,7 @@ namespace Database.Tables
         [StringLength(30)]
         [Required]
         public string LastName { get; set; }
-
+        
         // TODO: [Index(IsUnique = true)]
         [Display(Name = "Email")]
         [StringLength(50)]
@@ -57,6 +58,11 @@ namespace Database.Tables
             user.UserPermisions = userPermissions;
 
             return user;
+        }
+
+        public string FullName()
+        {
+            return $"{FirstName} {LastName}";
         }
     }
 }

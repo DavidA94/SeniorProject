@@ -41,10 +41,10 @@ class FBTextBlock extends FBObject {
 
             // If width or height was set, then make those no longer auto'd
             if(e.propertyName === "width"){
-                this._textBlock.autoWidth = false;
+                this._textBlock._autoWidth = false;
             }
             if(e.propertyName === "height"){
-                this._textBlock.autoHeight = false;
+                this._textBlock._autoHeight = false;
             }
         });
     }
@@ -116,7 +116,7 @@ class FBTextBlock extends FBObject {
         this._ignoreLayoutChange = false;
     }
 
-    toString() { return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.FBTextBlock, Seciovni.APIs"; }
+    toString() { return "Shared.FormBuilderObjects.FBObjects.FBTextBlock, Shared"; }
 
     /**
      * Gets the bindings for the given object

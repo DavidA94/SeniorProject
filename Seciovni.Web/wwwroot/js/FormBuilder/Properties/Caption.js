@@ -156,13 +156,13 @@ class Caption extends SubscribableProperty {
             // Set the width and height
 
             // Remove the auto-sizing on both side
-            this._textBlock.autoWidth = this._textBlock.autoHeight = false;
+            this._textBlock._autoWidth = this._textBlock._autoHeight = false;
 
             // And if we're to auto-size
             if(this.reserve === WYSIWYG_CAPTION_AUTO){
                 // Then set the correct side to auto
-                if(this.location & WYSIWYG_CAPTION_TOP_BOTTOM) this._textBlock.autoHeight = true;
-                else if(this.location & WYSIWYG_CAPTION_LEFT_RIGHT) this._textBlock.autoWidth = true;
+                if(this.location & WYSIWYG_CAPTION_TOP_BOTTOM) this._textBlock._autoHeight = true;
+                else if(this.location & WYSIWYG_CAPTION_LEFT_RIGHT) this._textBlock._autoWidth = true;
             }
             else{
                 if(this.location & WYSIWYG_CAPTION_TOP_BOTTOM) this._textBlock.layout.height = this.reserve;

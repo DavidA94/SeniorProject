@@ -17,5 +17,9 @@
         public const int DEVNULL_EMPLOYEE_ID = 1;
 
         public const string OVERWRITE_HEADER = "Overwrite";
+
+        public const int WYSIWYG_PPI = 72;
+        public const int WYSIWYG_PAGE_HEIGHT = 11 * WYSIWYG_PPI;
+        public const double WYSIWYG_FLH_RATIO = 1.4;
     }
 }

@@ -49,7 +49,7 @@ class BasicShape extends FBObject {
 
     // region Public Methods
 
-    toString() { return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.BasicShape, Seciovni.APIs"; }
+    toString() { return "Shared.FormBuilderObjects.FBObjects.BasicShape, Shared"; }
 
     // endregion
 

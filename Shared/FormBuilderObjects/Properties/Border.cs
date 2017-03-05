@@ -1,4 +1,4 @@
-﻿namespace Seciovni.APIs.WebHelpers.FormBuilder.Properties
+﻿namespace Shared.FormBuilderObjects.Properties
 {
     public class Border
     {

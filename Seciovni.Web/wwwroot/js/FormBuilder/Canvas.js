@@ -13,11 +13,11 @@ class CanvasFields {
 }
 
 class CanvasShapeTypes {
-    static get fbImage() { return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.FBImage, Seciovni.APIs"; }
-    static get checkBox() { return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.CheckBox, Seciovni.APIs"; }
-    static get fbTextBlock() { return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.FBTextBlock, Seciovni.APIs"; }
-    static get basicShape() { return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.BasicShape, Seciovni.APIs"; }
-    static get table() { return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.Table, Seciovni.APIs"; }
+    static get fbImage() { return "Shared.FormBuilderObjects.FBObjects.FBImage, Shared"; }
+    static get checkBox() { return "Shared.FormBuilderObjects.FBObjects.CheckBox, Shared"; }
+    static get fbTextBlock() { return "Shared.FormBuilderObjects.FBObjects.FBTextBlock, Shared"; }
+    static get basicShape() { return "Shared.FormBuilderObjects.FBObjects.BasicShape, Shared"; }
+    static get table() { return "Shared.FormBuilderObjects.FBObjects.Table, Shared"; }
 }
 
 /**

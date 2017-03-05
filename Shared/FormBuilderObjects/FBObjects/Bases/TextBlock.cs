@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
-using Seciovni.APIs.WebHelpers.FormBuilder.Properties;
+using Shared.FormBuilderObjects.Properties;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.Bases
+namespace Shared.FormBuilderObjects.FBObjects.Bases
 {
     public class TextBlock
     {
@@ -14,7 +14,10 @@ namespace Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.Bases
         public double? MaxWidth { get; set; }
         public string Text { get; set; }
         public bool VerticallyCenter { get; set; }
-        
+
+        public bool AutoHeight { get; set; }
+        public bool AutoWidth { get; set; }
+
         [JsonIgnore]
         public bool HasBindingError
         {

@@ -91,7 +91,7 @@ class FBImage extends FBObject {
     }
 
     toString() {
-        return "Seciovni.APIs.WebHelpers.FormBuilder.FBObjects.FBImage, Seciovni.APIs";
+        return "Shared.FormBuilderObjects.FBObjects.FBImage, Shared";
     }
 
     // endregion
