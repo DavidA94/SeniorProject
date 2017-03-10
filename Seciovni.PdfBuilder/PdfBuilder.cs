@@ -1,18 +1,20 @@
 ﻿using Database.Tables;
 using Shared;
+using Shared.CustomFormatters;
 using Shared.FormBuilderObjects;
 using Shared.FormBuilderObjects.FBObjects;
 using Shared.FormBuilderObjects.FBObjects.Bases;
+using Shared.FormBuilderObjects.Properties;
 using Syncfusion.Drawing;
 using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
+using Syncfusion.Pdf.Grid;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Reflection;
-using Syncfusion.Pdf.Grid;
+using System.Text.RegularExpressions;
 
 namespace Seciovni.PdfBuilder
 {
@@ -20,6 +22,7 @@ namespace Seciovni.PdfBuilder
     {
         private static PdfDocument m_doc = null;
         private static Invoice m_invoice = null;
+        private static double m_globalShift = 0;
 
         public static void Generate(FormBuilder fb, Invoice invoice)
         {
@@ -27,30 +30,60 @@ namespace Seciovni.PdfBuilder
 
             m_doc = new PdfDocument();
             m_doc.DocumentInformation.Title = invoice.InvoiceDate.ToString("YYYY-mm-dd") + " " + invoice.Buyer.User.FullName() + " Invoice";
-            
-            PdfPage page = m_doc.Pages.Add();
+            m_doc.PageSettings.SetMargins(0f);
 
-            foreach(dynamic shape in fb.Canvas.Shapes)
+            PdfPage page = m_doc.Pages.Add();
+            
+
+            //for(float i = 590, y = 20; i < 610; i += 1, y += 20)
+            //{
+            //    page.Graphics.DrawLine(PdfPens.Black, 0, y, i, y);
+            //    page.Graphics.DrawString(i.ToString(), new PdfStandardFont(PdfFontFamily.Courier, 12), PdfPens.Black, i - 5, y, 
+            //        new PdfStringFormat(PdfTextAlignment.Right));
+            //}
+
+            //using (MemoryStream stream = new MemoryStream())
+            //{
+            //    m_doc.Save(stream);
+
+            //    File.WriteAllBytes("Test.pdf", stream.ToArray());
+            //}
+
+            //return;
+
+            foreach (dynamic shape in fb.Canvas.Shapes)
             {
                 Draw(page.Graphics, shape);
                 DrawMain(page.Graphics, shape);
             }
-            
+
             using (MemoryStream stream = new MemoryStream())
             {
                 m_doc.Save(stream);
 
                 File.WriteAllBytes("Test.pdf", stream.ToArray());
             }
-            
+
             m_doc = null;
             m_invoice = null;
         }
 
         private static void Draw(PdfGraphics g, BasicShape image) { }
         private static void Draw(PdfGraphics g, Box box) { }
-        private static void Draw(PdfGraphics g, Cell box) {
+        private static void Draw(PdfGraphics g, Cell box)
+        {
+            float borderSize = 0.75f;
+            float shiftAmt = borderSize / 2.0f;
+
+            PdfBrush background = new PdfSolidBrush(new PdfColor(GetColor(box.Background)));
+            PdfPen border = new PdfPen(new PdfColor(GetColor(box.BorderColor)), borderSize);
+
+            g.DrawRectangle(background, GetRectangle(box.Layout));
             Draw(g, box as TextBlock);
+
+            // Make the stroke be half in, half out
+            var borderRect = GetRectangle(box.Layout);
+            g.DrawRectangle(border, borderRect);
         }
         private static void Draw(PdfGraphics g, CheckBox box) { }
         private static void Draw(PdfGraphics g, Ellipse box) { }
@@ -61,60 +94,112 @@ namespace Seciovni.PdfBuilder
 
             Draw(g, textBlock.TextBlock);
         }
-        private static void Draw(PdfGraphics g, Table box) {
+        private static void Draw(PdfGraphics g, Table box)
+        {
             var grid = new PdfGrid();
+            var headers = box.Cells.Select(c => c["header"]);
+            var contents = box.Cells.Select(c => c["content"]).ToList();
 
-            foreach (var cell in box.Cells)
+            foreach (var header in headers)
             {
-                Draw(g, cell["header"]);
-                Draw(g, cell["content"]);
+                Draw(g, header);
             }
+
+            // Figure out what we're bound to
+            var cellContent = contents.FirstOrDefault(cell => cell.Bindings.Count > 0);
+            var bindingPart = cellContent.Bindings.First().Value.Value.Split('.').First();
+            int count = 0;
+
+            if (bindingPart == nameof(VehicleInfo)) count = m_invoice.Vehicles.Count;
+            else if (bindingPart == nameof(MiscellaneousFee)) count = m_invoice.Fees.Count;
+            else if (bindingPart == nameof(Payment)) count = m_invoice.Payments.Count;
+
+            // Store the original bindings so we can revert
+            var originalBindings = contents.SelectMany(c => c.Bindings.Select(kv => kv.Value.Value)).ToList();
+
+            for(int i = 0; i < count; ++i)
+            {
+                if (i > 0)
+                {
+                    g.TranslateTransform(0, (float)box.ContentHeight);
+                }
+
+                for(int cellIdx = 0; cellIdx < contents.Count; ++cellIdx)
+                {
+                    var cell = contents[cellIdx];
+
+                    foreach (var kv in cell.Bindings)
+                    {
+                        kv.Value.Value = originalBindings[cellIdx].Replace(bindingPart, $"{bindingPart}[{i}]");
+                    }
+
+                    Draw(g, cell);
+                }
+            }
+
+            //foreach (var cell in box.Cells) {
+            //    Draw(g, cell["content"]);
+            //}
         }
 
 
         private static void Draw(PdfGraphics g, TextBlock box)
         {
-            foreach(var binding in box.Bindings.Select(b => b.Value))
+            // Do this so we don't change the actual object being passed in when there are bindings
+            string boxText = box.Text;
+
+            foreach (var binding in box.Bindings.Select(b => b.Value))
             {
                 string realValue = "";
                 object obj = m_invoice;
-                
-                foreach(var part in binding.Value.Split('.'))
-                {
-                    bool gotInInvoice = (obj is Invoice);
 
-                    if(obj is Invoice)
+                var parts = binding.Value.Split('.');
+                foreach (var part in parts)
+                {
+                    if (obj is Invoice)
                     {
                         if (part == "Total")
                         {
-                            obj = (obj as Invoice).GetTotal();
+                            obj = Format.ForPrint(new PrintFormatAttribute() { FixedPlaces = 2, Prefix = "$ " }, (obj as Invoice).GetTotal());
+                            break;
                         }
                         else if (part == "Due")
                         {
-                            obj = (obj as Invoice).GetDue();
+                            obj = Format.ForPrint(new PrintFormatAttribute() { FixedPlaces = 2, Prefix = "$ " }, (obj as Invoice).GetDue());
+                            break;
                         }
-                        else if (part == nameof(MiscellaneousFee))
+                        // If we've hit one of the arrays
+                        else if (part.EndsWith("]"))
                         {
-                            obj = (obj as Invoice).Fees[0];
+                            // We'll assume there's no bad data, until it blows up
+                            var index = Convert.ToInt32(Regex.Match(part, "(\\d+)").Groups[1].Value);
+                            var name = part.Substring(0, part.IndexOf('['));
+
+                            if (name == nameof(MiscellaneousFee))
+                            {
+                                obj = (obj as Invoice).Fees.ElementAt(index);
+                                continue;
+                            }
+                            else if (name == nameof(Payment))
+                            {
+                                obj = (obj as Invoice).Payments.ElementAt(index);
+                                continue;
+                            }
+                            else if (name == nameof(VehicleInfo))
+                            {
+                                obj = (obj as Invoice).Vehicles.ElementAt(index);
+                                continue;
+                            }
                         }
-                        else if (part == nameof(Payment))
-                        {
-                            obj = (obj as Invoice).Payments[0];
-                        }
-                        else if (part == nameof(VehicleInfo))
-                        {
-                            obj = (obj as Invoice).Vehicles[0];
-                        }
-                        else gotInInvoice = false;
                     }
 
-                    if (!gotInInvoice && part.EndsWith("]"))
+                    if (part == parts.Last())
                     {
-                        //object[] index = new object[] { Regex.Match(part, @"\[(.*?)\]").Groups[1].Value };
-                        //string baseName = Regex.Replace(part, @"(\[.*?\])", "");
-                        //obj = obj.GetType().GetRuntimeProperty(baseName).GetValue(obj, index);
+                        var pi = obj.GetType().GetRuntimeProperty(part);
+                        var format = pi.GetCustomAttribute<PrintFormatAttribute>();
+                        obj = Format.ForPrint(format, pi.GetValue(obj, null));
                     }
-                    else if(!gotInInvoice)
+                    else
                     {
                         obj = obj.GetType().GetRuntimeProperty(part).GetValue(obj, null);
                     }
@@ -122,22 +207,26 @@ namespace Seciovni.PdfBuilder
 
                 realValue = obj.ToString();
 
-                box.Text = box.Text.Replace("|_" + binding.Id + "_|", realValue);
+                boxText = boxText.Replace("|_" + binding.Id + "_|", realValue);
             }
 
             var brush = new PdfSolidBrush(new PdfColor(GetColor(box.Font.Color)));
-            var font = new Font();
-            font.Bold = box.Font.Bold;
-            font.Italic = box.Font.Italic;
-            font.FontFamilyName = box.Font.Family;
-            font.SizeInPoints = (float)box.Font.Size;
-            //PdfFont pdfFont = new PdfTrueTypeFont(font, font.Size);
-            PdfFont pdfFont = new PdfStandardFont(PdfFontFamily.Helvetica, font.Size);
+
+
+            string fontStyle = "";
+            if (box.Font.Bold) fontStyle += "b";
+            if (box.Font.Italic) fontStyle += "i";
+
+            string fontFile = Path.Combine(Directory.GetCurrentDirectory(), "Fonts", box.Font.Family, fontStyle + ".ttf");
+            if (!File.Exists(fontFile)) fontFile = Path.Combine(Directory.GetCurrentDirectory(), "Fonts", box.Font.Family, ".ttf");
+
+            Stream fontStream = new FileStream(fontFile, FileMode.Open, FileAccess.Read);
+            PdfFont pdfFont = new PdfTrueTypeFont(fontStream, (float)box.Font.Size);
 
             double? height = box.AutoHeight ? (double?)null : box.Layout.Height;
             double? width = box.AutoWidth ? (double?)null : box.Layout.Width;
 
-            var textProps = GetTextProperties(box.Text, width, height, pdfFont);
+            var textProps = GetTextProperties(boxText, width, height, pdfFont);
 
             if (box.AutoHeight) box.Layout.Height = textProps.Height + box.Layout.Padding.Top + box.Layout.Padding.Bottom;
             if (box.AutoWidth) box.Layout.Width = textProps.Width + box.Layout.Padding.Left + box.Layout.Padding.Right;
@@ -152,8 +241,8 @@ namespace Seciovni.PdfBuilder
             }
 
             PdfStringFormat textSettings;
-            if(box.Font.Alignment == "Center") textSettings = new PdfStringFormat(PdfTextAlignment.Center);
-            else if(box.Font.Alignment == "Right") textSettings = new PdfStringFormat(PdfTextAlignment.Right);
+            if (box.Font.Alignment == "Center") textSettings = new PdfStringFormat(PdfTextAlignment.Center);
+            else if (box.Font.Alignment == "Right") textSettings = new PdfStringFormat(PdfTextAlignment.Right);
             else textSettings = new PdfStringFormat(PdfTextAlignment.Left);
 
             var xPos = (float)(box.Layout.X + box.Layout.Padding.Left);
@@ -169,7 +258,14 @@ namespace Seciovni.PdfBuilder
         }
 
 
-        private static void DrawMain(PdfGraphics g, FBObject obj) { }
+        private static void DrawMain(PdfGraphics g, FBObject obj)
+        {
+            if (!string.IsNullOrWhiteSpace(obj.Caption.TextBlock.Text) && obj.Caption.Location != Location.None)
+            {
+                // Since I don't plan to fix captioning, this should take care of things for demos
+                Draw(g, obj.Caption.TextBlock);
+            }
+        }
 
         private static Color GetColor(string hex)
         {
@@ -184,7 +280,12 @@ namespace Seciovni.PdfBuilder
 
             return Color.FromArgb(parts[0], parts[1], parts[2]);
         }
-        
+
+        private static RectangleF GetRectangle(Layout layout)
+        {
+            return new RectangleF((float)layout.X, (float)layout.Y, (float)layout.Width, (float)layout.Height);
+        }
+
         private static TextProperties GetTextProperties(string text, double? width, double? height, PdfFont font)
         {
             float calcWidth = 0;  // Holds what we calculated the width to be for a given line
@@ -305,7 +406,8 @@ namespace Seciovni.PdfBuilder
             calcHeight = (float)Math.Ceiling(calcHeight);
 
             // Return what we got
-            return new TextProperties {
+            return new TextProperties
+            {
                 Width = maxWidth,
                 Height = calcHeight,
                 TextLines = outputText

@@ -7,7 +7,7 @@
 
         public static double PxToPt(double value)
         {
-            return value * 0.75;
+            return value;
         }
     }
 }

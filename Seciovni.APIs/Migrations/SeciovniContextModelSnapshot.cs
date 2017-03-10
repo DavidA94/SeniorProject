@@ -52,6 +52,8 @@ namespace Seciovni.APIs.Migrations
 
                     b.Property<int?>("AddressID");
 
+                    b.Property<string>("CellPhone");
+
                     b.Property<string>("CompanyName");
 
                     b.Property<string>("DealerLicenseNumber");
@@ -60,11 +62,17 @@ namespace Seciovni.APIs.Migrations
 
                     b.Property<string>("Group");
 
+                    b.Property<string>("HomePhone");
+
                     b.Property<string>("MCNumber");
+
+                    b.Property<string>("PrimaryPhone");
 
                     b.Property<string>("ResaleNumber");
 
                     b.Property<int?>("UserID");
+
+                    b.Property<string>("WorkPhone");
 
                     b.HasKey("CustomerID");
 
@@ -262,25 +270,6 @@ namespace Seciovni.APIs.Migrations
                     b.ToTable("Permissions");
                 });
 
-            modelBuilder.Entity("Database.Tables.PhoneNumber", b =>
-                {
-                    b.Property<int>("PhoneID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("CustomerID");
-
-                    b.Property<string>("Number");
-
-                    b.Property<int>("Type");
-
-                    b.HasKey("PhoneID");
-
-                    b.HasIndex("CustomerID");
-
-                    b.ToTable("PhoneNumber");
-                });
-
             modelBuilder.Entity("Database.Tables.User", b =>
                 {
                     b.Property<int>("UserID")
@@ -455,13 +444,6 @@ namespace Seciovni.APIs.Migrations
                     b.HasOne("Database.Tables.Invoice")
                         .WithMany("Payments")
                         .HasForeignKey("InvoiceID");
-                });
-
-            modelBuilder.Entity("Database.Tables.PhoneNumber", b =>
-                {
-                    b.HasOne("Database.Tables.Customer")
-                        .WithMany("PhoneNumbers")
-                        .HasForeignKey("CustomerID");
                 });
 
             modelBuilder.Entity("Database.Tables.UserLogin", b =>

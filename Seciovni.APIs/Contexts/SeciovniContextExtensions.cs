@@ -78,7 +78,7 @@ namespace Seciovni.APIs.Contexts
                     CompanyName = "Get My Furniture",
                     DealerLicenseNumber = "AZ 33280",
                     Emails = new List<EmailAddress> { new EmailAddress() { Email = "LanceMGillespie@jourrapide.com" } },
-                    PhoneNumbers = new List<PhoneNumber> { new PhoneNumber() { Number = "615-895-7269", Type = PhoneType.Cell } },
+                    PrimaryPhone = "615-895-7269",
                     User = new User()
                     {
                         FirstName = "Lance",
@@ -100,7 +100,7 @@ namespace Seciovni.APIs.Contexts
                     CompanyName = "Army Spy",
                     DealerLicenseNumber = "OK 88280",
                     Emails = new List<EmailAddress> { new EmailAddress() { Email = "MelindaPYoung@armyspy.com" } },
-                    PhoneNumbers = new List<PhoneNumber> { new PhoneNumber() { Number = "580-596-1036", Type = PhoneType.Cell } },
+                    PrimaryPhone = "580-596-1036",
                     User = new User()
                     {
                         FirstName = "Melinda",

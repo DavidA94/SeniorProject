@@ -200,7 +200,7 @@ function prettifyNumber(value, prefix, fixedPlaces){
  * @return {string}
  */
 function pxToPt(data){
-    return (parseFloat(data) * .75).toFixed(3);
+    return (parseFloat(data) * (1)).toFixed(3);
 }
 
 /**
@@ -209,7 +209,7 @@ function pxToPt(data){
  * @return {number}
  */
 function ptToPx(data){
-    return parseFloat(data) / .75;
+    return parseFloat(data);
 }
 
 /**

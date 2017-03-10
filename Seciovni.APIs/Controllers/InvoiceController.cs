@@ -38,7 +38,6 @@ namespace Seciovni.APIs.Controllers
             // Pull all the data we're going to need from the database, so there's not a ton of pegging it
             var dbInvoices = db.Invoices.Include(i => i.Buyer).ThenInclude(b => b.Address)
                                         .Include(i => i.Buyer).ThenInclude(b => b.Emails)
-                                        .Include(i => i.Buyer).ThenInclude(b => b.PhoneNumbers)
                                         .Include(i => i.Buyer).ThenInclude(b => b.User)
                                         .Include(i => i.Fees)
                                         .Include(i => i.LienHolder)
@@ -48,16 +47,8 @@ namespace Seciovni.APIs.Controllers
 
             var dbCustomers = db.Customers.Include(c => c.Address)
                                           .Include(c => c.Emails)
-                                          .Include(c => c.PhoneNumbers)
                                           .Include(c => c.User);
-
-            // There won't be phone numbers if we have a contact
-            if (invoice.Buyer.PhoneNumbers != null)
-            {
-                // Clean up the phone numbers we got, to just be the digits
-                invoice.Buyer.PhoneNumbers.ForEach(p => new string(p.Number.Where(char.IsDigit).ToArray()));
-            }
-
+            
             // If this isn't a new invoice
             if (invoice.InvoiceID != 0)
             {
@@ -155,7 +146,7 @@ namespace Seciovni.APIs.Controllers
                 var customers = dbCustomers
                     .Where(c => c.User.Email.ToLower() == invoice.Buyer.User.Email.ToLower() ||
                                 c.Emails.Select(e => e.Email).Contains(invoice.Buyer.User.Email, StringComparer.OrdinalIgnoreCase) ||
-                                c.PhoneNumbers.FirstOrDefault() == invoice.Buyer.PhoneNumbers.FirstOrDefault())
+                                c.PrimaryPhone == invoice.Buyer.PrimaryPhone)
                     .Where(c => c.EmployeeID == employee.UserID ||
                                 c.EmployeeID == Constants.DEVNULL_EMPLOYEE_ID);
 
@@ -192,7 +183,7 @@ namespace Seciovni.APIs.Controllers
                         customer.MCNumber = invoice.Buyer.MCNumber;
                         customer.ResaleNumber = invoice.Buyer.ResaleNumber;
 
-                        customer.PhoneNumbers[0].Number = invoice.Buyer.PhoneNumbers[0].Number;
+                        customer.PrimaryPhone = invoice.Buyer.PrimaryPhone;
 
                         customer.User.Email = invoice.Buyer.User.Email;
                         customer.User.FirstName = invoice.Buyer.User.FirstName;
@@ -409,7 +400,6 @@ namespace Seciovni.APIs.Controllers
             // Pull all the data we're going to need from the database, so there's not a ton of pegging it
             var dbInvoices = db.Invoices.Include(i => i.Buyer).ThenInclude(b => b.Address)
                                         .Include(i => i.Buyer).ThenInclude(b => b.Emails)
-                                        .Include(i => i.Buyer).ThenInclude(b => b.PhoneNumbers)
                                         .Include(i => i.Buyer).ThenInclude(b => b.User)
                                         .Include(i => i.Fees)
                                         .Include(i => i.IIPT)
@@ -485,7 +475,6 @@ namespace Seciovni.APIs.Controllers
         public Invoice Get(int id)
         {
             var invoices = db.Invoices.Include(i => i.Buyer).ThenInclude(b => b.Address)
-                                      .Include(i => i.Buyer).ThenInclude(b => b.PhoneNumbers)
                                       .Include(i => i.Buyer).ThenInclude(b => b.User)
                                       .Include(i => i.Fees)
                                       .Include(i => i.LienHolder).ThenInclude(l => l.Address)

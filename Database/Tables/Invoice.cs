@@ -1,5 +1,6 @@
 ﻿using Database.Tables.ManyManyTables;
 using Shared;
+using Shared.CustomFormatters;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -32,14 +33,17 @@ namespace Database.Tables
 
         [Required]
         [Range(0, int.MaxValue)]
+        [PrintFormat(FixedPlaces = 2, Prefix = "$ ")]
         public decimal DocFee { get; set; }
 
         [Required]
         [Range(0, int.MaxValue)]
+        [PrintFormat(FixedPlaces = 2, Prefix = "$ ")]
         public decimal DownPayment { get; set; }
 
         [Required]
         [Range(0, int.MaxValue)]
+        [PrintFormat(FixedPlaces = 2, Prefix = "$ ")]
         public decimal TaxAmount { get; set; }
 
         public LienHolder LienHolder { get; set; }

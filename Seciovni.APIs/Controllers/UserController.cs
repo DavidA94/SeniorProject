@@ -40,7 +40,6 @@ namespace Seciovni.APIs.Controllers
             {
                 contacts = db.Customers.Include(c => c.Address)
                                        .Include(c => c.Emails)
-                                       .Include(c => c.PhoneNumbers)
                                        .Include(c => c.User)
                                        .Where(c => c.EmployeeID == employee.EmployeeID).ToList();
             }

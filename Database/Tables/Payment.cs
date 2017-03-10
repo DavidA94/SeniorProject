@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.CustomFormatters;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -17,6 +18,7 @@ namespace Database.Tables
         public string Description { get; set; }
 
         [Required]
+        [PrintFormat(FixedPlaces = 2, Prefix = "$ ")]
         public decimal Amount { get; set; }
 
         public override bool Equals(object obj)

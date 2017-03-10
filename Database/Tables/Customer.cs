@@ -32,8 +32,18 @@ namespace Database.Tables
 
         public string Group { get; set; }
 
-        public List<PhoneNumber> PhoneNumbers { get; set; }
+        [Phone]
+        public string PrimaryPhone { get; set; }
 
+        [Phone]
+        public string HomePhone { get; set; }
+
+        [Phone]
+        public string CellPhone { get; set; }
+
+        [Phone]
+        public string WorkPhone { get; set; } 
+        
         public List<EmailAddress> Emails { get; set; }
 
         /// <summary>
@@ -56,7 +66,7 @@ namespace Database.Tables
                    rhs.User.FirstName == User.FirstName &&
                    rhs.User.LastName == User.LastName &&
                    rhs.User.Email.ToLower() == User.Email.ToLower() &&
-                   PhoneNumbers.Contains(rhs.PhoneNumbers.FirstOrDefault()) &&
+                   PrimaryPhone == rhs.PrimaryPhone &&
                    Comparison.AreEqual(rhs.CompanyName, CompanyName) &&
                    Comparison.AreEqual(rhs.DealerLicenseNumber, DealerLicenseNumber) &&
                    Comparison.AreEqual(rhs.MCNumber, MCNumber) &&

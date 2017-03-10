@@ -1,4 +1,5 @@
 ﻿using Database.CustomValidators;
+using Shared.CustomFormatters;
 using System.ComponentModel.DataAnnotations;
 
 namespace Database.Tables
@@ -37,12 +38,14 @@ namespace Database.Tables
         public string Model { get; set; }
 
         [Required]
+        [PrintFormat(FixedPlaces = 0, Prefix = null)]
         public int Miles { get; set; } = 0;
 
         [Required]
         public string Location { get; set; }
 
         [Required]
+        [PrintFormat(FixedPlaces = 2, Prefix = "$ ")]
         public decimal Price { get; set; }
 
         public override bool Equals(object obj)

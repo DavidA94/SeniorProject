@@ -21,5 +21,6 @@
         public const int WYSIWYG_PPI = 72;
         public const int WYSIWYG_PAGE_HEIGHT = 11 * WYSIWYG_PPI;
         public const double WYSIWYG_FLH_RATIO = 1.4;
+        public const float WYSIWYG_TABLE_BORDER_SIZE = 1;
     }
 }

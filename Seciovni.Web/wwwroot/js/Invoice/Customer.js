@@ -6,7 +6,10 @@ class CustomerFields {
     static get customerID() { return "customerID"; }
     static get user() { return "user"; }
     static get address() { return "address"; }
-    static get phoneNumbers() { return "phoneNumbers"; }
+    static get primaryPhone() { return "primaryPhone"; }
+    static get cellPhone() { return "cellPhone"; }
+    static get homePhone() { return "homePhone"; }
+    static get workPhone() { return "workPhone"; }
     static get company() { return "companyName"; }
     static get licenseNum() { return "dealerLicenseNumber"; }
     static get mcNum() { return "mcNumber"; }
@@ -132,9 +135,27 @@ class Customer {
 
         /**
          * @private
-         * @type {[PhoneNumber]}
+         * @type {BaseHtmlElement}
          */
-        this._phoneNumbers = [new PhoneNumber()];
+        this._primaryPhone = null;
+
+        /**
+         * @private
+         * @type {BaseHtmlElement}
+         */
+        this._homePhone = null;
+
+        /**
+         * @private
+         * @type {BaseHtmlElement}
+         */
+        this._cellPhone = null;
+
+        /**
+         * @private
+         * @type {BaseHtmlElement}
+         */
+        this._workPhone = null;
 
         /**
          * @private
@@ -179,8 +200,17 @@ class Customer {
                 case UserFields.email:
                     this._user.Email = element = new TextInput(elements[i]);
                     break;
-                case PhoneFields.number:
-                    this._phoneNumbers[0].Number = element = new TextInput(elements[i]);
+                case CustomerFields.primaryPhone:
+                    this._primaryPhone = element = new TextInput(elements[i]);
+                    break;
+                case CustomerFields.cellPhone:
+                    this._cellPhone = element = new TextInput(elements[i]);
+                    break;
+                case CustomerFields.homePhone:
+                    this._homePhone = element = new TextInput(elements[i]);
+                    break;
+                case CustomerFields.workPhone:
+                    this._workPhone = element = new TextInput(elements[i]);
                     break;
                 case AddressFields.address:
                     this._address.StreetAddress = element = new TextInput(elements[i]);
@@ -244,11 +274,15 @@ class Customer {
         else {
             this._user.initialize_json(json[CustomerFields.user]);
             this._address.initialize_json(json[CustomerFields.address]);
-            this._phoneNumbers[0].initialize_json(json[CustomerFields.phoneNumbers][0]);
+            this._primaryPhone.value = json[CustomerFields.primaryPhone];
             this._company.value = json[CustomerFields.company];
             this._licenseNum.value = json[CustomerFields.licenseNum];
             this._mcNum.value = json[CustomerFields.mcNum];
             this._resaleNum.value = json[CustomerFields.resaleNum];
+
+            if(json[CustomerFields.cellPhone]) this._cellPhone.value = json[CustomerFields.cellPhone];
+            if(json[CustomerFields.homePhone]) this._homePhone.value = json[CustomerFields.homePhone];
+            if(json[CustomerFields.workPhone]) this._workPhone.value = json[CustomerFields.workPhone];
 
             this.swap(new Event(""));
             this._updatePreviewField();
@@ -267,7 +301,10 @@ class Customer {
         this._user.Email.value = "";
         this._user.FirstName.value = "";
         this._user.LastName.value = "";
-        this._phoneNumbers[0].Number.value = "";
+        this._primaryPhone.value = "";
+        if(this._cellPhone) this._cellPhone.value = "";
+        if(this._homePhone) this._homePhone.value = "";
+        if(this._workPhone) this._workPhone.value = "";
 
         this._chosenContact = null;
         this._chosenContactID = -1;
@@ -342,7 +379,10 @@ class Customer {
             const properties = {};
             properties[CustomerFields.user] = this._user;
             properties[CustomerFields.address] = this._address;
-            properties[CustomerFields.phoneNumbers] = this._phoneNumbers;
+            properties[CustomerFields.primaryPhone] = this._primaryPhone.value;
+            properties[CustomerFields.cellPhone] = this._cellPhone.value;
+            properties[CustomerFields.homePhone] = this._homePhone.value;
+            properties[CustomerFields.workPhone] = this._workPhone.value;
 
             properties[CustomerFields.company] = this._company.value;
             properties[CustomerFields.licenseNum] = this._licenseNum.value;
@@ -364,15 +404,24 @@ class Customer {
      */
     _fieldUpdated(e) {
         // Ensure the phone, email, and zip are valid
-        if(e.propertyName == PhoneFields.number){
-            const phone = this._phoneNumbers[0].Number.value;
+        if(e.propertyName.indexOf("Phone") > 0){
+            /**
+             * @type {BaseHtmlElement}
+             */
+            let phone;
+
+            if(e.propertyName == CustomerFields.primaryPhone) phone = this._primaryPhone;
+            else if(e.propertyName == CustomerFields.cellPhone) phone = this._cellPhone;
+            else if(e.propertyName == CustomerFields.homePhone) phone = this._homePhone;
+            else if(e.propertyName == CustomerFields.workPhone) phone = this._workPhone;
+
             const phoneRegEx = new RegExp(/^(1[.\-])?[0-9]{3}[.\-]?[0-9]{3}[.\-]?[0-9]{4}$/);
 
-            if(phone != "" && !phone.match(phoneRegEx)){
-                this._phoneNumbers[0].Number.error = "Invalid Phone Number. Expecting format 1-111-111-1111";
+            if(phone && phone.value != "" && !phone.value.match(phoneRegEx)){
+                phone.error = "Invalid Phone Number. Expecting format 1-111-111-1111";
             }
-            else{
-                this._phoneNumbers[0].error = null;
+            else if(phone){
+                phone.error = null;
             }
         }
         else if(e.propertyName === UserFields.email){
