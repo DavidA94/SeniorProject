@@ -2,7 +2,7 @@
 
 namespace Shared.FormBuilderObjects.FBObjects
 {
-    public class Box : FBObject
+    public class Box : Shape
     {
     }
 }

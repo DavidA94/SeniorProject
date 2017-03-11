@@ -415,14 +415,13 @@ class FBObject extends EventPropagator {
         // If there is a caption to draw, save the context and draw it
         if(this.caption.text && this.caption.text !== "") {
             context.save();
-             this.caption.draw(context, this.layout, this.border);
-            //this._drawCaption(context);
+            this.caption.draw(context, this.layout, this.border);
             context.restore();
 
             const capLoc = this.caption.location;
 
             // Don't draw a resizer if it's in the middle
-            if(capLoc & WYSIWYG_CAPTION_CENTER){
+            if(capLoc & WYSIWYG_CAPTION_CENTER || capLoc === Location.None){
                 this._captionResizer.layout.width = this._captionResizer.layout.height = 0;
                 return;
             }
@@ -845,8 +844,8 @@ class FBObject extends EventPropagator {
         const rightThickness = this.border.right;
         const bottomThickness = this.border.bottom;
         const leftThickness = this.border.left;
-        const x = this.layout._x;
-        const y = this.layout._y;
+        const x = this.layout.x;
+        const y = this.layout.y;
         const height = this.layout.height;
         const width = this.layout.width;
 

@@ -16,7 +16,7 @@ class CheckBox extends FBObject {
     _doDraw(context){
         const scaleAmt = Math.min(this.width, this.height) / 10;
         const cornerAmt = 2 * scaleAmt;
-        const lineWidth = Math.floor(scaleAmt);
+        const lineWidth = scaleAmt;
         let width = this.width - lineWidth;
         let height = this.height - lineWidth;
         let shiftX = 0;
@@ -36,13 +36,14 @@ class CheckBox extends FBObject {
         // Shift so we'll draw within the bounds
         context.translate(this.x + (lineWidth / 2) + shiftX, this.y + (lineWidth / 2) + shiftY);
 
-        context.lineWidth = Math.floor(scaleAmt);
+        context.lineWidth = scaleAmt;
         context.lineCap = "round";
         context.lineJoin = "round";
-        context.beginPath();
+        //context.beginPath();
 
         // Arcs are in clockwise order starting at the top left
-        context.moveTo(0, cornerAmt);
+        // Not fancy because PDFs
+        /*context.moveTo(0, cornerAmt);
         context.quadraticCurveTo(0, 0, cornerAmt, 0);
         context.lineTo(width - cornerAmt, 0);
         context.quadraticCurveTo(width, 0, width, cornerAmt);
@@ -50,8 +51,13 @@ class CheckBox extends FBObject {
         context.quadraticCurveTo(width, height, width - cornerAmt, height);
         context.lineTo(cornerAmt, height);
         context.quadraticCurveTo(0, height, 0, height - cornerAmt);
-        context.lineTo(0, cornerAmt);
+        context.lineTo(0, cornerAmt);*/
 
+        context.rect(0, 0, width, height);
+        context.stroke();
+
+        context.lineWidth = scaleAmt * 1.5;
+        context.beginPath();
         context.moveTo(width * .2, height * .57);
         context.lineTo(width * .4, height * .77);
         context.lineTo(width * .8, height * .27);

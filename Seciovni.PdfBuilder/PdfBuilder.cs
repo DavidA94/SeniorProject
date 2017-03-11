@@ -22,39 +22,35 @@ namespace Seciovni.PdfBuilder
     {
         private static PdfDocument m_doc = null;
         private static Invoice m_invoice = null;
+        private static int m_curPage = 0;
         private static double m_globalShift = 0;
-
+        private static dynamic m_nextPageShape = null;
+        
         public static void Generate(FormBuilder fb, Invoice invoice)
         {
             m_invoice = invoice;
 
             m_doc = new PdfDocument();
             m_doc.DocumentInformation.Title = invoice.InvoiceDate.ToString("YYYY-mm-dd") + " " + invoice.Buyer.User.FullName() + " Invoice";
-            m_doc.PageSettings.SetMargins(0f);
+            m_doc.PageSettings.SetMargins(0f, 0f, 0f, 17.5f);
 
+            m_curPage = 1;
             PdfPage page = m_doc.Pages.Add();
-            
 
-            //for(float i = 590, y = 20; i < 610; i += 1, y += 20)
-            //{
-            //    page.Graphics.DrawLine(PdfPens.Black, 0, y, i, y);
-            //    page.Graphics.DrawString(i.ToString(), new PdfStandardFont(PdfFontFamily.Courier, 12), PdfPens.Black, i - 5, y, 
-            //        new PdfStringFormat(PdfTextAlignment.Right));
-            //}
-
-            //using (MemoryStream stream = new MemoryStream())
-            //{
-            //    m_doc.Save(stream);
-
-            //    File.WriteAllBytes("Test.pdf", stream.ToArray());
-            //}
-
-            //return;
-
-            foreach (dynamic shape in fb.Canvas.Shapes)
+            foreach (dynamic shape in fb.Canvas.Shapes.OrderBy(s => s.Layout.Y))
             {
                 Draw(page.Graphics, shape);
                 DrawMain(page.Graphics, shape);
+
+
+                // Shape detects new page is needed
+                if (m_nextPageShape)
+                {
+                    ++m_curPage;
+                    page = m_doc.Pages.Add();
+                    Draw(page.Graphics, m_nextPageShape);
+                    DrawMain(page.Graphics, m_nextPageShape);
+                }
             }
 
             using (MemoryStream stream = new MemoryStream())
@@ -68,8 +64,27 @@ namespace Seciovni.PdfBuilder
             m_invoice = null;
         }
 
-        private static void Draw(PdfGraphics g, BasicShape image) { }
-        private static void Draw(PdfGraphics g, Box box) { }
+        private static void Draw(PdfGraphics g, BasicShape box) {
+            if(box.Shape.ShapeName == nameof(Box))
+            {
+                var boxX = (float)box.Layout.X;
+                var boxY = (float)box.Layout.Y;
+                var boxH = (float)box.Layout.Height;
+                var boxW = (float)box.Layout.Width;
+                var marginL = (float)box.Layout.Margin.Left;
+                var marginT = (float)box.Layout.Margin.Top;
+
+                var background = new PdfSolidBrush(new PdfColor(GetColor(box.Appearance.Background)));
+                var stroke = new PdfPen(new PdfColor(GetColor(box.Appearance.StrokeColor)), (float)box.Appearance.StrokeThickness);
+
+                g.DrawRectangle(background, boxX + marginL, boxY + marginT, boxW, boxH);
+                g.DrawRectangle(stroke, boxX + marginL, boxY + marginT, boxW, boxH);
+            }
+            else
+            {
+                // TODO
+            }
+        }
         private static void Draw(PdfGraphics g, Cell box)
         {
             float borderSize = 0.75f;
@@ -85,7 +100,43 @@ namespace Seciovni.PdfBuilder
             var borderRect = GetRectangle(box.Layout);
             g.DrawRectangle(border, borderRect);
         }
-        private static void Draw(PdfGraphics g, CheckBox box) { }
+        private static void Draw(PdfGraphics g, CheckBox box) {
+            var scaleAmt = Math.Min(box.Layout.Width, box.Layout.Height) / 10.0;
+            var cornerAmt = (float)(2 * scaleAmt);
+            var lineWidth = scaleAmt;
+
+            var x = box.Layout.X;
+            var y = box.Layout.Y;
+            var width = box.Layout.Width - lineWidth;
+            var height = box.Layout.Height - lineWidth;
+
+            var shiftX = 0.0;
+            var shiftY = 0.0;
+
+            if(width > height)
+            {
+                shiftX = (width - height) / 2;
+                width = height;
+            }
+
+            if (width < height)
+            {
+                shiftY = (height - width) / 2.0;
+                height = width;
+            }
+
+            shiftX += x + (lineWidth / 2);
+            shiftY += y + (lineWidth / 2);
+
+            var pen = new PdfPen(PdfBrushes.Black, (float)lineWidth);
+            g.DrawRectangle(pen, (float)x, (float)y, (float)width, (float)height);
+
+            pen = new PdfPen(PdfBrushes.Black, (float)lineWidth * 1.5f);
+            g.DrawLine(pen, (float)(x + width * 0.2), (float)(y + height * 0.57),
+                            (float)(x + width * 0.4), (float)(y + height * 0.77));
+            g.DrawLine(pen, (float)(x + width * 0.4), (float)(y + height * 0.77),
+                            (float)(x + width * 0.8), (float)(y + height * 0.27));
+        }
         private static void Draw(PdfGraphics g, Ellipse box) { }
         private static void Draw(PdfGraphics g, FBImage box) { }
         private static void Draw(PdfGraphics g, FBTextBlock textBlock)
@@ -116,15 +167,14 @@ namespace Seciovni.PdfBuilder
 
             // Store the original bindings so we can revert
             var originalBindings = contents.SelectMany(c => c.Bindings.Select(kv => kv.Value.Value)).ToList();
-
-            for(int i = 0; i < count; ++i)
+            for (int i = 0; i < count; ++i)
             {
                 if (i > 0)
                 {
                     g.TranslateTransform(0, (float)box.ContentHeight);
+                    m_globalShift += box.ContentHeight;
                 }
-
-                for(int cellIdx = 0; cellIdx < contents.Count; ++cellIdx)
+                for (int cellIdx = 0; cellIdx < contents.Count; ++cellIdx)
                 {
                     var cell = contents[cellIdx];
 
@@ -166,6 +216,11 @@ namespace Seciovni.PdfBuilder
                         else if (part == "Due")
                         {
                             obj = Format.ForPrint(new PrintFormatAttribute() { FixedPlaces = 2, Prefix = "$ " }, (obj as Invoice).GetDue());
+                            break;
+                        }
+                        else if(part == "PageNumber")
+                        {
+                            obj = m_curPage;
                             break;
                         }
                         // If we've hit one of the arrays
@@ -223,8 +278,8 @@ namespace Seciovni.PdfBuilder
             Stream fontStream = new FileStream(fontFile, FileMode.Open, FileAccess.Read);
             PdfFont pdfFont = new PdfTrueTypeFont(fontStream, (float)box.Font.Size);
 
-            double? height = box.AutoHeight ? (double?)null : box.Layout.Height;
-            double? width = box.AutoWidth ? (double?)null : box.Layout.Width;
+            double? width = box.AutoWidth ? (box.MaxWidth > 0 ? box.MaxWidth : null) : box.Layout.Width;
+            double? height = box.AutoHeight ? (box.MaxHeight> 0 ? box.MaxHeight : null) : box.Layout.Height;
 
             var textProps = GetTextProperties(boxText, width, height, pdfFont);
 
@@ -264,6 +319,73 @@ namespace Seciovni.PdfBuilder
             {
                 // Since I don't plan to fix captioning, this should take care of things for demos
                 Draw(g, obj.Caption.TextBlock);
+            }
+
+            DrawBorder(g, obj);
+        }
+
+        private static void DrawBorder(PdfGraphics g, FBObject obj)
+        {
+            // Store the needed properties in local variables for easy access
+            var topThickness = obj.Border.Thickness.Top;
+            var rightThickness = obj.Border.Thickness.Right;
+            var bottomThickness = obj.Border.Thickness.Bottom;
+            var leftThickness = obj.Border.Thickness.Left;
+            var x = obj.Layout.X;
+            var y = obj.Layout.Y;
+            var height = obj.Layout.Height;
+            var width = obj.Layout.Width;
+
+            // Create a brush with the right color
+            PdfBrush fill = new PdfSolidBrush(new PdfColor(GetColor(obj.Border.Color)));
+            
+            /**
+            ** The following four if statements work with the following logic:
+            ** If the border has a size, figure out the size it should be
+            ** The size includes the size of neighboring border. Such that,
+            ** if there is a top and right border, the top's width will be
+            ** extended so that it goes all the way to the right of the right
+            ** border, and the right's height and y position will be adjusted
+            ** so that the right border will go to the top of the top border.
+            ** This is a little redundant, But it keeps all the logic the same.
+            ** Might change it someday.
+            ** Then a rectangle is drawn to represent the border
+            */
+
+            if (topThickness > 0)
+            {
+                var bY = (float)(y - topThickness);
+                var bX = (float)(x - leftThickness);
+                var bW = (float)(width + leftThickness + rightThickness);
+
+                g.DrawRectangle(fill, bX, bY, bW, (float)topThickness);
+            }
+
+            if (rightThickness > 0)
+            {
+                var bX = (float)(x + width);
+                var bY = (float)(y - topThickness);
+                var bH = (float)(height + topThickness + bottomThickness);
+
+                g.DrawRectangle(fill, bX, bY, (float)rightThickness, bH);
+            }
+
+            if (bottomThickness > 0)
+            {
+                var bY = (float)(y + height);
+                var bX = (float)(x - leftThickness);
+                var bW = (float)(width + leftThickness + rightThickness);
+
+                g.DrawRectangle(fill, bX, bY, bW, (float)bottomThickness);
+            }
+
+            if (leftThickness > 0)
+            {
+                var bX = (float)(x - leftThickness);
+                var bY = (float)(y - topThickness);
+                var bH = (float)(height + topThickness + bottomThickness);
+
+                g.DrawRectangle(fill, bX, bY, (float)leftThickness, bH);
             }
         }
 

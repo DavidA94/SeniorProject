@@ -197,6 +197,7 @@ namespace Seciovni.APIs.Controllers
                     new BindingOptionData(INVOICE, "Down Payment", nameof(Invoice.DownPayment)),
                     new BindingOptionData(INVOICE, "Invoice Total", "Total"),
                     new BindingOptionData(INVOICE, "Amount Due", "Due"),
+                    new BindingOptionData(INVOICE, "Page Number", "PageNumber"),
 
 
                     new BindingOptionData(BUYER, "First Name", $"{BUYER}.{USER}.{nameof(Database.Tables.User.FirstName)}"),

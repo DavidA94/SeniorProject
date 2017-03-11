@@ -35,7 +35,7 @@ class TextBlock extends EventPropagator {
          */
         this._size = new Font();
 
-        this.font.alignment = Alignment.Center;
+        this.font.alignment = Alignment.Left;
 
         /**
          * @private
@@ -48,7 +48,7 @@ class TextBlock extends EventPropagator {
          * @type {number|null}
          * @private
          */
-        this._maxWidth = null;
+        this._maxWidth = 555; // Magic number = width of page without margins
 
         /**
          * The maximum height when in auto-size mode, or the height of the object

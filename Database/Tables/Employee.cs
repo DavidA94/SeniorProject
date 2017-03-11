@@ -21,5 +21,10 @@ namespace Database.Tables
         public JobType Job { get; set; }
 
         public ICollection<Customer> Contacts { get; set; }
+
+        public override string ToString()
+        {
+            return User.FirstName + " " + User.LastName;
+        }
     }
 }

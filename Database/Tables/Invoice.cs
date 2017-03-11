@@ -15,6 +15,7 @@ namespace Database.Tables
         public int InvoiceID { get; set; }
 
         [Required]
+        [PrintFormat(typeof(DateTime))]
         public DateTime InvoiceDate { get; set; }
 
         [Required]

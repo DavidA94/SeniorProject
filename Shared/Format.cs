@@ -12,6 +12,11 @@ namespace Shared
         {
             if(format == null || !(value is double || value is decimal || value is int))
             {
+                if (format?.Type == typeof(DateTime))
+                {
+                    return ((DateTime)value).ToString("yyyy-MM-dd");
+                }
+
                 return value?.ToString();
             }
 

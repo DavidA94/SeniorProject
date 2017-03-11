@@ -2,7 +2,7 @@
 
 namespace Shared.FormBuilderObjects.FBObjects
 {
-    public class Ellipse : FBObject
+    public class Ellipse : Shape
     {
     }
 }
