@@ -78,6 +78,7 @@ namespace Seciovni.APIs
             });
 
             app.UseMvc();
+            app.UseStaticFiles();
         }
     }
 }

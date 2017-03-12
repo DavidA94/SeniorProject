@@ -5,6 +5,7 @@
     static get buyerName() { return "buyerName" }
     static get invoiceTotal() { return "invoiceTotal" }
     static get totalDue() { return "totalDue" }
+    static get salesPerson() { return "salesPerson" }
 }
 
 class InvoicePreview {
@@ -53,6 +54,12 @@ class InvoicePreview {
          * @type {number}
          */
         this._totalDue = null;
+
+        /**
+         * @private
+         * @type {string}
+         */
+        this._salesPerson = null;
     }
 
     // endregion
@@ -101,6 +108,12 @@ class InvoicePreview {
      */
     get totalDue() { return this._totalDue; }
 
+    /**
+     * The sales person on the invoice
+     * @return {string}
+     */
+    get salesPerson() { return this._salesPerson; }
+
     // endregion
 
     // region Public methods
@@ -144,6 +157,11 @@ class InvoicePreview {
         this._totalDue = value = json[InvoicePreviewFields.totalDue];
         td.innerHTML = prettifyNumber(value, "$ ", 2);
         td.className = "right";
+        parent.appendChild(td);
+
+        td = document.createElement("td");
+        this._salesPerson = value = json[InvoicePreviewFields.salesPerson];
+        td.innerHTML = value;
         parent.appendChild(td);
     }
 

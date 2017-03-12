@@ -337,7 +337,7 @@ class Customer {
             this._getContactPreviews();
         }
 
-        this._dialog.show();
+        this._dialog.showModal();
     }
 
     /**
@@ -380,9 +380,9 @@ class Customer {
             properties[CustomerFields.user] = this._user;
             properties[CustomerFields.address] = this._address;
             properties[CustomerFields.primaryPhone] = this._primaryPhone.value;
-            properties[CustomerFields.cellPhone] = this._cellPhone.value;
-            properties[CustomerFields.homePhone] = this._homePhone.value;
-            properties[CustomerFields.workPhone] = this._workPhone.value;
+            if(this._cellPhone) properties[CustomerFields.cellPhone] = this._cellPhone.value;
+            if(this._homePhone) properties[CustomerFields.homePhone] = this._homePhone.value;
+            if(this._workPhone) properties[CustomerFields.workPhone] = this._workPhone.value;
 
             properties[CustomerFields.company] = this._company.value;
             properties[CustomerFields.licenseNum] = this._licenseNum.value;

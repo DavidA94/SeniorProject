@@ -8,6 +8,7 @@
             <button id="saveButton"><img src="~/images/save.png" /> Save Invoice</button>
             @if (Model.InvoiceID > 0)
             {
+                <button id="printButton"><img src="~/images/print.png" /> Print Invoice</button>
                 <button id="deleteButton"><img src="~/images/cancel.png" /> Delete Invoice</button>
 
                 if (!(bool)ViewData["IsEdit"])
@@ -17,6 +18,7 @@
             }
         </div>
         <div id="rightHeader">
+            <a href="/Invoice/View/" class="button"><img src="~/images/back.png" /> Back to Invoices</a>
         </div>
     </div>
     <div id="invoiceData">
@@ -31,8 +33,17 @@
         <div><b>Date:</b> <span id="invoiceDate">@Model.InvoiceDate.ToString("yyyy-MM-dd")</span></div>
     </div>
     <div class="row">
+        <label class="cell invoiceTopLeft" for="invoiceSeller">Sales Person:</label>
+        <select class="cell" id="invoiceSeller"></select>
+    </div>
+    <div class="row">
         <label class="cell invoiceTopLeft" for="invoiceState">Invoice State:</label>
-        <select class="cell" id="invoiceState" asp-items="@Html.GetEnumSelectList<InvoiceState>()"></select>
+        <select class="cell" id="invoiceState">
+            @foreach(InvoiceState state in Enum.GetValues(typeof(InvoiceState)))
+            {
+                <option value="@((int)state)">@state</option>
+            }
+        </select>
     </div>
     <div id="invoiceCustomerDiv" class="row">
         <div>
@@ -210,7 +221,18 @@
             <div id="invoiceTotalDue">$ 0.00</div>
         </div>
     </div>
+    <dialog id="printDialog" class="invoiceDialog">
+        <h1>Select Pages to Print</h1>
+        <div id="pageOptions">
+
+        </div>
+        <div class="saveButton">
+            <button id="printInvoiceButton">Print Invoice</button>
+        </div>
+    </dialog>
 </form>
+
+<script type="text/javascript" src="~/js/base64-js/base64js.min.js"></script>
 
 <script type="text/javascript" src="~/js/Events/EventTypes/EventArgs.js"></script>
 <script type="text/javascript" src="~/js/Events/EventTypes/BaseEventType.js"></script>
@@ -241,4 +263,5 @@
 <script type="text/javascript" src="~/js/Invoice/LienHolder.js"></script>
 <script type="text/javascript" src="~/js/Invoice/Payment.js"></script>
 <script type="text/javascript" src="~/js/Invoice/Payments.js"></script>
+<script type="text/javascript" src="~/js/Invoice/Print.js"></script>
 <script type="text/javascript" src="~/js/Invoice/Invoice.js"></script>

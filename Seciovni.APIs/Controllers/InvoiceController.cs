@@ -1,16 +1,21 @@
 ﻿using Database.Tables;
+using Database.Tables.ManyManyTables;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Seciovni.APIs.Contexts;
 using Seciovni.APIs.WebHelpers;
 using Shared;
 using Shared.ApiResponses;
+using Shared.FormBuilderObjects;
 using Shared.SecurityTypes;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Web.Http;
 
 namespace Seciovni.APIs.Controllers
@@ -48,7 +53,14 @@ namespace Seciovni.APIs.Controllers
             var dbCustomers = db.Customers.Include(c => c.Address)
                                           .Include(c => c.Emails)
                                           .Include(c => c.User);
-            
+
+            // Ensure we have a valid sales person
+            var salesPerson = db.Employees.FirstOrDefault(e => e.EmployeeID == invoice.SalesPerson.EmployeeID);
+            if (salesPerson == null)
+            {
+                return new ApiResponse(false, "Invalid Sales Person");
+            }
+
             // If this isn't a new invoice
             if (invoice.InvoiceID != 0)
             {
@@ -237,9 +249,8 @@ namespace Seciovni.APIs.Controllers
                     InvoiceDate = DateTime.Now,
                     ModifiedDate = DateTime.Now,
                     LienHolder = lienHolder,
-                    PagesUsed = invoice.PagesUsed,
                     Payments = invoice.Payments,
-                    SalesPerson = invoice.SalesPerson ?? employee,
+                    SalesPerson = salesPerson,
                     State = invoice.State,
                     TaxAmount = invoice.TaxAmount,
                     Vehicles = invoice.Vehicles
@@ -323,6 +334,7 @@ namespace Seciovni.APIs.Controllers
                 dbInvoice.LienHolder = lienHolder;
                 dbInvoice.State = invoice.State;
                 dbInvoice.TaxAmount = invoice.TaxAmount;
+                dbInvoice.SalesPerson = salesPerson;
 
                 dbInvoice.ModifiedDate = DateTime.Now;
 
@@ -332,7 +344,7 @@ namespace Seciovni.APIs.Controllers
 
             if (usingDbCust)
             {
-                foreach(var error in ModelState)
+                foreach (var error in ModelState)
                 {
                     if (error.Key.StartsWith(nameof(Invoice.Buyer)) ||
                         error.Key.StartsWith(nameof(Invoice.SalesPerson)))
@@ -371,8 +383,25 @@ namespace Seciovni.APIs.Controllers
             {
                 if (db.SaveChanges() > 0)
                 {
+                    // If it's a new invoice, and somebody made it for another person, we need to send an email
+                    if (true || dbInvoice == null && employee.EmployeeID != invoice.SalesPerson.EmployeeID)
+                    {
+                        var toUser = db.Employees.Include(e => e.User).FirstOrDefault(e => e.EmployeeID == salesPerson.EmployeeID).User;
+                        var subject = $"Invoice {invoice.InvoiceID} was created for you!";
+                        var message = string.Format(File.ReadAllText("EmailTemplates/NewInvoice.txt"),
+                            invoice.Buyer.User.FullName(),
+                            employee.User.FullName(),
+                            $"/Invoies/View/{invoice.InvoiceID}");
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                        Email.SendAsync(employee.User, toUser, subject, message);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                    }
+
                     return new ApiResponse(true, "Sucessfully Saved:" + invoice.InvoiceID.ToString());
                 }
+
+                return new ApiResponse(true, "Nothing to save");
             }
             catch (Exception ex)
             {
@@ -407,7 +436,7 @@ namespace Seciovni.APIs.Controllers
                                         .Include(i => i.Payments)
                                         .Include(i => i.SalesPerson).ThenInclude(sp => sp.User)
                                         .Include(i => i.Vehicles);
-            
+
             // Find the invoice in the database
             dbInvoice = dbInvoices.FirstOrDefault(i => i.InvoiceID == id);
 
@@ -447,7 +476,7 @@ namespace Seciovni.APIs.Controllers
                 db.Entry(dbInvoice.Buyer).State = EntityState.Deleted;
                 db.Entry(dbInvoice.Buyer.Address).State = EntityState.Deleted;
             }
-            
+
             try
             {
                 if (db.SaveChanges() > 0)
@@ -478,7 +507,6 @@ namespace Seciovni.APIs.Controllers
                                       .Include(i => i.Buyer).ThenInclude(b => b.User)
                                       .Include(i => i.Fees)
                                       .Include(i => i.LienHolder).ThenInclude(l => l.Address)
-                                      .Include(i => i.PagesUsed)
                                       .Include(i => i.Payments)
                                       .Include(i => i.SalesPerson).ThenInclude(s => s.User)
                                       .Include(i => i.Vehicles);
@@ -510,31 +538,156 @@ namespace Seciovni.APIs.Controllers
 
             IEnumerable<Invoice> invoicesToUse;
 
-            if(employee.Job != JobType.Admin && employee.Job != JobType.Assistant)
+            if (employee.Job != JobType.Admin && employee.Job != JobType.Assistant)
             {
                 invoicesToUse = dbInvoices.Where(i => i.SalesPerson.EmployeeID == employee.EmployeeID)
-                                          .OrderBy(i => i.ModifiedDate)
+                                          .OrderByDescending(i => i.ModifiedDate)
                                           .Take(NUM_TO_GET);
             }
             else
             {
-                invoicesToUse = dbInvoices.OrderBy(i => i.ModifiedDate).Take(NUM_TO_GET);
+                invoicesToUse = dbInvoices.OrderByDescending(i => i.ModifiedDate).Take(NUM_TO_GET);
             }
 
-            foreach(var invoice in invoicesToUse)
+            foreach (var invoice in invoicesToUse)
             {
                 yield return new InvoicePreview()
                 {
-                    BuyerName = invoice.Buyer.User.FirstName + " " + invoice.Buyer.User.LastName,
+                    BuyerName = invoice.Buyer.User.FullName(),
                     CreatedDate = invoice.InvoiceDate,
                     InvoiceNumber = invoice.InvoiceID,
                     InvoiceTotal = invoice.GetTotal(),
                     ModifiedDate = invoice.ModifiedDate,
-                    TotalDue = invoice.GetDue()
+                    TotalDue = invoice.GetDue(),
+                    SalesPerson = invoice.SalesPerson.User.FullName()
                 };
             }
         }
 
+        [HttpGet(nameof(GetSalesPeople))]
+        public JsonResult GetSalesPeople()
+        {
+            User current;
+            if (Request.HasValidLogin(db, out current) && Request.CanAccess(db, AccessPolicy.EditInvoicePrivilege))
+            {
+                var employees = db.Employees.Include(e => e.User)
+                                            .Where(e => e.EmployeeID > Constants.DEVNULL_EMPLOYEE_ID &&
+                                                        (e.Job == JobType.Sales || e.Job == JobType.Admin))
+                                            .Select(e => new
+                                            {
+                                                id = e.EmployeeID,
+                                                name = (e.User.FullName() == current.FullName()
+                                                            ? "**" + e.User.FullName()
+                                                            : e.User.FullName())
+                                            });
+
+                return new JsonResult(employees);
+            }
+
+            return null;
+        }
+
+        [HttpGet(nameof(GetPrintOptions) + "/{id}")]
+        public IEnumerable<string> GetPrintOptions(int id)
+        {
+            if(!Request.HasValidLogin(db) || !Request.CanAccess(db, AccessPolicy.ViewInvoicePrivilege))
+            {
+                yield break;
+            }
+
+            var invoice = db.Invoices.Include(i => i.IIPT).FirstOrDefault(i => i.InvoiceID == id);
+            if (invoice == null) yield break;
+
+            var forms = db.InvoiceTemplates.Where(t => t.States.HasFlag(invoice.State));
+
+            foreach(var form in forms)
+            {
+                if(invoice.IIPT.FirstOrDefault(i => i.TemplateID == form.TemplateID) != null)
+                {
+                    yield return "*" + form.TemplateTitle;
+                }
+                else
+                {
+                    yield return form.TemplateTitle;
+                }
+            }
+        }
+
+        [HttpPost(nameof(Print) + "/{id}")]
+        public ApiResponse Print([FromBody]List<string> pages, int id)
+        {
+            if (!Request.HasValidLogin(db) || !Request.CanAccess(db, AccessPolicy.ViewInvoicePrivilege))
+            {
+                return new ApiResponse(false, "Permission Denied");
+            }
+            
+
+            var invoice = db.Invoices.Include(i => i.IIPT).ThenInclude(ii => ii.InvoicePageTempate)
+                                     .Include(i => i.Buyer).ThenInclude(b => b.Address)
+                                     .Include(i => i.Buyer).ThenInclude(b => b.User)
+                                     .Include(i => i.Fees)
+                                     .Include(i => i.LienHolder).ThenInclude(l => l.Address)
+                                     .Include(i => i.Payments)
+                                     .Include(i => i.SalesPerson).ThenInclude(sp => sp.User)
+                                     .Include(i => i.Vehicles)
+                                     .FirstOrDefault(i => i.InvoiceID == id);
+            if (invoice == null) return new ApiResponse(false, "Invalid Invoice");
+
+            // If there's nothing to print, that's a special "Clear current forms" command
+            if (pages.Count == 0)
+            {
+                invoice.IIPT.Clear();
+                db.SaveChanges();
+                return new ApiResponse(true, "Legacy Forms have been cleared");
+            }
+
+            // Ensure everything is locked in
+            foreach(var page in pages)
+            {
+                if (invoice.IIPT.FirstOrDefault(ii => ii.InvoicePageTempate.TemplateTitle == page) == null)
+                {
+                    var template = db.InvoiceTemplates.LastOrDefault(t => t.TemplateTitle == page);
+                    if(template == null)
+                    {
+                        return new ApiResponse(false, $"{page} is not a valid page to print");
+                    }
+
+                    invoice.IIPT.Add(new InvoiceInvoicePageTemplate()
+                    {
+                        Invoice = invoice,
+                        InvoiceID = invoice.InvoiceID,
+                        InvoicePageTempate = template,
+                        TemplateID = template.TemplateID
+                    });
+                }
+            }
+
+            // Make sure everything is aved
+            db.SaveChanges();
+
+            // Convert all the forms to be printed
+            var settings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto };
+            List<FormBuilder> forms = new List<FormBuilder>();
+            foreach(var iipt in invoice.IIPT)
+            {
+                forms.Add(JsonConvert.DeserializeObject<FormBuilder>(iipt.InvoicePageTempate.TemplateJSON, settings));
+            }
+
+            var path = PdfBuilder.PdfBuilder.Generate(forms, invoice);
+
+            byte[] file;
+            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = new BinaryReader(stream))
+                {
+                    file = reader.ReadBytes((int)stream.Length);
+                }
+            }
+
+            string b64 = Convert.ToBase64String(File.ReadAllBytes(path));
+
+            return new ApiResponse(true, b64);
+        }
 
         /// <summary>
         /// Checks if the current user has permission to access this section

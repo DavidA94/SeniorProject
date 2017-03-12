@@ -11,9 +11,10 @@ class SubscribableProperty extends Subscribable {
     /**
      * Dispatches the EVENT_PROPERTY_CHANGE event
      * @param {string} propertyName - The name of the property being updated
+     * @param {*} originalValue - The original value
      * @protected
      */
-    __sendPropChangeEvent(propertyName){
-        this.__dispatchEvent(EVENT_PROPERTY_CHANGE, new PropertyChangedEventArgs(propertyName, this));
+    __sendPropChangeEvent(propertyName, originalValue = null){
+        this.__dispatchEvent(EVENT_PROPERTY_CHANGE, new PropertyChangedEventArgs(propertyName, this, originalValue));
     }
 }

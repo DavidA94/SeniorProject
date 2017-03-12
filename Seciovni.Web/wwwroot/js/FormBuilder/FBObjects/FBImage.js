@@ -23,16 +23,8 @@ class FBImage extends FBObject {
 
         this._canDraw = false;
 
-        this._image.onerror = () => {
-            console.log("failed to find image");
-            this._image.src = WYSIWYG_DEFAULT_IMG;
-        };
-
-        this._image.onload = () => {
-            this._imageWidth = this._image.width;
-            this._imageHeight = this._image.height;
-            this._canDraw = true;
-        };
+        this._boundOnError = this._image_onerror.bind(this);
+        this._boundOnLoad = this._image_onload.bind(this);
 
         this._preserveRatio = true;
 
@@ -53,6 +45,13 @@ class FBImage extends FBObject {
      * @param {string} value
      */
     set src(value){
+        this._image.removeEventListener('error', this._boundOnError);
+        this._image.removeEventListener('load', this._boundOnLoad);
+
+        this._image = new Image();
+        this._image.addEventListener('error', this._boundOnError);
+        this._image.addEventListener('load', this._boundOnLoad);
+
         this._canDraw = false;
         this._image.src = value;
     }
@@ -153,6 +152,17 @@ class FBImage extends FBObject {
         }
 
         context.drawImage(this._image, this.x, this.y, this._image.width, this._image.height);
+    }
+
+    _image_onerror(e){
+        console.log("failed to find image");
+        this._image.src = WYSIWYG_DEFAULT_IMG;
+    }
+
+    _image_onload(){
+        this._imageWidth = this._image.width;
+        this._imageHeight = this._image.height;
+        this._canDraw = true;
     }
 
     // endregion

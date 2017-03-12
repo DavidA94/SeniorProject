@@ -1,11 +1,15 @@
-﻿class RecentInvoices {
-    constructor(){
+/**
+ * Created by David on 2017-03-11.
+ */
+
+class InvoiceForms {
+    constructor() {
         /**
-         * The invoices we get from the server
-         * @type {Array<InvoicePreview>}
+         * The list of form names
+         * @type {HTMLTableRowElement[]}
          * @private
          */
-        this._invoices = [];
+        this._formNames = [];
 
         /**
          * @private
@@ -24,14 +28,14 @@
     }
 
     initialize(){
-        this._tableParent = document.getElementById(INVOICE_RECENT_INVOICES_TABLE_ID);
+        this._tableParent = document.getElementById(WYSIWYG_FORMS_TABLE_ID);
 
         for(const th of this._tableParent.getElementsByTagName("th"))
         {
             th.addEventListener('click', this._boundSort);
         }
 
-        sendToApi("Invoice/GetRecent", "GET", null, (xmlhttp) => {
+        sendToApi("FormBuilder/GetForms", "GET", null, (xmlhttp) => {
             if(xmlhttp === null) {
                 alert("Failed to contact server");
                 return;
@@ -39,17 +43,20 @@
 
             if(xmlhttp.readyState == XMLHttpRequest.DONE){
                 if(xmlhttp.status === 200){
-                    for(const invoice_json of JSON.parse(xmlhttp.response.toString())){
-                        const ip = new InvoicePreview();
-                        ip.initialize_json(invoice_json);
-                        this._invoices.push(ip);
-                        this._tableParent.appendChild(ip.parentElement.htmlObj);
+                    for(const formName of JSON.parse(xmlhttp.response.toString())){
+                        const tr = /** @type HTMLTableRowElement */document.createElement("tr");
+                        const td = document.createElement("td");
+                        td.innerHTML = formName;
+                        td.title = location.hostname + "/FormEditor/Edit/" + formName.replace(/ /g, "");
 
-                        ip.parentElement.htmlObj.title = location.hostname + "/Invoice/View/" + ip.invoiceNum;
+                        tr.onclick = () => {
+                            location.assign("/FormEditor/Edit/" + formName.replace(/ /g, ""));
+                        };
 
-                        ip.parentElement.addEvent('click', () => {
-                            location.assign("/Invoice/View/" + ip.invoiceNum);
-                        })
+                        tr.appendChild(td);
+                        this._tableParent.appendChild(tr);
+
+                        this._formNames.push(tr);
                     }
                 }
             }
@@ -65,13 +72,13 @@
         this._currentSort = element.getAttribute(ATTRIBUTE_COLUMN);
 
         if(sortDesc){
-            this._invoices.sort((l, r) => l[this._currentSort] < r[this._currentSort]);
+            this._formNames.sort((l, r) => l.firstElementChild.innerHTML < r.firstElementChild.innerHTML);
             element.className = "desc";
             // So it will sort asc next time.
             this._currentSort = "";
         }
         else{
-            this._invoices.sort((l, r) => l[this._currentSort] > r[this._currentSort]);
+            this._formNames.sort((l, r) => l.firstElementChild.innerHTML > r.firstElementChild.innerHTML);
             element.className = "";
         }
 
@@ -83,11 +90,11 @@
             this._tableParent.removeChild(this._tableParent.lastElementChild);
         }
 
-        for(const row of this._invoices){
-            this._tableParent.appendChild(row.parentElement.htmlObj);
+        for(const row of this._formNames){
+            this._tableParent.appendChild(row);
         }
     }
 }
 
-const ri = new RecentInvoices();
-ri.initialize();
+const forms = new InvoiceForms();
+forms.initialize();

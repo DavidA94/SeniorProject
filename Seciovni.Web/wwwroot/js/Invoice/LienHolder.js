@@ -138,7 +138,7 @@ class LienHolder {
         e.preventDefault();
         document.getElementById(INVOICE_LIEN_CLOSE_ID).focus();
 
-        this._dialog.show();
+        this._dialog.showModal();
     }
 
     /**

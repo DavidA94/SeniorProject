@@ -3,7 +3,7 @@
  */
 
 class PropertyChangedEventArgs extends EventArgs {
-    constructor(propertyName, originalTarget) {
+    constructor(propertyName, originalTarget, originalValue = null) {
         super(originalTarget);
 
         /**
@@ -11,6 +11,8 @@ class PropertyChangedEventArgs extends EventArgs {
          * @type {string}
          */
         this._propertyName = propertyName;
+
+        this._originalValue = originalValue;
     }
 
     /**
@@ -18,4 +20,10 @@ class PropertyChangedEventArgs extends EventArgs {
      * @returns {string}
      */
     get propertyName() { return this._propertyName; }
+
+    /**
+     * The original value
+     * @return {*}
+     */
+    get originalValue() { return this._originalValue; }
 }

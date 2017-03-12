@@ -13,5 +13,6 @@ namespace Shared.ApiResponses
         public string BuyerName { get; set; }
         public decimal InvoiceTotal { get; set; }
         public decimal TotalDue { get; set; }
+        public string SalesPerson { get; set; }
     }
 }

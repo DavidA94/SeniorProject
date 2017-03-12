@@ -1,13 +1,25 @@
-﻿@{
+﻿@using Shared;
+@{
     ViewData["Title"] = "Form Editor";
 }
 
 <div id="appHeader" class="builderPageHeader">
     <div id="leftHeader">
-        <img id="builderTitleEdit" src="~/images/edit.png" alt="Click to Edit" />
-        <input type="text" id="builderTitle" value="Title" />
+        <div class="row">
+            <label id="builderTitleLabel" for="builderTitle">Title:</label>
+            <input type="text" id="builderTitle" value="Title" />
+        </div>
+        <div class="row">
+            <label for="formState">State(s):</label>
+            @foreach (InvoiceState state in Enum.GetValues(typeof(InvoiceState)))
+            {
+                <input type="checkbox" class="noDisplay check" id="@state.ToString()" value="@((int)state)" />
+                <label for="@state.ToString()" class="checkLabel">@state.ToString()</label>
+            }
+        </div>
     </div>
     <div id="rightHeader">
+        <a href="/FormEditor" class="button"><img src="~/images/back.png" /> Back to Forms</a>
         <button id="saveButton"><img src="~/images/save.png" /> Save Invoice</button>
     </div>
 </div>
@@ -32,6 +44,12 @@
         <div id="zoom"></div>
     </div>
 </div>
+<dialog id="imagePicker">
+    <div id="formImages"></div>
+    <div class="saveButton">
+        <button>Choose Image</button>
+    </div>
+</dialog>
 
 <script type="text/javascript" src="~/js/prototypes.js"></script>
 <script type="text/javascript" src="~/js/helpers.js"></script>

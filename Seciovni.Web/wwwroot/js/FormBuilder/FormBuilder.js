@@ -44,6 +44,8 @@ class FormBuilder{
         this._initializeShapes();
         this._initializeZoom();
 
+        this.boundImagePicker = this._canvas_imagePicker.bind(this);
+
         this._title = new TextInput(document.getElementById(WYSIWYG_TITLE_ID));
 
         // Subscribe to the canvas shapeChange event
@@ -51,7 +53,7 @@ class FormBuilder{
         this._canvas.subscribe(EVENT_PROPERTY_CHANGE, this._canvas_propertychange.bind(this));
 
         let propertyChangedEventHandler = (e) => {
-            const box = e.currentTarget;
+            const box = e.currentTarget || e.target;
             let newData = null;
 
             if (box.nodeName.toLowerCase() === "input") {
@@ -68,8 +70,11 @@ class FormBuilder{
             else if (box.nodeName.toLowerCase() === "select") {
                 newData = box.value;
             }
+            else if(box.nodeName.toLowerCase() === "button"){
+                newData = box.value;
+            }
 
-            this._htmlObjDict[e.currentTarget.id].set(newData);
+            this._htmlObjDict[box.id].set(newData);
         };
         /**
          * The event handler for when an HTML object has it's value changed
@@ -82,14 +87,21 @@ class FormBuilder{
             const json = JSON.stringify(this);
 
             sendToApi("FormBuilder/Save", "POST", json, (xmlhttp) => {
+                if(!xmlhttp){
+                    alert("Failed to contact the server");
+                    return;
+                }
+
                 if (xmlhttp.readyState === XMLHttpRequest.DONE && xmlhttp.status === 200) {
                     const response = /** @type{ApiResponse} */JSON.parse(xmlhttp.response);
 
                     // If successful, redirect if necessary
                     if(response.successful){
+                        alert(response.message);
+
                         const title = location.pathname.split("/").splice(-1)[0];
-                        if(title != this._title.value) {
-                            location.replace("/FormEditor/Edit/" + this._title.value);
+                        if(title.replace(/ /g, "") != this._title.value.replace(/ /g, "")) {
+                            location.replace("/FormEditor/Edit/" + this._title.value.replace(/ /g, ""));
                         }
                     }
                 }
@@ -100,6 +112,10 @@ class FormBuilder{
         const pageName = location.pathname.split("/").splice(-1)[0].toLowerCase();
         if(pageName && pageName != "" && pageName != "edit"){
             sendToApi("FormBuilder/Get/" + pageName, "GET", null, (xmlhttp) => {
+                if(!xmlhttp){
+                    alert("Failed to contact the server");
+                    return;
+                }
                 if (xmlhttp.readyState === XMLHttpRequest.DONE && xmlhttp.status === 200) {
 
                     if (!xmlhttp.response || xmlhttp.response == "") {
@@ -115,6 +131,17 @@ class FormBuilder{
                 }
             });
         }
+
+        // Adjust things to fit right
+        const appHeader = document.getElementById("appHeader");
+        const builderMain = document.getElementById("builderMain");
+        const builderRight = document.getElementById("builderRight");
+        const properties = document.getElementById("properties");
+
+        const topSpace = appHeader.getBoundingClientRect().bottom;
+        builderMain.style.top = topSpace + "px";
+        builderRight.style.top = topSpace + "px";
+        properties.style.height = "calc(80vh - " + topSpace + "px)";
     }
 
     // endregion
@@ -122,9 +149,17 @@ class FormBuilder{
     // region Public Methods
 
     toJSON(){
+        let states = 0;
+        for(const stateCheck of document.querySelectorAll(".check")){
+            if(stateCheck.checked){
+                states |= parseInt(stateCheck.value);
+            }
+        }
+
         const properties = {};
         properties["title"] = this._title.value;
         properties["canvas"] = this._canvas;
+        properties["states"] = states;
 
         return properties;
     }
@@ -132,6 +167,15 @@ class FormBuilder{
     initialize_json(json){
         this._title.value = json["title"];
         this._canvas.initialize_json(json["canvas"]);
+
+        const states = json["states"] || 0;
+        for(const stateCheck of document.querySelectorAll(".check")){
+            const stateVal = parseInt(stateCheck.value);
+
+            if((states & stateVal) > 0){
+                stateCheck.checked = true;
+            }
+        }
     }
 
     // endregion
@@ -310,6 +354,34 @@ class FormBuilder{
     // endregion
 
     // region Canvas Events
+
+    _canvas_imagePicker(e){
+        e.preventDefault();
+
+        sendToApi("FormBuilder/FormImages", "GET", null, (xmlhttp) => {
+            if(xmlhttp.status === 200 && xmlhttp.readyState === XMLHttpRequest.DONE){
+                const urls = JSON.parse(xmlhttp.response.toString());
+
+                const parent = document.getElementById("formImages");
+                while(parent.firstElementChild) parent.removeChild(parent.firstElementChild);
+
+                for(let url of urls){
+                    const img = document.createElement("img");
+                    img.alt = "";
+                    img.src = "https://localhost:44357/" + url;
+                    img.onclick = () => {
+                        e.target.value = img.src;
+                        this._propertyChangedEventHandler(e);
+                    };
+                    parent.appendChild(img);
+                }
+
+                const picker = document.getElementById("imagePicker");
+                picker.getElementsByTagName("button")[0].onclick = () => picker.close();
+                picker.showModal();
+            }
+        });
+    }
 
     /**
      * Fires when the mouse is moved on the canvas
@@ -497,10 +569,16 @@ class FormBuilder{
                 case PropertyType.Color:
                 case PropertyType.Number:
                 case PropertyType.Text:
-                case PropertyType.File:
                     propElement = document.createElement("input");
                     propElement.id = key;
                     propElement.type = prop.Type;
+                    parentOfElem.appendChild(propElement);
+                    break;
+                case PropertyType.File:
+                    propElement = document.createElement("button");
+                    propElement.id = key;
+                    propElement.innerHTML = "Choose File";
+                    propElement.addEventListener('click', this.boundImagePicker);
                     parentOfElem.appendChild(propElement);
                     break;
             }

@@ -1,0 +1,6 @@
+﻿A new invoice for {0} has been created for you by {1}.
+
+You can view the invoice by going to:
+{2}
+
+<end of message>

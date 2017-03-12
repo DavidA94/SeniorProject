@@ -1,21 +1,17 @@
 ﻿@{
-    ViewData["Title"] = "Recent Invoices";
+    ViewData["Title"] = "Invoice Forms";
 }
 
-<h1>Recent Invoices</h1>
+<h1>Invoice Forms</h1>
 
-<a href="/Invoice/Edit/" class="button"><img src="~/images/add.png" /> Add Invoice</a>
+<a href="/FormEditor/Edit/" class="button"><img src="~/images/add.png" /> Add Form</a>
 
-<table id="recentInvoicesList" class="dataTableList">
+<table id="formsList" class="dataTableList">
     <tr>
-        <th data-column="createdDate">Date</th>
-        <th data-column="invoiceNum">Invoice Num</th>
-        <th data-column="buyerName">Buyer Name</th>
-        <th data-column="invoiceTotal">Invoice Total</th>
-        <th data-column="totalDue">Total Due</th>
-        <th data-column="salesPerson">Sales Person</th>
+        <th data-column="title">Title</th>
     </tr>
 </table>
+
 
 <script type="text/javascript" src="~/js/Events/EventTypes/BaseEventType.js"></script>
 <script type="text/javascript" src="~/js/Events/EventTypes/MouseEvent.js"></script>
@@ -26,5 +22,4 @@
 <script type="text/javascript" src="~/js/Events/Subscribable.js"></script>
 <script type="text/javascript" src="~/js/Events/SubscribableProperty.js"></script>
 <script type="text/javascript" src="~/js/HelperTypes/HTMLElements/BaseHtmlElement.js"></script>
-<script type="text/javascript" src="~/js/Invoice/InvoicePreview.js"></script>
-<script type="text/javascript" src="~/js/Invoice/RecentInvoices.js"></script>
+<script type="text/javascript" src="~/js/FormBuilder/InvoiceForms.js"></script>

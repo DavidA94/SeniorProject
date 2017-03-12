@@ -98,12 +98,16 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 .centerSpinner {display:block;margin:auto;}
 
 #appHeader {margin:1em 0;overflow:hidden;padding-bottom:.5em;border-bottom:1px solid #bbb;}
-#appHeader #leftHeader {float:left;}
+#appHeader #leftHeader {float:left;padding-left:10px;}
 #appHeader #leftHeader #deleteButton {background:#dadada;border:1px solid #aaa;}
 #appHeader #leftHeader #deleteButton:hover {background:#dfdfdf;border-color:maroon;color:maroon;}
 #appHeader #rightHeader {float:right;}
 #appHeader button {margin-right:.5em;padding:4px;}
 #appHeader button img {position:relative;top:-1px;}
+
+.button {appearance:button;-webkit-appearance:button;padding:6px;margin-right:.5em;}
+.button img {position:relative;top:-1px;}
+.button:hover {text-decoration:none;}
 
 #appHeader.builderPageHeader {position:fixed;right:0;left:0;border-bottom:2px solid black;z-index:7;margin:10px 0;padding-bottom:5px;}
 
@@ -122,25 +126,25 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #contactsList[data-search] > div {display:none}
 #contactsList[data-search] > div[data-foundResult] {display:block;}
 
-#recentInvoicesList {border-collapse:collapse}
-#recentInvoicesList td, #recentInvoicesList th {border:1px solid #d0d0d0;padding:0 10px;font-size:14px;line-height:24px;}
-#recentInvoicesList th {background:#eee;cursor:pointer}
-#recentInvoicesList th#sorted::after {display:inline-block;content:'';width:10px;height:12px;background-image:url('/images/sortArrow.svg');
+.dataTableList {border-collapse:collapse;margin-top:.5em;}
+.dataTableList td, .dataTableList th {border:1px solid #d0d0d0;padding:0 10px;font-size:14px;line-height:24px;}
+.dataTableList th {background:#eee;cursor:pointer}
+.dataTableList th#sorted::after {display:inline-block;content:'';width:10px;height:12px;background-image:url('/images/sortArrow.svg');
                                       background-repeat:no-repeat;background-size:10px 5px;background-position:center;margin-left:4px;}
-#recentInvoicesList th#sorted.desc::after {transform:scaleY(-1);height:8px;}
-#recentInvoicesList td {cursor:pointer;}
-#recentInvoicesList tr:hover {background:#f5fcff}
+.dataTableList th#sorted.desc::after {transform:scaleY(-1);height:8px;}
+.dataTableList td {cursor:pointer;}
+.dataTableList tr:hover {background:#f5fcff}
 .right {text-align:right;}
 
 #viewInvoice #appHeader #saveButton, #viewInvoice #appHeader #deleteButton {display:none;}
 
 #builderBottom{position:fixed;bottom:0;left:0;right:300px;background:white;z-index:10;border-top:2px solid black;}
-#builderRight{position:fixed;right:0;top:100px;bottom:0;z-index:10;border-left:1px solid black;}
-#builderMain{position:fixed;top:100px;right:300px;bottom:50px;left:0;overflow:auto;}
+#builderRight{position:fixed;right:0;top:150px;bottom:2px;z-index:10;border-left:1px solid black;}
+#builderMain{position:fixed;top:150px;right:300px;bottom:50px;left:0;overflow:auto;}
 
-#builderTitleEdit {position:relative;float:left;margin-left:1em;}
-#builderTitle {float:left;font-size:24px;font-weight:bold;margin-left:-20px;font-style:italic;width:calc(100vw - 400px);
-               border-width:0 0 1px 0;padding-left:30px;}
+#builderTitleLabel {font-size:24px;}
+#builderTitle {font-size:24px;font-weight:bold;width:calc(100vw - 420px);border-width:0 0 1px 0;
+               margin-left:5px;padding-left:5px;}
 
 #canvasHolder {position:relative;box-sizing:border-box;
                z-index:5;}
@@ -163,11 +167,27 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #shapes div {float:left;width:90px;margin:0 0 5px 0;}
 #shapes img {width:20px;height:20px;margin-right:10px;float:left;}
 #shapes span {line-height:20px;float:left;}
-#properties {float:left;width:300px;height:calc(80vh - 100px);overflow:auto;border:1px solid black;padding:5px;}
+#properties {float:left;width:300px;height:calc(80vh - 150px);overflow:auto;border:1px solid black;padding:5px;}
 #properties label {float:left;clear:left;margin:5px 10px 5px 0;line-height:20px;}
 #properties input, #properties select {height:20px;float:left;margin:5px 0;}
+#properties button {float:left;margin:5px 0;}
 #properties fieldset legend {font-size:18px;}
 #properties fieldset fieldset legend {font-size:14px;font-weight:bold;}
 
 #formBuilderToolTip {position:absolute;top:-999px;left:-999px;border:1px solid #767676;background:#fff;padding:1px 4px;
                      box-shadow:rgba(0, 0, 0, .4) 3px 3px 4px;color:#575757;font-family:Tahoma;font-size:12px;}
+
+#imagePicker {z-index:999;}
+#imagePicker #formImages {width:600px;overflow:hidden;}
+#imagePicker #formImages img {float:left;max-width:90px;padding:5px;}
+#imagePicker #formImages img:focus {border:3px solid #00cad1;}
+
+.noDisplay {display:none;}
+
+.check:checked + .checkLabel {background:#d0d0d0;border-color:#888;}
+.checkLabel {background:#f0f0f0;border:1px solid #aaa;padding:2px 5px;}
+
+.printCheck:checked + .printCheckLabel {font-weight:bold;}
+.printCheckLabel {margin-left:5px;vertical-align:middle;font-weight:normal;}
+
+#printDialog {width:300px;}

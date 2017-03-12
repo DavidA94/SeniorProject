@@ -161,7 +161,7 @@ function sendToApi(url, method, data, callback){
             xmlhttp.open(method, "https://localhost:44357/api/" + url, true);
             xmlhttp.setRequestHeader("Authorization", "Bearer " + token);
             if(data) {
-                xmlhttp.setRequestHeader("Content-Type", "application/json");
+                xmlhttp.setRequestHeader("Content-Type", "application/json; charset=utf-8");
                 xmlhttp.send(data.toString());
             }
             else {
@@ -222,6 +222,8 @@ function getBindingOptions(bindingContext){
         let response = null;
 
         sendToApi("FormBuilder/BindingOptions/" + bindingContext, "GET", null, (xmlhttp) => {
+            // No-op
+            if(!xmlhttp) return;
             if(xmlhttp.readyState === XMLHttpRequest.DONE) {
                 if (xmlhttp.status === 200) {
                     response = xmlhttp.response;

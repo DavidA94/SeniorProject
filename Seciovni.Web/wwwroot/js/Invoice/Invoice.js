@@ -1,5 +1,6 @@
 class InvoiceFields {
     static get invoiceID() { return "invoiceID"; }
+    static get salesPerson() { return "salesPerson"; }
     static get state() { return "state"; }
     static get buyer() { return "buyer"; }
     static get lienHolder() { return "lienHolder"; }
@@ -15,6 +16,13 @@ class Invoice {
 
     // region CTOR
     constructor() {
+
+        const defaultFees = {
+            /*Arizona*/    "1": 400,
+            /*California*/ "2": 65,
+            /*Georgia*/    "4": 200,
+            /*Illinois*/   "8": 150
+        };
 
         this._saveButton = document.getElementById("saveButton");
         this._saveButton.addEventListener('click', (e) => {
@@ -134,11 +142,25 @@ class Invoice {
         }
 
         /**
+         * Takes care of handling all the printing logic
+         * @type {Print}
+         * @private
+         */
+        this._print = new Print(this);
+
+        /**
          * The invoice's ID
          * @type {number}
          * @private
          */
         this._invoiceID = 0;
+
+        /**
+         * The sales person for this invoice
+         * @type {number}
+         * @private
+         */
+        this._salesPersonID = -1;
 
         /**
          * Holds the vehicles in this invoice
@@ -185,10 +207,21 @@ class Invoice {
         this._chargeContainer = document.getElementById(INVOICE_MISC_CHARGE_ID).parentNode;
 
         /**
+         * The Invoice Sales Person dropdown
+         * @type {TextInput}
+         */
+        this._salesPeople = new TextInput(document.getElementById(INVOICE_SALES_PERSON_ID));
+
+        /**
          * The Invoice State dropdown
          * @type {TextInput}
          */
         this._state = new TextInput(document.getElementById(INVOICE_STATE_ID));
+        this._state.subscribe(EVENT_PROPERTY_CHANGE, (e) => {
+            if(this._docFee.value === defaultFees[e.originalValue] || this._docFee.value === -1){
+                this._docFee.value = defaultFees[this._state.value];
+            }
+        });
 
         /**
          * The Tax field
@@ -203,6 +236,7 @@ class Invoice {
          * @private
          */
         this._docFee = new MoneyInput(document.getElementById(INVOICE_DOC_FEE_ID));
+        this._docFee.value = defaultFees[this._state.value];
 
         /**
          * The Down Payment field
@@ -303,9 +337,12 @@ class Invoice {
                         }
 
                         for(const input of document.querySelectorAll("dialog .saveButton button")){
-                            input.innerHTML = "Close";
+                            if(input.innerHTML.indexOf("Save") >= 0) {
+                                input.innerHTML = "Close";
+                            }
                         }
 
+                        this._salesPeople.htmlObj.disabled = true;
                         this._state.htmlObj.disabled = true;
                         this._vehicles[this._vehicles.length - 1].destroy();
                         this._miscCharges[this._miscCharges.length - 1].destroy();
@@ -315,6 +352,38 @@ class Invoice {
                 }
             })
         }
+
+        sendToApi("/Invoice/GetSalesPeople", "GET", null, (xmlhttp) => {
+            if(!xmlhttp){
+                location.assign(location.href);
+                return;
+            }
+
+            if(xmlhttp.readyState === XMLHttpRequest.DONE && xmlhttp.status === 200){
+
+                /**
+                 * @type {{id: number, name:string}[]}
+                 */
+                const data = JSON.parse(xmlhttp.response.toString());
+                for(const e of data){
+                    // If it's already a match, then don't add it, as it already has been
+                    if(e.id === this._salesPersonID){
+                        continue;
+                    }
+
+                    const opt = document.createElement("option");
+                    if(e.name.substring(0, 2) === "**"){
+                        opt.selected = true;
+                        e.name = e.name.replace("**", "");
+                    }
+
+                    opt.value = e.id;
+                    opt.innerHTML = e.name;
+
+                    this._salesPeople.htmlObj.appendChild(opt);
+                }
+            }
+        });
     }
 
     /**
@@ -329,6 +398,7 @@ class Invoice {
         }
 
         this._invoiceID = json[InvoiceFields.invoiceID];
+        this._salesPersonID = json[InvoiceFields.salesPerson].employeeID;
         this._state.value = json[InvoiceFields.state];
         this._customer.initialize_json(json[InvoiceFields.buyer]);
         this._lienHolder.initialize_json(json[InvoiceFields.lienHolder]);
@@ -346,15 +416,35 @@ class Invoice {
 
         this._calculateTotal();
         this._payments.initialize_json(json[InvoiceFields.payments]);
+
+        // Either select or add the sales person
+        let added = false;
+        for(const opt of this._salesPeople.htmlObj.getElementsByTagName("option")){
+            if(opt.value === this._salesPersonID){
+                added = true;
+                opt.selected = true;
+            }
+        }
+
+        if(!added){
+            const opt = document.createElement("option");
+            opt.value = this._salesPersonID;
+            opt.innerHTML = json[InvoiceFields.salesPerson].user.firstName + " " + json[InvoiceFields.salesPerson].user.lastName;
+
+            this._salesPeople.htmlObj.appendChild(opt);
+        }
     }
 
+    /**
+     * Resets all of the invoice data
+     */
     reset(){
         // Skip the last one -- Go backwards because an event will remove them from the list
         for(let i = this._vehicles.length - 2; i >= 0; --i) this._vehicles[i].destroy();
         for(let i = this._miscCharges.length - 2; i >= 0; --i) this._miscCharges[i].destroy();
 
         this._invoiceID = 0;
-        this._state.value = "0";
+        this._state.value = "1";
         this._tax.value = "";
         this._docFee.value = "";
         this._downPayment.value = "";
@@ -373,6 +463,8 @@ class Invoice {
     toJSON(){
         const properties = {};
         properties[InvoiceFields.invoiceID] = this._invoiceID;
+        properties[InvoiceFields.salesPerson] = {};
+        properties[InvoiceFields.salesPerson].employeeID = this._salesPeople.value;
         properties[InvoiceFields.state] = this._state.value;
         properties[InvoiceFields.buyer] = this._customer;
         properties[InvoiceFields.lienHolder] = this._lienHolder;

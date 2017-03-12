@@ -23,7 +23,7 @@
     }
     @if (User.HasClaim(c => c.Type == AccessPolicy.FormEditorPrivilege || c.Type == AccessPolicy.AdminPrivilege))
     {
-        <a asp-controller="FormEditor" asp-action="Edit" class="dashboardButton"><p>Form Editor</p></a>
+        <a asp-controller="FormEditor" asp-action="Index" class="dashboardButton"><p>Form Editor</p></a>
     }
     @if (User.HasClaim(c => c.Type == AccessPolicy.AdminPrivilege)) {
         <a href="#" id="dashboardManagement" class="dashboardButton"><p>Management</p></a> 

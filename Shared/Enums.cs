@@ -1,6 +1,14 @@
-﻿namespace Shared
+﻿using System;
+
+namespace Shared
 {
-    public enum InvoiceState { Arizona, California, Georgia, Illinois }
+    [Flags]
+    public enum InvoiceState {
+        Arizona = 1,
+        California = 2,
+        Georgia = 4,
+        Illinois = 8
+    }
 
     public enum Country { Canada, Mexico, USA }
 

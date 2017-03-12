@@ -1,4 +1,5 @@
 ﻿using Database.Tables.ManyManyTables;
+using Newtonsoft.Json;
 using Shared;
 using Shared.CustomFormatters;
 using System;
@@ -50,10 +51,8 @@ namespace Database.Tables
         public LienHolder LienHolder { get; set; }
 
         public IList<Payment> Payments { get; set; }
-
-        // NOTE: Prompt user if this will change -- Use latest version if not on this list
-        public IList<InvoicePageTemplate> PagesUsed { get; set; } = null;
-
+        
+        [JsonIgnore]
         public IList<InvoiceInvoicePageTemplate> IIPT { get; set; }
 
         public decimal GetTotal()

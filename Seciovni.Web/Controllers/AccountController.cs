@@ -34,7 +34,7 @@ namespace Seciovni.Web.Controllers
             if (HttpContext.User.Identity.IsAuthenticated)
             {
                 // Redirect to home page if the user is authenticated.
-                return RedirectToAction(nameof(HomeController.Dashboard), nameof(HomeController).Replace("Controller", ""));
+                return RedirectToAction(nameof(HomeController.Index), nameof(HomeController).Replace("Controller", ""));
             }
 
             return View();

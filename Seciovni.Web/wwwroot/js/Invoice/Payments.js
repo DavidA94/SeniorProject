@@ -141,7 +141,7 @@ class Payments extends Subscribable {
     show(e){
         e.preventDefault();
         document.getElementById(INVOICE_PAYMENTS_CLOSE_ID).focus();
-        this._dialog.show();
+        this._dialog.showModal();
     }
 
     reset(){

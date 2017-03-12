@@ -5,15 +5,21 @@
 class TextInput extends BaseHtmlElement{
     constructor(inputObj){
         super(inputObj);
+        this._lastValue = inputObj.value;
 
-        inputObj.addEventListener('change', this.__getBoundFunc(this.input_changed));
+        this.addEvent('change', this.__getBoundFunc(this.input_changed));
+        this.addEvent('focus', () => this._lastValue = this.value);
     }
 
     input_changed(e){
         this.value = e.currentTarget.value;
-        this.__sendPropChangeEvent(e.currentTarget.getAttribute(ATTRIBUTE_BIND));
     }
 
     get value() { return this.htmlObj.value; }
-    set value(value) { this.htmlObj.value = value; }
+    set value(value) {
+        if(this.htmlObj.value !== value) {
+            this.htmlObj.value = value;
+            this.__sendPropChangeEvent(this.htmlObj.getAttribute(ATTRIBUTE_BIND), this._lastValue);
+        }
+    }
 }

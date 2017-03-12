@@ -1030,48 +1030,6 @@ class Canvas extends EventPropagator {
         }
     }
 
-    /**
-     * Gets the amount the canvas has been scrolled on the X axis
-     * @param node - The node to get the scroll amount of
-     * @returns {number}
-     * @private
-     */
-    _scrollX(node){
-
-        // Figure out how much we shift for this node
-        let shiftAmt = 0;
-        if(node.scrollLeft) shiftAmt -= node.scrollLeft;
-
-        // If we have a parent node, return the scroll amount plus the parents scroll amount (recursive)
-        if(node.parentNode){
-            return shiftAmt + this._scrollX(node.parentNode);
-        }
-
-        // Otherwise, return the current element's scroll amount
-        return shiftAmt;
-    }
-
-    /**
-     * Gets the amount the canvas has been scrolled on the Y axis
-     * @param node - The node to get the scroll amount of
-     * @returns {number}
-     * @private
-     */
-    _scrollY(node){
-
-        // Figure out how much we shift for this node
-        let shiftAmt = 0;
-        if(node.scrollTop) shiftAmt += node.scrollTop;
-
-        // If we have a parent node, return the scroll amount plus the parents scroll amount (recursive)
-        if(node.parentNode){
-            return shiftAmt + this._scrollY(node.parentNode);
-        }
-
-        // Otherwise, return the current element's scroll amount
-        return shiftAmt;
-    }
-
     // endregion
 
     // region Event Handlers

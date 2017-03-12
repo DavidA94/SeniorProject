@@ -166,7 +166,7 @@ const PropertyType = {
     Checkbox: "checkbox",
     Location: "location",
     Alignment: "alignment",
-    File: "text",
+    File: "file",
     Orientation: "orientation",
     DocumentType: "documentType",
 };
@@ -199,6 +199,7 @@ const INVOICE_PAYMENTS_DATA_ID = "paymentsData";
 const INVOICE_PAYMENTS_OPEN_ID = "openPaymentsButton";
 const INVOICE_RECENT_INVOICES_TABLE_ID = "recentInvoicesList";
 const INVOICE_SHOW_CUSTOM_ID = "showCustom";
+const INVOICE_SALES_PERSON_ID = "invoiceSeller";
 const INVOICE_STATE_ID = "invoiceState";
 const INVOICE_TAX_ID = "tax";
 const INVOICE_TOTAL_ID = "invoiceTotalDue";
@@ -212,6 +213,7 @@ const WYSIWYG_PROPERTIES_FORM_ID = "propForm";
 const WYSIWYG_PROPERTIES_ID = "properties";
 const WYSIWYG_SHAPES_ID = "shapes";
 const WYSIWYG_ZOOM_ID = "zoom";
+const WYSIWYG_FORMS_TABLE_ID = "formsList";
 
 // endregion
 

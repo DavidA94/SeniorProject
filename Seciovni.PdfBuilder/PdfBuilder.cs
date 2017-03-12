@@ -20,13 +20,69 @@ namespace Seciovni.PdfBuilder
 {
     public static class PdfBuilder
     {
+        #region Dealer Phone Numbers and Addresses
+
+        private static Dictionary<InvoiceState, Tuple<string, Address>> m_dealer = new Dictionary<InvoiceState, Tuple<string, Address>> {
+
+            { InvoiceState.Arizona,
+                Tuple.Create(
+                    "1-800-769-2979",
+                    new Address()
+                    {
+                        StreetAddress = "5601 W. Buckeye Rd.",
+                        City = "Phoenix",
+                        State = "AZ",
+                        ZipCode = "85043"
+                    }
+                )
+            },
+            { InvoiceState.California,
+                Tuple.Create(
+                    "1-800-801-0836",
+                    new Address()
+                    {
+                        StreetAddress = "4450 S. Blackstone Dr.",
+                        City = "Tulare",
+                        State = "CA",
+                        ZipCode = "93274"
+                    }
+                )
+            },
+            { InvoiceState.Georgia,
+                Tuple.Create(
+                    "1-855-266-4913",
+                    new Address()
+                    {
+                        StreetAddress = "4275 Shirley Dr.",
+                        City = "Atlanta",
+                        State = "GA",
+                        ZipCode = "30336"
+                    }
+                )
+            },
+            { InvoiceState.Illinois,
+                Tuple.Create(
+                    "1-866-544-1212",
+                    new Address()
+                    {
+                        StreetAddress = "3301 W. Mount Rd.",
+                        City = "Joliet",
+                        State = "IL",
+                        ZipCode = "60436"
+                    }
+                )
+            }            
+        };
+
+        #endregion
+
         private static PdfDocument m_doc = null;
         private static Invoice m_invoice = null;
         private static int m_curPage = 0;
         private static double m_globalShift = 0;
         private static dynamic m_nextPageShape = null;
         
-        public static void Generate(FormBuilder fb, Invoice invoice)
+        public static string Generate(IEnumerable<FormBuilder> forms, Invoice invoice)
         {
             m_invoice = invoice;
 
@@ -34,34 +90,41 @@ namespace Seciovni.PdfBuilder
             m_doc.DocumentInformation.Title = invoice.InvoiceDate.ToString("YYYY-mm-dd") + " " + invoice.Buyer.User.FullName() + " Invoice";
             m_doc.PageSettings.SetMargins(0f, 0f, 0f, 17.5f);
 
-            m_curPage = 1;
-            PdfPage page = m_doc.Pages.Add();
-
-            foreach (dynamic shape in fb.Canvas.Shapes.OrderBy(s => s.Layout.Y))
+            foreach (var form in forms)
             {
-                Draw(page.Graphics, shape);
-                DrawMain(page.Graphics, shape);
+                ++m_curPage;
+                PdfPage page = m_doc.Pages.Add();
 
-
-                // Shape detects new page is needed
-                if (m_nextPageShape)
+                foreach (dynamic shape in form.Canvas.Shapes.OrderBy(s => s.Layout.Y))
                 {
-                    ++m_curPage;
-                    page = m_doc.Pages.Add();
-                    Draw(page.Graphics, m_nextPageShape);
-                    DrawMain(page.Graphics, m_nextPageShape);
+                    Draw(page.Graphics, shape);
+                    DrawMain(page.Graphics, shape);
+
+
+                    // Shape detects new page is needed
+                    if (m_nextPageShape != null)
+                    {
+                        ++m_curPage;
+                        page = m_doc.Pages.Add();
+                        Draw(page.Graphics, m_nextPageShape);
+                        DrawMain(page.Graphics, m_nextPageShape);
+                    }
                 }
             }
 
+            string tempFilePath = Path.GetTempPath();
+            string fileName = Path.Combine(tempFilePath, $"Invoice {invoice.InvoiceID} - {invoice.Buyer.User.FullName()}.pdf");
             using (MemoryStream stream = new MemoryStream())
             {
                 m_doc.Save(stream);
 
-                File.WriteAllBytes("Test.pdf", stream.ToArray());
+                File.WriteAllBytes(fileName, stream.ToArray());
             }
 
             m_doc = null;
             m_invoice = null;
+
+            return fileName;
         }
 
         private static void Draw(PdfGraphics g, BasicShape box) {
@@ -196,74 +259,7 @@ namespace Seciovni.PdfBuilder
         private static void Draw(PdfGraphics g, TextBlock box)
         {
             // Do this so we don't change the actual object being passed in when there are bindings
-            string boxText = box.Text;
-
-            foreach (var binding in box.Bindings.Select(b => b.Value))
-            {
-                string realValue = "";
-                object obj = m_invoice;
-
-                var parts = binding.Value.Split('.');
-                foreach (var part in parts)
-                {
-                    if (obj is Invoice)
-                    {
-                        if (part == "Total")
-                        {
-                            obj = Format.ForPrint(new PrintFormatAttribute() { FixedPlaces = 2, Prefix = "$ " }, (obj as Invoice).GetTotal());
-                            break;
-                        }
-                        else if (part == "Due")
-                        {
-                            obj = Format.ForPrint(new PrintFormatAttribute() { FixedPlaces = 2, Prefix = "$ " }, (obj as Invoice).GetDue());
-                            break;
-                        }
-                        else if(part == "PageNumber")
-                        {
-                            obj = m_curPage;
-                            break;
-                        }
-                        // If we've hit one of the arrays
-                        else if (part.EndsWith("]"))
-                        {
-                            // We'll assume there's no bad data, until it blows up
-                            var index = Convert.ToInt32(Regex.Match(part, "(\\d+)").Groups[1].Value);
-                            var name = part.Substring(0, part.IndexOf('['));
-
-                            if (name == nameof(MiscellaneousFee))
-                            {
-                                obj = (obj as Invoice).Fees.ElementAt(index);
-                                continue;
-                            }
-                            else if (name == nameof(Payment))
-                            {
-                                obj = (obj as Invoice).Payments.ElementAt(index);
-                                continue;
-                            }
-                            else if (name == nameof(VehicleInfo))
-                            {
-                                obj = (obj as Invoice).Vehicles.ElementAt(index);
-                                continue;
-                            }
-                        }
-                    }
-
-                    if (part == parts.Last())
-                    {
-                        var pi = obj.GetType().GetRuntimeProperty(part);
-                        var format = pi.GetCustomAttribute<PrintFormatAttribute>();
-                        obj = Format.ForPrint(format, pi.GetValue(obj, null));
-                    }
-                    else
-                    {
-                        obj = obj.GetType().GetRuntimeProperty(part).GetValue(obj, null);
-                    }
-                }
-
-                realValue = obj.ToString();
-
-                boxText = boxText.Replace("|_" + binding.Id + "_|", realValue);
-            }
+            string boxText = ProcessBindings(box.Text, box.Bindings.Select(b => b.Value));
 
             var brush = new PdfSolidBrush(new PdfColor(GetColor(box.Font.Color)));
 
@@ -536,6 +532,107 @@ namespace Seciovni.PdfBuilder
             };
         }
 
+        private static string ProcessBindings(string text, IEnumerable<Binding> bindingValues)
+        {
+            foreach (var binding in bindingValues)
+            {
+                string realValue = "";
+                object obj = m_invoice;
+
+                var parts = binding.Value.Split('.');
+                foreach (var part in parts)
+                {
+                    if (obj is Invoice)
+                    {
+                        if (part == "Total")
+                        {
+                            obj = Format.ForPrint(new PrintFormatAttribute() { FixedPlaces = 2, Prefix = "$ " }, (obj as Invoice).GetTotal());
+                            break;
+                        }
+                        else if (part == "Due")
+                        {
+                            obj = Format.ForPrint(new PrintFormatAttribute() { FixedPlaces = 2, Prefix = "$ " }, (obj as Invoice).GetDue());
+                            break;
+                        }
+                        else if (part == "PageNumber")
+                        {
+                            obj = m_curPage;
+                            break;
+                        }
+                        else if (part == "StreetAddress")
+                        {
+
+                            obj = m_dealer[m_invoice.State].Item2.StreetAddress;
+                            break;
+                        }
+                        else if (part == "City")
+                        {
+
+                            obj = m_dealer[m_invoice.State].Item2.City;
+                            break;
+                        }
+                        else if (part == "State")
+                        {
+
+                            obj = m_dealer[m_invoice.State].Item2.State;
+                            break;
+                        }
+                        else if (part == "ZIP")
+                        {
+
+                            obj = m_dealer[m_invoice.State].Item2.ZipCode;
+                            break;
+                        }
+                        else if (part == "PhoneNumber")
+                        {
+
+                            obj = m_dealer[m_invoice.State].Item1;
+                            break;
+                        }
+                        // If we've hit one of the arrays
+                        else if (part.EndsWith("]"))
+                        {
+                            // We'll assume there's no bad data, until it blows up
+                            var index = Convert.ToInt32(Regex.Match(part, "(\\d+)").Groups[1].Value);
+                            var name = part.Substring(0, part.IndexOf('['));
+
+                            if (name == nameof(MiscellaneousFee))
+                            {
+                                obj = (obj as Invoice).Fees.ElementAt(index);
+                                continue;
+                            }
+                            else if (name == nameof(Payment))
+                            {
+                                obj = (obj as Invoice).Payments.ElementAt(index);
+                                continue;
+                            }
+                            else if (name == nameof(VehicleInfo))
+                            {
+                                obj = (obj as Invoice).Vehicles.ElementAt(index);
+                                continue;
+                            }
+                        }
+                    }
+
+                    if (part == parts.Last())
+                    {
+                        var pi = obj.GetType().GetRuntimeProperty(part);
+                        var format = pi.GetCustomAttribute<PrintFormatAttribute>();
+                        obj = Format.ForPrint(format, pi.GetValue(obj, null));
+                    }
+                    else
+                    {
+                        obj = obj.GetType().GetRuntimeProperty(part).GetValue(obj, null);
+                    }
+                }
+
+                realValue = obj.ToString();
+
+                text = text.Replace("|_" + binding.Id + "_|", realValue);
+            }
+
+            return text;
+        }
     }
 
     class TextProperties
