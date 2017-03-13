@@ -686,7 +686,8 @@ namespace Seciovni.APIs.Controllers
                 }
             }
 
-            var path = PdfBuilder.PdfBuilder.Generate(forms, invoice);
+            var builder = new PdfBuilder.PdfBuilder();
+            var path = builder.Generate(forms, invoice);
 
             byte[] file;
             using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))

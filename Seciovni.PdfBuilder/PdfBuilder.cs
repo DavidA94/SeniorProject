@@ -8,7 +8,6 @@ using Shared.FormBuilderObjects.Properties;
 using Syncfusion.Drawing;
 using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
-using Syncfusion.Pdf.Grid;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,7 +17,7 @@ using System.Text.RegularExpressions;
 
 namespace Seciovni.PdfBuilder
 {
-    public static class PdfBuilder
+    public class PdfBuilder
     {
         #region Dealer Phone Numbers and Addresses
 
@@ -71,18 +70,18 @@ namespace Seciovni.PdfBuilder
                         ZipCode = "60436"
                     }
                 )
-            }            
+            }
         };
 
         #endregion
 
-        private static PdfDocument m_doc = null;
-        private static Invoice m_invoice = null;
-        private static int m_curPage = 0;
-        private static double m_globalShift = 0;
-        private static int? m_curVehicle = null;
-        
-        public static string Generate(IEnumerable<FormBuilder> forms, Invoice invoice)
+        private PdfDocument m_doc = null;
+        private Invoice m_invoice = null;
+        private int m_curPage = 0;
+        private double m_globalShift = 0;
+        private int? m_curVehicle = null;
+
+        public string Generate(IEnumerable<FormBuilder> forms, Invoice invoice)
         {
             m_invoice = invoice;
 
@@ -105,7 +104,7 @@ namespace Seciovni.PdfBuilder
 
                 var count = (form.Canvas.DocType == DocumentType.ONE_PER_INV ? 1 : invoice.Vehicles.Count);
 
-                for(int i = 0; i < count; ++i)
+                for (int i = 0; i < count; ++i)
                 {
                     ++m_curPage;
                     PdfPage page = m_doc.Pages.Add();
@@ -115,7 +114,7 @@ namespace Seciovni.PdfBuilder
                     m_curVehicle = (form.Canvas.DocType == DocumentType.ONE_PER_VEH ? (int?)i : null);
 
                     var shapes = form.Canvas.Shapes.OrderBy(s => s.Layout.Y).ToList();
-                    for(int shapeIdx = 0; shapeIdx < shapes.Count; ++shapeIdx)
+                    for (int shapeIdx = 0; shapeIdx < shapes.Count; ++shapeIdx)
                     {
                         dynamic shape = shapes[shapeIdx];
 
@@ -126,13 +125,22 @@ namespace Seciovni.PdfBuilder
                         {
                             // Draw and duplicate anything that's made to go below (footer)
                             var footerShapes = shapes.Where(s => s.Layout.Y + s.Layout.Height > height).ToList();
+
+                            // Make sure things aren't shifted
+                            var backupState = page.Graphics.Save();
+                            page.Graphics.Restore(savedState);
+
                             foreach (dynamic footerObj in footerShapes)
                             {
                                 // Remove and add so it's not printed twice on new runs
                                 shapes.Remove(footerObj as FBObject);
                                 shapes.Add(footerObj as FBObject);
                                 Draw(page.Graphics, footerObj);
+                                DrawMain(page.Graphics, footerObj);
                             }
+
+                            // This shouldn't matter, but JIC, restore the state of what it was before
+                            page.Graphics.Restore(backupState);
 
                             ++m_curPage;
                             page = m_doc.Pages.Add();
@@ -143,7 +151,7 @@ namespace Seciovni.PdfBuilder
                             page.Graphics.TranslateTransform(0f, (float)m_globalShift);
                         }
                         // Otherwise, if we are meant to be at the bottom, then some restoration needs to happen
-                        else if(fbObj.Layout.Y + fbObj.Layout.Height > height)
+                        else if (fbObj.Layout.Y + fbObj.Layout.Height > height)
                         {
                             var backupState = page.Graphics.Save();
                             page.Graphics.Restore(savedState);
@@ -160,7 +168,7 @@ namespace Seciovni.PdfBuilder
                         Draw(page.Graphics, shape);
                         DrawMain(page.Graphics, shape);
                     }
-                }                
+                }
             }
 
             string tempFilePath = Path.GetTempPath();
@@ -178,8 +186,9 @@ namespace Seciovni.PdfBuilder
             return fileName;
         }
 
-        private static void Draw(PdfGraphics g, BasicShape box) {
-            if(box.Shape.ShapeName == nameof(Box))
+        private void Draw(PdfGraphics g, BasicShape box)
+        {
+            if (box.Shape.ShapeName == nameof(Box))
             {
                 var boxX = (float)box.Layout.X;
                 var boxY = (float)box.Layout.Y;
@@ -199,7 +208,7 @@ namespace Seciovni.PdfBuilder
                 // TODO
             }
         }
-        private static void Draw(PdfGraphics g, Cell box)
+        private void Draw(PdfGraphics g, Cell box)
         {
             float borderSize = 0.75f;
             float shiftAmt = borderSize / 2.0f;
@@ -214,7 +223,8 @@ namespace Seciovni.PdfBuilder
             var borderRect = GetRectangle(box.Layout);
             g.DrawRectangle(border, borderRect);
         }
-        private static void Draw(PdfGraphics g, CheckBox box) {
+        private void Draw(PdfGraphics g, CheckBox box)
+        {
             var scaleAmt = Math.Min(box.Layout.Width, box.Layout.Height) / 10.0;
             var cornerAmt = (float)(2 * scaleAmt);
             var lineWidth = scaleAmt;
@@ -227,7 +237,7 @@ namespace Seciovni.PdfBuilder
             var shiftX = 0.0;
             var shiftY = 0.0;
 
-            if(width > height)
+            if (width > height)
             {
                 shiftX = (width - height) / 2;
                 width = height;
@@ -251,8 +261,8 @@ namespace Seciovni.PdfBuilder
             g.DrawLine(pen, (float)(x + width * 0.4), (float)(y + height * 0.77),
                             (float)(x + width * 0.8), (float)(y + height * 0.27));
         }
-        private static void Draw(PdfGraphics g, Ellipse box) { }
-        private static void Draw(PdfGraphics g, FBImage box)
+        private void Draw(PdfGraphics g, Ellipse box) { }
+        private void Draw(PdfGraphics g, FBImage box)
         {
             using (var stream = new FileStream(Path.Combine(Constants.API_ROOT_IMG_FOLDER, box.ImgSrc), FileMode.Open))
             {
@@ -266,7 +276,7 @@ namespace Seciovni.PdfBuilder
                         height = bitmap.Height * (width / bitmap.Width);
 
                         // If we went the wrong way
-                        if(height > box.Layout.Height)
+                        if (height > box.Layout.Height)
                         {
                             height = box.Layout.Height;
                             width = bitmap.Width * (height / bitmap.Height);
@@ -277,13 +287,13 @@ namespace Seciovni.PdfBuilder
                 }
             }
         }
-        private static void Draw(PdfGraphics g, FBTextBlock textBlock)
+        private void Draw(PdfGraphics g, FBTextBlock textBlock)
         {
             if (m_doc == null) return;
 
             Draw(g, textBlock.TextBlock);
         }
-        private static void Draw(PdfGraphics g, Table box)
+        private void Draw(PdfGraphics g, Table box)
         {
             var headers = box.Cells.Select(c => c["header"]);
             var contents = box.Cells.Select(c => c["content"]).ToList();
@@ -298,7 +308,7 @@ namespace Seciovni.PdfBuilder
             else if (bindingPart == nameof(Payment)) count = m_invoice.Payments.Count;
 
             // If there's no content, then don't draw anything
-            if(count == 0)
+            if (count == 0)
             {
                 var shiftAmt = box.HeaderHeight + box.ContentHeight;
                 m_globalShift -= shiftAmt;
@@ -339,7 +349,7 @@ namespace Seciovni.PdfBuilder
         }
 
 
-        private static void Draw(PdfGraphics g, TextBlock box)
+        private void Draw(PdfGraphics g, TextBlock box)
         {
             // Do this so we don't change the actual object being passed in when there are bindings
             string boxText = ProcessBindings(box.Text, box.Bindings.Select(b => b.Value));
@@ -358,7 +368,7 @@ namespace Seciovni.PdfBuilder
             PdfFont pdfFont = new PdfTrueTypeFont(fontStream, (float)box.Font.Size);
 
             double? width = box.AutoWidth ? (box.MaxWidth > 0 ? box.MaxWidth : null) : box.Layout.Width;
-            double? height = box.AutoHeight ? (box.MaxHeight> 0 ? box.MaxHeight : null) : box.Layout.Height;
+            double? height = box.AutoHeight ? (box.MaxHeight > 0 ? box.MaxHeight : null) : box.Layout.Height;
 
             var textProps = GetTextProperties(boxText, width, height, pdfFont);
 
@@ -392,7 +402,7 @@ namespace Seciovni.PdfBuilder
         }
 
 
-        private static void DrawMain(PdfGraphics g, FBObject obj)
+        private void DrawMain(PdfGraphics g, FBObject obj)
         {
             if (!string.IsNullOrWhiteSpace(obj.Caption.TextBlock.Text) && obj.Caption.Location != Location.None)
             {
@@ -403,7 +413,7 @@ namespace Seciovni.PdfBuilder
             DrawBorder(g, obj);
         }
 
-        private static void DrawBorder(PdfGraphics g, FBObject obj)
+        private void DrawBorder(PdfGraphics g, FBObject obj)
         {
             // Store the needed properties in local variables for easy access
             var topThickness = obj.Border.Thickness.Top;
@@ -417,7 +427,7 @@ namespace Seciovni.PdfBuilder
 
             // Create a brush with the right color
             PdfBrush fill = new PdfSolidBrush(new PdfColor(GetColor(obj.Border.Color)));
-            
+
             /**
             ** The following four if statements work with the following logic:
             ** If the border has a size, figure out the size it should be
@@ -468,7 +478,7 @@ namespace Seciovni.PdfBuilder
             }
         }
 
-        private static Color GetColor(string hex)
+        private Color GetColor(string hex)
         {
             hex = hex.Trim('#');
 
@@ -482,12 +492,12 @@ namespace Seciovni.PdfBuilder
             return Color.FromArgb(parts[0], parts[1], parts[2]);
         }
 
-        private static RectangleF GetRectangle(Layout layout)
+        private RectangleF GetRectangle(Layout layout)
         {
             return new RectangleF((float)layout.X, (float)layout.Y, (float)layout.Width, (float)layout.Height);
         }
 
-        private static TextProperties GetTextProperties(string text, double? width, double? height, PdfFont font)
+        private TextProperties GetTextProperties(string text, double? width, double? height, PdfFont font)
         {
             float calcWidth = 0;  // Holds what we calculated the width to be for a given line
             float calcHeight = 0; // Holds what we calculated the height to be
@@ -615,7 +625,7 @@ namespace Seciovni.PdfBuilder
             };
         }
 
-        private static string ProcessBindings(string text, IEnumerable<Binding> bindingValues)
+        private string ProcessBindings(string text, IEnumerable<Binding> bindingValues)
         {
             foreach (var binding in bindingValues)
             {
@@ -673,7 +683,7 @@ namespace Seciovni.PdfBuilder
                             break;
                         }
                         // Special case for when doing a page per vehicle
-                        else if(part == nameof(VehicleInfo) && m_curVehicle != null)
+                        else if (part == nameof(VehicleInfo) && m_curVehicle != null)
                         {
                             obj = (obj as Invoice).Vehicles.ElementAt((int)m_curVehicle);
                             continue;
