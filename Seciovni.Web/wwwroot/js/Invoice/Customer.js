@@ -642,7 +642,6 @@ class Customer {
 
             if(liklihood.length > 0) {
                 const average = liklihood.reduce((a, b) => a + b) / liklihood.length;
-                console.log(contact.firstName + "   " + average);
                 results.push({likelihood: average, contact: contact});
             }
             else{

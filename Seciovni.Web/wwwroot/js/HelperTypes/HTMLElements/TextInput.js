@@ -17,9 +17,7 @@ class TextInput extends BaseHtmlElement{
 
     get value() { return this.htmlObj.value; }
     set value(value) {
-        if(this.htmlObj.value !== value) {
-            this.htmlObj.value = value;
-            this.__sendPropChangeEvent(this.htmlObj.getAttribute(ATTRIBUTE_BIND), this._lastValue);
-        }
+        this.htmlObj.value = value;
+        this.__sendPropChangeEvent(this.htmlObj.getAttribute(ATTRIBUTE_BIND), this._lastValue);
     }
 }

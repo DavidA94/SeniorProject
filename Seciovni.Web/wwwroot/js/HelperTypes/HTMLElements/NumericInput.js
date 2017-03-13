@@ -61,6 +61,7 @@ class NumericInput extends TextInput{
         this.numberVal = parseFloat(value);
         this._isPretty = false;
         this._makeInputPretty();
+        this.__sendPropChangeEvent(this.htmlObj.getAttribute(ATTRIBUTE_BIND));
     }
 
     _makeInputEditable(){

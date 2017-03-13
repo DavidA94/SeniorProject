@@ -12,7 +12,6 @@ function search(search, targets){
 
     for(const target of targets){
         const likeliness = getLikeliness(target.toString(), search);
-        console.log(search + "  in  " + target + "  =  " + likeliness);
         if(likeliness > 0){
             target.dlSearchVal = likeliness;
             bestMatches.push(target);

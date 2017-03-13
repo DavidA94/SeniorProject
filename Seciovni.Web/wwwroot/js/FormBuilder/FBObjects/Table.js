@@ -233,8 +233,6 @@ class Table extends FBObject {
         const col = this._cells.splice(column, 1);
         const width = this._columnWidths.splice(column, 1);
 
-        console.log(width[0]);
-
         this._columnWidths[this._columnWidths.length - 1] += width[0];
         this.__removeChild(col[0].header);
         this.__removeChild(col[0].content);

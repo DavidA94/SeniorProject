@@ -513,10 +513,10 @@ class Invoice {
     _rowDestroyed(e){
         const row = e.originalTarget;
 
-        if(row instanceof Vehicle){
+        if(row instanceof Vehicle && this._vehicles.indexOf(row) >= 0){
             this._vehicles.splice(this._vehicles.indexOf(row), 1);
         }
-        else if(row instanceof  MiscCharge){
+        else if(row instanceof  MiscCharge && this._miscCharges.indexOf(row) >= 0){
             this._miscCharges.splice(this._miscCharges.indexOf(row), 1);
         }
     }
