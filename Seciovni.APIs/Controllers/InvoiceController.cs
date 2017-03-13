@@ -590,13 +590,15 @@ namespace Seciovni.APIs.Controllers
         [HttpGet(nameof(GetPrintOptions) + "/{id}")]
         public IEnumerable<string> GetPrintOptions(int id)
         {
+            var retVal = new HashSet<string>();
+
             if(!Request.HasValidLogin(db) || !Request.CanAccess(db, AccessPolicy.ViewInvoicePrivilege))
             {
-                yield break;
+                return null;
             }
 
             var invoice = db.Invoices.Include(i => i.IIPT).FirstOrDefault(i => i.InvoiceID == id);
-            if (invoice == null) yield break;
+            if (invoice == null) return null;
 
             var forms = db.InvoiceTemplates.Where(t => t.States.HasFlag(invoice.State));
 
@@ -604,13 +606,21 @@ namespace Seciovni.APIs.Controllers
             {
                 if(invoice.IIPT.FirstOrDefault(i => i.TemplateID == form.TemplateID) != null)
                 {
-                    yield return "*" + form.TemplateTitle;
+                    // Just remove it since it has to have the * added, the, add the new one
+                    retVal.Remove(form.TemplateTitle);
+                    retVal.Add("*" + form.TemplateTitle);
                 }
                 else
                 {
-                    yield return form.TemplateTitle;
+                    // Only add it if it hasn't been already
+                    if (!retVal.Contains(form.TemplateTitle) && !retVal.Contains("*" + form.TemplateTitle))
+                    {
+                        retVal.Add(form.TemplateTitle);
+                    }
                 }
             }
+
+            return retVal;
         }
 
         [HttpPost(nameof(Print) + "/{id}")]
@@ -670,7 +680,10 @@ namespace Seciovni.APIs.Controllers
             List<FormBuilder> forms = new List<FormBuilder>();
             foreach(var iipt in invoice.IIPT)
             {
-                forms.Add(JsonConvert.DeserializeObject<FormBuilder>(iipt.InvoicePageTempate.TemplateJSON, settings));
+                if (pages.Contains(iipt.InvoicePageTempate.TemplateTitle))
+                {
+                    forms.Add(JsonConvert.DeserializeObject<FormBuilder>(iipt.InvoicePageTempate.TemplateJSON, settings));
+                }
             }
 
             var path = PdfBuilder.PdfBuilder.Generate(forms, invoice);

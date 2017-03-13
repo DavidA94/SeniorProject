@@ -18,9 +18,12 @@
 
         public const string OVERWRITE_HEADER = "Overwrite";
 
-        public const int WYSIWYG_PPI = 72;
-        public const int WYSIWYG_PAGE_HEIGHT = 11 * WYSIWYG_PPI;
+        public const int WYSIWYG_PPI = 70;
+        public const float WYSIWYG_PAGE_HEIGHT = 11.0f * WYSIWYG_PPI;
+        public const float WYSIWYG_PAGE_WIDTH = 8.5f * WYSIWYG_PPI;
         public const double WYSIWYG_FLH_RATIO = 1.4;
         public const float WYSIWYG_TABLE_BORDER_SIZE = 1;
+
+        public const string API_ROOT_IMG_FOLDER = "wwwroot\\FormBuilder\\Images";
     }
 }

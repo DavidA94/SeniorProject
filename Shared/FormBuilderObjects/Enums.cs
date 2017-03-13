@@ -1,6 +1,11 @@
 ﻿namespace Shared.FormBuilderObjects
 {
     public enum Orientation { LANDSCAPE, PORTRAIT };
+    public enum DocumentType
+    {
+        ONE_PER_INV = 0,
+        ONE_PER_VEH = 1
+    }
 
     public enum Location
     {

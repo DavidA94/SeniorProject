@@ -80,36 +80,87 @@ namespace Seciovni.PdfBuilder
         private static Invoice m_invoice = null;
         private static int m_curPage = 0;
         private static double m_globalShift = 0;
-        private static dynamic m_nextPageShape = null;
+        private static int? m_curVehicle = null;
         
         public static string Generate(IEnumerable<FormBuilder> forms, Invoice invoice)
         {
             m_invoice = invoice;
 
             m_doc = new PdfDocument();
-            m_doc.DocumentInformation.Title = invoice.InvoiceDate.ToString("YYYY-mm-dd") + " " + invoice.Buyer.User.FullName() + " Invoice";
-            m_doc.PageSettings.SetMargins(0f, 0f, 0f, 17.5f);
+            m_doc.DocumentInformation.Title = invoice.InvoiceDate.ToString("yyyy-MM-dd") + " " + invoice.Buyer.User.FullName() + " Invoice";
+            m_doc.PageSettings.SetMargins(0f, 0f, 0f, 0f);
+            m_doc.PageSettings.Size = new SizeF(Constants.WYSIWYG_PPI * 8.5f, Constants.WYSIWYG_PPI * 11f);
+
+            float margin = 0.25f * Constants.WYSIWYG_PPI;
 
             foreach (var form in forms)
             {
-                ++m_curPage;
-                PdfPage page = m_doc.Pages.Add();
+                float height = (form.Canvas.Orientation == Orientation.PORTRAIT
+                                ? Constants.WYSIWYG_PAGE_HEIGHT
+                                : Constants.WYSIWYG_PAGE_WIDTH) - margin;
 
-                foreach (dynamic shape in form.Canvas.Shapes.OrderBy(s => s.Layout.Y))
+                float width = form.Canvas.Orientation == Orientation.LANDSCAPE
+                                ? Constants.WYSIWYG_PAGE_HEIGHT
+                                : Constants.WYSIWYG_PAGE_WIDTH;
+
+                var count = (form.Canvas.DocType == DocumentType.ONE_PER_INV ? 1 : invoice.Vehicles.Count);
+
+                for(int i = 0; i < count; ++i)
                 {
-                    Draw(page.Graphics, shape);
-                    DrawMain(page.Graphics, shape);
+                    ++m_curPage;
+                    PdfPage page = m_doc.Pages.Add();
+                    var savedState = page.Graphics.Save();
 
+                    // Set or clear the cur vehicle
+                    m_curVehicle = (form.Canvas.DocType == DocumentType.ONE_PER_VEH ? (int?)i : null);
 
-                    // Shape detects new page is needed
-                    if (m_nextPageShape != null)
+                    var shapes = form.Canvas.Shapes.OrderBy(s => s.Layout.Y).ToList();
+                    for(int shapeIdx = 0; shapeIdx < shapes.Count; ++shapeIdx)
                     {
-                        ++m_curPage;
-                        page = m_doc.Pages.Add();
-                        Draw(page.Graphics, m_nextPageShape);
-                        DrawMain(page.Graphics, m_nextPageShape);
+                        dynamic shape = shapes[shapeIdx];
+
+                        // If we've passed the bottom of the page, due to shifting from the global offset
+                        var fbObj = (shape as FBObject);
+                        if (fbObj.Layout.Y + fbObj.Layout.Height + m_globalShift > height &&
+                            fbObj.Layout.Y + fbObj.Layout.Height <= height)
+                        {
+                            // Draw and duplicate anything that's made to go below (footer)
+                            var footerShapes = shapes.Where(s => s.Layout.Y + s.Layout.Height > height).ToList();
+                            foreach (dynamic footerObj in footerShapes)
+                            {
+                                // Remove and add so it's not printed twice on new runs
+                                shapes.Remove(footerObj as FBObject);
+                                shapes.Add(footerObj as FBObject);
+                                Draw(page.Graphics, footerObj);
+                            }
+
+                            ++m_curPage;
+                            page = m_doc.Pages.Add();
+                            savedState = page.Graphics.Save();
+
+                            // Need to shift everything up now\
+                            m_globalShift = margin - fbObj.Layout.Y;
+                            page.Graphics.TranslateTransform(0f, (float)m_globalShift);
+                        }
+                        // Otherwise, if we are meant to be at the bottom, then some restoration needs to happen
+                        else if(fbObj.Layout.Y + fbObj.Layout.Height > height)
+                        {
+                            var backupState = page.Graphics.Save();
+                            page.Graphics.Restore(savedState);
+
+                            Draw(page.Graphics, shape);
+                            DrawMain(page.Graphics, shape);
+
+                            page.Graphics.Restore(backupState);
+
+                            // Make sure we don't draw twice
+                            continue;
+                        }
+
+                        Draw(page.Graphics, shape);
+                        DrawMain(page.Graphics, shape);
                     }
-                }
+                }                
             }
 
             string tempFilePath = Path.GetTempPath();
@@ -201,7 +252,31 @@ namespace Seciovni.PdfBuilder
                             (float)(x + width * 0.8), (float)(y + height * 0.27));
         }
         private static void Draw(PdfGraphics g, Ellipse box) { }
-        private static void Draw(PdfGraphics g, FBImage box) { }
+        private static void Draw(PdfGraphics g, FBImage box)
+        {
+            using (var stream = new FileStream(Path.Combine(Constants.API_ROOT_IMG_FOLDER, box.ImgSrc), FileMode.Open))
+            {
+                using (var bitmap = new PdfBitmap(stream))
+                {
+                    var width = box.Layout.Width;
+                    var height = box.Layout.Height;
+
+                    if (box.PreserveRatio)
+                    {
+                        height = bitmap.Height * (width / bitmap.Width);
+
+                        // If we went the wrong way
+                        if(height > box.Layout.Height)
+                        {
+                            height = box.Layout.Height;
+                            width = bitmap.Width * (height / bitmap.Height);
+                        }
+                    }
+
+                    g.DrawImage(bitmap, new PointF((float)box.Layout.X, (float)box.Layout.Y), new SizeF((float)width, (float)height));
+                }
+            }
+        }
         private static void Draw(PdfGraphics g, FBTextBlock textBlock)
         {
             if (m_doc == null) return;
@@ -210,14 +285,8 @@ namespace Seciovni.PdfBuilder
         }
         private static void Draw(PdfGraphics g, Table box)
         {
-            var grid = new PdfGrid();
             var headers = box.Cells.Select(c => c["header"]);
             var contents = box.Cells.Select(c => c["content"]).ToList();
-
-            foreach (var header in headers)
-            {
-                Draw(g, header);
-            }
 
             // Figure out what we're bound to
             var cellContent = contents.FirstOrDefault(cell => cell.Bindings.Count > 0);
@@ -227,6 +296,20 @@ namespace Seciovni.PdfBuilder
             if (bindingPart == nameof(VehicleInfo)) count = m_invoice.Vehicles.Count;
             else if (bindingPart == nameof(MiscellaneousFee)) count = m_invoice.Fees.Count;
             else if (bindingPart == nameof(Payment)) count = m_invoice.Payments.Count;
+
+            // If there's no content, then don't draw anything
+            if(count == 0)
+            {
+                var shiftAmt = box.HeaderHeight + box.ContentHeight;
+                m_globalShift -= shiftAmt;
+                g.TranslateTransform(0f, -(float)shiftAmt);
+                return;
+            }
+
+            foreach (var header in headers)
+            {
+                Draw(g, header);
+            }
 
             // Store the original bindings so we can revert
             var originalBindings = contents.SelectMany(c => c.Bindings.Select(kv => kv.Value.Value)).ToList();
@@ -588,6 +671,12 @@ namespace Seciovni.PdfBuilder
 
                             obj = m_dealer[m_invoice.State].Item1;
                             break;
+                        }
+                        // Special case for when doing a page per vehicle
+                        else if(part == nameof(VehicleInfo) && m_curVehicle != null)
+                        {
+                            obj = (obj as Invoice).Vehicles.ElementAt((int)m_curVehicle);
+                            continue;
                         }
                         // If we've hit one of the arrays
                         else if (part.EndsWith("]"))

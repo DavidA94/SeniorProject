@@ -290,6 +290,12 @@ const WYSIWYG_TABLE_BORDER_SIZE = 1;
  */
 const WYSIWYG_DEFAULT_IMG = "/images/FormBuilder/image.svg";
 
+/**
+ * The base path for all images in the editor
+ * @type {string}
+ */
+const WYSIWYG_IMAGE_BASE_PATH = "https://localhost:44357/FormBuilder/Images/";
+
 // endregion
 
 // endregion

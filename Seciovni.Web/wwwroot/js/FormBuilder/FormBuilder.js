@@ -104,6 +104,9 @@ class FormBuilder{
                             location.replace("/FormEditor/Edit/" + this._title.value.replace(/ /g, ""));
                         }
                     }
+                    else{
+                        alert(response.message);
+                    }
                 }
             });
         });

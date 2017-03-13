@@ -4,7 +4,10 @@
 
 <h1>Recent Invoices</h1>
 
-<a href="/Invoice/Edit/" class="button"><img src="~/images/add.png" /> Add Invoice</a>
+@if (User.HasClaim(c => c.Type == AccessPolicy.EditInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
+{
+    <a href="/Invoice/Edit/" class="button"><img src="~/images/add.png" /> Add Invoice</a>
+}
 
 <table id="recentInvoicesList" class="dataTableList">
     <tr>

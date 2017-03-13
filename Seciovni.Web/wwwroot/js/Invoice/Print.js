@@ -14,6 +14,10 @@ class Print {
         if(printButton) {
             printButton.addEventListener('click', this._boundShow);
             document.getElementById("printInvoiceButton").addEventListener("click", this._boundPrint);
+            document.getElementById("cancelPrint").addEventListener("click", (e) => {
+                e.preventDefault();
+                this._dialog.close()
+            });
         }
     }
 
@@ -47,7 +51,7 @@ class Print {
     _print(e){
         e.preventDefault();
 
-        const checkedBoxes = document.querySelectorAll(".printCheck");
+        const checkedBoxes = document.querySelectorAll(".printCheck:checked");
         const checkedNames = [];
 
         for(const checked of checkedBoxes){
@@ -69,7 +73,7 @@ class Print {
                     const response = /** @type {ApiResponse}*/JSON.parse(xmlhttp.response.toString());
 
                     if(response.successful) {
-                        if(response.message.indexOf(" Legacy ") > 0){
+                        if(response.message.indexOf("Legacy ") === 0){
                             alert(response.message);
                         }
                         else {
@@ -116,10 +120,8 @@ class Print {
         }
 
         if(options.length === 0){
-            const noPrintOptions = document.createElement("p");
-            noPrintOptions.innerHTML = "No Forms Available";
-            noPrintOptions.className = "row";
-            optBox.appendChild(noPrintOptions);
+            alert("No Forms Available");
+            this._dialog.close();
         }
 
         for(const option of options){
@@ -139,8 +141,12 @@ class Print {
             label.className = "printCheckLabel";
             label.innerHTML = optionText;
 
-            optBox.appendChild(input);
-            optBox.appendChild(label);
+            const row = document.createElement("div");
+            row.className = "row";
+            row.appendChild(input);
+            row.appendChild(label);
+
+            optBox.appendChild(row);
         }
     }
 }

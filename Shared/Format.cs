@@ -20,6 +20,11 @@ namespace Shared
                 return value?.ToString();
             }
 
+            if(format.Format != null)
+            {
+                return ((dynamic)value).ToString(format.Format);
+            }
+
             // Zero with no prefix = "-"
             if(value.ToString() == "0" && format.Prefix == null)
             {

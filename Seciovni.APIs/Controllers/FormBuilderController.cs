@@ -47,15 +47,21 @@ namespace Seciovni.APIs.Controllers
                 const string VEHICLE = "Vehicle";
                 const string VEHICLE_INFO = nameof(VehicleInfo);
 
-                retVal.InsertRange(0, new List<BindingOptionData>
+                if(option != BindingOption.BOTH)
                 {
-                    new BindingOptionData(MISC_CHARGE, nameof(MiscellaneousFee.Description), MISC_FEE + "." + nameof(MiscellaneousFee.Description)),
-                    new BindingOptionData(MISC_CHARGE, nameof(MiscellaneousFee.Price), MISC_FEE + "." + nameof(MiscellaneousFee.Price)),
+                    retVal.InsertRange(0, new List<BindingOptionData>
+                    {
+                        new BindingOptionData(MISC_CHARGE, nameof(MiscellaneousFee.Description), MISC_FEE + "." + nameof(MiscellaneousFee.Description)),
+                        new BindingOptionData(MISC_CHARGE, nameof(MiscellaneousFee.Price), MISC_FEE + "." + nameof(MiscellaneousFee.Price)),
 
-                    new BindingOptionData(PAYMENT, nameof(Payment.Date), PAYMENT + "." + nameof(Payment.Date)),
-                    new BindingOptionData(PAYMENT, nameof(Payment.Description), PAYMENT + "." + nameof(Payment.Description)),
-                    new BindingOptionData(PAYMENT, nameof(Payment.Amount), PAYMENT + "." + nameof(Payment.Amount)),
-
+                        new BindingOptionData(PAYMENT, nameof(Payment.Date), PAYMENT + "." + nameof(Payment.Date)),
+                        new BindingOptionData(PAYMENT, nameof(Payment.Description), PAYMENT + "." + nameof(Payment.Description)),
+                        new BindingOptionData(PAYMENT, nameof(Payment.Amount), PAYMENT + "." + nameof(Payment.Amount))
+                    });
+                }
+                
+                retVal.InsertRange(retVal.Count, new List<BindingOptionData>
+                {
                     new BindingOptionData(VEHICLE, "Stock Number", VEHICLE_INFO + "." + nameof(VehicleInfo.StockNum)),
                     new BindingOptionData(VEHICLE, nameof(VehicleInfo.VIN), VEHICLE_INFO + "." + nameof(VehicleInfo.VIN)),
                     new BindingOptionData(VEHICLE, nameof(VehicleInfo.Year), VEHICLE_INFO + "." + nameof(VehicleInfo.Year)),
@@ -126,8 +132,9 @@ namespace Seciovni.APIs.Controllers
         [HttpGet(nameof(FormImages))]
         public IEnumerable<string> FormImages()
         {
-            return Directory.GetFiles("wwwroot\\FormBuilder\\Images", "*.png").Union(
-                   Directory.GetFiles("wwwroot\\FormBuilder\\Images", "*.jpeg")).Select(s => s.Replace("wwwroot\\", ""));
+            return Directory.GetFiles(Constants.API_ROOT_IMG_FOLDER, "*.png").Union(
+                   Directory.GetFiles(Constants.API_ROOT_IMG_FOLDER, "*.jpeg")).Select(s => s.Replace("wwwroot\\", "")
+                                                                                             .Replace("\\", "/"));
         }
 
         [HttpGet(nameof(Get) + "/{pageName}")]
@@ -143,7 +150,7 @@ namespace Seciovni.APIs.Controllers
         [HttpGet(nameof(GetForms))]
         public IEnumerable<string> GetForms()
         {
-            return db.InvoiceTemplates.Select(it => it.TemplateTitle);
+            return db.InvoiceTemplates.Select(it => it.TemplateTitle).Distinct();
         }
 
         #endregion
@@ -171,7 +178,7 @@ namespace Seciovni.APIs.Controllers
 
             // Get the "page" that submitted this -- [null = new template]
             var pageName = WebUtility.UrlDecode(Request.Headers.Referrer.Segments.Last());
-            if (pageName.Trim().ToLower() == "edit") pageName = null;
+            if (pageName.Trim('/').Trim().ToLower() == "edit") pageName = null;
 
             // Try to get the template from the database
 

@@ -7,11 +7,17 @@
     @*http://www.istockphoto.com/vector/file-document-icon-set-vector-eps10-gm527795151-53395100?st=86db603*@
     @if (User.HasClaim(c => c.Type == AccessPolicy.EditInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
     {
-        <a asp-controller="Invoice" asp-action="Edit" class="dashboardButton"><p>New Invoice</p></a>
+        <a asp-controller="Invoice" asp-action="Edit" class="dashboardButton">
+            <img src="~/images/new.svg" alt="" />
+            <p>New Invoice</p>
+        </a>
     }
     @if (User.HasClaim(c => c.Type == AccessPolicy.ViewInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
     { 
-        <a asp-controller="Invoice" asp-action="View" class="dashboardButton"><p>View Invoices</p></a> 
+        <a asp-controller="Invoice" asp-action="View" class="dashboardButton">
+            <img src="~/images/view.svg" alt="" id="viewShift" />
+            <p>View Invoices</p>
+        </a>
     }
     @if (User.HasClaim(c => c.Type == AccessPolicy.EditInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
     {
@@ -23,7 +29,10 @@
     }
     @if (User.HasClaim(c => c.Type == AccessPolicy.FormEditorPrivilege || c.Type == AccessPolicy.AdminPrivilege))
     {
-        <a asp-controller="FormEditor" asp-action="Index" class="dashboardButton"><p>Form Editor</p></a>
+        <a asp-controller="FormEditor" asp-action="Index" class="dashboardButton">
+            <img src="~/images/editor.svg" alt="" id="editShift" />
+            <p>Form Editor</p>
+        </a>
     }
     @if (User.HasClaim(c => c.Type == AccessPolicy.AdminPrivilege)) {
         <a href="#" id="dashboardManagement" class="dashboardButton"><p>Management</p></a> 

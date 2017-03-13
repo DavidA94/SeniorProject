@@ -13,6 +13,7 @@ namespace Database.Tables
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [PrintFormat("D4")]
         public int InvoiceID { get; set; }
 
         [Required]

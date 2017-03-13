@@ -10,6 +10,7 @@ class CanvasFields {
     static get shapes() { return "shapes"; }
     static get showGrid() { return "showGrid"; }
     static get snap() { return "span"; }
+    static get docType() { return "docType"; }
 }
 
 class CanvasShapeTypes {
@@ -566,6 +567,7 @@ class Canvas extends EventPropagator {
         this.scale = json[CanvasFields.scale];
         this.showGrid = json[CanvasFields.showGrid];
         this.snapToGrid = json[CanvasFields.snap];
+        this.documentType = json[CanvasFields.docType];
 
         for(const shape of json[CanvasFields.shapes]){
             let child;
@@ -592,6 +594,7 @@ class Canvas extends EventPropagator {
         properties[CanvasFields.scale] = this.scale;
         properties[CanvasFields.showGrid] = this.showGrid;
         properties[CanvasFields.snap] = this.snapToGrid;
+        properties[CanvasFields.docType] = this.documentType;
 
         properties[CanvasFields.shapes] = [];
 

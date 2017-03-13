@@ -9,5 +9,6 @@ namespace Shared.FormBuilderObjects
         public int NumPages { get; set; }
         public Orientation Orientation { get; set; }
         public List<FBObject> Shapes { get; set; }
+        public DocumentType DocType { get; set; }
     }
 }

@@ -12,22 +12,6 @@ namespace Seciovni.Web.Controllers
             return View();
         }
 
-        [Authorize(Policy = AccessPolicy.FormEditorPrivilege)]
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        [Authorize(Policy = AccessPolicy.AdminPrivilege)]
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
         public IActionResult Error()
         {
             return View();

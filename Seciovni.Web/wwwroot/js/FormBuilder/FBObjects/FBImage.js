@@ -103,7 +103,7 @@ class FBImage extends FBObject {
      */
     toJSON() {
         const properties = this.__toJSON();
-        properties[FBImageFields.imgSrc] = this.src;
+        properties[FBImageFields.imgSrc] = decodeURIComponent(this.src.substring(this.src.lastIndexOf("/") + 1));
         properties[FBImageFields.preserveRatio] = this.preserveRatio;
 
         return properties;
@@ -118,7 +118,7 @@ class FBImage extends FBObject {
         const fbImage = new FBImage(null, null, null, null);
         fbImage.__init_json(json);
         fbImage.preserveRatio = json[FBImageFields.preserveRatio];
-        fbImage.src = json[FBImageFields.imgSrc];
+        fbImage.src = WYSIWYG_IMAGE_BASE_PATH + json[FBImageFields.imgSrc];
 
         return fbImage;
     }

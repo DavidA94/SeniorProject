@@ -17,7 +17,7 @@ input, select {height:20px;line-height:20px;box-sizing:content-box;border:1px so
 input:focus, select:focus {box-shadow:0 0 0 #5394ff;}
 dialog {padding:15px;}
 dialog div.saveButton {margin:10px -15px -15px;padding:7px 15px;background:#f0f0f0;border-top:1px solid #bbb;overflow:hidden;}
-dialog div.saveButton button {float:right;}
+dialog div.saveButton button {float:right;margin-left:10px;}
 
 input[data-error] {box-shadow:0 0 5px 1px #800;}
 input[type=date]::-webkit-clear-button {display:none;}
@@ -29,9 +29,12 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 
 #dashboard {overflow:hidden;max-width:730px;margin:auto;}
 #dashboard .dashboardButton {position:relative;width:200px;height:200px;float:left;margin:20px;background:#efefef;border:2px solid #999;
-                             color:#555;}
+                             color:#555;text-align:center;}
 #dashboard .dashboardButton:hover {color:#000;}
 #dashboard .dashboardButton p {text-align:center;position:absolute;bottom:0;width:100%;font-size:18px;margin:5px 0;}
+#dashboard .dashboardButton img {width:128px;height:128px;margin-top:30px;}
+#dashboard .dashboardButton img#editShift {margin-left:35px;}
+#dashboard .dashboardButton img#viewShift {margin-top:25px}
 
 .invoiceDialog input {box-sizing:border-box;height:auto;}
 .invoiceDialog > div {margin:0 0 10px;}
