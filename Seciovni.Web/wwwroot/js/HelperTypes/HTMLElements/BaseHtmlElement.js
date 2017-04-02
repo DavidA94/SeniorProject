@@ -105,16 +105,16 @@ class BaseHtmlElement extends SubscribableProperty {
     /**
      * The Value of the field
      * @return {*}
-     * @abstract
+     * @virtual
      */
-    get value() {  }
+    get value() { return this._htmlObj.innerHTML }
 
     /**
      *
      * @param {*} value - The value to set the field as
-     * @abstract
+     * @virtual
      */
-    set value(value) {  }
+    set value(value) { this._htmlObj.innerHTML = value; }
 
     toString(){
         return this.value;

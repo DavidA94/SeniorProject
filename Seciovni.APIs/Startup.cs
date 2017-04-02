@@ -62,7 +62,8 @@ namespace Seciovni.APIs
                     {
                         serviceScope.ServiceProvider.GetService<SeciovniContext>().Database.Migrate();
                     }
-                    catch (SqlException) { }
+                    catch (SqlException ex) {
+                    }
                     serviceScope.ServiceProvider.GetService<SeciovniContext>().EnsureSeedData();
                 }
             }

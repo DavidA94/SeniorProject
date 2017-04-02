@@ -99,7 +99,23 @@ namespace Database.Tables
                         var xmlResponse = XElement.Parse(result);
 
                         // <Error> in the XML indicates an invalid address
-                        return !xmlResponse.Descendants().Any(n => n.Name.LocalName.ToLower() == "error");
+                        if(xmlResponse.Descendants().Any(n => n.Name.LocalName.ToLower() == "error"))
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            // USPS will correct off-by-one errors, so make sure what they put is what we got back.
+                            var responseAddr = xmlResponse.Descendants().FirstOrDefault(n => n.Name.LocalName == "Address2").Value;
+                            var responseCity = xmlResponse.Descendants().FirstOrDefault(n => n.Name.LocalName == "City").Value;
+                            var responseState = xmlResponse.Descendants().FirstOrDefault(n => n.Name.LocalName == "State").Value;
+                            var responseZip = xmlResponse.Descendants().FirstOrDefault(n => n.Name.LocalName == "Zip5").Value;
+
+                            return responseAddr.ToLower() == StreetAddress.ToLower() &&
+                                   responseCity.ToLower() == City.ToLower() &&
+                                   responseState.ToLower() == State.ToLower() &&
+                                   responseZip.ToLower() == ZipCode.ToLower();
+                        }
                     }
                     else return false;
                 }

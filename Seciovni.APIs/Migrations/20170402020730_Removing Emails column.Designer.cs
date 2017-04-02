@@ -9,9 +9,10 @@ using Shared;
 namespace Seciovni.APIs.Migrations
 {
     [DbContext(typeof(SeciovniContext))]
-    partial class SeciovniContextModelSnapshot : ModelSnapshot
+    [Migration("20170402020730_Removing Emails column")]
+    partial class RemovingEmailscolumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
@@ -65,8 +66,6 @@ namespace Seciovni.APIs.Migrations
                     b.Property<string>("HomePhone");
 
                     b.Property<string>("MCNumber");
-
-                    b.Property<int>("PreviousCustomerID");
 
                     b.Property<string>("PrimaryPhone");
 

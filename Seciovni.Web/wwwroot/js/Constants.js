@@ -145,9 +145,16 @@ const Location = {
 };
 
 /**
- * Represents page orientation options
+ * Represents how contacts can be ordered
  * @enum {number}
  */
+const ContactOrder = {
+    FirstName: 0,
+    LastName: 1,
+    Email: 2
+};
+
+
 const Orientation = {
     Landscape: 0,
     Portrait: 1
@@ -174,6 +181,14 @@ const PropertyType = {
 // endregion
 
 // region IDs
+
+const CONTACTS_SELECTED_ORDER_ID = "selected";
+const CONTACTS_MENU_ID = "contactMenu";
+const CONTACTS_EDIT_CONTAINER_ID = "contactView";
+const CONTACTS_LIST_ID = "contactsList";
+const CONTACTS_SEARCH_INPUT_ID = "contactSearchBar";
+const CONTACTS_INVOICES_LIST_ID = "contactInvoices";
+const CONTACTS_FORM_ID = "contactViewForm";
 
 const CONTEXT_MENU_ID = "contextMenu";
 

@@ -12,6 +12,9 @@
 
 footer {clear:both;}
 
+h1 {font-size:1.8em;margin:.4em 0;}
+h2 {font-size:1.6em;margin:.3em 0;}
+
 select[disabled]{background:#ebebe4;}
 input, select {height:20px;line-height:20px;box-sizing:content-box;border:1px solid #a9a9a9;padding:2px 1px;}
 input:focus, select:focus {box-shadow:0 0 0 #5394ff;}
@@ -93,23 +96,23 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 
 .contactPreviewItem {border-left:2px solid #ccc;margin:.5em 0;padding:0 .5em}
 .contactPreviewItem:hover {border-left:2px solid #059;cursor:pointer;}
-.contactPreviewItem p {margin:0;}
+.contactPreviewItem p {margin:0;overflow:hidden;text-overflow:ellipsis;}
 
-#chosenContact {border-left:4px solid #059;background:#f5fcff;}
+#chosenContact {border-left:4px solid #059;background:#f5fcff;padding-left:calc(.5em - 2px);}
 
 .loadingSpinner {width:100px;}
 .centerSpinner {display:block;margin:auto;}
 
 #appHeader {margin:1em 0;overflow:hidden;padding-bottom:.5em;border-bottom:1px solid #bbb;}
 #appHeader #leftHeader {float:left;padding-left:10px;}
-#appHeader #leftHeader #deleteButton {background:#dadada;border:1px solid #aaa;}
-#appHeader #leftHeader #deleteButton:hover {background:#dfdfdf;border-color:maroon;color:maroon;}
+#appHeader #deleteButton {background:#dadada;border:1px solid #aaa;}
+#appHeader #deleteButton:hover {background:#dfdfdf;border-color:maroon;color:maroon;}
 #appHeader #rightHeader {float:right;}
 #appHeader button {margin-right:.5em;padding:4px;}
-#appHeader button img {position:relative;top:-1px;}
+#appHeader button img {position:relative;top:-1px;width:20px;}
 
-.button {appearance:button;-webkit-appearance:button;padding:6px;margin-right:.5em;}
-.button img {position:relative;top:-1px;}
+.button {appearance:button;-webkit-appearance:button;padding:6px;margin-right:.5em;color:black;text-decoration:none;}
+.button img {position:relative;top:-1px;width:20px;}
 .button:hover {text-decoration:none;}
 
 #appHeader.builderPageHeader {position:fixed;right:0;left:0;border-bottom:2px solid black;z-index:7;margin:10px 0;padding-bottom:5px;}
@@ -120,11 +123,9 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #invoiceData p {font-size:1.7em;font-weight:bold;margin-bottom:0;}
 
 #contactSearchBar {position:relative;}
-#contactSearchBar input {width:100%;height:28px;margin-right:10px;padding-right:42px;}
-#contactSearchBar input:focus + div {background:linear-gradient(#699ae9, #5494ff);}
-#contactSearchBar input:focus + div > svg path{fill:#fafafa!important;}
-#contactSearchBar div {width:40px;height:28px;text-align:center;padding-top:6px;background:linear-gradient(#d0d0d0, #c4c4c4);
-                       position:absolute;right:0;cursor:pointer;}
+#contactSearchBar input {width:100%;height:28px;padding-left:25px;box-sizing:border-box;}
+#contactSearchBar input:focus + div > svg path{fill:#477dd6!important;}
+#contactSearchBar div {width:25px;height:28px;text-align:center;padding-top:6px;position:absolute;top:0;left:0;}
 
 #contactsList[data-search] > div {display:none}
 #contactsList[data-search] > div[data-foundResult] {display:block;}
@@ -194,3 +195,40 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 .printCheckLabel {margin-left:5px;vertical-align:middle;font-weight:normal;}
 
 #printDialog {width:300px;}
+
+#fullContactsList {width:220px;height:calc(100vh - 170px);float:left;border-right:2px solid #bbb;margin:0 1em 0 -5px;overflow-y:auto;
+                   padding:5px 1em 5px 5px;}
+#contactView {float:left;height:calc(100vh - 170px);overflow-y:auto;}
+#contactView input {box-sizing:border-box;height:26px;}
+#contactView h2, #contactInvoices h2 {font-size:1.1em;font-weight:bold;color:#444;font-family:Arial,sans-serif;font-variant:small-caps;}
+#contactView h2:first-child ~ h2 {margin-top:1em;}
+#contactView .row {margin-left:1em;}
+#contactView .halfWidth input {width:200px;margin-right:10px;}
+#contactView .fullWidth input {width:410px;}
+#contactView #city {width:270px;margin-right:10px;}
+#contactView #state {width:40px;margin-right:10px;}
+#contactView #zip {width:80px}
+
+#contactInvoices {float:right;width:220px;height:calc(100vh - 170px);overflow-y:auto;}
+#contactInvoices #invoiceList {border:solid #d0d0d0;border-width:1px 1px 0;}
+#contactInvoices #invoiceList .header {background:#eee}
+#contactInvoices #invoiceList div {border-bottom:1px solid #d0d0d0;overflow:hidden;line-height:24px;}
+#contactInvoices #invoiceList div > * {padding:0 5px;}
+#contactInvoices #invoiceList div a {display:block;text-decoration:none;color:black;cursor:pointer;}
+#contactInvoices #invoiceList div a:hover {background:#f5fcff;}
+
+.subLabel {position:relative;}
+.subLabel label {font-size:10px;position:absolute;left:0;bottom:0;margin:0 0 0 2px;}
+.subLabel label + input {margin-bottom:13px;}
+
+.vMenu {width:20px;cursor:pointer;}
+
+#contactMenu {position:relative;float:right;margin-left:10px;line-height:26px;width:20px;vertical-align:middle;cursor:pointer;}
+#contactMenu > svg {vertical-align:middle;}
+#contactMenu:hover > svg path, #contactMenu.opened > svg path {fill:#477dd6!important;}
+#contactMenu + #contactSearchBar {margin-right:30px;}
+#contactMenu.opened #contextMenu {top:30px;right:0;left:auto;width:160px;}
+#contactMenu.opened #contextMenu li {padding-left:20px;}
+#contactMenu.opened #contextMenu li#selected:before {position:absolute;left:5px;content:"\2713";}
+
+#noContacts {margin:1em 10px;font-weight:bold;}

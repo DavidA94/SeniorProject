@@ -43,11 +43,9 @@ namespace Seciovni.APIs.WebHelpers
         {
             var token = request.Headers.Authorization.Parameter.Replace("Bearer ", "");
 
-            var user = db.Logins.Include(l => l.User)
-                         .FirstOrDefault(l => l.LoginToken == token)
-                        ?.User;
+            var login = db.Logins.Include(l => l.User).FirstOrDefault(l => l.LoginToken == token);
 
-            return user;
+            return login?.User;
         }
     }
 }

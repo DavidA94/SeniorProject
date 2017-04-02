@@ -152,7 +152,7 @@ class CustomerPreview {
     static createFromJSON(json){
         const cp = new CustomerPreview();
 
-        cp.customerID = json.customerID;
+        cp.customerID = json.contactID;
 
         const parent = document.createElement("div");
         parent.className = CONTACT_PREVIEW_CLASSES;

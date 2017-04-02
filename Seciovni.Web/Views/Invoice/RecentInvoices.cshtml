@@ -6,7 +6,7 @@
 
 @if (User.HasClaim(c => c.Type == AccessPolicy.EditInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
 {
-    <a href="/Invoice/Edit/" class="button"><img src="~/images/add.png" /> Add Invoice</a>
+    <a href="/Invoice/Edit/" class="button"><img src="~/images/add.svg" /> Add Invoice</a>
 }
 
 <table id="recentInvoicesList" class="dataTableList">

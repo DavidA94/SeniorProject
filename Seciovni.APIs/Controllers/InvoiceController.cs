@@ -15,7 +15,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Web.Http;
 
 namespace Seciovni.APIs.Controllers
@@ -42,7 +41,6 @@ namespace Seciovni.APIs.Controllers
 
             // Pull all the data we're going to need from the database, so there's not a ton of pegging it
             var dbInvoices = db.Invoices.Include(i => i.Buyer).ThenInclude(b => b.Address)
-                                        .Include(i => i.Buyer).ThenInclude(b => b.Emails)
                                         .Include(i => i.Buyer).ThenInclude(b => b.User)
                                         .Include(i => i.Fees)
                                         .Include(i => i.LienHolder)
@@ -51,7 +49,6 @@ namespace Seciovni.APIs.Controllers
                                         .Include(i => i.Vehicles);
 
             var dbCustomers = db.Customers.Include(c => c.Address)
-                                          .Include(c => c.Emails)
                                           .Include(c => c.User);
 
             // Ensure we have a valid sales person
@@ -157,7 +154,6 @@ namespace Seciovni.APIs.Controllers
                 // the user may input the customer by hand multiple times.
                 var customers = dbCustomers
                     .Where(c => c.User.Email.ToLower() == invoice.Buyer.User.Email.ToLower() ||
-                                c.Emails.Select(e => e.Email).Contains(invoice.Buyer.User.Email, StringComparer.OrdinalIgnoreCase) ||
                                 c.PrimaryPhone == invoice.Buyer.PrimaryPhone)
                     .Where(c => c.EmployeeID == employee.UserID ||
                                 c.EmployeeID == Constants.DEVNULL_EMPLOYEE_ID);
@@ -428,7 +424,6 @@ namespace Seciovni.APIs.Controllers
 
             // Pull all the data we're going to need from the database, so there's not a ton of pegging it
             var dbInvoices = db.Invoices.Include(i => i.Buyer).ThenInclude(b => b.Address)
-                                        .Include(i => i.Buyer).ThenInclude(b => b.Emails)
                                         .Include(i => i.Buyer).ThenInclude(b => b.User)
                                         .Include(i => i.Fees)
                                         .Include(i => i.IIPT)
@@ -503,6 +498,9 @@ namespace Seciovni.APIs.Controllers
         [HttpGet(nameof(Get) + "/{id}")]
         public Invoice Get(int id)
         {
+            var employee = validateUser(Request, AccessPolicy.ViewInvoicePrivilege);
+            if (employee == null) return null;
+
             var invoices = db.Invoices.Include(i => i.Buyer).ThenInclude(b => b.Address)
                                       .Include(i => i.Buyer).ThenInclude(b => b.User)
                                       .Include(i => i.Fees)

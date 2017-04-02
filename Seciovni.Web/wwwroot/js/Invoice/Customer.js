@@ -3,7 +3,7 @@
  */
 
 class CustomerFields {
-    static get customerID() { return "customerID"; }
+    static get customerID() { return "contactID"; }
     static get user() { return "user"; }
     static get address() { return "address"; }
     static get primaryPhone() { return "primaryPhone"; }
@@ -50,7 +50,7 @@ class Customer {
          * @private
          * @type {function}
          */
-        this._keyPressedBound = this._keyReleased.bind(this);
+        this._keyReleasedBound = this._keyReleased.bind(this);
 
 
         /**
@@ -85,12 +85,6 @@ class Customer {
 
         // Setup Searching
         document.getElementById(INVOICE_CONTACTS_SEARCH_INPUT_ID).addEventListener('input', this._searchBound);
-        document.getElementById(INVOICE_CONTACTS_SEARCH_INPUT_ID).addEventListener('keypress', (e) => {
-            // If [Enter]
-            if(e.keyCode === ENTER_KEY){
-                this._searchBound(null);
-            }
-        });
 
 
         /**
@@ -437,7 +431,7 @@ class Customer {
         }
         else if(e.propertyName === AddressFields.zip){
             const zip = this._address.Zip.htmlObj.value;
-            if(zip.length != 5){
+            if(zip.length != 5 && zip.length != 0){
                 this._address.Zip.error = "Invalid ZIP code";
             }
             else{

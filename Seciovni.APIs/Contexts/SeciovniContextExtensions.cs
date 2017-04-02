@@ -77,7 +77,6 @@ namespace Seciovni.APIs.Contexts
                     },
                     CompanyName = "Get My Furniture",
                     DealerLicenseNumber = "AZ 33280",
-                    Emails = new List<EmailAddress> { new EmailAddress() { Email = "LanceMGillespie@jourrapide.com" } },
                     PrimaryPhone = "615-895-7269",
                     User = new User()
                     {
@@ -99,7 +98,6 @@ namespace Seciovni.APIs.Contexts
                     },
                     CompanyName = "Army Spy",
                     DealerLicenseNumber = "OK 88280",
-                    Emails = new List<EmailAddress> { new EmailAddress() { Email = "MelindaPYoung@armyspy.com" } },
                     PrimaryPhone = "580-596-1036",
                     User = new User()
                     {
