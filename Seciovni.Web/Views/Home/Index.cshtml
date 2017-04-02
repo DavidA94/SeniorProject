@@ -27,8 +27,11 @@
         </a>
     }
     @if (User.HasClaim(c => c.Type == AccessPolicy.ViewInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
-    { 
-        <a href="#" id="dashboardSearch" class="dashboardButton"><p>Search</p></a> 
+    {
+        <a asp-controller="Search" asp-action="Home" class="dashboardButton">
+            <img src="~/images/frontSearch.svg" alt="" />
+            <p>Search</p>
+        </a>
     }
     @if (User.HasClaim(c => c.Type == AccessPolicy.FormEditorPrivilege || c.Type == AccessPolicy.AdminPrivilege))
     {
