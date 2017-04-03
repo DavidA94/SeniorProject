@@ -64,6 +64,7 @@
 /// <reference path="js/Invoice/Print.js" />
 /// <reference path="js/invoice/recentinvoices.js" />
 /// <reference path="js/invoice/vehicle.js" />
+/// <reference path="js/invoicesearch/search.js" />
 /// <reference path="js/prototypes.js" />
 /// <reference path="js/search.js" />
 /// <reference path="js/shared/address.js" />

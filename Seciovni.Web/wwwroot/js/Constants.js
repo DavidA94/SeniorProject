@@ -154,7 +154,10 @@ const ContactOrder = {
     Email: 2
 };
 
-
+/**
+ * The page orientation
+ * @type {{Landscape: number, Portrait: number}}
+ */
 const Orientation = {
     Landscape: 0,
     Portrait: 1
@@ -178,17 +181,38 @@ const PropertyType = {
     DocumentType: "documentType",
 };
 
+/**
+ * Represents the boolean types of a search field
+ * @enum {number}
+ */
+const SearchBoolean = {
+    AND: 0,
+    OR: 1
+};
+
+/**
+ * Represents the different types of search fields
+ * @enum {number}
+ */
+const SearchFieldType = {
+    IGNORE: 0,
+    Date: 1,
+    InvoiceState: 2,
+    Range: 3,
+    State: 4,
+    Text: 5
+};
+
 // endregion
 
 // region IDs
 
-const CONTACTS_SELECTED_ORDER_ID = "selected";
-const CONTACTS_MENU_ID = "contactMenu";
 const CONTACTS_EDIT_CONTAINER_ID = "contactView";
-const CONTACTS_LIST_ID = "contactsList";
-const CONTACTS_SEARCH_INPUT_ID = "contactSearchBar";
-const CONTACTS_INVOICES_LIST_ID = "contactInvoices";
 const CONTACTS_FORM_ID = "contactViewForm";
+const CONTACTS_INVOICES_LIST_ID = "contactInvoices";
+const CONTACTS_LIST_ID = "contactsList";
+const CONTACTS_MENU_ID = "contactMenu";
+const CONTACTS_SELECTED_ORDER_ID = "selected";
 
 const CONTEXT_MENU_ID = "contextMenu";
 
@@ -221,6 +245,8 @@ const INVOICE_TOTAL_ID = "invoiceTotalDue";
 const INVOICE_TOTAL_PAYMENTS_ID = "totalPayments";
 const INVOICE_TOTAL_PAYMENTS_INNER_ID = "totalPaymentsInner";
 const INVOICE_VEHICLE_TEMPLATE_ID = "vehicleTemplate";
+
+const SEARCH_TERM_LIST_ID = "searchTerms";
 
 const WYSIWYG_CANVAS_HOLDER_ID = "canvasHolder";
 const WYSIWYG_CANVAS_ID = "editor";

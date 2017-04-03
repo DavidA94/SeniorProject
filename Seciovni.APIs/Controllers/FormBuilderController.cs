@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Seciovni.APIs.Contexts;
+using Seciovni.APIs.Shared;
 using Seciovni.APIs.WebHelpers;
 using Shared;
 using Shared.ApiResponses;
@@ -35,106 +36,25 @@ namespace Seciovni.APIs.Controllers
         [HttpGet(nameof(BindingOptions) + "/{option}")]
         public IEnumerable<BindingOptionData> BindingOptions(BindingOption option)
         {
-            List<BindingOptionData> retVal = new List<BindingOptionData>();
-
-            if (option == BindingOption.BOTH || option == BindingOption.REPEATING)
+            if(Request.HasValidLogin(db) && Request.CanAccess(db, AccessPolicy.FormEditorPrivilege))
             {
-                const string MISC_CHARGE = "Miscellaneous Charge";
-                const string MISC_FEE = nameof(MiscellaneousFee);
-
-                const string PAYMENT = nameof(Payment);
-
-                const string VEHICLE = "Vehicle";
-                const string VEHICLE_INFO = nameof(VehicleInfo);
-
-                if(option != BindingOption.BOTH)
-                {
-                    retVal.InsertRange(0, new List<BindingOptionData>
-                    {
-                        new BindingOptionData(MISC_CHARGE, nameof(MiscellaneousFee.Description), MISC_FEE + "." + nameof(MiscellaneousFee.Description)),
-                        new BindingOptionData(MISC_CHARGE, nameof(MiscellaneousFee.Price), MISC_FEE + "." + nameof(MiscellaneousFee.Price)),
-
-                        new BindingOptionData(PAYMENT, nameof(Payment.Date), PAYMENT + "." + nameof(Payment.Date)),
-                        new BindingOptionData(PAYMENT, nameof(Payment.Description), PAYMENT + "." + nameof(Payment.Description)),
-                        new BindingOptionData(PAYMENT, nameof(Payment.Amount), PAYMENT + "." + nameof(Payment.Amount))
-                    });
-                }
-                
-                retVal.InsertRange(retVal.Count, new List<BindingOptionData>
-                {
-                    new BindingOptionData(VEHICLE, "Stock Number", VEHICLE_INFO + "." + nameof(VehicleInfo.StockNum)),
-                    new BindingOptionData(VEHICLE, nameof(VehicleInfo.VIN), VEHICLE_INFO + "." + nameof(VehicleInfo.VIN)),
-                    new BindingOptionData(VEHICLE, nameof(VehicleInfo.Year), VEHICLE_INFO + "." + nameof(VehicleInfo.Year)),
-                    new BindingOptionData(VEHICLE, nameof(VehicleInfo.Make), VEHICLE_INFO + "." + nameof(VehicleInfo.Make)),
-                    new BindingOptionData(VEHICLE, nameof(VehicleInfo.Model), VEHICLE_INFO + "." + nameof(VehicleInfo.Model)),
-                    new BindingOptionData(VEHICLE, nameof(VehicleInfo.Miles), VEHICLE_INFO + "." + nameof(VehicleInfo.Miles)),
-                    new BindingOptionData(VEHICLE, nameof(VehicleInfo.Location), VEHICLE_INFO + "." + nameof(VehicleInfo.Location)),
-                    new BindingOptionData(VEHICLE, nameof(VehicleInfo.Price), VEHICLE_INFO + "." + nameof(VehicleInfo.Price)),
-                });
-            }
-            if (option == BindingOption.BOTH || option == BindingOption.SINGLE)
-            {
-                const string INVOICE = nameof(Invoice);
-                const string BUYER = nameof(Invoice.Buyer);
-                const string LIEN_HOLDER = nameof(Invoice.LienHolder);
-                const string USER = nameof(Customer.User);
-                const string ADDRESS = nameof(Customer.Address);
-                const string COMPANY = "Company";
-
-                retVal.InsertRange(0, new List<BindingOptionData>
-                {
-                    new BindingOptionData(COMPANY, "Street Address", "StreetAddress"),
-                    new BindingOptionData(COMPANY, "City", "City"),
-                    new BindingOptionData(COMPANY, "State", "State"),
-                    new BindingOptionData(COMPANY, "ZIP", "ZIP"),
-                    new BindingOptionData(COMPANY, "Phone Number", "PhoneNumber"),
-
-                    new BindingOptionData(INVOICE, "Invoice Number", nameof(Invoice.InvoiceID)),
-                    new BindingOptionData(INVOICE, "Invoice Date", nameof(Invoice.InvoiceDate)),
-                    new BindingOptionData(INVOICE, "Invoice State", nameof(Invoice.State)),
-                    new BindingOptionData(INVOICE, "Sales Person", nameof(Invoice.SalesPerson)),
-                    new BindingOptionData(INVOICE, "Tax", nameof(Invoice.TaxAmount)),
-                    new BindingOptionData(INVOICE, "Doc Fee", nameof(Invoice.DocFee)),
-                    new BindingOptionData(INVOICE, "Down Payment", nameof(Invoice.DownPayment)),
-                    new BindingOptionData(INVOICE, "Invoice Total", "Total"),
-                    new BindingOptionData(INVOICE, "Amount Due", "Due"),
-                    new BindingOptionData(INVOICE, "Page Number", "PageNumber"),
-
-
-                    new BindingOptionData(BUYER, "First Name", $"{BUYER}.{USER}.{nameof(Database.Tables.User.FirstName)}"),
-                    new BindingOptionData(BUYER, "Last Name", $"{BUYER}.{USER}.{nameof(Database.Tables.User.LastName)}"),
-                    new BindingOptionData(BUYER, "Company", $"{BUYER}.{nameof(Customer.CompanyName)}"),
-                    new BindingOptionData(BUYER, "E-Mail", $"{BUYER}.{USER}.{nameof(Database.Tables.User.Email)}"),
-                    new BindingOptionData(BUYER, "Primary Phone", $"{BUYER}.{nameof(Customer.PrimaryPhone)}"),
-                    new BindingOptionData(BUYER, "Cell Phone", $"{BUYER}.{nameof(Customer.CellPhone)}"),
-                    new BindingOptionData(BUYER, "Work Phone", $"{BUYER}.{nameof(Customer.WorkPhone)}"),
-                    new BindingOptionData(BUYER, "Home Phone", $"{BUYER}.{nameof(Customer.HomePhone)}"),
-                    new BindingOptionData(BUYER, "Street Address", $"{BUYER}.{ADDRESS}.{nameof(Address.StreetAddress)}"),
-                    new BindingOptionData(BUYER, "City", $"{BUYER}.{ADDRESS}.{nameof(Address.City)}"),
-                    new BindingOptionData(BUYER, "State", $"{BUYER}.{ADDRESS}.{nameof(Address.State)}"),
-                    new BindingOptionData(BUYER, "ZIP", $"{BUYER}.{ADDRESS}.{nameof(Address.ZipCode)}"),
-                    new BindingOptionData(BUYER, "Dealer License Number", $"{BUYER}.{nameof(Customer.DealerLicenseNumber)}"),
-                    new BindingOptionData(BUYER, "MC Number", $"{BUYER}.{nameof(Customer.MCNumber)}"),
-                    new BindingOptionData(BUYER, "Resale Number", $"{BUYER}.{nameof(Customer.ResaleNumber)}"),
-
-                    new BindingOptionData("Lien Holder", "Name", $"{LIEN_HOLDER}.{nameof(LienHolder.Name)}"),
-                    new BindingOptionData("Lien Holder", "Street Address", $"{LIEN_HOLDER}.{ADDRESS}.{nameof(Address.StreetAddress)}"),
-                    new BindingOptionData("Lien Holder", "City", $"{LIEN_HOLDER}.{ADDRESS}.{nameof(Address.City)}"),
-                    new BindingOptionData("Lien Holder", "State", $"{LIEN_HOLDER}.{ADDRESS}.{nameof(Address.State)}"),
-                    new BindingOptionData("Lien Holder", "ZIP", $"{LIEN_HOLDER}.{ADDRESS}.{nameof(Address.ZipCode)}"),
-                    new BindingOptionData("Lien Holder", "EIN", $"{LIEN_HOLDER}.{nameof(LienHolder.EIN)}"),
-                });
+                return SharedData.GetBindingOptions(option);
             }
 
-            return retVal;
+            return null;
         }
-        
+
         [HttpGet(nameof(FormImages))]
         public IEnumerable<string> FormImages()
         {
-            return Directory.GetFiles(Constants.API_ROOT_IMG_FOLDER, "*.png").Union(
-                   Directory.GetFiles(Constants.API_ROOT_IMG_FOLDER, "*.jpeg")).Select(s => s.Replace("wwwroot\\", "")
-                                                                                             .Replace("\\", "/"));
+            if (Request.HasValidLogin(db) && Request.CanAccess(db, AccessPolicy.FormEditorPrivilege))
+            {
+                return Directory.GetFiles(Constants.API_ROOT_IMG_FOLDER, "*.png").Union(
+                    Directory.GetFiles(Constants.API_ROOT_IMG_FOLDER, "*.jpeg")).Select(s => s.Replace("wwwroot\\", "")
+                                                                                              .Replace("\\", "/"));
+            }
+
+            return null;
         }
 
         [HttpGet(nameof(Get) + "/{pageName}")]
@@ -150,6 +70,9 @@ namespace Seciovni.APIs.Controllers
         [HttpGet(nameof(GetForms))]
         public IEnumerable<string> GetForms()
         {
+            // If we don't have a valid request, then no-go
+            if (!Request.HasValidLogin(db) || !Request.CanAccess(db, AccessPolicy.FormEditorPrivilege)) return null;
+
             return db.InvoiceTemplates.Select(it => it.TemplateTitle).Distinct();
         }
 

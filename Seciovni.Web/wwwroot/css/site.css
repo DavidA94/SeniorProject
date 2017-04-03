@@ -232,3 +232,13 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #contactMenu.opened #contextMenu li#selected:before {position:absolute;left:5px;content:"\2713";}
 
 #noContacts {margin:1em 10px;font-weight:bold;}
+
+#searchTerms .row .cell  {margin-right:5px;}
+#searchTerms .row .cell .deleteButton {margin-top:3px;cursor:pointer;}
+#searchTerms .row:last-child .deleteButton {display:none;}
+#searchTerms .invoiceStateSelect option:not([data-invState]) {display:none;}
+
+#searchButton {background:#cadeff;border:1px solid #6c99e4;float:right;padding:4px 8px;margin-top:1em;cursor:default;
+               border-radius:2px;line-height:18px;}
+#searchButton img {margin-top:-1px;}
+#searchButton:hover {border-color:#355b9b;}

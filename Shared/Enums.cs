@@ -21,4 +21,6 @@ namespace Shared
     public enum JobType { Admin, Assistant, Manager, Sales }
 
     public enum BindingOption { BOTH, REPEATING, SINGLE }
+
+    public enum BindingType { IGNORE, Date, InvoiceState, Range, State, Text }
 }

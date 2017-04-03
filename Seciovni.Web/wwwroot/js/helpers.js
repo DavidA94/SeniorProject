@@ -236,3 +236,29 @@ function getBindingOptions(bindingContext){
 
     return getBindingOptions[bindingContext];
 }
+
+/**
+ * Gets the search fields
+ * @return {{category: string display: string, type: SearchFieldType, value: string}[]}
+ */
+function getSearchFields(){
+    const KEY = "fields";
+    if(getBindingOptions[KEY] === undefined){
+        getBindingOptions[KEY] = null;
+        let response = null;
+
+        sendToApi("Search/SearchFields/", "GET", null, (xmlhttp) => {
+            // No-op
+            if(!xmlhttp) return;
+            if(xmlhttp.readyState === XMLHttpRequest.DONE) {
+                if (xmlhttp.status === 200) {
+                    response = xmlhttp.response;
+                }
+
+                getBindingOptions[KEY] = JSON.parse(response);
+            }
+        });
+    }
+
+    return getBindingOptions[KEY];
+}

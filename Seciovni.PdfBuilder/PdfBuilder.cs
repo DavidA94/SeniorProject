@@ -664,7 +664,7 @@ namespace Seciovni.PdfBuilder
                             obj = m_dealer[m_invoice.State].Item2.City;
                             break;
                         }
-                        else if (part == "State")
+                        else if (part == "CompanyState")
                         {
 
                             obj = m_dealer[m_invoice.State].Item2.State;
