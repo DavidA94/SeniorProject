@@ -22,5 +22,5 @@ namespace Shared
 
     public enum BindingOption { BOTH, REPEATING, SINGLE }
 
-    public enum BindingType { IGNORE, Date, InvoiceState, Range, State, Text }
+    public enum BindingType { IGNORE, Date, InvoiceState, Money, Number, Range, State, Text }
 }

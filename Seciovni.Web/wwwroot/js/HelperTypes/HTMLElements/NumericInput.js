@@ -67,7 +67,7 @@ class NumericInput extends TextInput{
     _makeInputEditable(){
         if(this.numberVal >= 0) this.htmlObj.value = this.numberVal;
         this._isPretty = false;
-        this.htmlObj.select();
+        if(typeof(this.htmlObj.select) === 'function') this.htmlObj.select();
     }
 
     _makeInputPretty(){
@@ -106,7 +106,6 @@ class NumericInput extends TextInput{
         if(this._prettyPrefix) tempVal = this._prettyPrefix + tempVal;
 
         input.value = tempVal;
-
         this._isPretty = true;
     }
 }

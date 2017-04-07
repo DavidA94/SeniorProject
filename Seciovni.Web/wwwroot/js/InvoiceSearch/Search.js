@@ -7,6 +7,9 @@ class Search {
         // Get the search fields so they're there when we need them.
         getSearchFields();
 
+        this._boundExtraUpdated = this._extraUpdated.bind(this);
+        this._boundTermDestroyed = this._termDestroyed.bind(this);
+
         this._termsList = document.getElementById(SEARCH_TERM_LIST_ID);
         this._terms = [];
 
@@ -22,6 +25,7 @@ class Search {
             }
             else{
                 const st = new SearchTerm();
+                st.subscribe(EVENT_PROPERTY_CHANGE, this._boundExtraUpdated);
                 this._termsList.appendChild(st.htmlObj);
                 this._terms.push(st);
 
@@ -36,6 +40,32 @@ class Search {
 
     _closeLoading() {
 
+    }
+
+    /**
+     * Fires when the last row is updated, and adds a new row
+     * @param {PropertyChangedEventArgs} e
+     * @private
+     */
+    _extraUpdated(e){
+        // Unsubscribe and resubscribe as needed
+        const oldExtra = e.originalTarget;
+        oldExtra.unsubscribe(EVENT_PROPERTY_CHANGE, this._boundExtraUpdated);
+        oldExtra.subscribe(EVENT_OBJECT_DESTROYED, this._boundTermDestroyed);
+
+        const newTerm = new SearchTerm();
+        newTerm.subscribe(EVENT_PROPERTY_CHANGE, this._boundExtraUpdated);
+        this._termsList.appendChild(newTerm.htmlObj);
+        this._terms.push(newTerm);
+    }
+
+    /**
+     * Fires when a search term is destoryed
+     * @param {ObjectDestroyedEventArgs} e - The event data
+     * @private
+     */
+    _termDestroyed(e){
+        this._terms.splice(this._terms.indexOf(e.originalTarget), 1);
     }
 }
 

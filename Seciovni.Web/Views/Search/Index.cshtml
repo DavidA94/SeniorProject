@@ -5,7 +5,12 @@
 <h1>Invoice Search</h1>
 <p>Enter desired fields to search below.</p>
 
-<form method="post" action="#" onsubmit="return false">
+<form method="post" action="#" id="searchForm" onsubmit="return false">
+    <div id="searchTermHeaders" class="row">
+        <div class="searchFieldCol cell"><b>Search Field</b></div>
+        <div class="searchTermsCol cell"><b>Search Term(s)</b></div>
+
+    </div>
     <div id="searchTerms">
     </div>
     <div id="searchButton"><img src="~/images/search.svg" alt="" /> Search</div>
@@ -18,6 +23,7 @@
 <script type="text/javascript" src="~/js/Events/EventTypes/KeyboardEvent.js"></script>
 <script type="text/javascript" src="~/js/Events/EventTypes/EventArgs.js"></script>
 <script type="text/javascript" src="~/js/Events/EventTypes/PropertyChangedEventArgs.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/ObjectDestroyedEventArgs.js"></script>
 <script type="text/javascript" src="~/js/Events/Subscribable.js"></script>
 <script type="text/javascript" src="~/js/Events/SubscribableProperty.js"></script>
 

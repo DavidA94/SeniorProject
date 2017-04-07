@@ -233,12 +233,16 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 
 #noContacts {margin:1em 10px;font-weight:bold;}
 
-#searchTerms .row .cell  {margin-right:5px;}
-#searchTerms .row .cell .deleteButton {margin-top:3px;cursor:pointer;}
-#searchTerms .row:last-child .deleteButton {display:none;}
-#searchTerms .invoiceStateSelect option:not([data-invState]) {display:none;}
+#searchForm {float:left;}
+#searchForm .row .cell  {margin-right:1em;}
+#searchForm .row .cell .deleteButton {margin-top:3px;cursor:pointer;}
+#searchForm .row:last-child .deleteButton {display:none;}
+#searchForm .invoiceStateSelect option:not([data-invState]) {display:none;}
+#searchForm .row .throughDash {line-height:24px;width:25px;text-align:center;font-weight:bold;margin:0 0 0 -1em;}
+#searchForm .row .searchFieldCol {width:180px;}
+#searchForm .row select.searchFieldCol{box-sizing:border-box;height:26px;}
 
-#searchButton {background:#cadeff;border:1px solid #6c99e4;float:right;padding:4px 8px;margin-top:1em;cursor:default;
-               border-radius:2px;line-height:18px;}
-#searchButton img {margin-top:-1px;}
-#searchButton:hover {border-color:#355b9b;}
+#searchForm #searchButton {background:#cadeff;border:1px solid #6c99e4;float:left;padding:4px 8px;margin-top:1em;cursor:default;
+                           border-radius:2px;line-height:18px;}
+#searchForm #searchButton img {margin-top:-1px;}
+#searchForm #searchButton:hover {border-color:#355b9b;}

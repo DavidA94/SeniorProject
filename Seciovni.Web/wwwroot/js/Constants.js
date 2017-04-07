@@ -198,9 +198,11 @@ const SearchFieldType = {
     IGNORE: 0,
     Date: 1,
     InvoiceState: 2,
-    Range: 3,
-    State: 4,
-    Text: 5
+    Money: 3,
+    Number: 4,
+    Range: 5,
+    State: 6,
+    Text: 7
 };
 
 // endregion

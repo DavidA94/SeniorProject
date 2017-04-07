@@ -73,12 +73,19 @@ class BaseHtmlElement extends SubscribableProperty {
         this._events.splice(this._events.indexOf([eventName, eventFunc], 1));
     }
 
+    /**
+     * Removes all subscribed events
+     */
     clearEvents(){
         for(let event of this._events){
             this.htmlObj.removeEventListener(event[0], event[1]);
         }
     }
 
+    /**
+     * The HTML object that this object wraps
+     * @return {HTMLElement}
+     */
     get htmlObj() { return this._htmlObj; }
 
     /**

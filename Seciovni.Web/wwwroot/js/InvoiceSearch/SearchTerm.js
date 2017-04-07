@@ -5,17 +5,13 @@
 class SearchTerm extends SubscribableProperty {
     constructor() {
         super();
+        this.__addEvent(EVENT_OBJECT_DESTROYED);
 
         /**
          * @private
          * @type {function}
          */
         this._boundInvFieldChange = this._invFieldChange.bind(this);
-        /**
-         * @private
-         * @type {function}
-         */
-        this._boundBooleanChange = this._booleanChange.bind(this);
         /**
          * @private
          * @type {function}
@@ -32,8 +28,13 @@ class SearchTerm extends SubscribableProperty {
         // ----- Create the options -----
 
         const invField = document.createElement("select");
-        invField.className = "cell";
-        invField.appendChild(document.createElement("option"));
+        invField.className = "cell searchFieldCol";
+
+        const blank = document.createElement("option");
+        blank.hidden = true;
+        blank.disabled = true;
+        blank.selected = true;
+        invField.appendChild(blank);
         const optGroups = {};
 
         for(const field of getSearchFields()){
@@ -74,31 +75,18 @@ class SearchTerm extends SubscribableProperty {
 
         /**
          * @private
-         * @type {HTMLInputElement}
+         * @type {TextInput}
          */
-        this._inputSearchTerm = document.createElement("input");
-        this._inputSearchTerm.className = "cell";
+        this._stateSearch = new TextInput(SearchTerm._getStateSelect());
+        this._stateSearch.htmlObj.className = "cell";
 
         /**
          * @private
-         * @type {HTMLInputElement}
+         * @type {TextInput}
          */
-        this._inputSearchTermRange = document.createElement("input");
-        this._inputSearchTermRange.className = "cell";
-
-        /**
-         * @private
-         * @type {HTMLSelectElement}
-         */
-        this._stateSearch = SearchTerm._getStateSelect();
-        this._stateSearch.className = "cell";
-
-        /**
-         * @private
-         * @type {HTMLSelectElement}
-         */
-        this._invStateSearch = SearchTerm._getStateSelect();
-        this._invStateSearch.className = "cell invoiceStateSelect";
+        this._invStateSearch = new TextInput(SearchTerm._getStateSelect());
+        this._invStateSearch.htmlObj.className = "cell invoiceStateSelect";
+        this._invStateSearch.value = "AZ";
 
         // ----- Create the boolean box -----
 
@@ -106,8 +94,10 @@ class SearchTerm extends SubscribableProperty {
         boolean.className = "cell";
         const and = document.createElement("option");
         and.value = "0";
+        and.innerHTML = "AND";
         const or = document.createElement("option");
         or.value = "1";
+        or.innerHTML = "OR";
 
         boolean.appendChild(and);
         boolean.appendChild(or);
@@ -117,7 +107,6 @@ class SearchTerm extends SubscribableProperty {
          * @type {NumericInput}
          */
         this._boolean = new NumericInput(boolean);
-        this._boolean.addEvent('change', this._boundBooleanChange);
 
         // Wrappers for keeping the data good in the search terms
 
@@ -133,6 +122,9 @@ class SearchTerm extends SubscribableProperty {
          */
         this._searchTermRangeWrapper = null;
 
+        this._throughDash = document.createElement("span");
+        this._throughDash.className = "cell throughDash";
+        this._throughDash.innerHTML = " &ndash; ";
     }
 
     /**
@@ -171,21 +163,19 @@ class SearchTerm extends SubscribableProperty {
      */
     get boolean() { return this._boolean.value; }
 
-    _booleanChange(e) {
-        this.__sendPropChangeEvent("boolean");
+    _destroy(){
+        this._destroySearchTerms();
+        this._deleteImg.removeEventListener('click', this._boundDestroy);
+        this._invField.clearEvents();
+
+        this._parentElem.remove();
+
+        this.__dispatchEvent(EVENT_OBJECT_DESTROYED, new ObjectDestroyedEventArgs(this));
     }
 
     _invFieldChange(e){
-        if(this._searchTermWrapper){
-            this._parentElem.removeChild(this._searchTermWrapper.htmlObj);
-
-            if(this._searchTermRangeWrapper){
-                this._parentElem.removeChild(this._searchTermRangeWrapper.htmlObj);
-            }
-        }
-
-        this._searchTermWrapper = null;
-        this._searchTermRangeWrapper = null;
+        // Kill any current search terms
+        this._destroySearchTerms();
 
         // Send that the value has been changed
         this.__sendPropChangeEvent("field");
@@ -198,46 +188,31 @@ class SearchTerm extends SubscribableProperty {
 
         // Figure out what to show the user
         switch(dataType){
-            case SearchFieldType.Date:
-                this._inputSearchTerm.type = "date";
-                this._inputSearchTermRange.type = "date";
-
-                this._searchTermWrapper = new DateInput(this._inputSearchTerm);
-                this._searchTermRangeWrapper = new DateInput(this._inputSearchTermRange);
-
-                this._parentElem.insertBefore(this._searchTermWrapper.htmlObj, this._deleteImg);
-                this._parentElem.insertBefore(this._searchTermRangeWrapper.htmlObj, this._deleteImg);
-                break;
             case SearchFieldType.InvoiceState:
-                this._searchTermWrapper = new TextInput(this._invStateSearch);
-                this._searchTermWrapper.value = "AZ";
+                this._searchTermWrapper = this._invStateSearch;
                 this._parentElem.insertBefore(this._searchTermWrapper.htmlObj, this._deleteImg);
-                break;
-            case SearchFieldType.Range:
-                this._inputSearchTerm.type = "text";
-                this._inputSearchTermRange.type = "text";
-
-                this._searchTermWrapper = new NumericInput(this._inputSearchTerm);
-                this._searchTermRangeWrapper = new NumericInput(this._inputSearchTermRange);
-
-                this._parentElem.insertBefore(this._searchTermWrapper.htmlObj, this._deleteImg);
-                this._parentElem.insertBefore(this._searchTermRangeWrapper.htmlObj, this._deleteImg);
                 break;
             case SearchFieldType.State:
-                this._searchTermWrapper = new TextInput(this._stateSearch);
+                this._searchTermWrapper = this._stateSearch;
                 this._parentElem.insertBefore(this._searchTermWrapper.htmlObj, this._deleteImg);
                 break;
+            case SearchFieldType.Date:
+            case SearchFieldType.Money:
+            case SearchFieldType.Number:
+            case SearchFieldType.Range:
+                this._searchTermWrapper = SearchTerm._getInput(dataType);
+                this._searchTermRangeWrapper = SearchTerm._getInput(dataType);
+
+                this._parentElem.insertBefore(this._searchTermWrapper.htmlObj, this._deleteImg);
+                this._parentElem.insertBefore(this._throughDash, this._deleteImg);
+                this._parentElem.insertBefore(this._searchTermRangeWrapper.htmlObj, this._deleteImg);
+                break;
             case SearchFieldType.Text:
-                this._inputSearchTerm.type = "text";
-                this._searchTermWrapper = new TextInput(this._inputSearchTerm);
+                this._searchTermWrapper = SearchTerm._getInput(dataType);
                 this._parentElem.insertBefore(this._searchTermWrapper.htmlObj, this._deleteImg);
                 break;
         }
-
-    }
-
-    _destroy() {
-
+        this._parentElem.insertBefore(this._boolean.htmlObj, this._deleteImg);
     }
 
     static _getStateSelect(){
@@ -295,5 +270,48 @@ class SearchTerm extends SubscribableProperty {
             '<option value="WY">Wyoming</option>'
 
         return select;
+    }
+
+    /**
+     * Creates a new input to be used for keeping the input
+     * @param {SearchFieldType} dataType - The type of input to get
+     * @return {BaseHtmlElement}
+     * @private
+     */
+    static _getInput(dataType){
+        const input = /** @type {HTMLInputElement} */document.createElement("input");
+        input.type = "text";
+        input.className = "cell";
+
+        switch (dataType){
+            case SearchFieldType.Date:
+                input.type = "date";
+                return new DateInput(input);
+            case SearchFieldType.Money:
+                return new NumericInput(input, "$ ", 2);
+            case SearchFieldType.Number:
+                return new NumericInput(input, "", 0, false);
+            case SearchFieldType.Range:
+                return new NumericInput(input);
+            case SearchFieldType.Text:
+            return new TextInput(input);
+        }
+    }
+
+    _destroySearchTerms(){
+        if(this._searchTermWrapper){
+            this._parentElem.removeChild(this._searchTermWrapper.htmlObj);
+            this._parentElem.removeChild(this._boolean.htmlObj);
+
+            this._searchTermWrapper.clearEvents();
+            this._searchTermWrapper = null;
+
+            if(this._searchTermRangeWrapper){
+                this._parentElem.removeChild(this._searchTermRangeWrapper.htmlObj);
+
+                this._searchTermRangeWrapper.clearEvents();
+                this._searchTermRangeWrapper = null;
+            }
+        }
     }
 }
