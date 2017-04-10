@@ -2,9 +2,18 @@
  * Created by David on 2017-04-02.
  */
 
+class SearchTermFields {
+    static get invField() { return "invoiceField"; }
+    static get term() { return "term"; }
+    static get termRange() { return "termRange"; }
+}
+
 class SearchTerm extends SubscribableProperty {
+    // region CTOR
+
     constructor() {
         super();
+
         this.__addEvent(EVENT_OBJECT_DESTROYED);
 
         /**
@@ -37,10 +46,10 @@ class SearchTerm extends SubscribableProperty {
         invField.appendChild(blank);
         const optGroups = {};
 
-        for(const field of getSearchFields()){
-            if(field.type === SearchFieldType.IGNORE) continue;
+        for (const field of getSearchFields()) {
+            if (field.type === SearchFieldType.IGNORE) continue;
 
-            if(!optGroups[field.category]){
+            if (!optGroups[field.category]) {
                 optGroups[field.category] = document.createElement("optgroup");
                 optGroups[field.category].label = field.category;
                 invField.appendChild(optGroups[field.category]);
@@ -59,7 +68,7 @@ class SearchTerm extends SubscribableProperty {
          * @private
          */
         this._invField = new TextInput(invField);
-        this._invField.addEvent('change', this._boundInvFieldChange);
+        this._invField.subscribe(EVENT_PROPERTY_CHANGE, this._boundInvFieldChange);
 
         this._parentElem.appendChild(this._invField.htmlObj);
 
@@ -88,26 +97,6 @@ class SearchTerm extends SubscribableProperty {
         this._invStateSearch.htmlObj.className = "cell invoiceStateSelect";
         this._invStateSearch.value = "AZ";
 
-        // ----- Create the boolean box -----
-
-        const boolean = document.createElement("select");
-        boolean.className = "cell";
-        const and = document.createElement("option");
-        and.value = "0";
-        and.innerHTML = "AND";
-        const or = document.createElement("option");
-        or.value = "1";
-        or.innerHTML = "OR";
-
-        boolean.appendChild(and);
-        boolean.appendChild(or);
-
-        /**
-         * @private
-         * @type {NumericInput}
-         */
-        this._boolean = new NumericInput(boolean);
-
         // Wrappers for keeping the data good in the search terms
 
         /**
@@ -127,24 +116,36 @@ class SearchTerm extends SubscribableProperty {
         this._throughDash.innerHTML = " &ndash; ";
     }
 
-    /**
-     * The HTML object that olds all the information this object stores
-     * @return {HTMLDivElement}
-     */
-    get htmlObj() { return this._parentElem; }
+    // endregion
+
+    // region Public Properties
 
     /**
      * The invoice field that is targeted by term
      * @return {string}
      */
-    get field() { return this._invField.value; }
+    get field() {
+        return this._invField.value;
+    }
+
+    get fieldUIValue() {
+        return this._invField.htmlObj.options[this._invField.htmlObj.selectedIndex].text;
+    }
+
+    /**
+     * The HTML object that olds all the information this object stores
+     * @return {HTMLDivElement}
+     */
+    get htmlObj() {
+        return this._parentElem;
+    }
 
     /**
      * The search term
      * @return {*}
      */
     get searchTerm() {
-        if(this._searchTermWrapper) return this._searchTermWrapper.value;
+        if (this._searchTermWrapper) return this._searchTermWrapper.value;
         return null;
     }
 
@@ -153,69 +154,127 @@ class SearchTerm extends SubscribableProperty {
      * @return {*}
      */
     get searchTermRange() {
-        if(this._searchTermRangeWrapper) return this._searchTermRangeWrapper.value;
+        if (this._searchTermRangeWrapper) return this._searchTermRangeWrapper.value;
         return null;
     }
 
-    /**
-     * How this relates to the next search term
-     * @return {*}
-     */
-    get boolean() { return this._boolean.value; }
+    // endregion
 
-    _destroy(){
-        this._destroySearchTerms();
-        this._deleteImg.removeEventListener('click', this._boundDestroy);
-        this._invField.clearEvents();
+    // region Public Methods
 
-        this._parentElem.remove();
+    toJSON() {
+        const properties = {};
+        properties[SearchTermFields.invField] = this._invField.value;
 
-        this.__dispatchEvent(EVENT_OBJECT_DESTROYED, new ObjectDestroyedEventArgs(this));
-    }
-
-    _invFieldChange(e){
-        // Kill any current search terms
-        this._destroySearchTerms();
-
-        // Send that the value has been changed
-        this.__sendPropChangeEvent("field");
-
-        // Stop if we went to nothing being selected
-        if(e.currentTarget.value === "") return;
-
-        // Get the data type of the invoice field that is selected
-        const dataType = parseInt(e.currentTarget.options[e.currentTarget.selectedIndex].getAttribute("data-type"));
-
-        // Figure out what to show the user
-        switch(dataType){
-            case SearchFieldType.InvoiceState:
-                this._searchTermWrapper = this._invStateSearch;
-                this._parentElem.insertBefore(this._searchTermWrapper.htmlObj, this._deleteImg);
-                break;
-            case SearchFieldType.State:
-                this._searchTermWrapper = this._stateSearch;
-                this._parentElem.insertBefore(this._searchTermWrapper.htmlObj, this._deleteImg);
-                break;
-            case SearchFieldType.Date:
-            case SearchFieldType.Money:
-            case SearchFieldType.Number:
-            case SearchFieldType.Range:
-                this._searchTermWrapper = SearchTerm._getInput(dataType);
-                this._searchTermRangeWrapper = SearchTerm._getInput(dataType);
-
-                this._parentElem.insertBefore(this._searchTermWrapper.htmlObj, this._deleteImg);
-                this._parentElem.insertBefore(this._throughDash, this._deleteImg);
-                this._parentElem.insertBefore(this._searchTermRangeWrapper.htmlObj, this._deleteImg);
-                break;
-            case SearchFieldType.Text:
-                this._searchTermWrapper = SearchTerm._getInput(dataType);
-                this._parentElem.insertBefore(this._searchTermWrapper.htmlObj, this._deleteImg);
-                break;
+        if (this._searchTermWrapper){
+            properties[SearchTermFields.term] = SearchTerm._getRealValue(this._searchTermWrapper);
         }
-        this._parentElem.insertBefore(this._boolean.htmlObj, this._deleteImg);
+        if (this._searchTermRangeWrapper){
+            properties[SearchTermFields.termRange] = SearchTerm._getRealValue(this._searchTermRangeWrapper);
+        }
+
+        return properties;
     }
 
-    static _getStateSelect(){
+    toURL() {
+        if (this._invField.value === "") return null;
+
+        const field = SearchTerm._encodeToURL(this._invField);
+        const term = this._searchTermWrapper ? SearchTerm._encodeToURL(this._searchTermWrapper) : "";
+        const termRange = this._searchTermRangeWrapper ? SearchTerm._encodeToURL(this._searchTermRangeWrapper) : "";
+
+        return field + "``" +
+            term + "``" +
+            termRange;
+    }
+
+    static fromURL(urlVal) {
+        const parts = urlVal.split(/``/g);
+        const term = new SearchTerm();
+
+
+        if (parts[0] === "") return term;
+
+        term._invField.value = SearchTerm._decodeFromURL(parts[0]);
+
+        // Need to do this so the wrappers will be made
+        setTimeout(() => {
+            term._searchTermWrapper.value = SearchTerm._decodeFromURL(parts[1]);
+            if (term._searchTermRangeWrapper) term._searchTermRangeWrapper.value = SearchTerm._decodeFromURL(parts[2]);
+        }, 250);
+
+        return term;
+    }
+
+
+    // endregion
+
+    // region Private Methods
+
+    /**
+     * Gets the value ready to be used in the URL
+     * @param {BaseHtmlElement} elem - The HTML element to get the value from
+     * @return {string}
+     * @private
+     */
+    static _encodeToURL(elem) {
+        return encodeURI(SearchTerm._getRealValue(elem).toString().replace(/`/g, "\\`"));
+    }
+
+    /**
+     * Gets the value ready to be used when coming from a URL
+     * @param {string} value - The value to be decoded
+     * @return {string}
+     * @private
+     */
+    static _decodeFromURL(value) {
+        return decodeURI(value).replace(/\\`/g, "`");
+    }
+
+    /**
+     * Takes care of converting empty number fields to "" instead of -1
+     * @param {BaseHtmlElement} elem - The element to get the value of
+     * @private
+     */
+    static _getRealValue(elem){
+        if(elem instanceof NumericInput && elem.value < 0){
+            return "";
+        }
+        return elem.value;
+    }
+
+    /**
+     * Creates a new input to be used for keeping the input
+     * @param {SearchFieldType} dataType - The type of input to get
+     * @return {BaseHtmlElement}
+     * @private
+     */
+    static _getInput(dataType) {
+        const input = /** @type {HTMLInputElement} */document.createElement("input");
+        input.type = "text";
+        input.className = "cell";
+
+        switch (dataType) {
+            case SearchFieldType.Date:
+                input.type = "date";
+                return new DateInput(input);
+            case SearchFieldType.Money:
+                return new NumericInput(input, "$ ", 2);
+            case SearchFieldType.Number:
+                return new NumericInput(input, "", 0, false);
+            case SearchFieldType.Range:
+                return new NumericInput(input);
+            case SearchFieldType.Text:
+                return new TextInput(input);
+        }
+    }
+
+    /**
+     * Gets the select element with all the states in it
+     * @return {HTMLSelectElement}
+     * @private
+     */
+    static _getStateSelect() {
         const select = document.createElement("select");
         select.innerHTML =
             '<option value="AL">Alabama</option>' +
@@ -273,40 +332,33 @@ class SearchTerm extends SubscribableProperty {
     }
 
     /**
-     * Creates a new input to be used for keeping the input
-     * @param {SearchFieldType} dataType - The type of input to get
-     * @return {BaseHtmlElement}
+     * Destroys the object when the X button is clicked
      * @private
      */
-    static _getInput(dataType){
-        const input = /** @type {HTMLInputElement} */document.createElement("input");
-        input.type = "text";
-        input.className = "cell";
+    _destroy() {
+        this._destroySearchTerms();
+        this._deleteImg.removeEventListener('click', this._boundDestroy);
+        this._invField.clearEvents();
 
-        switch (dataType){
-            case SearchFieldType.Date:
-                input.type = "date";
-                return new DateInput(input);
-            case SearchFieldType.Money:
-                return new NumericInput(input, "$ ", 2);
-            case SearchFieldType.Number:
-                return new NumericInput(input, "", 0, false);
-            case SearchFieldType.Range:
-                return new NumericInput(input);
-            case SearchFieldType.Text:
-            return new TextInput(input);
-        }
+        this._parentElem.remove();
+
+        this.__dispatchEvent(EVENT_OBJECT_DESTROYED, new ObjectDestroyedEventArgs(this));
     }
 
-    _destroySearchTerms(){
-        if(this._searchTermWrapper){
+    /**
+     * Kills all the search terms so nothing is left on the page, and unsubscribes from everythihng
+     * @private
+     */
+    _destroySearchTerms() {
+        if (this._searchTermWrapper) {
+            this._throughDash.remove();
+
             this._parentElem.removeChild(this._searchTermWrapper.htmlObj);
-            this._parentElem.removeChild(this._boolean.htmlObj);
 
             this._searchTermWrapper.clearEvents();
             this._searchTermWrapper = null;
 
-            if(this._searchTermRangeWrapper){
+            if (this._searchTermRangeWrapper) {
                 this._parentElem.removeChild(this._searchTermRangeWrapper.htmlObj);
 
                 this._searchTermRangeWrapper.clearEvents();
@@ -314,4 +366,51 @@ class SearchTerm extends SubscribableProperty {
             }
         }
     }
+
+    /**
+     * Fires when search field dropdown changes
+     * @private
+     */
+    _invFieldChange() {
+        // Kill any current search terms
+        this._destroySearchTerms();
+
+        // Send that the value has been changed
+        this.__sendPropChangeEvent("field");
+
+        // Stop if we went to nothing being selected
+        if (this._invField.value === "") return;
+
+        // Get the data type of the invoice field that is selected
+        const dataType = parseInt(this._invField.htmlObj.options[this._invField.htmlObj.selectedIndex].getAttribute("data-type"));
+
+        // Figure out what to show the user
+        switch (dataType) {
+            case SearchFieldType.InvoiceState:
+                this._searchTermWrapper = this._invStateSearch;
+                this._parentElem.insertBefore(this._searchTermWrapper.htmlObj, this._deleteImg);
+                break;
+            case SearchFieldType.State:
+                this._searchTermWrapper = this._stateSearch;
+                this._parentElem.insertBefore(this._searchTermWrapper.htmlObj, this._deleteImg);
+                break;
+            case SearchFieldType.Date:
+            case SearchFieldType.Money:
+            case SearchFieldType.Number:
+            case SearchFieldType.Range:
+                this._searchTermWrapper = SearchTerm._getInput(dataType);
+                this._searchTermRangeWrapper = SearchTerm._getInput(dataType);
+
+                this._parentElem.insertBefore(this._searchTermWrapper.htmlObj, this._deleteImg);
+                this._parentElem.insertBefore(this._throughDash, this._deleteImg);
+                this._parentElem.insertBefore(this._searchTermRangeWrapper.htmlObj, this._deleteImg);
+                break;
+            case SearchFieldType.Text:
+                this._searchTermWrapper = SearchTerm._getInput(dataType);
+                this._parentElem.insertBefore(this._searchTermWrapper.htmlObj, this._deleteImg);
+                break;
+        }
+    }
+
+    // endregion
 }

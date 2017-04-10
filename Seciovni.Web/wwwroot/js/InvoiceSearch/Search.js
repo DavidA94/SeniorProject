@@ -9,37 +9,61 @@ class Search {
 
         this._boundExtraUpdated = this._extraUpdated.bind(this);
         this._boundTermDestroyed = this._termDestroyed.bind(this);
+        this._boundSearch = this._search.bind(this);
+
+        document.getElementById("searchButton").addEventListener('click', this._boundSearch);
 
         this._termsList = document.getElementById(SEARCH_TERM_LIST_ID);
+
+        /**
+         * The list of terms in the search
+         * @type {SearchTerm[]}
+         * @private
+         */
         this._terms = [];
 
-        this._showLoading();
+        showFullScreenLoading();
 
         this._waitForSearchFields(0);
     }
 
+    _search() {
+        let url = null;
+
+        for(const term of this._terms){
+            const urlTerm = term.toURL();
+
+            if(url && urlTerm) url += "~~" + Search.encodeToURL(urlTerm);
+            else if(urlTerm) url = Search.encodeToURL(urlTerm);
+        }
+
+        window.location.hash = url ? url : "";
+
+        sendToApi("Search/Search", "POST", JSON.stringify(this._terms), (xmlhttp) => {});
+    }
+
+    /**
+     * Trys to get the search fields, and if it can't calls itself in a setTimeout to try again in the specified time
+     * @param {number} waitTime - The number of ms to wait before seeing if the fields have arrived yet
+     * @private
+     */
     _waitForSearchFields(waitTime){
         setTimeout(() =>{
             if(getSearchFields() === null){
                 this._waitForSearchFields(2000);
             }
-            else{
+            else {
+                if (window.location.hash !== "") {
+                    this._loadFromURL();
+                }
                 const st = new SearchTerm();
                 st.subscribe(EVENT_PROPERTY_CHANGE, this._boundExtraUpdated);
                 this._termsList.appendChild(st.htmlObj);
                 this._terms.push(st);
 
-                this._closeLoading();
+                hideFullScreenLoading();
             }
         }, waitTime);
-    }
-
-    _showLoading() {
-
-    }
-
-    _closeLoading() {
-
     }
 
     /**
@@ -66,6 +90,40 @@ class Search {
      */
     _termDestroyed(e){
         this._terms.splice(this._terms.indexOf(e.originalTarget), 1);
+    }
+
+    /**
+     * Initializes from the URL search
+     * @private
+     */
+    _loadFromURL(){
+        const terms = Search._decodeFromURL(window.location.hash.replace("#", "")).split("~~");
+
+        for(const term of terms){
+            const st = SearchTerm.fromURL(term);
+            this._termsList.appendChild(st.htmlObj);
+            this._terms.push(st);
+        }
+    }
+
+    /**
+     * Gets the value ready to be used in the URL
+     * @param {string} value - The value to be made into URL friendly
+     * @return {string}
+     * @private
+     */
+    static encodeToURL(value){
+        return encodeURI(value.replace(/~/g, "\\~"));
+    }
+
+    /**
+     * Gets the value ready to be used when coming from a URL
+     * @param {string} value - The value to be decoded
+     * @return {string}
+     * @private
+     */
+    static _decodeFromURL(value){
+        return decodeURI(value).replace(/\\~/g, "~");
     }
 }
 

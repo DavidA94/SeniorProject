@@ -262,3 +262,18 @@ function getSearchFields(){
 
     return getBindingOptions[KEY];
 }
+
+function showFullScreenLoading(){
+    hideFullScreenLoading();
+
+    const element = document.createElement("div");
+    element.id = "fullScreenLoading";
+    document.body.appendChild(element);
+}
+
+function hideFullScreenLoading(){
+    const element = document.getElementById("fullScreenLoading");
+    if(element){
+        element.remove();
+    }
+}

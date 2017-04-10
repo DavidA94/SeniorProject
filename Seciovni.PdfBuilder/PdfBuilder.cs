@@ -624,113 +624,138 @@ namespace Seciovni.PdfBuilder
                 TextLines = outputText
             };
         }
-
+        
         private string ProcessBindings(string text, IEnumerable<Binding> bindingValues)
         {
             foreach (var binding in bindingValues)
             {
-                string realValue = "";
-                object obj = m_invoice;
-
-                var parts = binding.Value.Split('.');
-                foreach (var part in parts)
-                {
-                    if (obj is Invoice)
-                    {
-                        if (part == "Total")
-                        {
-                            obj = Format.ForPrint(new PrintFormatAttribute() { FixedPlaces = 2, Prefix = "$ " }, (obj as Invoice).GetTotal());
-                            break;
-                        }
-                        else if (part == "Due")
-                        {
-                            obj = Format.ForPrint(new PrintFormatAttribute() { FixedPlaces = 2, Prefix = "$ " }, (obj as Invoice).GetDue());
-                            break;
-                        }
-                        else if (part == "PageNumber")
-                        {
-                            obj = m_curPage;
-                            break;
-                        }
-                        else if (part == "StreetAddress")
-                        {
-
-                            obj = m_dealer[m_invoice.State].Item2.StreetAddress;
-                            break;
-                        }
-                        else if (part == "City")
-                        {
-
-                            obj = m_dealer[m_invoice.State].Item2.City;
-                            break;
-                        }
-                        else if (part == "CompanyState")
-                        {
-
-                            obj = m_dealer[m_invoice.State].Item2.State;
-                            break;
-                        }
-                        else if (part == "ZIP")
-                        {
-
-                            obj = m_dealer[m_invoice.State].Item2.ZipCode;
-                            break;
-                        }
-                        else if (part == "PhoneNumber")
-                        {
-
-                            obj = m_dealer[m_invoice.State].Item1;
-                            break;
-                        }
-                        // Special case for when doing a page per vehicle
-                        else if (part == nameof(VehicleInfo) && m_curVehicle != null)
-                        {
-                            obj = (obj as Invoice).Vehicles.ElementAt((int)m_curVehicle);
-                            continue;
-                        }
-                        // If we've hit one of the arrays
-                        else if (part.EndsWith("]"))
-                        {
-                            // We'll assume there's no bad data, until it blows up
-                            var index = Convert.ToInt32(Regex.Match(part, "(\\d+)").Groups[1].Value);
-                            var name = part.Substring(0, part.IndexOf('['));
-
-                            if (name == nameof(MiscellaneousFee))
-                            {
-                                obj = (obj as Invoice).Fees.ElementAt(index);
-                                continue;
-                            }
-                            else if (name == nameof(Payment))
-                            {
-                                obj = (obj as Invoice).Payments.ElementAt(index);
-                                continue;
-                            }
-                            else if (name == nameof(VehicleInfo))
-                            {
-                                obj = (obj as Invoice).Vehicles.ElementAt(index);
-                                continue;
-                            }
-                        }
-                    }
-
-                    if (part == parts.Last())
-                    {
-                        var pi = obj.GetType().GetRuntimeProperty(part);
-                        var format = pi.GetCustomAttribute<PrintFormatAttribute>();
-                        obj = Format.ForPrint(format, pi.GetValue(obj, null));
-                    }
-                    else
-                    {
-                        obj = obj.GetType().GetRuntimeProperty(part).GetValue(obj, null);
-                    }
-                }
-
-                realValue = obj.ToString();
-
+                string realValue = GetInvoiceValueFromPath(m_invoice, binding.Value, m_curPage, m_curVehicle, true);
                 text = text.Replace("|_" + binding.Id + "_|", realValue);
             }
 
             return text;
+        }
+
+        /// <summary>
+        /// Gets the value from an invoice
+        /// </summary>
+        /// <param name="inv">The invoice to get the value from</param>
+        /// <param name="path">The path to the invoice value</param>
+        /// <param name="pageNumber">The page number to use</param>
+        /// <param name="vehicleIdx">The vehicle index to use</param>
+        /// <param name="autoFormat">Indicates if values should be auto-formatted</param>
+        /// <returns>The invoice's value for the given field</returns>
+        /// <remarks>
+        /// This doesn't really belong here, but it uses things from both Database and Shared, which would
+        /// casue a recursive reference, so can't do that...
+        /// </remarks>
+        public static string GetInvoiceValueFromPath(Invoice inv, string path, int pageNumber = 0, int? vehicleIdx = 0, bool autoFormat = true)
+        {
+            object obj = inv;
+
+            var parts = path.Split('.');
+            foreach (var part in parts)
+            {
+                if (obj is Invoice)
+                {
+                    if (part == "Total")
+                    {
+                        if (autoFormat)
+                        {
+                            obj = Format.ForPrint(new PrintFormatAttribute() { FixedPlaces = 2, Prefix = "$ " }, (obj as Invoice).GetTotal());
+                        }
+                        else
+                        {
+                            obj = inv.GetTotal();
+                        }
+                        break;
+                    }
+                    else if (part == "Due")
+                    {
+                        if (autoFormat)
+                        {
+                            obj = Format.ForPrint(new PrintFormatAttribute() { FixedPlaces = 2, Prefix = "$ " }, (obj as Invoice).GetDue());
+                        }
+                        else
+                        {
+                            obj = inv.GetDue();
+                        }
+                        break;
+                    }
+                    else if (part == "PageNumber")
+                    {
+                        obj = pageNumber;
+                        break;
+                    }
+                    else if (part == "StreetAddress")
+                    {
+                        obj = m_dealer[inv.State].Item2.StreetAddress;
+                        break;
+                    }
+                    else if (part == "City")
+                    {
+                        obj = m_dealer[inv.State].Item2.City;
+                        break;
+                    }
+                    else if (part == "CompanyState")
+                    {
+                        obj = m_dealer[inv.State].Item2.State;
+                        break;
+                    }
+                    else if (part == "ZIP")
+                    {
+                        obj = m_dealer[inv.State].Item2.ZipCode;
+                        break;
+                    }
+                    else if (part == "PhoneNumber")
+                    {
+                        obj = m_dealer[inv.State].Item1;
+                        break;
+                    }
+                    // Special case for when doing a page per vehicle
+                    else if (part == nameof(VehicleInfo) && vehicleIdx != null)
+                    {
+                        obj = (obj as Invoice).Vehicles.ElementAt((int)vehicleIdx);
+                        continue;
+                    }
+                    // If we've hit one of the arrays
+                    else if (part.EndsWith("]"))
+                    {
+                        // We'll assume there's no bad data, until it blows up
+                        var index = Convert.ToInt32(Regex.Match(part, "(\\d+)").Groups[1].Value);
+                        var name = part.Substring(0, part.IndexOf('['));
+
+                        if (name == nameof(MiscellaneousFee))
+                        {
+                            obj = (obj as Invoice).Fees.ElementAt(index);
+                            continue;
+                        }
+                        else if (name == nameof(Payment))
+                        {
+                            obj = (obj as Invoice).Payments.ElementAt(index);
+                            continue;
+                        }
+                        else if (name == nameof(VehicleInfo))
+                        {
+                            obj = (obj as Invoice).Vehicles.ElementAt(index);
+                            continue;
+                        }
+                    }
+                }
+
+                if (part == parts.Last())
+                {
+                    var pi = obj.GetType().GetRuntimeProperty(part);
+                    var format = pi.GetCustomAttribute<PrintFormatAttribute>();
+                    obj = Format.ForPrint(format, pi.GetValue(obj, null));
+                }
+                else
+                {
+                    obj = obj.GetType().GetRuntimeProperty(part).GetValue(obj, null);
+                }
+            }
+
+            return obj.ToString();
         }
     }
 

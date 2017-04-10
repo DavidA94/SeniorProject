@@ -1,12 +1,69 @@
 ﻿using Database.Tables;
 using Shared;
 using Shared.ApiResponses;
+using System;
 using System.Collections.Generic;
 
 namespace Seciovni.APIs.Shared
 {
     public static class SharedData
     {
+        #region Dealer Phone Numbers and Addresses
+
+        private static Dictionary<InvoiceState, Tuple<string, Address>> m_dealer = new Dictionary<InvoiceState, Tuple<string, Address>> {
+
+            { InvoiceState.Arizona,
+                Tuple.Create(
+                    "1-800-769-2979",
+                    new Address()
+                    {
+                        StreetAddress = "5601 W. Buckeye Rd.",
+                        City = "Phoenix",
+                        State = "AZ",
+                        ZipCode = "85043"
+                    }
+                )
+            },
+            { InvoiceState.California,
+                Tuple.Create(
+                    "1-800-801-0836",
+                    new Address()
+                    {
+                        StreetAddress = "4450 S. Blackstone Dr.",
+                        City = "Tulare",
+                        State = "CA",
+                        ZipCode = "93274"
+                    }
+                )
+            },
+            { InvoiceState.Georgia,
+                Tuple.Create(
+                    "1-855-266-4913",
+                    new Address()
+                    {
+                        StreetAddress = "4275 Shirley Dr.",
+                        City = "Atlanta",
+                        State = "GA",
+                        ZipCode = "30336"
+                    }
+                )
+            },
+            { InvoiceState.Illinois,
+                Tuple.Create(
+                    "1-866-544-1212",
+                    new Address()
+                    {
+                        StreetAddress = "3301 W. Mount Rd.",
+                        City = "Joliet",
+                        State = "IL",
+                        ZipCode = "60436"
+                    }
+                )
+            }
+        };
+
+        #endregion
+
         public static IEnumerable<BindingOptionData> GetBindingOptions(BindingOption option)
         {
             List<BindingOptionData> retVal = new List<BindingOptionData>();
@@ -21,6 +78,7 @@ namespace Seciovni.APIs.Shared
                 const string VEHICLE = "Vehicle";
                 const string VEHICLE_INFO = nameof(VehicleInfo);
 
+                // Can't do these page by page, so not valid in a BOTH context
                 if (option != BindingOption.BOTH)
                 {
                     retVal.InsertRange(0, new List<BindingOptionData>
@@ -57,11 +115,11 @@ namespace Seciovni.APIs.Shared
 
                 retVal.InsertRange(0, new List<BindingOptionData>
                 {
-                    new BindingOptionData(COMPANY, "Street Address", "StreetAddress", BindingType.Text),
-                    new BindingOptionData(COMPANY, "City", "City", BindingType.Text),
-                    new BindingOptionData(COMPANY, "State", "CompanyState", BindingType.State),
-                    new BindingOptionData(COMPANY, "ZIP", "ZIP", BindingType.Text),
-                    new BindingOptionData(COMPANY, "Phone Number", "PhoneNumber", BindingType.Text),
+                    new BindingOptionData(COMPANY, "Street Address", "StreetAddress", BindingType.IGNORE),
+                    new BindingOptionData(COMPANY, "City", "City", BindingType.IGNORE),
+                    new BindingOptionData(COMPANY, "State", "CompanyState", BindingType.IGNORE),
+                    new BindingOptionData(COMPANY, "ZIP", "ZIP", BindingType.IGNORE),
+                    new BindingOptionData(COMPANY, "Phone Number", "PhoneNumber", BindingType.IGNORE),
 
                     new BindingOptionData(INVOICE, "Invoice Number", nameof(Invoice.InvoiceID), BindingType.Number),
                     new BindingOptionData(INVOICE, "Invoice Date", nameof(Invoice.InvoiceDate), BindingType.Date),
@@ -102,5 +160,6 @@ namespace Seciovni.APIs.Shared
 
             return retVal;
         }
+        
     }
 }

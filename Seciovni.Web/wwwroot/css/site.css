@@ -241,8 +241,12 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #searchForm .row .throughDash {line-height:24px;width:25px;text-align:center;font-weight:bold;margin:0 0 0 -1em;}
 #searchForm .row .searchFieldCol {width:180px;}
 #searchForm .row select.searchFieldCol{box-sizing:border-box;height:26px;}
+#searchForm input[type=date] {width:100px;}
 
 #searchForm #searchButton {background:#cadeff;border:1px solid #6c99e4;float:left;padding:4px 8px;margin-top:1em;cursor:default;
                            border-radius:2px;line-height:18px;}
 #searchForm #searchButton img {margin-top:-1px;}
 #searchForm #searchButton:hover {border-color:#355b9b;}
+
+#fullScreenLoading {position:fixed;top:0;right:0;bottom:0;left:0;background:url('/images/loading.svg') center center no-repeat;
+                    background-color:rgba(0,0,0,0.2);}

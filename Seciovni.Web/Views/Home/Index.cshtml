@@ -19,18 +19,18 @@
             <p>View Invoices</p>
         </a>
     }
+    @if (User.HasClaim(c => c.Type == AccessPolicy.ViewInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
+    {
+        <a asp-controller="Search" asp-action="Index" class="dashboardButton">
+            <img src="~/images/frontSearch.svg" alt="" />
+            <p>Search Invoices</p>
+        </a>
+    }
     @if (User.HasClaim(c => c.Type == AccessPolicy.EditInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
     {
         <a asp-controller="Contacts" asp-action="Index" class="dashboardButton">
             <img src="~/images/contacts.svg" alt="" />
             <p>Contacts</p>
-        </a>
-    }
-    @if (User.HasClaim(c => c.Type == AccessPolicy.ViewInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
-    {
-        <a asp-controller="Search" asp-action="Index" class="dashboardButton">
-            <img src="~/images/frontSearch.svg" alt="" />
-            <p>Invoice Search</p>
         </a>
     }
     @if (User.HasClaim(c => c.Type == AccessPolicy.FormEditorPrivilege || c.Type == AccessPolicy.AdminPrivilege))
