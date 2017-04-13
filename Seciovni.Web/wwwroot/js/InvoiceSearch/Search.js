@@ -39,7 +39,23 @@ class Search {
 
         window.location.hash = url ? url : "";
 
-        sendToApi("Search/Search", "POST", JSON.stringify(this._terms), (xmlhttp) => {});
+        sendToApi("Search/Search", "POST", JSON.stringify(this._terms), (xmlhttp) => {
+            if(xmlhttp.readyState === XMLHttpRequest.DONE){
+                if(xmlhttp.status === 200){
+                    if(xmlhttp.response === null) {
+                        alert("Permission Denied");
+                    }
+                    else{
+                        const response = /** @type{SearchResult} */JSON.parse(xmlhttp.response.toString());
+
+                    }
+                }
+                else if(xmlhttp.status === 401) {} // Because we always get a 401
+                else{
+                    alert("An unknown error occurred: " + xmlhttp.status);
+                }
+            }
+        });
     }
 
     /**
