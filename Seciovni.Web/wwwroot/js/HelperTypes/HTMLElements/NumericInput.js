@@ -83,29 +83,9 @@ class NumericInput extends TextInput{
             this.numberVal = 0;
         }
 
-        // Get the number with a fixed amount of decimal places
-        let tempVal = this.numberVal;
+        const prettyVal = makeNumberPretty(this.numberVal, this._prettyPrefix, this._fixedPlaces)
 
-        // If zero, and the prefix is null, then make it be displayed as "-"
-        if(tempVal === 0 && this._prettyPrefix === null){
-            input.value = "-";
-            return;
-        }
-
-        // Fix the decimal points, if necessary
-        if(this._fixedPlaces > 0){
-            tempVal = tempVal.toFixed(this._fixedPlaces);
-        }
-
-        // Add commas and prefix
-        if(this._makePretty) {
-            tempVal = tempVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-
-        // Add the prefix if there is one
-        if(this._prettyPrefix) tempVal = this._prettyPrefix + tempVal;
-
-        input.value = tempVal;
+        input.value = this._makePretty ? prettyVal : this.numberVal;
         this._isPretty = true;
     }
 }

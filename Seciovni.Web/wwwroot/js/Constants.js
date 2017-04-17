@@ -27,6 +27,33 @@ const CONTACT_PREVIEW_CLASSES = "contactPreviewItem row";
 
 const CONTEXT_MENU_SEPARATOR_CLASS = "contextSeparator";
 
+const SEARCH_RESULT_CLASS = "result";
+const SEARCH_PREVIEW_CLASS = "resultPreview";  // Outer DIV
+const SEARCH_PREVIEW_DATA_CLASS = "previewData"; // Inner DIVs
+const SEARCH_DATA_DESCRIPTION_CLASS = "dataDescription";
+const SEARCH_RESULT_ROW_DATA_CLASS = "resultRowData";
+const SEARCH_EXPANDER_SHOW_CLASS = "expander show";
+const SEARCH_EXPANDER_CLASS = "expander";
+const SEARCH_INNER_HEADER_CLASS = "searchTableHeader";
+const SEARCH_COLUMN_TITLE_CLASS = "searchColumnTitle";
+const SEARCH_HEADER_ID = "searchHeader";
+
+const SEARCH_MISC_FEE_DESC_CLASS = "miscFeeDescription";
+const SEARCH_MISC_FEE_PRICE_CLASS = "miscFeePrice";
+
+const SEARCH_PAYMENT_DATE_CLASS = "paymentDate";
+const SEARCH_PAYMENT_DESC_CLASS = "paymentDesc";
+const SEARCH_PAYMENT_AMOUNT_CLASS = "paymentAmount";
+
+const SEARCH_VEHICLE_STOCK_CLASS = "vehicleStockNum";
+const SEARCH_VEHICLE_VIN_CLASS = "vehicleVIN";
+const SEARCH_VEHICLE_YEAR_CLASS = "vehicleYear";
+const SEARCH_VEHICLE_MAKE_CLASS = "vehicleMake";
+const SEARCH_VEHICLE_MODEL_CLASS = "vehicleModel";
+const SEARCH_VEHICLE_MILES_CLASS = "vehicleMiles";
+const SEARCH_VEHICLE_LOCATION_CLASS = "vehicleLocation";
+const SEARCH_VEHICLE_PRICE_CLASS = "vehiclePrice";
+
 // endregion
 
 // region Custom Subscribable Event names

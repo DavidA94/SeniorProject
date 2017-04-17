@@ -747,7 +747,15 @@ namespace Seciovni.PdfBuilder
                 {
                     var pi = obj.GetType().GetRuntimeProperty(part);
                     var format = pi.GetCustomAttribute<PrintFormatAttribute>();
-                    obj = Format.ForPrint(format, pi.GetValue(obj, null));
+
+                    if (autoFormat)
+                    {
+                        obj = Format.ForPrint(format, pi.GetValue(obj));
+                    }
+                    else
+                    {
+                        obj = pi.GetValue(obj);
+                    }
                 }
                 else
                 {

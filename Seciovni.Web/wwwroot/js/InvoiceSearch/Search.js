@@ -39,15 +39,253 @@ class Search {
 
         window.location.hash = url ? url : "";
 
-        sendToApi("Search/Search", "POST", JSON.stringify(this._terms), (xmlhttp) => {
+        sendToApi("Search/Search", "GET", JSON.stringify(this._terms), (xmlhttp) => {
             if(xmlhttp.readyState === XMLHttpRequest.DONE){
-                if(xmlhttp.status === 200){
-                    if(xmlhttp.response === null) {
+                if(xmlhttp.status === 200) {
+                    if (xmlhttp.response === null) {
                         alert("Permission Denied");
                     }
-                    else{
-                        const response = /** @type{SearchResult} */JSON.parse(xmlhttp.response.toString());
+                    else {
+                        const responses = /** @type{SearchResult[]} */JSON.parse(xmlhttp.response.toString());
 
+                        const results = document.getElementById("results");
+                        results.innerHTML = ""; // FIX
+
+                        if (responses.length === 0){
+                            results.appendChild(makeHtmlElem({
+                                tag: "h2",
+                                text: "No Results"
+                            }));
+                        }
+
+                        const stagingArea = document.createElement("div");
+                        stagingArea.style.position = "absolute";
+                        stagingArea.style.left = "-9999px";
+                        document.body.appendChild(stagingArea);
+
+                        // Start with the core things
+                        const headerTitles = {
+                            tag: "div",
+                            id: SEARCH_HEADER_ID,
+                            children: [
+                                makeDivData("Invoice Date", SEARCH_COLUMN_TITLE_CLASS),
+                                makeDivData("Invoice Number", SEARCH_COLUMN_TITLE_CLASS),
+                                makeDivData("Buyer's Name", SEARCH_COLUMN_TITLE_CLASS),
+                                makeDivData("Sales Person", SEARCH_COLUMN_TITLE_CLASS),
+                            ]
+                        };
+
+                        // Add the other fields
+                        if(responses[0].otherFields) {
+                            for (const fieldKV of Object.keys(responses[0].otherFields)) {
+                                const header = getSearchFields().find((f) => f.value === fieldKV.key).value;
+
+                                headerTitles.children.push(makeDivData(header, "other " + SEARCH_COLUMN_TITLE_CLASS));
+                            }
+                        }
+
+                        results.appendChild(makeHtmlElem(headerTitles));
+
+                        for (const result of responses) {
+
+                            // Start with the core things
+                            const headerData = [
+                                {
+                                    tag: "div",
+                                    class: SEARCH_PREVIEW_CLASS,
+                                    children: [
+                                        {
+                                            tag: "div",
+                                            class: SEARCH_PREVIEW_DATA_CLASS,
+                                            children: [
+                                                makeSpanData("Invoice Date", SEARCH_DATA_DESCRIPTION_CLASS),
+                                                makeSpanData((new Date(result.createdDate)).getPrettyUTCDate())
+                                            ]
+                                        },
+                                        {
+                                            tag: "div",
+                                            class: SEARCH_PREVIEW_DATA_CLASS,
+                                            children: [
+                                                makeSpanData("Invoice Number", SEARCH_DATA_DESCRIPTION_CLASS),
+                                                makeSpanData(("0000" + result.invoiceNumber).substr(-4)) // 4 digits
+                                            ]
+                                        },
+                                        {
+                                            tag: "div",
+                                            class: SEARCH_PREVIEW_DATA_CLASS,
+                                            children: [
+                                                makeSpanData("Buyer's Name", SEARCH_DATA_DESCRIPTION_CLASS),
+                                                makeSpanData(result.buyerName)
+                                            ]
+                                        },
+                                        {
+                                            tag: "div",
+                                            class: SEARCH_PREVIEW_DATA_CLASS,
+                                            children: [
+                                                makeSpanData("Sales Person", SEARCH_DATA_DESCRIPTION_CLASS),
+                                                makeSpanData(result.salesPerson)
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ];
+
+                            // Add the other fields
+                            for (const fieldKV of Object.keys(result.otherFields)) {
+                                const header = getSearchFields().find((f) => f.value === fieldKV.key).value;
+
+                                headerData.children.push({
+                                    tag: "div",
+                                    class: SEARCH_PREVIEW_CLASS,
+                                    children: [
+                                        makeSpanData(header, "other " + SEARCH_DATA_DESCRIPTION_CLASS),
+                                        makeSpanData(fieldKV.value)
+                                    ]
+                                });
+                            }
+
+                            // Add the table stuff. Add the header and column labels if there are any
+                            const fees = [];
+                            for (const fee of result.fees) {
+                                fees.push({
+                                    tag: "div",
+                                    class: SEARCH_RESULT_ROW_DATA_CLASS,
+                                    children: [
+                                        makeDivData(fee.description, SEARCH_MISC_FEE_DESC_CLASS),
+                                        makeDivData(makeNumberPretty(fee.price, "$ ", 2), SEARCH_MISC_FEE_PRICE_CLASS)
+                                    ]
+                                })
+                            }
+                            if (fees.length > 0) {
+                                fees.unshift(
+                                    {
+                                        tag: "h2",
+                                        text: "Miscellaneous Fees",
+                                        class: SEARCH_INNER_HEADER_CLASS
+                                    },
+                                    {
+                                        tag: "div",
+                                        class: SEARCH_RESULT_ROW_DATA_CLASS,
+                                        children: [
+                                            makeDivData("Description", SEARCH_MISC_FEE_DESC_CLASS),
+                                            makeDivData("Price", SEARCH_MISC_FEE_PRICE_CLASS)
+                                        ]
+                                    }
+                                );
+                            }
+
+                            const payments = [];
+                            for (const payment of result.payments) {
+                                payments.push({
+                                    tag: "div",
+                                    class: SEARCH_RESULT_ROW_DATA_CLASS,
+                                    children: [
+                                        makeDivData((new Date(payment.date)).getPrettyUTCDate(), SEARCH_PAYMENT_DATE_CLASS),
+                                        makeDivData(payment.description, SEARCH_PAYMENT_DESC_CLASS),
+                                        makeDivData(makeNumberPretty(payment.amount, "$ ", 2), SEARCH_PAYMENT_AMOUNT_CLASS)
+                                    ]
+                                });
+                            }
+                            if (payments.length > 0) {
+                                payments.unshift(
+                                    {
+                                        tag: "h2",
+                                        text: "Payments",
+                                        class: SEARCH_INNER_HEADER_CLASS
+                                    },
+                                    {
+                                        tag: "div",
+                                        class: SEARCH_RESULT_ROW_DATA_CLASS,
+                                        children: [
+                                            makeDivData("Date", SEARCH_PAYMENT_DATE_CLASS),
+                                            makeDivData("Description", SEARCH_PAYMENT_DESC_CLASS),
+                                            makeDivData("Price", SEARCH_PAYMENT_AMOUNT_CLASS)
+                                        ]
+                                    }
+                                );
+                            }
+
+                            const vehicles = [];
+                            for (const vehicle of result.vehicles) {
+                                vehicles.push({
+                                    tag: "div",
+                                    class: SEARCH_RESULT_ROW_DATA_CLASS,
+                                    children: [
+                                        makeDivData(vehicle.stockNum, SEARCH_VEHICLE_STOCK_CLASS),
+                                        makeDivData(vehicle.vin, SEARCH_VEHICLE_VIN_CLASS),
+                                        makeDivData(vehicle.year, SEARCH_VEHICLE_YEAR_CLASS),
+                                        makeDivData(vehicle.make, SEARCH_VEHICLE_MAKE_CLASS),
+                                        makeDivData(vehicle.model, SEARCH_VEHICLE_MODEL_CLASS),
+                                        makeDivData(makeNumberPretty(vehicle.miles, "", 0), SEARCH_VEHICLE_MILES_CLASS),
+                                        makeDivData(vehicle.location, SEARCH_VEHICLE_LOCATION_CLASS),
+                                        makeDivData(makeNumberPretty(vehicle.price, "$ ", 2), SEARCH_VEHICLE_PRICE_CLASS)
+                                    ]
+                                });
+                            }
+                            if (vehicles.length > 0) {
+                                vehicles.unshift(
+                                    {
+                                        tag: "h2",
+                                        text: "Vehicles",
+                                        class: SEARCH_INNER_HEADER_CLASS
+                                    },
+                                    {
+                                        tag: "div",
+                                        class: SEARCH_RESULT_ROW_DATA_CLASS,
+                                        children: [
+                                            makeDivData("Stock #", SEARCH_VEHICLE_STOCK_CLASS),
+                                            makeDivData("VIN", SEARCH_VEHICLE_VIN_CLASS),
+                                            makeDivData("Year", SEARCH_VEHICLE_YEAR_CLASS),
+                                            makeDivData("Make", SEARCH_VEHICLE_MAKE_CLASS),
+                                            makeDivData("Model", SEARCH_VEHICLE_MODEL_CLASS),
+                                            makeDivData("Miles", SEARCH_VEHICLE_MILES_CLASS),
+                                            makeDivData("Location", SEARCH_VEHICLE_LOCATION_CLASS),
+                                            makeDivData("Price", SEARCH_VEHICLE_PRICE_CLASS)
+                                        ]
+                                    }
+                                );
+                            }
+
+                            // Create the containing element
+                            const resultDiv = makeHtmlElem({
+                                tag: "div",
+                                class: SEARCH_RESULT_CLASS,
+                                children: headerData.concat(fees, payments, vehicles)
+                            });
+
+                            // Size everything
+                            stagingArea.appendChild(resultDiv);
+
+                            // Go through each class, find the largest one, and give that size to the rest
+                            const columnClasses = [
+                                SEARCH_MISC_FEE_DESC_CLASS,
+                                SEARCH_MISC_FEE_PRICE_CLASS,
+                                SEARCH_PAYMENT_DATE_CLASS,
+                                SEARCH_PAYMENT_DESC_CLASS,
+                                SEARCH_PAYMENT_AMOUNT_CLASS,
+                                SEARCH_VEHICLE_STOCK_CLASS,
+                                SEARCH_VEHICLE_VIN_CLASS,
+                                SEARCH_VEHICLE_YEAR_CLASS,
+                                SEARCH_VEHICLE_MAKE_CLASS,
+                                SEARCH_VEHICLE_MODEL_CLASS,
+                                SEARCH_VEHICLE_MILES_CLASS,
+                                SEARCH_VEHICLE_LOCATION_CLASS,
+                                SEARCH_VEHICLE_PRICE_CLASS
+                            ];
+
+                            for(const className of columnClasses){
+                                const elems = stagingArea.querySelectorAll("." + className);
+                                if(elems.length === 0) continue;
+                                let width = 0;
+                                let height = 0;
+                                for(const elem of elems) width = Math.max(width, Math.ceil(elem.getBoundingClientRect().width));
+                                for(const elem of elems) elem.style.width = width + "px";
+                            }
+
+                            results.appendChild(resultDiv);
+                        }
+
+                        stagingArea.remove();
                     }
                 }
                 else if(xmlhttp.status === 401) {} // Because we always get a 401

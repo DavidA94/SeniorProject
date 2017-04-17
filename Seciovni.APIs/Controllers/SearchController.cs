@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Http;
+using Newtonsoft.Json;
 
 namespace Seciovni.APIs.Controllers
 {
@@ -40,13 +41,17 @@ namespace Seciovni.APIs.Controllers
             return null;
         }
 
-        [HttpPost(nameof(Search))]
-        public IEnumerable<SearchResult> Search([FromBody]IEnumerable<SearchTerm> searchTerms)
+        [HttpGet(nameof(Search))]
+        public IEnumerable<SearchResult> Search()
         {
             const string DATE_FORMAT = "yyyy-MM-dd";
 
             if (Request.HasValidLogin(db) && Request.CanAccess(db, AccessPolicy.ViewInvoicePrivilege))
             {
+                // Need to do it this way -- Can't figure out why it won't bind using [FromUri]
+                var searchTerms = JsonConvert.DeserializeObject<IEnumerable<SearchTerm>>(Uri.UnescapeDataString(Request.RequestUri.Query.Trim('?')));
+                if (searchTerms.Count(t => !string.IsNullOrWhiteSpace(t.InvoiceField)) == 0) return null;
+
                 // Get everything so we don't have to ask again
                 var dbInvoices = db.Invoices
                                    .Include(i => i.Buyer).ThenInclude(b => b.Address)
@@ -58,24 +63,17 @@ namespace Seciovni.APIs.Controllers
                                    .Include(i => i.Vehicles);
 
                 var results = new List<Tuple<Invoice, double, Dictionary<string, string>>>();
-
-                var arrayTerms = searchTerms.Where(t => t.InvoiceField.StartsWith(nameof(MiscellaneousFee)) ||
-                                                        t.InvoiceField.StartsWith(nameof(Payment)) ||
-                                                        t.InvoiceField.StartsWith(nameof(VehicleInfo)));
-                var otherTerms = searchTerms.Except(arrayTerms)
-                                            .Where(t => !string.IsNullOrWhiteSpace(t.InvoiceField));
-
+                var invValues = new Dictionary<string, string>();
 
                 foreach (var invoice in dbInvoices)
                 {
                     bool isRangeMatch = true;
                     var chances = new List<double>();
-                    var invValues = new Dictionary<string, string>();
 
-                    // Loop through the things that are apart of an array
-                    foreach (var term in arrayTerms)
+                    // Loop through the terms that aren't empty
+                    foreach (var term in searchTerms.Where(t => !string.IsNullOrWhiteSpace(t.InvoiceField)))
                     {
-                        // Get what we're searching
+                        // Pull the first part of the term, so we can check if it's an array
                         string arrayPart = term.InvoiceField.Split('.').First();
                         int numItems = 0;
 
@@ -83,6 +81,7 @@ namespace Seciovni.APIs.Controllers
                         if (arrayPart == nameof(MiscellaneousFee)) numItems = invoice.Fees.Count;
                         else if (arrayPart == nameof(Payment)) numItems = invoice.Payments.Count;
                         else if (arrayPart == nameof(VehicleInfo)) numItems = invoice.Vehicles.Count;
+                        else  arrayPart = null;
 
                         // If this is a range search
                         if (term.TermRange != null)
@@ -109,7 +108,9 @@ namespace Seciovni.APIs.Controllers
                                     break;
                                 }
 
-                                isRangeMatch = checkArrayRange(invoice, term.InvoiceField, arrayPart, numItems, low, high);
+                                isRangeMatch = arrayPart != null ?
+                                    checkRange(invoice, term.InvoiceField, low, high, arrayPart, numItems) :
+                                    checkRange(invoice, term.InvoiceField, low, high);
                             }
                             else
                             {
@@ -130,7 +131,9 @@ namespace Seciovni.APIs.Controllers
                                     break;
                                 }
 
-                                isRangeMatch = checkArrayRange(invoice, term.InvoiceField, arrayPart, numItems, low, high);
+                                isRangeMatch = arrayPart != null ?
+                                    checkRange(invoice, term.InvoiceField, low, high, arrayPart, numItems) :
+                                    checkRange(invoice, term.InvoiceField, low, high);
                             }
 
                             // If we didn't match the range, then we're done here
@@ -142,9 +145,12 @@ namespace Seciovni.APIs.Controllers
                         // Non-range search
                         else
                         {
-                            var invValue = PdfBuilder.PdfBuilder.GetInvoiceValueFromPath(invoice, term.InvoiceField, 0, 0, false);
-                            chances.Add(getLikeliness(invValue, term.Term));
-                            invValues[term.InvoiceField] = invValue;
+                            var valueAndLikeliness = arrayPart != null ?
+                                getValueAndLikelieness(invoice, term.InvoiceField, term.Term, arrayPart, numItems) :
+                                getValueAndLikelieness(invoice, term.InvoiceField, term.Term);
+
+                            chances.Add(valueAndLikeliness.Item2);
+                            if(arrayPart == null) invValues[term.InvoiceField] = valueAndLikeliness.Item1;
                         }
                     }
 
@@ -160,23 +166,22 @@ namespace Seciovni.APIs.Controllers
                               {
                                   BuyerName = r.Item1.Buyer.User.FullName(),
                                   CreatedDate = r.Item1.InvoiceDate,
-                                  Fees = arrayTerms.Any(t => t.InvoiceField.StartsWith(nameof(MiscellaneousFee))) ? r.Item1.Fees : null,
+                                  Fees = searchTerms.Any(t => t.InvoiceField.StartsWith(nameof(MiscellaneousFee))) ? r.Item1.Fees : new List<MiscellaneousFee>(),
                                   InvoiceNumber = r.Item1.InvoiceID,
-                                  Payments = arrayTerms.Any(t => t.InvoiceField.StartsWith(nameof(Payment))) ? r.Item1.Payments : null,
+                                  OtherFields = invValues,
+                                  Payments = searchTerms.Any(t => t.InvoiceField.StartsWith(nameof(Payment))) ? r.Item1.Payments : new List<Payment>(),
                                   SalesPerson = r.Item1.SalesPerson.User.FullName(),
-                                  Vehicles = arrayTerms.Any(t => t.InvoiceField.StartsWith(nameof(VehicleInfo))) ? r.Item1.Vehicles : null
+                                  Vehicles = searchTerms.Any(t => t.InvoiceField.StartsWith(nameof(VehicleInfo))) ? r.Item1.Vehicles : new List<VehicleInfo>()
                               });
             }
 
             return null;
         }
 
-        private bool checkArrayRange(Invoice invoice, string invoiceField, string arrayPart, int numItems, double low, double high)
+        private bool checkRange(Invoice invoice, string invoiceField, double low, double high, string arrayPart = null, int numItems = 0)
         {
-            for (int i = 0; i < numItems; ++i)
+            Func<string, bool> checkValue = (rawValue) =>
             {
-                // Get the raw value, and then convert it to a DateTime
-                var rawValue = getArrayValue(invoice, invoiceField, arrayPart, i);
                 double invValue = double.Parse(rawValue);
 
                 // If it matches, then we're done here
@@ -184,18 +189,31 @@ namespace Seciovni.APIs.Controllers
                 {
                     return true;
                 }
+                return false;
+            };
+
+            if (arrayPart != null)
+            {
+                for (int i = 0; i < numItems; ++i)
+                {
+                    // If the value is good, return true
+                    if (checkValue(getValue(invoice, invoiceField, arrayPart, i))) return true;
+                }
+            }
+            else
+            {
+                // Return if the value is within the range
+                return checkValue(getValue(invoice, invoiceField));
             }
 
             // If we make it this far, there was no match
             return false;
         }
 
-        private bool checkArrayRange(Invoice invoice, string invoiceField, string arrayPart, int numItems, DateTime low, DateTime high)
+        private bool checkRange(Invoice invoice, string invoiceField, DateTime low, DateTime high, string arrayPart = null, int numItems = 0)
         {
-            for (int i = 0; i < numItems; ++i)
+            Func<string, bool> checkValue = (rawValue) =>
             {
-                // Get the raw value, and then convert it to a DateTime
-                var rawValue = getArrayValue(invoice, invoiceField, arrayPart, i);
                 DateTime invValue = DateTime.ParseExact(rawValue, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
                 // If it matches, then we're done here
@@ -203,16 +221,58 @@ namespace Seciovni.APIs.Controllers
                 {
                     return true;
                 }
+                return false;
+            };
+
+            if (arrayPart != null)
+            {
+                for (int i = 0; i < numItems; ++i)
+                {
+                    // If the value is good, return true
+                    if (checkValue(getValue(invoice, invoiceField, arrayPart, i))) return true;
+                }
+            }
+            else
+            {
+                // Return if the value is within the range
+                return checkValue(getValue(invoice, invoiceField));
             }
 
             // If we make it this far, there was no match
             return false;
         }
 
-        private string getArrayValue(Invoice invoice, string invoiceField, string arrayPart, int index)
+        private Tuple<string, double> getValueAndLikelieness(Invoice invoice, string invoiceField, string searchString, string arrayPart = null, int numItems = 0)
+        {
+            Func<string, double> checkValue = (rawValue) =>
+            {
+                return getLikeliness(rawValue, searchString);
+            };
+
+            if (arrayPart != null)
+            {
+                var likelinesses = new List<Tuple<string, double>>();
+                for (int i = 0; i < numItems; ++i)
+                {
+                    var value = getValue(invoice, invoiceField, arrayPart, i);
+                    likelinesses.Add(Tuple.Create(value, getLikeliness(value, searchString)));
+                }
+
+                // Either give back the max value, or zero if there were no elements
+                return likelinesses.Count > 0 ? likelinesses.OrderByDescending(e => e.Item2).First() : Tuple.Create("", 0.0);
+            }
+            else
+            {
+                // Return if the value is within the range
+                var value = getValue(invoice, invoiceField);
+                return Tuple.Create(value, getLikeliness(value, searchString));
+            }
+        }
+
+        private string getValue(Invoice invoice, string invoiceField, string arrayPart = null, int index = 0)
         {
             // Replace with the right index
-            invoiceField = invoiceField.Replace(arrayPart, $"{arrayPart}[{index}]");
+            invoiceField = (arrayPart != null) ? invoiceField.Replace(arrayPart, $"{arrayPart}[{index}]") : invoiceField;
 
             // Really bad we do it this way. Meh.
             // To future self, you were too lazy to refactor this right now so it's not in PdfBuilder

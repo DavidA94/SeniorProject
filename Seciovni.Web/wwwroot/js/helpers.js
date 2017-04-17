@@ -158,9 +158,14 @@ function sendToApi(url, method, data, callback){
                 callback(e.currentTarget);
             };
 
-            xmlhttp.open(method, "https://localhost:44357/api/" + url, true);
+            let openString = "https://localhost:44357/api/" + url;
+            if(method.toUpperCase() === "GET" && data){
+                openString += "?" + data.toString();
+            }
+
+            xmlhttp.open(method, openString, true);
             xmlhttp.setRequestHeader("Authorization", "Bearer " + token);
-            if(data) {
+            if(method.toUpperCase() !== "GET" && data) {
                 xmlhttp.setRequestHeader("Content-Type", "application/json; charset=utf-8");
                 xmlhttp.send(data.toString());
             }
@@ -243,8 +248,8 @@ function getBindingOptions(bindingContext){
  */
 function getSearchFields(){
     const KEY = "fields";
-    if(getBindingOptions[KEY] === undefined){
-        getBindingOptions[KEY] = null;
+    if(getSearchFields[KEY] === undefined){
+        getSearchFields[KEY] = null;
         let response = null;
 
         sendToApi("Search/SearchFields/", "GET", null, (xmlhttp) => {
@@ -255,12 +260,43 @@ function getSearchFields(){
                     response = xmlhttp.response;
                 }
 
-                getBindingOptions[KEY] = JSON.parse(response);
+                getSearchFields[KEY] = JSON.parse(response);
             }
         });
     }
 
-    return getBindingOptions[KEY];
+    return getSearchFields[KEY];
+}
+
+/**
+ * Makes a number pretty
+ * @param {number} number - The number to prettify
+ * @param {string} prefix - The prefix for the number
+ * @param {number} fixedPlaces - How many decimal places to have
+ * @return {string}
+ */
+function makeNumberPretty(number, prefix, fixedPlaces) {
+    /**
+     * @type {number|string}
+     */
+    let pretty = number;
+
+    // If zero, and the prefix is null, then make it be displayed as "-"
+    if(pretty === 0 && prefix === null){
+        return "-";
+    }
+
+    // Fix the decimal points, if necessary
+    if(fixedPlaces > 0){
+        pretty = pretty.toFixed(fixedPlaces);
+    }
+
+    pretty = pretty.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    // Add the prefix if there is one
+    if(prefix) pretty = prefix + pretty;
+
+    return pretty;
 }
 
 function showFullScreenLoading(){

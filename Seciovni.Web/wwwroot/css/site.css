@@ -250,3 +250,17 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 
 #fullScreenLoading {position:fixed;top:0;right:0;bottom:0;left:0;background:url('/images/loading.svg') center center no-repeat;
                     background-color:rgba(0,0,0,0.2);}
+
+#searchHeader {clear:both;}
+#searchHeader div {float:left;margin-right:1em;}
+
+.result {clear:both;}
+.result .resultPreview {overflow:hidden;}
+.result .resultPreview .previewData {float:left;padding-right:10px;}
+.result .resultPreview .previewData .dataDescription {display:none;}
+.result .searchTableHeader {font-size:1em;font-weight:bold;margin-left:2em;}
+.result .resultRowData {overflow:hidden;margin-left:3em;}
+.result .resultRowData div {float:left;padding:3px 6px;/*border:solid black;border-width:1px 1px 0 0;*/}
+/*.result .resultRowData:last-child div {border-bottom-width:1px;}
+.result .resultRowData div:first-child {border-left-width:1px;}*/
+.result .searchTableHeader + .resultRowData div {padding:0px 6px;font-size:.9em;font-weight:bold;text-decoration:underline;}
