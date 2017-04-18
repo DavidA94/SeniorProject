@@ -8,7 +8,6 @@
  * @type {Object}
  * @property [string] tag - The HTML tag name
  * @property [string] class - The element's class
- * @property [string] id - The element's ID
  * @property [string] text - The element's text / innerHTML
  * @property [HtmlElemData[]] children - The children that go inside this element
  */
@@ -20,16 +19,16 @@
  */
 function makeHtmlElem(data){
     const elem = document.createElement(data.tag);
-    if(data.class) elem.className = data.class;
-    if(data.id) elem.id = data.id;
 
-    if(data.children){
-        for(const childData of data.children){
-            elem.appendChild(makeHtmlElem(childData));
+    for(const prop in data){
+        if(prop === "class") elem.className = data.class;
+        else if(prop === "children"){
+            for(const childData of data.children){
+                elem.appendChild(makeHtmlElem(childData));
+            }
         }
-    }
-    else if(data.text){
-        elem.innerHTML = data.text;
+        else if(prop === "text") elem.innerHTML = data.text;
+        else elem.setAttribute(prop, data[prop]);
     }
 
     return elem;

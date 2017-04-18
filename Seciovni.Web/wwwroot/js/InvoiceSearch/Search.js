@@ -10,6 +10,7 @@ class Search {
         this._boundExtraUpdated = this._extraUpdated.bind(this);
         this._boundTermDestroyed = this._termDestroyed.bind(this);
         this._boundSearch = this._search.bind(this);
+        this._boundExpand = this._expand.bind(this);
 
         document.getElementById("searchButton").addEventListener('click', this._boundSearch);
 
@@ -40,6 +41,9 @@ class Search {
         window.location.hash = url ? url : "";
 
         sendToApi("Search/Search", "GET", JSON.stringify(this._terms), (xmlhttp) => {
+            if(xmlhttp.readyState === XMLHttpRequest.OPENED){
+                showFullScreenLoading();
+            }
             if(xmlhttp.readyState === XMLHttpRequest.DONE){
                 if(xmlhttp.status === 200) {
                     if (xmlhttp.response === null) {
@@ -49,13 +53,19 @@ class Search {
                         const responses = /** @type{SearchResult[]} */JSON.parse(xmlhttp.response.toString());
 
                         const results = document.getElementById("results");
-                        results.innerHTML = ""; // FIX
+                        for(let elem of results.querySelectorAll("." + SEARCH_EXPANDER_CLASS)){
+                            elem.removeEventListener('click', this._boundExpand);
+                        }
+                        while(results.firstElementChild) results.firstElementChild.remove();
 
                         if (responses.length === 0){
-                            results.appendChild(makeHtmlElem({
-                                tag: "h2",
-                                text: "No Results"
-                            }));
+                            results.appendChild(makeHtmlElem(
+                                {
+                                    tag: "h2",
+                                    text: "No Results"
+                                }
+                            ));
+                            return;
                         }
 
                         const stagingArea = document.createElement("div");
@@ -68,6 +78,7 @@ class Search {
                             tag: "div",
                             id: SEARCH_HEADER_ID,
                             children: [
+                                makeDivData("", SEARCH_EXPANDER_CLASS),
                                 makeDivData("Invoice Date", SEARCH_COLUMN_TITLE_CLASS),
                                 makeDivData("Invoice Number", SEARCH_COLUMN_TITLE_CLASS),
                                 makeDivData("Buyer's Name", SEARCH_COLUMN_TITLE_CLASS),
@@ -77,14 +88,19 @@ class Search {
 
                         // Add the other fields
                         if(responses[0].otherFields) {
-                            for (const fieldKV of Object.keys(responses[0].otherFields)) {
-                                const header = getSearchFields().find((f) => f.value === fieldKV.key).value;
+                            for (const key of Object.keys(responses[0].otherFields)) {
+                                const header = getSearchFields().find((f) => f.value === key).display;
 
                                 headerTitles.children.push(makeDivData(header, "other " + SEARCH_COLUMN_TITLE_CLASS));
                             }
                         }
 
                         results.appendChild(makeHtmlElem(headerTitles));
+
+                        const columnWidths = [];
+                        for(const header of results.querySelectorAll("." + SEARCH_COLUMN_TITLE_CLASS)){
+                            columnWidths.push([header]);
+                        }
 
                         for (const result of responses) {
 
@@ -94,6 +110,10 @@ class Search {
                                     tag: "div",
                                     class: SEARCH_PREVIEW_CLASS,
                                     children: [
+                                        {
+                                            tag: "div",
+                                            class: SEARCH_EXPANDER_SHOW_CLASS
+                                        },
                                         {
                                             tag: "div",
                                             class: SEARCH_PREVIEW_DATA_CLASS,
@@ -108,6 +128,18 @@ class Search {
                                             children: [
                                                 makeSpanData("Invoice Number", SEARCH_DATA_DESCRIPTION_CLASS),
                                                 makeSpanData(("0000" + result.invoiceNumber).substr(-4)) // 4 digits
+                                            ]
+                                        },
+                                        {
+                                            tag: "div",
+                                            children: [
+                                                {
+                                                    tag: "a",
+                                                    class: SEARCH_VIEW_LINK_CLASS + " inner",
+                                                    href: "/Invoice/View/" + result.invoiceNumber,
+                                                    target: "_blank",
+                                                    text: "View"
+                                                }
                                             ]
                                         },
                                         {
@@ -131,18 +163,31 @@ class Search {
                             ];
 
                             // Add the other fields
-                            for (const fieldKV of Object.keys(result.otherFields)) {
-                                const header = getSearchFields().find((f) => f.value === fieldKV.key).value;
+                            for (const key of Object.keys(result.otherFields)) {
+                                const header = getSearchFields().find((f) => f.value === key).display;
 
-                                headerData.children.push({
+                                headerData[0].children.push({
                                     tag: "div",
-                                    class: SEARCH_PREVIEW_CLASS,
+                                    class: SEARCH_PREVIEW_DATA_CLASS,
                                     children: [
                                         makeSpanData(header, "other " + SEARCH_DATA_DESCRIPTION_CLASS),
-                                        makeSpanData(fieldKV.value)
+                                        makeSpanData(result.otherFields[key])
                                     ]
                                 });
                             }
+
+                            headerData[0].children.push({
+                                tag: "div",
+                                children: [
+                                    {
+                                        tag: "a",
+                                        class: SEARCH_VIEW_LINK_CLASS + " outer",
+                                        href: "/Invoice/View/" + result.invoiceNumber,
+                                        target: "_blank",
+                                        text: "View"
+                                    }
+                                ]
+                            });
 
                             // Add the table stuff. Add the header and column labels if there are any
                             const fees = [];
@@ -246,11 +291,20 @@ class Search {
                                 );
                             }
 
+
+                            // Put all the sub-stuff in another DIV
+                            const extraData = {
+                                tag: "div",
+                                class: SEARCH_EXTRA_DATA_CLASS,
+                                children: fees.concat(payments, vehicles)
+                            };
+                            headerData.push(extraData);
+
                             // Create the containing element
                             const resultDiv = makeHtmlElem({
                                 tag: "div",
                                 class: SEARCH_RESULT_CLASS,
-                                children: headerData.concat(fees, payments, vehicles)
+                                children: headerData
                             });
 
                             // Size everything
@@ -282,15 +336,32 @@ class Search {
                                 for(const elem of elems) elem.style.width = width + "px";
                             }
 
+                            const previewColumnData = stagingArea.querySelectorAll("." + SEARCH_PREVIEW_DATA_CLASS);
+                            for(let i = 0; i < previewColumnData.length; ++i){
+                                columnWidths[i].push(previewColumnData[i]);
+                            }
+
                             results.appendChild(resultDiv);
                         }
 
                         stagingArea.remove();
+
+                        for(const column of columnWidths){
+                            let width = 0;
+                            for(const elem of column)width = Math.max(width, Math.ceil(elem.getBoundingClientRect().width));
+                            for(const elem of column) elem.style.width = width + "px";
+                        }
+
+                        for(const elem of results.querySelectorAll("." + SEARCH_EXPANDER_CLASS)){
+                            elem.addEventListener('click', this._boundExpand);
+                        }
                     }
+                    hideFullScreenLoading();
                 }
-                else if(xmlhttp.status === 401) {} // Because we always get a 401
+                else if(xmlhttp.status === 401 || xmlhttp.status === 204) {} // Always happen for some reason
                 else{
-                    alert("An unknown error occurred: " + xmlhttp.status);
+                    alert("An error occured while loading the search results (" + xmlhttp.status + ")");
+                    hideFullScreenLoading();
                 }
             }
         });
@@ -355,8 +426,22 @@ class Search {
 
         for(const term of terms){
             const st = SearchTerm.fromURL(term);
+            st.subscribe(EVENT_OBJECT_DESTROYED, this._boundTermDestroyed);
             this._termsList.appendChild(st.htmlObj);
             this._terms.push(st);
+        }
+
+        // Delay so the boxes are fully set up.
+        setTimeout(() => this._search(), 250);
+    }
+
+    _expand(e) {
+        const expanded = document.getElementById(SEARCH_OPENED_RESULT_ID);
+
+        if(expanded) expanded.removeAttribute("id");
+
+        if(e.target.parentNode.parentNode !== expanded){
+            e.target.parentNode.parentNode.id = SEARCH_OPENED_RESULT_ID;
         }
     }
 

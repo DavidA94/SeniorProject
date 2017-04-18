@@ -15,6 +15,7 @@ using System.Globalization;
 using System.Linq;
 using System.Web.Http;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace Seciovni.APIs.Controllers
 {
@@ -22,6 +23,7 @@ namespace Seciovni.APIs.Controllers
     public class SearchController : ApiController
     {
         private SeciovniContext db;
+        private Dictionary<string, string> m_invoiceValues = new Dictionary<string, string>();
 
         public SearchController(SeciovniContext context)
         {
@@ -62,8 +64,7 @@ namespace Seciovni.APIs.Controllers
                                    .Include(i => i.SalesPerson).ThenInclude(sp => sp.User)
                                    .Include(i => i.Vehicles);
 
-                var results = new List<Tuple<Invoice, double, Dictionary<string, string>>>();
-                var invValues = new Dictionary<string, string>();
+                var results = new List<Tuple<Invoice, double>>();
 
                 foreach (var invoice in dbInvoices)
                 {
@@ -150,15 +151,25 @@ namespace Seciovni.APIs.Controllers
                                 getValueAndLikelieness(invoice, term.InvoiceField, term.Term);
 
                             chances.Add(valueAndLikeliness.Item2);
-                            if(arrayPart == null) invValues[term.InvoiceField] = valueAndLikeliness.Item1;
+                            if(arrayPart == null) m_invoiceValues[term.InvoiceField] = valueAndLikeliness.Item1;
                         }
                     }
 
                     if (isRangeMatch && (chances.Count == 0 || chances.Average() > 0.6))
                     {
-                        results.Add(Tuple.Create(invoice, chances.Count == 0 ? 1 : chances.Average(), invValues));
+                        results.Add(Tuple.Create(invoice, chances.Count == 0 ? 1 : chances.Average()));
                     }
                 }
+
+                m_invoiceValues = m_invoiceValues.Where(kv => !kv.Key.StartsWith(nameof(MiscellaneousFee)) &&
+                                                              !kv.Key.StartsWith(nameof(Payment)) &&
+                                                              !kv.Key.StartsWith(nameof(VehicleInfo)) &&
+                                                              !kv.Key.Contains(nameof(Invoice.InvoiceDate)) &&
+                                                              !kv.Key.Contains(nameof(Invoice.InvoiceID)) &&
+                                                              !kv.Key.Contains(nameof(Database.Tables.User.FirstName)) &&
+                                                              !kv.Key.Contains(nameof(Database.Tables.User.LastName)) &&
+                                                              !kv.Key.Contains("SalesPerson"))
+                                                 .ToDictionary(pair => pair.Key, pair => pair.Value);
 
                 return results.OrderByDescending(r => r.Item1.InvoiceDate)
                               .OrderByDescending(r => r.Item2)
@@ -168,7 +179,7 @@ namespace Seciovni.APIs.Controllers
                                   CreatedDate = r.Item1.InvoiceDate,
                                   Fees = searchTerms.Any(t => t.InvoiceField.StartsWith(nameof(MiscellaneousFee))) ? r.Item1.Fees : new List<MiscellaneousFee>(),
                                   InvoiceNumber = r.Item1.InvoiceID,
-                                  OtherFields = invValues,
+                                  OtherFields = m_invoiceValues,
                                   Payments = searchTerms.Any(t => t.InvoiceField.StartsWith(nameof(Payment))) ? r.Item1.Payments : new List<Payment>(),
                                   SalesPerson = r.Item1.SalesPerson.User.FullName(),
                                   Vehicles = searchTerms.Any(t => t.InvoiceField.StartsWith(nameof(VehicleInfo))) ? r.Item1.Vehicles : new List<VehicleInfo>()
@@ -187,6 +198,7 @@ namespace Seciovni.APIs.Controllers
                 // If it matches, then we're done here
                 if (invValue >= low && invValue <= high)
                 {
+                    m_invoiceValues[invoiceField] = rawValue;
                     return true;
                 }
                 return false;
@@ -219,6 +231,7 @@ namespace Seciovni.APIs.Controllers
                 // If it matches, then we're done here
                 if (invValue >= low && invValue <= high)
                 {
+                    m_invoiceValues[invoiceField] = rawValue;
                     return true;
                 }
                 return false;

@@ -36,7 +36,11 @@ const SEARCH_EXPANDER_SHOW_CLASS = "expander show";
 const SEARCH_EXPANDER_CLASS = "expander";
 const SEARCH_INNER_HEADER_CLASS = "searchTableHeader";
 const SEARCH_COLUMN_TITLE_CLASS = "searchColumnTitle";
+const SEARCH_EXTRA_DATA_CLASS = "extraData";
+const SEARCH_VIEW_LINK_CLASS = "viewLink";
+
 const SEARCH_HEADER_ID = "searchHeader";
+const SEARCH_OPENED_RESULT_ID = "openedResult";
 
 const SEARCH_MISC_FEE_DESC_CLASS = "miscFeeDescription";
 const SEARCH_MISC_FEE_PRICE_CLASS = "miscFeePrice";
