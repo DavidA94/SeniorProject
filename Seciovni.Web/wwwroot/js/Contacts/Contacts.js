@@ -652,7 +652,6 @@ class Contacts {
 
     _newContactClick(){
         this._selectedContact = new Contact();
-        this._selectedContact.contactID = -1;
         var selectedContact = document.getElementById(INVOICE_CHOSEN_CONTACT_ID);
         if(selectedContact) selectedContact.removeAttribute("id");
 
@@ -669,16 +668,7 @@ class Contacts {
     _saveClick(){
         let contactID = this._selectedContact.contactID > 0 ? this._selectedContact.contactID.toString() : "0";
 
-        const savingDiv = document.createElement("div");
-        savingDiv.setAttribute("style", "position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(255,255,255,.3");
-
-        const loading = document.createElement("img");
-        loading.src = "/images/loading.svg";
-        loading.className = "loadingSpinner centerSpinner";
-        loading.setAttribute("style", "margin-top:calc(50vh - 50px);");
-        savingDiv.appendChild(loading);
-
-        document.body.appendChild(savingDiv);
+        showFullScreenLoading();
 
         sendToApi("User/SaveContact/" + contactID, "POST", JSON.stringify(this._selectedContact), (xmlhttp) => {
             if(xmlhttp.readyState === XMLHttpRequest.DONE) {
@@ -687,11 +677,25 @@ class Contacts {
 
                     if (response.successful) {
                         this._loadContacts(() => {
-                            document.body.removeChild(savingDiv);
+                            if(contactID === 0) {
+                                let contactID = 0;
+                                let c = null;
+
+                                for (const contact of this._loadedContacts) {
+                                    if (contact.contactID > contactID) {
+                                        c = contact;
+                                        contactID = contact.contactID;
+                                    }
+                                }
+
+                                this._selectedContact = null;
+                                this._showContact(c);
+                            }
+                            hideFullScreenLoading();
                         });
                     }
                     else {
-                        document.body.removeChild(savingDiv);
+                        hideFullScreenLoading();
 
                         if (response.errors.length > 0) {
                             for (const error of response.errors) {
@@ -725,6 +729,7 @@ class Contacts {
                 }
                 else if(xmlhttp.status === 401) {}
                 else {
+                    hideFullScreenLoading();
                     alert("Unknown error occurred. Status " + xmlhttp.status);
                 }
             }

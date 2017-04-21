@@ -171,7 +171,8 @@ namespace Seciovni.APIs.Controllers
             // New contact
             else
             {
-                employee.Contacts.Add(contact);
+                // Should add it
+                employee.Contacts = new List<Customer>() { contact };
             }
 
             try
