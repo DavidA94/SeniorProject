@@ -32,11 +32,11 @@ namespace Seciovni.APIs.Contexts
             /**/                            .WithMany(u => u.UserPermisions)
             /**/                            .HasForeignKey(up => up.UserID);
 
-            builder.Entity<InvoiceInvoicePageTemplate>().HasKey(ii => new { ii.InvoiceID, ii.TemplateID });
+            builder.Entity<InvoiceInvoicePageTemplate>().HasKey(ii => new { ii.InvoiceIdentity, ii.TemplateID });
 
             builder.Entity<InvoiceInvoicePageTemplate>().HasOne(ii => ii.Invoice)
             /**/                                        .WithMany(i => i.IIPT)
-            /**/                                        .HasForeignKey(ii => ii.InvoiceID);
+            /**/                                        .HasForeignKey(ii => ii.InvoiceIdentity);
 
             builder.Entity<InvoiceInvoicePageTemplate>().HasOne(ii => ii.InvoicePageTempate)
             /**/                                        .WithMany(i => i.IIPT)

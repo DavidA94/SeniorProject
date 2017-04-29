@@ -7,7 +7,7 @@ namespace Database.Tables.ManyManyTables
 {
     public class InvoiceInvoicePageTemplate
     {
-        public int InvoiceID { get; set; }
+        public int InvoiceIdentity { get; set; }
         public Invoice Invoice { get; set; }
 
         public int TemplateID { get; set; }

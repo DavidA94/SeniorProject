@@ -106,6 +106,8 @@ namespace Database.Tables
                         else
                         {
                             // USPS will correct off-by-one errors, so make sure what they put is what we got back.
+                            // We can't fix it for them, because it's all uppercase.
+
                             var responseAddr = xmlResponse.Descendants().FirstOrDefault(n => n.Name.LocalName == "Address2").Value;
                             var responseCity = xmlResponse.Descendants().FirstOrDefault(n => n.Name.LocalName == "City").Value;
                             var responseState = xmlResponse.Descendants().FirstOrDefault(n => n.Name.LocalName == "State").Value;

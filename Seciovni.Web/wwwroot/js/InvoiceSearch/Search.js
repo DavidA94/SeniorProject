@@ -61,10 +61,12 @@ class Search {
                         if (responses.length === 0){
                             results.appendChild(makeHtmlElem(
                                 {
-                                    tag: "h2",
+                                    tag: "i",
                                     text: "No Results"
                                 }
                             ));
+
+                            hideFullScreenLoading();
                             return;
                         }
 

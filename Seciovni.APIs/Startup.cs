@@ -37,7 +37,10 @@ namespace Seciovni.APIs
         public void ConfigureServices(IServiceCollection services)
         {
             // Add database
-            services.AddDbContext<SeciovniContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SeciovniDb")));
+            services.AddDbContext<SeciovniContext>(options => {
+                options.UseSqlServer(Configuration.GetConnectionString("SeciovniDb"));
+                options.EnableSensitiveDataLogging();
+            });
             
             // Add framework services.
             services.AddMvc()

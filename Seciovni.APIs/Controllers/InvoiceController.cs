@@ -76,15 +76,6 @@ namespace Seciovni.APIs.Controllers
                 {
                     return new ApiResponse(false, "Invalid Invoice ID");
                 }
-                // If the employee isn't and admin, and they don't own this invoice, don't let them modify it
-                else if (employee.Job != JobType.Admin && dbInvoice.SalesPerson.EmployeeID != employee.EmployeeID)
-                {
-                    string firstName = dbInvoice.SalesPerson.User.FirstName;
-                    string lastName = dbInvoice.SalesPerson.User.LastName;
-
-                    return new ApiResponse(false, $"This invoice is owned by {firstName} {lastName}. " +
-                                                   "You do not have permission to modify it.");
-                }
             }
 
             // Ensure there is at least one vehicle.
@@ -289,8 +280,24 @@ namespace Seciovni.APIs.Controllers
 
                     if (!invoice.Vehicles.Contains(vehicle))
                     {
-                        dbInvoice.Vehicles.Remove(vehicle);
-                        db.Entry(vehicle).State = EntityState.Deleted;
+                        // Check if the unit matches
+                        var changed = invoice.Vehicles.FirstOrDefault(v => v.StockNum.ToLower() == vehicle.StockNum.ToLower());
+                        if (changed == null)
+                        {
+                            dbInvoice.Vehicles.Remove(vehicle);
+                            db.Entry(vehicle).State = EntityState.Deleted;
+                        }
+                        else
+                        {
+                            vehicle.Location = changed.Location;
+                            vehicle.Make = changed.Make;
+                            vehicle.Miles = changed.Miles;
+                            vehicle.Model = changed.Model;
+                            vehicle.Price = changed.Price;
+                            vehicle.StockNum = changed.StockNum;
+                            vehicle.VIN = changed.VIN;
+                            vehicle.Year = changed.Year;
+                        }
                     }
                 }
 
@@ -372,6 +379,7 @@ namespace Seciovni.APIs.Controllers
             // If we have a new invoie, add it
             if (dbInvoice == null)
             {
+                invoice.InvoiceID = dbInvoices.Max(i => i.InvoiceID) + 1;
                 db.Invoices.Add(invoice);
             }
 
@@ -385,7 +393,7 @@ namespace Seciovni.APIs.Controllers
                         var toUser = db.Employees.Include(e => e.User).FirstOrDefault(e => e.EmployeeID == salesPerson.EmployeeID).User;
                         var subject = $"Invoice {invoice.InvoiceID} was created for you!";
                         var message = string.Format(File.ReadAllText("EmailTemplates/NewInvoice.txt"),
-                            invoice.Buyer.User.FullName(),
+                            invoice.Buyer?.User?.FullName() ?? "Contact User",
                             employee.User.FullName(),
                             $"/Invoies/View/{invoice.InvoiceID}");
 
@@ -441,7 +449,7 @@ namespace Seciovni.APIs.Controllers
                 return new ApiResponse(false, "Invalid Invoice ID");
             }
             // If the employee isn't and admin, and they don't own this invoice, don't let them delete it
-            else if (employee.Job != JobType.Admin && dbInvoice.SalesPerson.EmployeeID != employee.EmployeeID)
+            else if (employee.Job >= JobType.Sales && dbInvoice.SalesPerson.EmployeeID != employee.EmployeeID)
             {
                 string firstName = dbInvoice.SalesPerson.User.FirstName;
                 string lastName = dbInvoice.SalesPerson.User.LastName;
@@ -536,7 +544,7 @@ namespace Seciovni.APIs.Controllers
 
             IEnumerable<Invoice> invoicesToUse;
 
-            if (employee.Job != JobType.Admin && employee.Job != JobType.Assistant)
+            if (employee.Job == JobType.Sales)
             {
                 invoicesToUse = dbInvoices.Where(i => i.SalesPerson.EmployeeID == employee.EmployeeID)
                                           .OrderByDescending(i => i.ModifiedDate)
@@ -570,7 +578,7 @@ namespace Seciovni.APIs.Controllers
             {
                 var employees = db.Employees.Include(e => e.User)
                                             .Where(e => e.EmployeeID > Constants.DEVNULL_EMPLOYEE_ID &&
-                                                        (e.Job == JobType.Sales || e.Job == JobType.Admin))
+                                                        (e.Job == JobType.Sales || e.Job == JobType.Manager))
                                             .Select(e => new
                                             {
                                                 id = e.EmployeeID,
@@ -663,7 +671,7 @@ namespace Seciovni.APIs.Controllers
                     invoice.IIPT.Add(new InvoiceInvoicePageTemplate()
                     {
                         Invoice = invoice,
-                        InvoiceID = invoice.InvoiceID,
+                        InvoiceIdentity = invoice.InvoiceID,
                         InvoicePageTempate = template,
                         TemplateID = template.TemplateID
                     });

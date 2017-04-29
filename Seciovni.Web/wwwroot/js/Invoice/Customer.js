@@ -3,7 +3,7 @@
  */
 
 class CustomerFields {
-    static get customerID() { return "contactID"; }
+    static get customerID() { return "customerID"; }
     static get user() { return "user"; }
     static get address() { return "address"; }
     static get primaryPhone() { return "primaryPhone"; }

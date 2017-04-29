@@ -155,7 +155,8 @@ namespace Seciovni.APIs.Controllers
                         }
                     }
 
-                    if (isRangeMatch && (chances.Count == 0 || chances.Average() > 0.6))
+                    // isRangeMatch is why we can have Count be zero
+                    if (isRangeMatch && (chances.Count == 0 || chances.Average() > 0.5))
                     {
                         results.Add(Tuple.Create(invoice, chances.Count == 0 ? 1 : chances.Average()));
                     }

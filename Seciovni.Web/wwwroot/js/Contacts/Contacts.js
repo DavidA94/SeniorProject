@@ -677,14 +677,14 @@ class Contacts {
 
                     if (response.successful) {
                         this._loadContacts(() => {
-                            if(contactID === 0) {
-                                let contactID = 0;
+                            if(contactID === "0") {
+                                let contactToLoadId = 0;
                                 let c = null;
 
                                 for (const contact of this._loadedContacts) {
-                                    if (contact.contactID > contactID) {
+                                    if (contact.contactID > contactToLoadId) {
                                         c = contact;
-                                        contactID = contact.contactID;
+                                        contactToLoadId = contact.contactID;
                                     }
                                 }
 

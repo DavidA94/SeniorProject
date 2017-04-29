@@ -11,8 +11,11 @@ namespace Database.Tables
 {
     public class Invoice
     {
-        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
+        [JsonIgnore]
+        public int InvoiceIdentity { get; set; }
+
         [PrintFormat("D4")]
         public int InvoiceID { get; set; }
 

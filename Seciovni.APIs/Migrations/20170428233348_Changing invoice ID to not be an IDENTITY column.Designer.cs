@@ -4,13 +4,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Seciovni.APIs.Contexts;
+using Shared;
 
 namespace Seciovni.APIs.Migrations
 {
     [DbContext(typeof(SeciovniContext))]
-    partial class SeciovniContextModelSnapshot : ModelSnapshot
+    [Migration("20170428233348_Changing invoice ID to not be an IDENTITY column")]
+    partial class ChanginginvoiceIDtonotbeanIDENTITYcolumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752")
