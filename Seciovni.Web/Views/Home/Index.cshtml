@@ -40,7 +40,11 @@
             <p>Form Editor</p>
         </a>
     }
-    @if (User.HasClaim(c => c.Type == AccessPolicy.AdminPrivilege)) {
-        <a href="#" id="dashboardManagement" class="dashboardButton"><p>Management</p></a> 
+    @if (User.HasClaim(c => c.Type == AccessPolicy.AdminPrivilege))
+    {
+        <a asp-controller="Management" asp-action="Index" class="dashboardButton">
+            <img src="~/images/settings.svg" alt="" />
+            <p>Management Settings</p>
+        </a>
     }
 </div>

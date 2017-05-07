@@ -109,7 +109,7 @@ namespace Seciovni.Web
                     OnAuthorizationCodeReceived = OnAuthorizationCodeReceived
                 }
             });
-
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

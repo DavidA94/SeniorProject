@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System;
 
 namespace Database.Tables
 {
@@ -23,7 +22,7 @@ namespace Database.Tables
         [StringLength(30)]
         [Required]
         public string LastName { get; set; }
-        
+
         // TODO: [Index(IsUnique = true)]
         [Display(Name = "Email")]
         [StringLength(50)]
@@ -33,6 +32,8 @@ namespace Database.Tables
 
         [JsonIgnore]
         public ICollection<UserPermission> UserPermisions { get; set; }
+
+        public bool Disabled { get; set; } = false;
 
         public static User MakeNewUser(string first, string last, string email, IEnumerable<Permission> permissions)
         {

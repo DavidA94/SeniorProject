@@ -1,9 +1,39 @@
 ﻿@{
-    ViewData["Title"] = "Managemnet";
+    ViewData["Title"] = "Management Settings";
 }
 
-<h1>Management</h1>
+<h1>Management Settings</h1>
+<br />
+<br />
+<h2>Employees</h2>
 
-<div id="management">
+<table id="employeeTable">
+    <thead>
+        <tr id="headers">
+            <th>Name</th>
+            <th>Email</th>
+            <th>Job</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
 
-</div>
+
+<script type="text/javascript" src="~/js/Constants.js"></script>
+<script type="text/javascript" src="~/js/helpers.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/BaseEventType.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/MouseEvent.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/KeyboardEvent.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/EventArgs.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/PropertyChangedEventArgs.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/ObjectDestroyedEventArgs.js"></script>
+<script type="text/javascript" src="~/js/Events/EventTypes/DataSavedEventArgs.js"></script>
+<script type="text/javascript" src="~/js/Events/Subscribable.js"></script>
+<script type="text/javascript" src="~/js/Events/SubscribableProperty.js"></script>
+
+<script type="text/javascript" src="~/js/HelperTypes/HTMLElements/BaseHtmlElement.js"></script>
+<script type="text/javascript" src="~/js/HelperTypes/HTMLElements/CheckboxInput.js"></script>
+<script type="text/javascript" src="~/js/HelperTypes/HTMLElements/TextInput.js"></script>
+<script type="text/javascript" src="~/js/builder.js"></script>
+<script type="text/javascript" src="~/js/Management/Employee.js"></script>
+<script type="text/javascript" src="~/js/Management/Management.js"></script>

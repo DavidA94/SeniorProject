@@ -275,3 +275,11 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 /*.result .resultRowData:last-child div {border-bottom-width:1px;}
 .result .resultRowData div:first-child {border-left-width:1px;}*/
 .result .searchTableHeader + .resultRowData div {padding:0px 6px;font-size:.9em;font-weight:bold;text-decoration:underline;}
+
+#employeeTable th {vertical-align:bottom;}
+#employeeTable td {padding:0 5px;}
+#employeeTable th {padding:0 7px;}
+#employeeTable .tiltedHeader {white-space:nowrap;padding:0;}
+#employeeTable .tiltedHeader div {width:30px;transform:rotate(-45deg) translate(12px, 0px)}
+#employeeTable .permissionCheck {text-align:center;}
+#employeeTable .wide {width:300px;}

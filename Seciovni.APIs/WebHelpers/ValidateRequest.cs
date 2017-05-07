@@ -29,6 +29,9 @@ namespace Seciovni.APIs.WebHelpers
             
             // Get the user
             var user = request.GetUser(db);
+
+            // If the user has been disabled, then no-go
+            if (user.Disabled) return false;
             
             // Check if the permission has the user
             var permission = db.Permissions.Include(p => p.UserPermissions)

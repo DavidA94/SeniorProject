@@ -21,7 +21,8 @@ function makeHtmlElem(data){
     const elem = document.createElement(data.tag);
 
     for(const prop in data){
-        if(prop === "class") elem.className = data.class;
+        if(prop == "tag") {} // Skip this one
+        else if(prop === "class") elem.className = data.class;
         else if(prop === "children"){
             for(const childData of data.children){
                 elem.appendChild(makeHtmlElem(childData));

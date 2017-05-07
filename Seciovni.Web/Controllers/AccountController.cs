@@ -16,6 +16,11 @@ namespace Seciovni.Web.Controllers
 {
     public class AccountController : Controller
     {
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
         public IActionResult SignIn()
         {
             return Challenge(

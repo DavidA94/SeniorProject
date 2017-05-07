@@ -16,7 +16,6 @@
 /**
  * Ensures we have a valid token in the local storage
  * @param {ValidTokenCallback} callback - The method to call once the token has been retrieved
- * @return {boolean}
  */
 function ensureValidToken(callback){
     // If we have the token time
@@ -27,7 +26,8 @@ function ensureValidToken(callback){
 
         // If we haven't expired, we're good
         if(expires - Date.now() > 0){
-            callback(true, localStorage.getItem("AuthorizationTokenTime"));
+            callback(true, localStorage.getItem("AuthorizationToken"));
+            return;
         }
     }
 
@@ -37,8 +37,8 @@ function ensureValidToken(callback){
     const xmlhttp = new XMLHttpRequest();
 
     xmlhttp.onreadystatechange = () => {
-        if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-            if (xmlhttp.status == 200) {
+        if (xmlhttp.readyState === XMLHttpRequest.DONE) {
+            if (xmlhttp.status === 200) {
                 const response = JSON.parse(xmlhttp.response.toString());
 
                 localStorage.setItem(AUTH_TOKEN, response["token"]);
@@ -266,6 +266,32 @@ function getSearchFields(){
     }
 
     return getSearchFields[KEY];
+}
+
+/**
+ * Gets the available permissions, in an array with [permission, friendly name, description]
+ * @return {string[]}
+ */
+function getPermissions(){
+    const KEY = "permissions";
+    if(getPermissions[KEY] === undefined){
+        getPermissions[KEY] = null;
+        let response = null;
+
+        sendToApi("Settings/Privileges/", "GET", null, (xmlhttp) => {
+            // No-op
+            if(!xmlhttp) return;
+            if(xmlhttp.readyState === XMLHttpRequest.DONE) {
+                if (xmlhttp.status === 200) {
+                    response = xmlhttp.response;
+                }
+
+                getPermissions[KEY] = JSON.parse(response);
+            }
+        });
+    }
+
+    return getPermissions[KEY];
 }
 
 /**
