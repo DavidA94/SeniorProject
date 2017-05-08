@@ -3,3 +3,8 @@
 }
 <h2>@ViewData["Title"].</h2>
 <p class="text-success">You have successfully signed out.</p>
+
+<script type="text/javascript">
+    localStorage.removeItem("AuthorizationTokenTime");
+    localStorage.removeItem("AuthorizationToken");
+</script>

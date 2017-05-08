@@ -40,6 +40,11 @@ class Search {
 
         window.location.hash = url ? url : "";
 
+        if(!url){
+            alert("Please enter a search term");
+            return;
+        }
+
         sendToApi("Search/Search", "GET", JSON.stringify(this._terms), (xmlhttp) => {
             if(xmlhttp.readyState === XMLHttpRequest.OPENED){
                 showFullScreenLoading();
@@ -106,6 +111,8 @@ class Search {
 
                         for (const result of responses) {
 
+                            const hasExapnder = result.fees.length > 0 || result.payments.length > 0 || result.vehicles.length > 0;
+
                             // Start with the core things
                             const headerData = [
                                 {
@@ -114,7 +121,7 @@ class Search {
                                     children: [
                                         {
                                             tag: "div",
-                                            class: SEARCH_EXPANDER_SHOW_CLASS
+                                            class: (hasExapnder ? SEARCH_EXPANDER_SHOW_CLASS : SEARCH_EXPANDER_CLASS)
                                         },
                                         {
                                             tag: "div",
@@ -354,7 +361,7 @@ class Search {
                             for(const elem of column) elem.style.width = width + "px";
                         }
 
-                        for(const elem of results.querySelectorAll("." + SEARCH_EXPANDER_CLASS)){
+                        for(const elem of results.querySelectorAll("." + SEARCH_EXPANDER_CLASS + ".show")){
                             elem.addEventListener('click', this._boundExpand);
                         }
                     }

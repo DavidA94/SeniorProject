@@ -28,8 +28,8 @@
       <file leaf-file-name="Constants.js" pinned="true" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/Constants.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="29" column="49" lean-forward="false" selection-start-line="29" selection-start-column="49" selection-end-line="29" selection-end-column="49" />
+            <state relative-caret-position="204">
+              <caret line="33" column="6" lean-forward="false" selection-start-line="33" selection-start-column="6" selection-end-line="33" selection-end-column="6" />
               <folding>
                 <element signature="n#!!doc" expanded="false" />
                 <element signature="e#21#85#0" expanded="false" />
@@ -65,37 +65,114 @@
                 <element signature="e#4908#4933#0" expanded="false" />
                 <element signature="e#4936#5012#0" expanded="false" />
                 <element signature="e#5037#5158#0" expanded="false" />
-                <element signature="e#5175#5188#0" expanded="false" />
-                <element signature="e#7444#7467#0" expanded="false" />
-                <element signature="e#7529#7552#0" expanded="false" />
-                <element signature="e#7554#7641#0" expanded="false" />
-                <element signature="e#7684#7787#0" expanded="false" />
-                <element signature="e#7919#7936#0" expanded="false" />
-                <element signature="e#8581#8738#0" expanded="false" />
-                <element signature="e#8775#8852#0" expanded="false" />
-                <element signature="e#8889#8940#0" expanded="false" />
-                <element signature="e#8973#9031#0" expanded="false" />
-                <element signature="e#9070#9169#0" expanded="false" />
-                <element signature="e#9232#9303#0" expanded="false" />
+                <element signature="e#7491#7514#0" expanded="false" />
+                <element signature="e#7576#7599#0" expanded="false" />
+                <element signature="e#7601#7688#0" expanded="false" />
+                <element signature="e#7731#7834#0" expanded="false" />
+                <element signature="e#7966#7983#0" expanded="false" />
+                <element signature="e#8628#8785#0" expanded="false" />
+                <element signature="e#8822#8899#0" expanded="false" />
+                <element signature="e#8936#8987#0" expanded="false" />
+                <element signature="e#9020#9078#0" expanded="false" />
+                <element signature="e#9117#9216#0" expanded="false" />
+                <element signature="e#9279#9350#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Search.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="helpers.js" pinned="true" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/helpers.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="213">
+              <caret line="149" column="9" lean-forward="false" selection-start-line="149" selection-start-column="9" selection-end-line="149" selection-end-column="9" />
+              <folding>
+                <element signature="e#42#148#0" expanded="false" />
+                <element signature="e#150#226#0" expanded="false" />
+                <element signature="n#!!doc;n#ensureValidToken#0" expanded="false" />
+                <element signature="n#!!block;n#ensureValidToken#0" expanded="false" />
+                <element signature="e#537#856#0" expanded="false" />
+                <element signature="e#747#850#0" expanded="false" />
+                <element signature="e#1035#1560#0" expanded="false" />
+                <element signature="e#1093#1554#0" expanded="false" />
+                <element signature="e#1135#1472#0" expanded="false" />
+                <element signature="e#1490#1544#0" expanded="false" />
+                <element signature="n#!!doc;n#numericInput_keypress#0" expanded="false" />
+                <element signature="n#!!block;n#numericInput_keypress#0" expanded="false" />
+                <element signature="e#1923#1974#0" expanded="false" />
+                <element signature="e#2112#2476#0" expanded="false" />
+                <element signature="e#2202#2271#0" expanded="false" />
+                <element signature="e#2348#2465#0" expanded="false" />
+                <element signature="e#2393#2455#0" expanded="false" />
+                <element signature="n#!!doc;n#invoice_keydown#0" expanded="false" />
+                <element signature="n#!!block;n#invoice_keydown#0" expanded="false" />
+                <element signature="e#2836#4543#0" expanded="false" />
+                <element signature="e#3005#3334#0" expanded="false" />
+                <element signature="e#3163#3273#0" expanded="false" />
+                <element signature="e#3488#3686#0" expanded="false" />
+                <element signature="e#3787#4108#0" expanded="false" />
+                <element signature="e#3941#4047#0" expanded="false" />
+                <element signature="e#4191#4385#0" expanded="false" />
+                <element signature="e#4496#4537#0" expanded="false" />
+                <element signature="n#!!doc;n#sendToApi#0" expanded="false" />
+                <element signature="e#5168#5226#0" expanded="false" />
+                <element signature="e#5350#5418#0" expanded="false" />
+                <element signature="e#5601#5756#0" expanded="false" />
+                <element signature="e#5774#5821#0" expanded="false" />
+                <element signature="e#5845#5884#0" expanded="false" />
+                <element signature="n#!!doc;n#prettifyNumber#0" expanded="false" />
+                <element signature="n#!!block;n#prettifyNumber#0" expanded="false" />
+                <element signature="n#!!doc;n#pxToPt#0" expanded="false" />
+                <element signature="n#!!block;n#pxToPt#0" expanded="false" />
+                <element signature="n#!!doc;n#ptToPx#0" expanded="false" />
+                <element signature="n#!!block;n#ptToPx#0" expanded="false" />
+                <element signature="n#!!doc;n#getBindingOptions#0" expanded="false" />
+                <element signature="n#!!block;n#getBindingOptions#0" expanded="false" />
+                <element signature="e#7069#7529#0" expanded="false" />
+                <element signature="e#7193#7521#0" expanded="false" />
+                <element signature="e#7308#7511#0" expanded="false" />
+                <element signature="e#7354#7422#0" expanded="false" />
+                <element signature="n#!!doc;n#getSearchFields#0" expanded="false" />
+                <element signature="n#!!block;n#getSearchFields#0" expanded="false" />
+                <element signature="e#7798#8258#0" expanded="false" />
+                <element signature="e#7935#8250#0" expanded="false" />
+                <element signature="e#8050#8240#0" expanded="false" />
+                <element signature="e#8096#8164#0" expanded="false" />
+                <element signature="n#!!doc;n#getPermissions#0" expanded="false" />
+                <element signature="n#!!block;n#getPermissions#0" expanded="false" />
+                <element signature="e#8518#8976#0" expanded="false" />
+                <element signature="e#8654#8968#0" expanded="false" />
+                <element signature="e#8769#8958#0" expanded="false" />
+                <element signature="e#8815#8883#0" expanded="false" />
+                <element signature="n#!!doc;n#makeNumberPretty#0" expanded="false" />
+                <element signature="n#!!block;n#makeNumberPretty#0" expanded="false" />
+                <element signature="e#9297#9337#0" expanded="false" />
+                <element signature="e#9476#9503#0" expanded="false" />
+                <element signature="e#9572#9625#0" expanded="false" />
+                <element signature="n#!!doc;n#showFullScreenLoading#0" expanded="false" />
+                <element signature="n#!!block;n#showFullScreenLoading#0" expanded="false" />
+                <element signature="n#!!doc;n#hideFullScreenLoading#0" expanded="false" />
+                <element signature="n#!!block;n#hideFullScreenLoading#0" expanded="false" />
+                <element signature="e#10187#10220#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Search.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/InvoiceSearch/Search.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="942">
-              <caret line="378" column="15" lean-forward="false" selection-start-line="378" selection-start-column="15" selection-end-line="378" selection-end-column="15" />
+            <state relative-caret-position="241">
+              <caret line="42" column="15" lean-forward="true" selection-start-line="42" selection-start-column="15" selection-end-line="42" selection-end-column="15" />
               <folding>
                 <element signature="n#!!doc;n#Search#0" expanded="false" />
                 <element signature="e#590#700#0" expanded="false" />
-                <element signature="e#10950#11622#0" expanded="false" />
-                <element signature="e#10998#11590#0" expanded="false" />
-                <element signature="e#11676#12635#0" expanded="false" />
-                <element signature="e#12753#13895#0" expanded="false" />
-                <element signature="e#13949#15374#0" expanded="false" />
-                <element signature="e#16344#17153#0" expanded="false" />
+                <element signature="e#11221#11893#0" expanded="false" />
+                <element signature="e#11269#11861#0" expanded="false" />
+                <element signature="e#11947#12906#0" expanded="false" />
+                <element signature="e#13024#14166#0" expanded="false" />
+                <element signature="e#14220#15645#0" expanded="false" />
+                <element signature="e#16615#17424#0" expanded="false" />
                 <element signature="n#!!doc;n#_waitForSearchFields#0;n#Search#0" expanded="false" />
                 <element signature="n#!!doc;n#_extraUpdated#0;n#Search#0" expanded="false" />
                 <element signature="n#!!block;n#_extraUpdated#0;n#Search#0" expanded="false" />
@@ -108,19 +185,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Management.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/Management/Management.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="425">
-              <caret line="39" column="0" lean-forward="true" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
-              <folding>
-                <element signature="n#!!doc;n#Management#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Employee.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Employee.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/Management/Employee.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="414">
@@ -145,73 +210,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Contacts.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/Contacts/Contacts.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="223">
-              <caret line="700" column="63" lean-forward="false" selection-start-line="700" selection-start-column="48" selection-end-line="700" selection-end-column="63" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="helpers.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/helpers.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
-              <caret line="30" column="9" lean-forward="true" selection-start-line="30" selection-start-column="9" selection-end-line="30" selection-end-column="9" />
-              <folding>
-                <element signature="e#42#148#0" expanded="false" />
-                <element signature="e#150#226#0" expanded="false" />
-                <element signature="n#!!doc;n#ensureValidToken#0" expanded="false" />
-                <element signature="n#!!doc;n#numericInput_keypress#0" expanded="false" />
-                <element signature="e#2112#2476#0" expanded="false" />
-                <element signature="e#2202#2271#0" expanded="false" />
-                <element signature="e#2348#2465#0" expanded="false" />
-                <element signature="e#2393#2455#0" expanded="false" />
-                <element signature="n#!!doc;n#invoice_keydown#0" expanded="false" />
-                <element signature="n#!!block;n#invoice_keydown#0" expanded="false" />
-                <element signature="e#2836#4543#0" expanded="false" />
-                <element signature="e#3005#3334#0" expanded="false" />
-                <element signature="e#3163#3273#0" expanded="false" />
-                <element signature="e#3488#3686#0" expanded="false" />
-                <element signature="e#3787#4108#0" expanded="false" />
-                <element signature="e#3941#4047#0" expanded="false" />
-                <element signature="e#4191#4385#0" expanded="false" />
-                <element signature="e#4496#4537#0" expanded="false" />
-                <element signature="n#!!doc;n#sendToApi#0" expanded="false" />
-                <element signature="e#5350#5418#0" expanded="false" />
-                <element signature="e#5601#5756#0" expanded="false" />
-                <element signature="e#5845#5884#0" expanded="false" />
-                <element signature="n#!!doc;n#prettifyNumber#0" expanded="false" />
-                <element signature="n#!!block;n#prettifyNumber#0" expanded="false" />
-                <element signature="n#!!doc;n#pxToPt#0" expanded="false" />
-                <element signature="n#!!block;n#pxToPt#0" expanded="false" />
-                <element signature="n#!!doc;n#ptToPx#0" expanded="false" />
-                <element signature="n#!!block;n#ptToPx#0" expanded="false" />
-                <element signature="n#!!doc;n#getBindingOptions#0" expanded="false" />
-                <element signature="e#7308#7511#0" expanded="false" />
-                <element signature="e#7354#7422#0" expanded="false" />
-                <element signature="n#!!doc;n#getSearchFields#0" expanded="false" />
-                <element signature="n#!!doc;n#getPermissions#0" expanded="false" />
-                <element signature="n#!!doc;n#makeNumberPretty#0" expanded="false" />
-                <element signature="n#!!block;n#makeNumberPretty#0" expanded="false" />
-                <element signature="e#9297#9337#0" expanded="false" />
-                <element signature="e#9476#9503#0" expanded="false" />
-                <element signature="e#9572#9625#0" expanded="false" />
-                <element signature="n#!!block;n#showFullScreenLoading#0" expanded="false" />
-                <element signature="n#!!block;n#hideFullScreenLoading#0" expanded="false" />
-                <element signature="e#10111#10144#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="Invoice.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/Invoice/Invoice.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="393">
-              <caret line="95" column="29" lean-forward="true" selection-start-line="40" selection-start-column="28" selection-end-line="95" selection-end-column="29" />
+            <state relative-caret-position="-1375">
+              <caret line="30" column="12" lean-forward="false" selection-start-line="30" selection-start-column="12" selection-end-line="30" selection-end-column="23" />
               <folding>
                 <element signature="n#InvoiceFields#0" expanded="false" />
                 <element signature="e#687#844#0" expanded="false" />
@@ -279,20 +282,20 @@
                 <element signature="e#12748#12826#0" expanded="false" />
                 <element signature="e#12926#13113#0" expanded="false" />
                 <element signature="e#12997#13087#0" expanded="false" />
-                <element signature="e#13723#13810#0" expanded="false" />
-                <element signature="e#13896#14731#0" expanded="false" />
-                <element signature="e#13915#13993#0" expanded="false" />
-                <element signature="e#14100#14717#0" expanded="false" />
-                <element signature="e#14244#14301#0" expanded="false" />
-                <element signature="e#14424#14551#0" expanded="false" />
+                <element signature="e#13722#13809#0" expanded="false" />
+                <element signature="e#13895#14730#0" expanded="false" />
+                <element signature="e#13914#13992#0" expanded="false" />
+                <element signature="e#14099#14716#0" expanded="false" />
+                <element signature="e#14243#14300#0" expanded="false" />
+                <element signature="e#14423#14550#0" expanded="false" />
                 <element signature="n#!!doc;n#initialize_json#0;n#Invoice#0" expanded="false" />
                 <element signature="n#!!block;n#initialize_json#0;n#Invoice#0" expanded="false" />
-                <element signature="e#14914#15060#0" expanded="false" />
-                <element signature="e#15627#15718#0" expanded="false" />
-                <element signature="e#15768#15861#0" expanded="false" />
-                <element signature="e#16124#16267#0" expanded="false" />
-                <element signature="e#16175#16257#0" expanded="false" />
-                <element signature="e#16287#16588#0" expanded="false" />
+                <element signature="e#14913#15059#0" expanded="false" />
+                <element signature="e#15626#15717#0" expanded="false" />
+                <element signature="e#15767#15860#0" expanded="false" />
+                <element signature="e#16123#16266#0" expanded="false" />
+                <element signature="e#16174#16256#0" expanded="false" />
+                <element signature="e#16286#16587#0" expanded="false" />
                 <element signature="n#!!doc;n#reset#0;n#Invoice#0" expanded="false" />
                 <element signature="n#!!block;n#reset#0;n#Invoice#0" expanded="false" />
                 <element signature="n#!!doc;n#toJSON#0;n#Invoice#0" expanded="false" />
@@ -301,35 +304,25 @@
                 <element signature="n#!!block;n#_calculateTotal#0;n#Invoice#0" expanded="false" />
                 <element signature="n#!!doc;n#_rowDestroyed#0;n#Invoice#0" expanded="false" />
                 <element signature="n#!!block;n#_rowDestroyed#0;n#Invoice#0" expanded="false" />
-                <element signature="e#19465#19543#0" expanded="false" />
-                <element signature="e#19626#19710#0" expanded="false" />
+                <element signature="e#19464#19542#0" expanded="false" />
+                <element signature="e#19625#19709#0" expanded="false" />
                 <element signature="n#!!doc;n#_existingRowChanged#0;n#Invoice#0" expanded="false" />
                 <element signature="n#!!block;n#_existingRowChanged#0;n#Invoice#0" expanded="false" />
-                <element signature="e#20340#20381#0" expanded="false" />
-                <element signature="e#20563#20610#0" expanded="false" />
-                <element signature="e#20707#21214#0" expanded="false" />
-                <element signature="e#20840#21204#0" expanded="false" />
-                <element signature="e#20923#21037#0" expanded="false" />
-                <element signature="e#21131#21190#0" expanded="false" />
-                <element signature="e#21326#21802#0" expanded="false" />
-                <element signature="e#21467#21792#0" expanded="false" />
-                <element signature="e#21536#21674#0" expanded="false" />
-                <element signature="e#21714#21778#0" expanded="false" />
+                <element signature="e#20339#20380#0" expanded="false" />
+                <element signature="e#20562#20609#0" expanded="false" />
+                <element signature="e#20706#21213#0" expanded="false" />
+                <element signature="e#20839#21203#0" expanded="false" />
+                <element signature="e#20922#21036#0" expanded="false" />
+                <element signature="e#21130#21189#0" expanded="false" />
+                <element signature="e#21325#21801#0" expanded="false" />
+                <element signature="e#21466#21791#0" expanded="false" />
+                <element signature="e#21535#21673#0" expanded="false" />
+                <element signature="e#21713#21777#0" expanded="false" />
                 <element signature="n#!!doc;n#_lastRowChanged#0;n#Invoice#0" expanded="false" />
-                <element signature="e#22574#22603#0" expanded="false" />
-                <element signature="e#23055#23785#0" expanded="false" />
-                <element signature="e#23470#23499#0" expanded="false" />
+                <element signature="e#22573#22602#0" expanded="false" />
+                <element signature="e#23054#23784#0" expanded="false" />
+                <element signature="e#23469#23498#0" expanded="false" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Vehicle.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/Invoice/Vehicle.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="121">
-              <caret line="262" column="4" lean-forward="false" selection-start-line="262" selection-start-column="4" selection-end-line="262" selection-end-column="4" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -337,21 +330,49 @@
       <file leaf-file-name="Customer.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/Invoice/Customer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="15" column="27" lean-forward="false" selection-start-line="15" selection-start-column="27" selection-end-line="15" selection-end-column="27" />
+            <state relative-caret-position="332">
+              <caret line="339" column="27" lean-forward="true" selection-start-line="339" selection-start-column="27" selection-end-line="339" selection-end-column="27" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="builder.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/builder.js">
+      <file leaf-file-name="Payments.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/Invoice/Payments.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="291">
-              <caret line="23" column="45" lean-forward="true" selection-start-line="23" selection-start-column="45" selection-end-line="23" selection-end-column="45" />
-              <folding>
-                <element signature="e#713#848#0" expanded="false" />
-              </folding>
+            <state relative-caret-position="563">
+              <caret line="244" column="42" lean-forward="false" selection-start-line="244" selection-start-column="42" selection-end-line="244" selection-end-column="42" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FormBuilder.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/FormBuilder/FormBuilder.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="240">
+              <caret line="49" column="87" lean-forward="true" selection-start-line="49" selection-start-column="87" selection-end-line="49" selection-end-column="87" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LienHolder.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/Invoice/LienHolder.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="308">
+              <caret line="145" column="7" lean-forward="true" selection-start-line="145" selection-start-column="7" selection-end-line="145" selection-end-column="7" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Print.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/Invoice/Print.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="7" column="18" lean-forward="true" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -367,36 +388,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>.email</find>
-      <find>make</find>
-      <find>_inputEvent</find>
-      <find>className</find>
-      <find>tilted</find>
-      <find>permission_che</find>
-      <find>sendToAp</find>
-      <find>return</find>
-      <find>.email)</find>
-      <find>ew</find>
-      <find>new</find>
-      <find>new Eo</find>
-      <find>new E</find>
-      <find>new Emp</find>
-      <find>new Empl</find>
-      <find>new Emplo</find>
-      <find>_employ</find>
-      <find>new Employ</find>
-      <find>to</find>
-      <find>toJSON</find>
-      <find>EVENT_DATA_SAVED</find>
-      <find>.</find>
-      <find>.error</find>
-      <find>.errors</find>
       <find>.errors</find>
       <find>.errors)</find>
       <find>email =</find>
       <find>response.errors</find>
       <find>con</find>
       <find>confirm</find>
+      <find>d</find>
+      <find>dial</find>
+      <find>dialog</find>
+      <find>.</find>
+      <find>.show</find>
+      <find>.showM</find>
+      <find>.showMod</find>
+      <find>.showModa</find>
+      <find>hide()</find>
+      <find>hide(</find>
+      <find>loadCon</find>
+      <find>_dialog</find>
+      <find>s</find>
+      <find>showMo</find>
+      <find>showMod</find>
+      <find>show(</find>
+      <find>showModal</find>
+      <find>showModal(</find>
+      <find>_dialog.close</find>
+      <find>sendToApi(&quot;</find>
+      <find>sendToApi(&quot;/</find>
+      <find>sendToAp</find>
+      <find>expander</find>
+      <find>sendToA</find>
     </findStrings>
     <replaceStrings>
       <replace>BIND_ATTRIB</replace>
@@ -437,7 +458,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/js/search.js" />
         <option value="$PROJECT_DIR$/js/FormBuilder/Properties/Appearance.js" />
         <option value="$PROJECT_DIR$/js/FormBuilder/Properties/Border.js" />
         <option value="$PROJECT_DIR$/js/FormBuilder/Properties/TRBL.js" />
@@ -466,28 +486,29 @@
         <option value="$PROJECT_DIR$/js/Events/EventTypes/PropertyChangedEventArgs.js" />
         <option value="$PROJECT_DIR$/js/Events/SubscribableProperty.js" />
         <option value="$PROJECT_DIR$/js/FormBuilder/InvoiceForms.js" />
-        <option value="$PROJECT_DIR$/js/Invoice/Payments.js" />
         <option value="$PROJECT_DIR$/js/FormBuilder/FBObjects/FBImage.js" />
-        <option value="$PROJECT_DIR$/js/FormBuilder/FormBuilder.js" />
         <option value="$PROJECT_DIR$/js/FormBuilder/Canvas.js" />
-        <option value="$PROJECT_DIR$/js/Invoice/Print.js" />
         <option value="$PROJECT_DIR$/js/HelperTypes/HTMLElements/TextInput.js" />
-        <option value="$PROJECT_DIR$/js/Invoice/Invoice.js" />
         <option value="$PROJECT_DIR$/js/Contacts/Contact.js" />
         <option value="$PROJECT_DIR$/js/HelperTypes/HTMLElements/BaseHtmlElement.js" />
         <option value="$PROJECT_DIR$/js/InvoiceSearch/SearchTerm.js" />
         <option value="$PROJECT_DIR$/js/HelperTypes/SearchResult.js" />
         <option value="$PROJECT_DIR$/js/HelperTypes/HTMLElements/NumericInput.js" />
-        <option value="$PROJECT_DIR$/js/Contacts/Contacts.js" />
         <option value="$PROJECT_DIR$/js/Invoice/CustomerPreview.js" />
-        <option value="$PROJECT_DIR$/js/Invoice/Customer.js" />
-        <option value="$PROJECT_DIR$/js/InvoiceSearch/Search.js" />
         <option value="$PROJECT_DIR$/js/HelperTypes/HTMLElements/CheckboxInput.js" />
-        <option value="$PROJECT_DIR$/js/Constants.js" />
         <option value="$PROJECT_DIR$/js/builder.js" />
-        <option value="$PROJECT_DIR$/js/helpers.js" />
         <option value="$PROJECT_DIR$/js/Management/Management.js" />
         <option value="$PROJECT_DIR$/js/Management/Employee.js" />
+        <option value="$PROJECT_DIR$/js/Constants.js" />
+        <option value="$PROJECT_DIR$/js/Contacts/Contacts.js" />
+        <option value="$PROJECT_DIR$/js/helpers.js" />
+        <option value="$PROJECT_DIR$/js/Invoice/Customer.js" />
+        <option value="$PROJECT_DIR$/js/Invoice/Payments.js" />
+        <option value="$PROJECT_DIR$/js/FormBuilder/FormBuilder.js" />
+        <option value="$PROJECT_DIR$/js/Invoice/LienHolder.js" />
+        <option value="$PROJECT_DIR$/js/Invoice/Print.js" />
+        <option value="$PROJECT_DIR$/js/Invoice/Invoice.js" />
+        <option value="$PROJECT_DIR$/js/InvoiceSearch/Search.js" />
       </list>
     </option>
   </component>
@@ -772,12 +793,12 @@
       <workItem from="1492734059329" duration="1036000" />
       <workItem from="1493413400908" duration="3246000" />
       <workItem from="1494092563202" duration="245000" />
-      <workItem from="1494092963817" duration="16619000" />
+      <workItem from="1494092963817" duration="24467000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="493459000" />
+    <option name="totallyTimeSpent" value="501307000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -822,7 +843,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/js/FormBuilder/FormBuilder.js</url>
-          <line>193</line>
+          <line>196</line>
           <option name="timeStamp" value="44" />
         </line-breakpoint>
       </breakpoints>
@@ -831,13 +852,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/Events/EventPropagator.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="277">
-          <caret line="46" column="4" lean-forward="false" selection-start-line="46" selection-start-column="4" selection-end-line="46" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/FormBuilder/FBObjects/bases/TextBlock.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="265">
@@ -915,13 +929,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/Invoice/Payments.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="143" column="30" lean-forward="false" selection-start-line="143" selection-start-column="30" selection-end-line="143" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/FormBuilder/FBObjects/FBTextBlock.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="418">
@@ -933,13 +940,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="352">
           <caret line="105" column="112" lean-forward="false" selection-start-line="105" selection-start-column="112" selection-end-line="105" selection-end-column="112" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/Invoice/Print.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="25" column="0" lean-forward="false" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -985,14 +985,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="21" column="16" lean-forward="false" selection-start-line="21" selection-start-column="16" selection-end-line="21" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/FormBuilder/FormBuilder.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="12" column="8" lean-forward="false" selection-start-line="12" selection-start-column="8" selection-end-line="12" selection-end-column="8" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1153,69 +1145,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/Invoice/Customer.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="27" lean-forward="false" selection-start-line="15" selection-start-column="27" selection-end-line="15" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/Constants.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="29" column="49" lean-forward="false" selection-start-line="29" selection-start-column="49" selection-end-line="29" selection-end-column="49" />
-          <folding>
-            <element signature="n#!!doc" expanded="false" />
-            <element signature="e#21#85#0" expanded="false" />
-            <element signature="e#87#191#0" expanded="false" />
-            <element signature="e#193#299#0" expanded="false" />
-            <element signature="e#1840#1881#0" expanded="false" />
-            <element signature="e#2119#2146#0" expanded="false" />
-            <element signature="e#2368#2396#0" expanded="false" />
-            <element signature="e#2461#2476#0" expanded="false" />
-            <element signature="e#2478#2529#0" expanded="false" />
-            <element signature="e#2548#2610#0" expanded="false" />
-            <element signature="e#2613#2667#0" expanded="false" />
-            <element signature="e#2683#2757#0" expanded="false" />
-            <element signature="e#2760#2837#0" expanded="false" />
-            <element signature="e#2861#2909#0" expanded="false" />
-            <element signature="e#2911#2992#0" expanded="false" />
-            <element signature="e#3008#3311#0" expanded="false" />
-            <element signature="e#3314#3386#0" expanded="false" />
-            <element signature="e#3408#3462#0" expanded="false" />
-            <element signature="e#3580#3637#0" expanded="false" />
-            <element signature="e#3659#3841#0" expanded="false" />
-            <element signature="e#3844#3908#0" expanded="false" />
-            <element signature="e#3925#3989#0" expanded="false" />
-            <element signature="e#3992#4058#0" expanded="false" />
-            <element signature="e#4076#4161#0" expanded="false" />
-            <element signature="e#4164#4231#0" expanded="false" />
-            <element signature="e#4253#4304#0" expanded="false" />
-            <element signature="e#4307#4387#0" expanded="false" />
-            <element signature="e#4408#4445#0" expanded="false" />
-            <element signature="e#4448#4516#0" expanded="false" />
-            <element signature="e#4538#4807#0" expanded="false" />
-            <element signature="e#4810#4885#0" expanded="false" />
-            <element signature="e#4908#4933#0" expanded="false" />
-            <element signature="e#4936#5012#0" expanded="false" />
-            <element signature="e#5037#5158#0" expanded="false" />
-            <element signature="e#5175#5188#0" expanded="false" />
-            <element signature="e#7444#7467#0" expanded="false" />
-            <element signature="e#7529#7552#0" expanded="false" />
-            <element signature="e#7554#7641#0" expanded="false" />
-            <element signature="e#7684#7787#0" expanded="false" />
-            <element signature="e#7919#7936#0" expanded="false" />
-            <element signature="e#8581#8738#0" expanded="false" />
-            <element signature="e#8775#8852#0" expanded="false" />
-            <element signature="e#8889#8940#0" expanded="false" />
-            <element signature="e#8973#9031#0" expanded="false" />
-            <element signature="e#9070#9169#0" expanded="false" />
-            <element signature="e#9232#9303#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/builder.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="291">
@@ -1226,92 +1155,91 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/InvoiceSearch/Search.js">
+    <entry file="file://$PROJECT_DIR$/js/Management/Management.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="942">
-          <caret line="378" column="15" lean-forward="false" selection-start-line="378" selection-start-column="15" selection-end-line="378" selection-end-column="15" />
+        <state relative-caret-position="425">
+          <caret line="39" column="0" lean-forward="true" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
           <folding>
-            <element signature="n#!!doc;n#Search#0" expanded="false" />
-            <element signature="e#590#700#0" expanded="false" />
-            <element signature="e#10950#11622#0" expanded="false" />
-            <element signature="e#10998#11590#0" expanded="false" />
-            <element signature="e#11676#12635#0" expanded="false" />
-            <element signature="e#12753#13895#0" expanded="false" />
-            <element signature="e#13949#15374#0" expanded="false" />
-            <element signature="e#16344#17153#0" expanded="false" />
-            <element signature="n#!!doc;n#_waitForSearchFields#0;n#Search#0" expanded="false" />
-            <element signature="n#!!doc;n#_extraUpdated#0;n#Search#0" expanded="false" />
-            <element signature="n#!!block;n#_extraUpdated#0;n#Search#0" expanded="false" />
-            <element signature="n#!!doc;n#_termDestroyed#0;n#Search#0" expanded="false" />
-            <element signature="n#!!doc;n#_loadFromURL#0;n#Search#0" expanded="false" />
-            <element signature="n#!!doc;n#encodeToURL#0;n#Search#0" expanded="false" />
-            <element signature="n#!!doc;n#_decodeFromURL#0;n#Search#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/helpers.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="30" column="9" lean-forward="true" selection-start-line="30" selection-start-column="9" selection-end-line="30" selection-end-column="9" />
-          <folding>
-            <element signature="e#42#148#0" expanded="false" />
-            <element signature="e#150#226#0" expanded="false" />
-            <element signature="n#!!doc;n#ensureValidToken#0" expanded="false" />
-            <element signature="n#!!doc;n#numericInput_keypress#0" expanded="false" />
-            <element signature="e#2112#2476#0" expanded="false" />
-            <element signature="e#2202#2271#0" expanded="false" />
-            <element signature="e#2348#2465#0" expanded="false" />
-            <element signature="e#2393#2455#0" expanded="false" />
-            <element signature="n#!!doc;n#invoice_keydown#0" expanded="false" />
-            <element signature="n#!!block;n#invoice_keydown#0" expanded="false" />
-            <element signature="e#2836#4543#0" expanded="false" />
-            <element signature="e#3005#3334#0" expanded="false" />
-            <element signature="e#3163#3273#0" expanded="false" />
-            <element signature="e#3488#3686#0" expanded="false" />
-            <element signature="e#3787#4108#0" expanded="false" />
-            <element signature="e#3941#4047#0" expanded="false" />
-            <element signature="e#4191#4385#0" expanded="false" />
-            <element signature="e#4496#4537#0" expanded="false" />
-            <element signature="n#!!doc;n#sendToApi#0" expanded="false" />
-            <element signature="e#5350#5418#0" expanded="false" />
-            <element signature="e#5601#5756#0" expanded="false" />
-            <element signature="e#5845#5884#0" expanded="false" />
-            <element signature="n#!!doc;n#prettifyNumber#0" expanded="false" />
-            <element signature="n#!!block;n#prettifyNumber#0" expanded="false" />
-            <element signature="n#!!doc;n#pxToPt#0" expanded="false" />
-            <element signature="n#!!block;n#pxToPt#0" expanded="false" />
-            <element signature="n#!!doc;n#ptToPx#0" expanded="false" />
-            <element signature="n#!!block;n#ptToPx#0" expanded="false" />
-            <element signature="n#!!doc;n#getBindingOptions#0" expanded="false" />
-            <element signature="e#7308#7511#0" expanded="false" />
-            <element signature="e#7354#7422#0" expanded="false" />
-            <element signature="n#!!doc;n#getSearchFields#0" expanded="false" />
-            <element signature="n#!!doc;n#getPermissions#0" expanded="false" />
-            <element signature="n#!!doc;n#makeNumberPretty#0" expanded="false" />
-            <element signature="n#!!block;n#makeNumberPretty#0" expanded="false" />
-            <element signature="e#9297#9337#0" expanded="false" />
-            <element signature="e#9476#9503#0" expanded="false" />
-            <element signature="e#9572#9625#0" expanded="false" />
-            <element signature="n#!!block;n#showFullScreenLoading#0" expanded="false" />
-            <element signature="n#!!block;n#hideFullScreenLoading#0" expanded="false" />
-            <element signature="e#10111#10144#0" expanded="false" />
+            <element signature="n#!!doc;n#Management#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/Contacts/Contacts.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="223">
-          <caret line="700" column="63" lean-forward="false" selection-start-line="700" selection-start-column="48" selection-end-line="700" selection-end-column="63" />
+        <state relative-caret-position="138">
+          <caret line="355" column="14" lean-forward="true" selection-start-line="355" selection-start-column="14" selection-end-line="355" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/Management/Employee.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="220" column="38" lean-forward="false" selection-start-line="220" selection-start-column="38" selection-end-line="220" selection-end-column="38" />
+          <folding>
+            <element signature="n#!!doc;n#EmployeeFields#0" expanded="false" />
+            <element signature="n#EmployeeFields#0" expanded="false" />
+            <element signature="n#!!doc;n#constructor#0;n#Employee#0" expanded="false" />
+            <element signature="e#890#1077#0" expanded="false" />
+            <element signature="e#949#1067#0" expanded="false" />
+            <element signature="e#967#1053#0" expanded="false" />
+            <element signature="e#1498#2058#0" expanded="false" />
+            <element signature="e#1557#2048#0" expanded="false" />
+            <element signature="e#1575#2034#0" expanded="false" />
+            <element signature="e#1662#2016#0" expanded="false" />
+            <element signature="e#2163#2212#0" expanded="false" />
+            <element signature="e#2263#2767#0" expanded="false" />
+            <element signature="e#2790#3728#0" expanded="false" />
+            <element signature="e#3741#3816#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/Invoice/Customer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="332">
+          <caret line="339" column="27" lean-forward="true" selection-start-line="339" selection-start-column="27" selection-end-line="339" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/Invoice/Payments.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="563">
+          <caret line="244" column="42" lean-forward="false" selection-start-line="244" selection-start-column="42" selection-end-line="244" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/FormBuilder/FormBuilder.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="49" column="87" lean-forward="true" selection-start-line="49" selection-start-column="87" selection-end-line="49" selection-end-column="87" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/Invoice/LienHolder.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="145" column="7" lean-forward="true" selection-start-line="145" selection-start-column="7" selection-end-line="145" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/Invoice/Print.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="18" lean-forward="true" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/Invoice/Invoice.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="393">
-          <caret line="95" column="29" lean-forward="true" selection-start-line="40" selection-start-column="28" selection-end-line="95" selection-end-column="29" />
+        <state relative-caret-position="-1375">
+          <caret line="30" column="12" lean-forward="false" selection-start-line="30" selection-start-column="12" selection-end-line="30" selection-end-column="23" />
           <folding>
             <element signature="n#InvoiceFields#0" expanded="false" />
             <element signature="e#687#844#0" expanded="false" />
@@ -1379,20 +1307,20 @@
             <element signature="e#12748#12826#0" expanded="false" />
             <element signature="e#12926#13113#0" expanded="false" />
             <element signature="e#12997#13087#0" expanded="false" />
-            <element signature="e#13723#13810#0" expanded="false" />
-            <element signature="e#13896#14731#0" expanded="false" />
-            <element signature="e#13915#13993#0" expanded="false" />
-            <element signature="e#14100#14717#0" expanded="false" />
-            <element signature="e#14244#14301#0" expanded="false" />
-            <element signature="e#14424#14551#0" expanded="false" />
+            <element signature="e#13722#13809#0" expanded="false" />
+            <element signature="e#13895#14730#0" expanded="false" />
+            <element signature="e#13914#13992#0" expanded="false" />
+            <element signature="e#14099#14716#0" expanded="false" />
+            <element signature="e#14243#14300#0" expanded="false" />
+            <element signature="e#14423#14550#0" expanded="false" />
             <element signature="n#!!doc;n#initialize_json#0;n#Invoice#0" expanded="false" />
             <element signature="n#!!block;n#initialize_json#0;n#Invoice#0" expanded="false" />
-            <element signature="e#14914#15060#0" expanded="false" />
-            <element signature="e#15627#15718#0" expanded="false" />
-            <element signature="e#15768#15861#0" expanded="false" />
-            <element signature="e#16124#16267#0" expanded="false" />
-            <element signature="e#16175#16257#0" expanded="false" />
-            <element signature="e#16287#16588#0" expanded="false" />
+            <element signature="e#14913#15059#0" expanded="false" />
+            <element signature="e#15626#15717#0" expanded="false" />
+            <element signature="e#15767#15860#0" expanded="false" />
+            <element signature="e#16123#16266#0" expanded="false" />
+            <element signature="e#16174#16256#0" expanded="false" />
+            <element signature="e#16286#16587#0" expanded="false" />
             <element signature="n#!!doc;n#reset#0;n#Invoice#0" expanded="false" />
             <element signature="n#!!block;n#reset#0;n#Invoice#0" expanded="false" />
             <element signature="n#!!doc;n#toJSON#0;n#Invoice#0" expanded="false" />
@@ -1401,57 +1329,178 @@
             <element signature="n#!!block;n#_calculateTotal#0;n#Invoice#0" expanded="false" />
             <element signature="n#!!doc;n#_rowDestroyed#0;n#Invoice#0" expanded="false" />
             <element signature="n#!!block;n#_rowDestroyed#0;n#Invoice#0" expanded="false" />
-            <element signature="e#19465#19543#0" expanded="false" />
-            <element signature="e#19626#19710#0" expanded="false" />
+            <element signature="e#19464#19542#0" expanded="false" />
+            <element signature="e#19625#19709#0" expanded="false" />
             <element signature="n#!!doc;n#_existingRowChanged#0;n#Invoice#0" expanded="false" />
             <element signature="n#!!block;n#_existingRowChanged#0;n#Invoice#0" expanded="false" />
-            <element signature="e#20340#20381#0" expanded="false" />
-            <element signature="e#20563#20610#0" expanded="false" />
-            <element signature="e#20707#21214#0" expanded="false" />
-            <element signature="e#20840#21204#0" expanded="false" />
-            <element signature="e#20923#21037#0" expanded="false" />
-            <element signature="e#21131#21190#0" expanded="false" />
-            <element signature="e#21326#21802#0" expanded="false" />
-            <element signature="e#21467#21792#0" expanded="false" />
-            <element signature="e#21536#21674#0" expanded="false" />
-            <element signature="e#21714#21778#0" expanded="false" />
+            <element signature="e#20339#20380#0" expanded="false" />
+            <element signature="e#20562#20609#0" expanded="false" />
+            <element signature="e#20706#21213#0" expanded="false" />
+            <element signature="e#20839#21203#0" expanded="false" />
+            <element signature="e#20922#21036#0" expanded="false" />
+            <element signature="e#21130#21189#0" expanded="false" />
+            <element signature="e#21325#21801#0" expanded="false" />
+            <element signature="e#21466#21791#0" expanded="false" />
+            <element signature="e#21535#21673#0" expanded="false" />
+            <element signature="e#21713#21777#0" expanded="false" />
             <element signature="n#!!doc;n#_lastRowChanged#0;n#Invoice#0" expanded="false" />
-            <element signature="e#22574#22603#0" expanded="false" />
-            <element signature="e#23055#23785#0" expanded="false" />
-            <element signature="e#23470#23499#0" expanded="false" />
+            <element signature="e#22573#22602#0" expanded="false" />
+            <element signature="e#23054#23784#0" expanded="false" />
+            <element signature="e#23469#23498#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/Management/Management.js">
+    <entry file="file://$PROJECT_DIR$/js/Constants.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="39" column="0" lean-forward="true" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
+        <state relative-caret-position="204">
+          <caret line="33" column="6" lean-forward="false" selection-start-line="33" selection-start-column="6" selection-end-line="33" selection-end-column="6" />
           <folding>
-            <element signature="n#!!doc;n#Management#0" expanded="false" />
+            <element signature="n#!!doc" expanded="false" />
+            <element signature="e#21#85#0" expanded="false" />
+            <element signature="e#87#191#0" expanded="false" />
+            <element signature="e#193#299#0" expanded="false" />
+            <element signature="e#1840#1881#0" expanded="false" />
+            <element signature="e#2119#2146#0" expanded="false" />
+            <element signature="e#2368#2396#0" expanded="false" />
+            <element signature="e#2461#2476#0" expanded="false" />
+            <element signature="e#2478#2529#0" expanded="false" />
+            <element signature="e#2548#2610#0" expanded="false" />
+            <element signature="e#2613#2667#0" expanded="false" />
+            <element signature="e#2683#2757#0" expanded="false" />
+            <element signature="e#2760#2837#0" expanded="false" />
+            <element signature="e#2861#2909#0" expanded="false" />
+            <element signature="e#2911#2992#0" expanded="false" />
+            <element signature="e#3008#3311#0" expanded="false" />
+            <element signature="e#3314#3386#0" expanded="false" />
+            <element signature="e#3408#3462#0" expanded="false" />
+            <element signature="e#3580#3637#0" expanded="false" />
+            <element signature="e#3659#3841#0" expanded="false" />
+            <element signature="e#3844#3908#0" expanded="false" />
+            <element signature="e#3925#3989#0" expanded="false" />
+            <element signature="e#3992#4058#0" expanded="false" />
+            <element signature="e#4076#4161#0" expanded="false" />
+            <element signature="e#4164#4231#0" expanded="false" />
+            <element signature="e#4253#4304#0" expanded="false" />
+            <element signature="e#4307#4387#0" expanded="false" />
+            <element signature="e#4408#4445#0" expanded="false" />
+            <element signature="e#4448#4516#0" expanded="false" />
+            <element signature="e#4538#4807#0" expanded="false" />
+            <element signature="e#4810#4885#0" expanded="false" />
+            <element signature="e#4908#4933#0" expanded="false" />
+            <element signature="e#4936#5012#0" expanded="false" />
+            <element signature="e#5037#5158#0" expanded="false" />
+            <element signature="e#7491#7514#0" expanded="false" />
+            <element signature="e#7576#7599#0" expanded="false" />
+            <element signature="e#7601#7688#0" expanded="false" />
+            <element signature="e#7731#7834#0" expanded="false" />
+            <element signature="e#7966#7983#0" expanded="false" />
+            <element signature="e#8628#8785#0" expanded="false" />
+            <element signature="e#8822#8899#0" expanded="false" />
+            <element signature="e#8936#8987#0" expanded="false" />
+            <element signature="e#9020#9078#0" expanded="false" />
+            <element signature="e#9117#9216#0" expanded="false" />
+            <element signature="e#9279#9350#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/Management/Employee.js">
+    <entry file="file://$PROJECT_DIR$/js/helpers.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="220" column="38" lean-forward="false" selection-start-line="220" selection-start-column="38" selection-end-line="220" selection-end-column="38" />
+        <state relative-caret-position="213">
+          <caret line="149" column="9" lean-forward="false" selection-start-line="149" selection-start-column="9" selection-end-line="149" selection-end-column="9" />
           <folding>
-            <element signature="n#!!doc;n#EmployeeFields#0" expanded="false" />
-            <element signature="n#EmployeeFields#0" expanded="false" />
-            <element signature="n#!!doc;n#constructor#0;n#Employee#0" expanded="false" />
-            <element signature="e#890#1077#0" expanded="false" />
-            <element signature="e#949#1067#0" expanded="false" />
-            <element signature="e#967#1053#0" expanded="false" />
-            <element signature="e#1498#2058#0" expanded="false" />
-            <element signature="e#1557#2048#0" expanded="false" />
-            <element signature="e#1575#2034#0" expanded="false" />
-            <element signature="e#1662#2016#0" expanded="false" />
-            <element signature="e#2163#2212#0" expanded="false" />
-            <element signature="e#2263#2767#0" expanded="false" />
-            <element signature="e#2790#3728#0" expanded="false" />
-            <element signature="e#3741#3816#0" expanded="false" />
+            <element signature="e#42#148#0" expanded="false" />
+            <element signature="e#150#226#0" expanded="false" />
+            <element signature="n#!!doc;n#ensureValidToken#0" expanded="false" />
+            <element signature="n#!!block;n#ensureValidToken#0" expanded="false" />
+            <element signature="e#537#856#0" expanded="false" />
+            <element signature="e#747#850#0" expanded="false" />
+            <element signature="e#1035#1560#0" expanded="false" />
+            <element signature="e#1093#1554#0" expanded="false" />
+            <element signature="e#1135#1472#0" expanded="false" />
+            <element signature="e#1490#1544#0" expanded="false" />
+            <element signature="n#!!doc;n#numericInput_keypress#0" expanded="false" />
+            <element signature="n#!!block;n#numericInput_keypress#0" expanded="false" />
+            <element signature="e#1923#1974#0" expanded="false" />
+            <element signature="e#2112#2476#0" expanded="false" />
+            <element signature="e#2202#2271#0" expanded="false" />
+            <element signature="e#2348#2465#0" expanded="false" />
+            <element signature="e#2393#2455#0" expanded="false" />
+            <element signature="n#!!doc;n#invoice_keydown#0" expanded="false" />
+            <element signature="n#!!block;n#invoice_keydown#0" expanded="false" />
+            <element signature="e#2836#4543#0" expanded="false" />
+            <element signature="e#3005#3334#0" expanded="false" />
+            <element signature="e#3163#3273#0" expanded="false" />
+            <element signature="e#3488#3686#0" expanded="false" />
+            <element signature="e#3787#4108#0" expanded="false" />
+            <element signature="e#3941#4047#0" expanded="false" />
+            <element signature="e#4191#4385#0" expanded="false" />
+            <element signature="e#4496#4537#0" expanded="false" />
+            <element signature="n#!!doc;n#sendToApi#0" expanded="false" />
+            <element signature="e#5168#5226#0" expanded="false" />
+            <element signature="e#5350#5418#0" expanded="false" />
+            <element signature="e#5601#5756#0" expanded="false" />
+            <element signature="e#5774#5821#0" expanded="false" />
+            <element signature="e#5845#5884#0" expanded="false" />
+            <element signature="n#!!doc;n#prettifyNumber#0" expanded="false" />
+            <element signature="n#!!block;n#prettifyNumber#0" expanded="false" />
+            <element signature="n#!!doc;n#pxToPt#0" expanded="false" />
+            <element signature="n#!!block;n#pxToPt#0" expanded="false" />
+            <element signature="n#!!doc;n#ptToPx#0" expanded="false" />
+            <element signature="n#!!block;n#ptToPx#0" expanded="false" />
+            <element signature="n#!!doc;n#getBindingOptions#0" expanded="false" />
+            <element signature="n#!!block;n#getBindingOptions#0" expanded="false" />
+            <element signature="e#7069#7529#0" expanded="false" />
+            <element signature="e#7193#7521#0" expanded="false" />
+            <element signature="e#7308#7511#0" expanded="false" />
+            <element signature="e#7354#7422#0" expanded="false" />
+            <element signature="n#!!doc;n#getSearchFields#0" expanded="false" />
+            <element signature="n#!!block;n#getSearchFields#0" expanded="false" />
+            <element signature="e#7798#8258#0" expanded="false" />
+            <element signature="e#7935#8250#0" expanded="false" />
+            <element signature="e#8050#8240#0" expanded="false" />
+            <element signature="e#8096#8164#0" expanded="false" />
+            <element signature="n#!!doc;n#getPermissions#0" expanded="false" />
+            <element signature="n#!!block;n#getPermissions#0" expanded="false" />
+            <element signature="e#8518#8976#0" expanded="false" />
+            <element signature="e#8654#8968#0" expanded="false" />
+            <element signature="e#8769#8958#0" expanded="false" />
+            <element signature="e#8815#8883#0" expanded="false" />
+            <element signature="n#!!doc;n#makeNumberPretty#0" expanded="false" />
+            <element signature="n#!!block;n#makeNumberPretty#0" expanded="false" />
+            <element signature="e#9297#9337#0" expanded="false" />
+            <element signature="e#9476#9503#0" expanded="false" />
+            <element signature="e#9572#9625#0" expanded="false" />
+            <element signature="n#!!doc;n#showFullScreenLoading#0" expanded="false" />
+            <element signature="n#!!block;n#showFullScreenLoading#0" expanded="false" />
+            <element signature="n#!!doc;n#hideFullScreenLoading#0" expanded="false" />
+            <element signature="n#!!block;n#hideFullScreenLoading#0" expanded="false" />
+            <element signature="e#10187#10220#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/InvoiceSearch/Search.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="241">
+          <caret line="42" column="15" lean-forward="true" selection-start-line="42" selection-start-column="15" selection-end-line="42" selection-end-column="15" />
+          <folding>
+            <element signature="n#!!doc;n#Search#0" expanded="false" />
+            <element signature="e#590#700#0" expanded="false" />
+            <element signature="e#11221#11893#0" expanded="false" />
+            <element signature="e#11269#11861#0" expanded="false" />
+            <element signature="e#11947#12906#0" expanded="false" />
+            <element signature="e#13024#14166#0" expanded="false" />
+            <element signature="e#14220#15645#0" expanded="false" />
+            <element signature="e#16615#17424#0" expanded="false" />
+            <element signature="n#!!doc;n#_waitForSearchFields#0;n#Search#0" expanded="false" />
+            <element signature="n#!!doc;n#_extraUpdated#0;n#Search#0" expanded="false" />
+            <element signature="n#!!block;n#_extraUpdated#0;n#Search#0" expanded="false" />
+            <element signature="n#!!doc;n#_termDestroyed#0;n#Search#0" expanded="false" />
+            <element signature="n#!!doc;n#_loadFromURL#0;n#Search#0" expanded="false" />
+            <element signature="n#!!doc;n#encodeToURL#0;n#Search#0" expanded="false" />
+            <element signature="n#!!doc;n#_decodeFromURL#0;n#Search#0" expanded="false" />
           </folding>
         </state>
       </provider>

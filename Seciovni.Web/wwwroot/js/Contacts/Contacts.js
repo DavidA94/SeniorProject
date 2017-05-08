@@ -255,7 +255,7 @@ class Contacts {
             this._htmlTranslators[attribute] = Contacts._makeHtmlTranslator(attribute, element);
         }
 
-        this._loadContacts();
+        this._loadContacts(null);
         this._initializeMenu();
 
         document.getElementById(CONTACTS_MENU_ID).addEventListener('click', this._boundContactMenuClick);

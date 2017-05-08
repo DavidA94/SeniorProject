@@ -137,8 +137,7 @@ class LienHolder {
     show(e){
         e.preventDefault();
         document.getElementById(INVOICE_LIEN_CLOSE_ID).focus();
-
-        this._dialog.showModal();
+        showModalDialog(this._dialog, this._hideBound);
     }
 
     /**
@@ -147,7 +146,7 @@ class LienHolder {
      */
     hide(e){
         e.preventDefault();
-        this._dialog.close();
+        hideModalDialog(this._dialog, this._hideBound);
 
         this._updatePreviewField();
     }

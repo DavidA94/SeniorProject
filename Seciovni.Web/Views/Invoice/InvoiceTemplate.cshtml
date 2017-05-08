@@ -51,7 +51,7 @@
             <input id="invoiceCustomer" disabled="disabled" />
             <button id="openCustomerButton">•••</button>
         </div>
-        <dialog id="invoiceCustomerData" class="invoiceDialog">
+        <div id="invoiceCustomerData" class="invoiceDialog dialog">
             <div id="contactsListOuter">
                 <h1 id="contactsListHeader">Contacts</h1>
                 <div id="contactSearch">
@@ -104,7 +104,7 @@
             <div class="saveButton">
                 <button id="hideCustomerButton">Save Customer</button>
             </div>
-        </dialog>
+        </div>
     </div>
     <div id="invoiceLienHolderDiv" class="row">
         <div>
@@ -112,7 +112,7 @@
             <input id="invoiceLienHolder" disabled="disabled" />
             <button id="openLienButton">•••</button>
         </div>
-        <dialog id="invoiceLienHolderData" class="invoiceDialog">
+        <dialog id="invoiceLienHolderData" class="invoiceDialog dialog">
             <h1>Lien Holder</h1>
             <div class="row">
                 <input class="fullWidth" data-bind="name" type="text" autocomplete="organization" placeholder-title="LienHolder.Name" />
@@ -174,7 +174,7 @@
     </div>
 
     <!-- Need this here so #endData doesn't mess with stuff -->
-    <dialog id="paymentsData">
+    <div class="dialog" id="paymentsData">
         <div class="dataTable">
             <div>
                 <div class="dataRow">
@@ -197,7 +197,7 @@
         <div class="saveButton">
             <button id="closePaymentsButton">Save Payments</button>
         </div>
-    </dialog>
+    </div>
 
     <div id="endData">
         <div>
@@ -221,7 +221,7 @@
             <div id="invoiceTotalDue">$ 0.00</div>
         </div>
     </div>
-    <dialog id="printDialog" class="invoiceDialog">
+    <div id="printDialog" class="invoiceDialog dialog">
         <h1>Select Pages to Print</h1>
         <div id="pageOptions">
 
@@ -230,7 +230,7 @@
             <button id="printInvoiceButton">Print Invoice</button>
             <button id="cancelPrint">Cancel</button>
         </div>
-    </dialog>
+    </div>
 </form>
 
 <script type="text/javascript" src="~/js/Events/EventTypes/EventArgs.js"></script>
@@ -241,6 +241,7 @@
 <script type="text/javascript" src="~/js/Events/EventTypes/MouseEvent.js"></script>
 <script type="text/javascript" src="~/js/Events/EventTypes/KeyboardEvent.js"></script>
 
+<script type="text/javascript" src="~/js/builder.js"></script>
 <script type="text/javascript" src="~/js/prototypes.js"></script>
 <script type="text/javascript" src="~/js/search.js"></script>
 <script type="text/javascript" src="~/js/Constants.js"></script>

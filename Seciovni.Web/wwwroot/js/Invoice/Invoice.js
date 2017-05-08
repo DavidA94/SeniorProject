@@ -353,7 +353,7 @@ class Invoice {
             })
         }
 
-        sendToApi("/Invoice/GetSalesPeople", "GET", null, (xmlhttp) => {
+        sendToApi("Invoice/GetSalesPeople", "GET", null, (xmlhttp) => {
             if(!xmlhttp){
                 location.assign(location.href);
                 return;

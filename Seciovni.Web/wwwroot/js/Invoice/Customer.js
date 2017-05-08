@@ -247,9 +247,7 @@ class Customer {
      */
     hide(e){
         e.preventDefault();
-        this._dialog.close();
-        // document.removeEventListener('keyup', this._keyPressedBound);
-
+        hideModalDialog(this._dialog, this._hideBound);
         this._updatePreviewField();
     }
 
@@ -318,7 +316,7 @@ class Customer {
      * Shows the dialog
      * @param e
      */
-    show(e){
+    show(e) {
         e.preventDefault();
 
         // Do the right things on keypress
@@ -327,11 +325,11 @@ class Customer {
         // document.addEventListener('keyup', this._keyPressedBound);
 
         // Get the contacts if we haven't already
-        if(this._loadedContacts.length === 0) {
+        if (this._loadedContacts.length === 0) {
             this._getContactPreviews();
         }
 
-        this._dialog.showModal();
+        showModalDialog(this._dialog, this._hideBound);
     }
 
     /**
@@ -357,6 +355,7 @@ class Customer {
         }
 
         this._showingContacts = !this._showingContacts;
+        positionModalDialog(this._dialog);
     }
 
     /**
@@ -535,6 +534,8 @@ class Customer {
             listNode.appendChild(cp.parentElement.htmlObj);
             this._loadedContacts.push(cp);
         }
+
+        positionModalDialog(this._dialog);
     }
 
     /**

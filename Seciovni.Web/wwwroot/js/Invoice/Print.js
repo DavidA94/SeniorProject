@@ -8,16 +8,14 @@ class Print {
         this._parent = parent;
 
         this._boundShow = this._show.bind(this);
+        this._boundHide = this._hide.bind(this);
         this._boundPrint = this._print.bind(this);
 
         const printButton = document.getElementById("printButton");
         if(printButton) {
             printButton.addEventListener('click', this._boundShow);
             document.getElementById("printInvoiceButton").addEventListener("click", this._boundPrint);
-            document.getElementById("cancelPrint").addEventListener("click", (e) => {
-                e.preventDefault();
-                this._dialog.close()
-            });
+            document.getElementById("cancelPrint").addEventListener("click", this._boundHide);
         }
     }
 
@@ -45,7 +43,12 @@ class Print {
             }
         });
 
-        this._dialog.showModal();
+        showModalDialog(this._dialog, this._boundHide);
+    }
+
+    _hide(e){
+        e.preventDefault();
+        hideModalDialog(this._dialog, this._boundHide);
     }
 
     _print(e){
@@ -61,7 +64,7 @@ class Print {
         sendToApi("Invoice/Print/" + this._parent._invoiceID, "POST", JSON.stringify(checkedNames), (xmlhttp) =>{
             if(!xmlhttp){
                 alert("Failed to contact the server");
-                this._dialog.close();
+                hideModalDialog(this._dialog, this._boundHide);
                 return;
             }
 
@@ -98,7 +101,7 @@ class Print {
                     alert("Error Printing");
                 }
 
-                this._dialog.close();
+                hideModalDialog(this._dialog, this._boundHide);
             }
         });
     }
@@ -121,7 +124,7 @@ class Print {
 
         if(options.length === 0){
             alert("No Forms Available");
-            this._dialog.close();
+            hideModalDialog(this._dialog, this._boundHide);
         }
 
         for(const option of options){

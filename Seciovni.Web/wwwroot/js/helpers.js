@@ -325,6 +325,9 @@ function makeNumberPretty(number, prefix, fixedPlaces) {
     return pretty;
 }
 
+/**
+ * Shows a full screen loader
+ */
 function showFullScreenLoading(){
     hideFullScreenLoading();
 
@@ -333,9 +336,51 @@ function showFullScreenLoading(){
     document.body.appendChild(element);
 }
 
+/**
+ * Hides a full screen loader
+ */
 function hideFullScreenLoading(){
     const element = document.getElementById("fullScreenLoading");
     if(element){
         element.remove();
     }
+}
+
+/**
+ * Shows the given DIV as a modal dialog
+ * @param div - The DIV that is the dialog
+ * @param hideCallback - The method to call if outside the dialog is clicked
+ */
+function showModalDialog(div, hideCallback){
+    div.style.visibility = "hidden";
+    div.style.display = "block";
+
+    positionModalDialog(div);
+    div.style.visibility = "visible";
+
+    const background = makeHtmlElem({tag:"div", id: DIALOG_BACKGROUND});
+    if(hideCallback) background.addEventListener('click', hideCallback);
+    document.body.appendChild(background)
+}
+
+/**
+ * Hides a dialog that was shown with showModalDialog
+ * @param div - The DIV that is the dialog
+ * @param hideCallback - The method that was passsed to showModalDialog
+ */
+function hideModalDialog(div, hideCallback){
+    div.style.display = "none";
+
+    const background = document.getElementById(DIALOG_BACKGROUND);
+    if(hideCallback) background.removeEventListener('click', hideCallback);
+    background.remove();
+}
+
+/**
+ * Positions the given dialog vertically
+ * @param div - The DIV that is the dialog
+ */
+function positionModalDialog(div){
+    const size = div.getBoundingClientRect();
+    div.style.top = ((window.innerHeight - size.height) / 2) + "px";
 }

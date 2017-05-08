@@ -1,6 +1,13 @@
-﻿body {
+﻿* {box-sizing:border-box;}
+
+body {
+    margin:0;
     padding-top: 50px;
-    padding-bottom: 20px;
+    font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size:14px;
+    line-height:1.5;
+    color:#333;
+    box-sizing:border-box;
 }
 
 /* Wrapping element */
@@ -10,10 +17,25 @@
     padding-right: 15px;
 }
 
-footer {clear:both;}
+a {text-decoration:none;color:#337ab7;}
+a:hover {text-decoration:underline;color:#23527c;}
+img{vertical-align:middle;}
 
+fieldset{margin:1em 0 0;padding:0;border:0;}
+fieldset legend {display:block;width:100%;border-bottom:1px solid #e5e5e5;}
+
+th {text-align:left;}
+
+p{margin:0 0 1em;}
+
+label {font-weight:bold;margin-bottom:5px;display:inline-block;}
+
+input, button, select {line-height:inherit;font-size:inherit;font-family:inherit;font-weight:inherit;color:inherit;}
+
+h1, h2, h3 {font-weight:500;line-height:1.1;color:inherit;}
 h1 {font-size:1.8em;margin:.4em 0;}
 h2 {font-size:1.6em;margin:.3em 0;}
+h3 {font-size:1.5em;margin:.2em 0;}
 
 select[disabled]{background:#ebebe4;}
 input, select {height:20px;line-height:20px;box-sizing:content-box;border:1px solid #a9a9a9;padding:2px 1px;}
@@ -39,6 +61,12 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #dashboard .dashboardButton img#editShift {margin-left:35px;}
 #dashboard .dashboardButton img#viewShift {margin-top:25px}
 
+
+.dialog {position:fixed;left:0;right:0;margin:auto;z-index:999;background:white;display:none;max-height:90vh;overflow:auto;padding:15px 15px 55px;border:3px solid black;}
+.dialog div.saveButton {position:absolute;bottom:0;right:0;left:0;margin:0;padding:7px 15px;background:#f0f0f0;border-top:1px solid #bbb;overflow:hidden;height:45px;}
+.dialog div.saveButton button {float:right;margin-left:10px;}
+
+#dialogBackground {position:fixed;top:0;right:0;bottom:0;left:0;background-color:rgba(0,0,0,0.2);z-index:100;}
 .invoiceDialog input {box-sizing:border-box;height:auto;}
 .invoiceDialog > div {margin:0 0 10px;}
 .invoiceDialog  h1 {font-size:1.3em;margin:0 0 .2em}
@@ -91,8 +119,10 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 .stackedLabel {margin-right:1em;}
 .stackedLabel label {display:block;font-size:11px;margin:0;}
 
-.row {display:block;margin:5px 0 0;}
+.row {display:block;margin:5px 0 0;overflow:hidden;}
 .cell {float:left;}
+
+#paymentsData {width:637px;}
 
 .contactPreviewItem {border-left:2px solid #ccc;margin:.5em 0;padding:0 .5em}
 .contactPreviewItem:hover {border-left:2px solid #059;cursor:pointer;}
@@ -234,8 +264,9 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #noContacts {margin:1em 10px;font-weight:bold;}
 
 #searchForm {float:left;}
+
 #searchForm .row .cell  {margin-right:1em;}
-#searchForm .row .cell .deleteButton {margin-top:3px;cursor:pointer;}
+#searchForm .row .cell.deleteButton {margin-top:3px;cursor:pointer;}
 #searchForm .row:last-child .deleteButton {display:none;}
 #searchForm .invoiceStateSelect option:not([data-invState]) {display:none;}
 #searchForm .row .throughDash {line-height:24px;width:25px;text-align:center;font-weight:bold;margin:0 0 0 -1em;}
@@ -252,8 +283,8 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
                     background-color:rgba(0,0,0,0.2);}
 
 #resultsHeader {clear:both;padding-top:1em;margin-left:20px;}
-#results .expander {width:20px;height:1em;float:left;position:relative;line-height:.75em;text-align:center;font-weight:bold;font-size:1.3em;
-                    cursor:pointer;}
+#results .expander {width:20px;height:1em;float:left;position:relative;line-height:.75em;text-align:center;font-weight:bold;font-size:1.3em;}
+#results .expander.show {cursor:pointer;}
 #results .expander.show::after {position:absolute;left:0;right:0;content:'+';}
 
 #searchHeader {clear:both;}
@@ -271,9 +302,7 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 .result#openedResult .expander::after {position:absolute;left:0;right:0;content:'-';}
 .result .extraData .searchTableHeader {font-size:1em;font-weight:bold;margin-left:0.5em;}
 .result .extraData .resultRowData {overflow:hidden;margin-left:1.5em;}
-.result .extraData .resultRowData div {float:left;padding:3px 6px;/*border:solid black;border-width:1px 1px 0 0;*/}
-/*.result .resultRowData:last-child div {border-bottom-width:1px;}
-.result .resultRowData div:first-child {border-left-width:1px;}*/
+.result .extraData .resultRowData div {float:left;padding:3px 6px;}
 .result .searchTableHeader + .resultRowData div {padding:0px 6px;font-size:.9em;font-weight:bold;text-decoration:underline;}
 
 #employeeTable th {vertical-align:bottom;}
@@ -283,3 +312,12 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #employeeTable .tiltedHeader div {width:30px;transform:rotate(-45deg) translate(12px, 0px)}
 #employeeTable .permissionCheck {text-align:center;}
 #employeeTable .wide {width:300px;}
+
+#navbar {position:fixed;top:0;left:0;right:0;background:#222;border-bottom:1px solid #080808;z-index:99;height:50px;line-height:50px;padding:0 1em;}
+#navbar #brand {margin-right:1em;font-size:18px;float:left;}
+#navbar a {display:block;height:50px;color:#9d9d9d;}
+#navbar ul {margin:0;padding:0;list-style:none;}
+#navbar ul li {float:left;padding:0 1em;}
+#navbar ul#navRight li {float:right;}
+
+.content{margin:0 auto;width:1150px;}

@@ -44,7 +44,10 @@ class FormBuilder{
         this._initializeShapes();
         this._initializeZoom();
 
-        this.boundImagePicker = this._canvas_imagePicker.bind(this);
+        this._boundImagePicker = this._canvas_imagePicker.bind(this);
+        this._pickerDialog = document.getElementById("imagePicker");
+        this._pickerDialog.getElementsByTagName("button")[0].onclick = this._hidePicker;
+        this._hidePicker = () => hideModalDialog(this._pickerDialog, this._hidePicker);
 
         this._title = new TextInput(document.getElementById(WYSIWYG_TITLE_ID));
 
@@ -379,9 +382,7 @@ class FormBuilder{
                     parent.appendChild(img);
                 }
 
-                const picker = document.getElementById("imagePicker");
-                picker.getElementsByTagName("button")[0].onclick = () => picker.close();
-                picker.showModal();
+                showModalDialog(this._pickerDialog, this._hidePicker);
             }
         });
     }
@@ -581,7 +582,7 @@ class FormBuilder{
                     propElement = document.createElement("button");
                     propElement.id = key;
                     propElement.innerHTML = "Choose File";
-                    propElement.addEventListener('click', this.boundImagePicker);
+                    propElement.addEventListener('click', this._boundImagePicker);
                     parentOfElem.appendChild(propElement);
                     break;
             }

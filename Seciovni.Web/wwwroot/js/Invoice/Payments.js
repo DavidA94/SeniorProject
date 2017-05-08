@@ -141,7 +141,8 @@ class Payments extends Subscribable {
     show(e){
         e.preventDefault();
         document.getElementById(INVOICE_PAYMENTS_CLOSE_ID).focus();
-        this._dialog.showModal();
+
+        showModalDialog(this._dialog, this._hideBound);
     }
 
     reset(){
@@ -157,7 +158,7 @@ class Payments extends Subscribable {
      */
     hide(e){
         e.preventDefault();
-        this._dialog.close();
+        hideModalDialog(this._dialog, this._hideBound);
 
         this._totalPaymentsOuter.innerHTML = this._getPrettyTotal();
         this.__dispatchEvent(EVENT_DATA_SAVED, new DataSavedEventArgs(this));
@@ -240,6 +241,8 @@ class Payments extends Subscribable {
 
         // Append the new row to the container
         this._paymentContainer.appendChild(newRow);
+
+        positionModalDialog(this._dialog);
     }
 
     /**

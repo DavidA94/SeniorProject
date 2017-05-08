@@ -256,6 +256,8 @@ const CONTACTS_SELECTED_ORDER_ID = "selected";
 
 const CONTEXT_MENU_ID = "contextMenu";
 
+const DIALOG_BACKGROUND = "dialogBackground";
+
 const INVOICE_CHOSEN_CONTACT_ID = "chosenContact";
 const INVOICE_CONTACTS_LIST_HEADER_ID = "contactsListHeader";
 const INVOICE_CONTACTS_LIST_ID = "contactsList";
