@@ -145,7 +145,7 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 .button img {position:relative;top:-1px;width:20px;}
 .button:hover {text-decoration:none;}
 
-#appHeader.builderPageHeader {position:fixed;right:0;left:0;border-bottom:2px solid black;z-index:7;margin:10px 0;padding-bottom:5px;}
+#appHeader.builderPageHeader {border-bottom:2px solid black;margin:10px 0;padding-bottom:5px;min-width:600px;}
 
 .invoiceTopLeft{float:left;width:125px;}
 
@@ -177,7 +177,7 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #builderMain{position:fixed;top:150px;right:300px;bottom:50px;left:0;overflow:auto;}
 
 #builderTitleLabel {font-size:24px;}
-#builderTitle {font-size:24px;font-weight:bold;width:calc(100vw - 420px);border-width:0 0 1px 0;
+#builderTitle {font-size:24px;font-weight:bold;width:calc(100vw - 420px);min-width:200px;border-width:0 0 1px 0;
                margin-left:5px;padding-left:5px;}
 
 #canvasHolder {position:relative;box-sizing:border-box;
@@ -320,4 +320,7 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #navbar ul li {float:left;padding:0 1em;}
 #navbar ul#navRight li {float:right;}
 
-.content{margin:0 auto;width:1150px;}
+.content{margin:0 auto;max-width:1150px;min-width:600px;padding:0 15px;}
+
+#invoiceForm {min-width:905px;}
+#contactsPage {min-width:910px;}

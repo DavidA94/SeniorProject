@@ -4,134 +4,137 @@
     ViewData["title"] = "Contacts";
 }
 
-<div id="appHeader">
-    <div id="leftHeader">
-        <h1>Contacts</h1>
+<div id="contactsPage">
+    <div id="appHeader">
+        <div id="leftHeader">
+            <h1>Contacts</h1>
+        </div>
+        <div id="rightHeader">
+            <button id="newButton"><img src="~/images/add.svg" /> New</button>
+            <button id="saveButton"><img src="~/images/save.png" /> Save</button>
+            <button id="editButton"><img src="~/images/edit.png" /> Edit</button>
+            <button id="deleteButton"><img src="~/images/cancel.png" /> Delete</button>
+        </div>
     </div>
-    <div id="rightHeader">
-        <button id="newButton"><img src="~/images/add.svg" /> New</button>
-        <button id="saveButton"><img src="~/images/save.png" /> Save</button>
-        <button id="editButton"><img src="~/images/edit.png" /> Edit</button>
-        <button id="deleteButton"><img src="~/images/cancel.png" /> Delete</button>
-    </div>
-</div>
-<div id="fullContactsList">
-    <div id="contactMenu">
-        <svg version="1.1" id="vMenu" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-             width="20px" height="20px" viewBox="0 0 20 20" style="enable-background:new 0 0 20 20;" xml:space="preserve">
+    <div id="fullContactsList">
+        <div id="contactMenu">
+            <svg version="1.1" id="vMenu" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                 width="20px" height="20px" viewBox="0 0 20 20" style="enable-background:new 0 0 20 20;" xml:space="preserve">
             <g>
-                <path fill="#4F4F4F" d="M10.001,5.352c-1.475,0-2.667-1.197-2.667-2.676C7.334,1.198,8.526,0,10.001,0
+            <path fill="#4F4F4F" d="M10.001,5.352c-1.475,0-2.667-1.197-2.667-2.676C7.334,1.198,8.526,0,10.001,0
 			        c1.471,0,2.665,1.197,2.665,2.676C12.665,4.153,11.472,5.352,10.001,5.352z" />
-                <path fill="#4F4F4F" d="M10.001,12.676c-1.475,0-2.667-1.197-2.667-2.676c0-1.478,1.192-2.676,2.667-2.676
+            <path fill="#4F4F4F" d="M10.001,12.676c-1.475,0-2.667-1.197-2.667-2.676c0-1.478,1.192-2.676,2.667-2.676
 			        c1.471,0,2.665,1.198,2.666,2.676C12.665,11.479,11.471,12.676,10.001,12.676z" />
-                <path fill="#4F4F4F" d="M10.001,20c-1.475,0-2.667-1.197-2.667-2.676s1.192-2.676,2.667-2.676
+            <path fill="#4F4F4F" d="M10.001,20c-1.475,0-2.667-1.197-2.667-2.676s1.192-2.676,2.667-2.676
 			        c1.471-0.001,2.665,1.197,2.665,2.676S11.471,20,10.001,20z" />
 	        </g>
         </svg>
-        <ul id="contextMenu"></ul>
-    </div>
-    <div id="contactSearchBar">
-        <input id="contactSearchInput" type="text" placeholder="Search" />
-        <div id="contactSearchButton">
-            <svg version="1.1" id="magnifyingGlass" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
-                 y="0px" width="16px" height="16px" viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
+            <ul id="contextMenu"></ul>
+        </div>
+        <div id="contactSearchBar">
+            <input id="contactSearchInput" type="text" placeholder="Search" />
+            <div id="contactSearchButton">
+                <svg version="1.1" id="magnifyingGlass" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+                     y="0px" width="16px" height="16px" viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
                 <path style="fill:#4F4F4F;" d="M15.7,12.6L12,9.2c0.4-0.9,0.7-1.8,0.7-2.8C12.6,2.8,9.8,0,6.3,0C2.8,0,0,2.8,0,6.3
 	                c0,3.5,2.8,6.3,6.3,6.3c1,0,2-0.2,2.8-0.7l3.5,3.8c0.3,0.4,0.9,0.4,1.3,0l1.9-1.9C16.1,13.5,16.1,13,15.7,12.6z M6.3,10.2
 	                c-2.1,0-3.9-1.7-3.9-3.9s1.7-3.9,3.9-3.9c2.1,0,3.9,1.7,3.9,3.9S8.4,10.2,6.3,10.2z" />
             </svg>
+            </div>
+        </div>
+        <div id="contactsList">
+            <div class="contactPreviewItem">
+                <p><span>Lance</span> <span>Glover</span></p>
+                <p>1-234-567-8900</p>
+                <p><span>LanceMGillespie@jourrapide.com</span></p>
+            </div>
         </div>
     </div>
-    <div id="contactsList">
-        <div class="contactPreviewItem">
-            <p><span>Lance</span> <span>Glover</span></p>
-            <p>1-234-567-8900</p>
-            <p><span>LanceMGillespie@jourrapide.com</span></p>
+    <div id="contactView">
+        <form action="#" method="post" id="contactViewForm">
+            <fieldset id="cvEdit">
+                <h2>Personal</h2>
+                <div class="row">
+                    <div class="cell subLabel halfWidth">
+                        <label for="firstName" label-content="Buyer.User.FirstName"></label>
+                        <input type="text" data-bind="firstName" id="firstName" />
+                    </div>
+                    <div class="cell subLabel halfWidth">
+                        <label for="lastName" label-content="Buyer.User.LastName"></label>
+                        <input type="text" data-bind="lastName" id="lastName" />
+                    </div>
+                </div>
+
+                <div class="row subLabel fullWidth">
+                    <label for="streetAddr" label-content="Buyer.Address.StreetAddress"></label>
+                    <input id="streetAddr" data-bind="streetAddress" type="text" autocomplete="street-address" />
+                </div>
+                <div class="row">
+                    <div class="cell subLabel">
+                        <label for="city" label-content="Buyer.Address.City"></label>
+                        <input id="city" data-bind="city" type="text" autocomplete="address-level2" />
+                    </div>
+                    <div class="cell subLabel">
+                        <label for="state" label-content="Buyer.Address.State"></label>
+                        <input id="state" data-bind="state" type="text" autocomplete="address-level1" />
+                    </div>
+                    <div class="cell subLabel">
+                        <label for="zip" label-content="Buyer.Address.ZipCode"></label>
+                        <input id="zip" data-bind="zipCode" type="text" autocomplete="postal-code" maxlength="5" />
+                    </div>
+                </div>
+
+
+                <h2>Contact</h2>
+                <div class="row subLabel fullWidth">
+                    <label for="email" label-content="Buyer.User.Email"></label>
+                    <input id="email" type="email" data-bind="email" autocomplete="email" />
+                </div>
+                <div class="row subLabel fullWidth">
+                    <label for="pPhone" label-content="Buyer.PrimaryPhone"></label>
+                    <input id="pPhone" type="tel" data-bind="primaryPhone" autocomplete="tel" />
+                </div>
+                <div class="row subLabel fullWidth">
+                    <label for="cPhone" label-content="Buyer.CellPhone"></label>
+                    <input id="cPhone" type="tel" data-bind="cellPhone" autocomplete="cell tel" />
+                </div>
+                <div class="row subLabel fullWidth">
+                    <label for="hPhone" label-content="Buyer.HomePhone"></label>
+                    <input id="hPhone" type="tel" data-bind="homePhone" autocomplete="home tel" />
+                </div>
+                <div class="row subLabel fullWidth">
+                    <label for="wPhone" label-content="Buyer.WorkPhone"></label>
+                    <input id="wPhone" type="tel" data-bind="workPhone" autocomplete="work tel" />
+                </div>
+
+                <h2>Business Information</h2>
+                <div class="row subLabel fullWidth">
+                    <label for="companyName" label-content="Buyer.CompanyName"></label>
+                    <input id="companyName" data-bind="companyName" type="text" autocomplete="organization" />
+                </div>
+                <div class="row subLabel fullWidth">
+                    <label for="licenseNum">Dealer License Num:</label>
+                    <input id="licenseNum" data-bind="dealerLicenseNumber" type="text" />
+                </div>
+                <div class="row subLabel fullWidth">
+                    <label for="mcNum" label-content="Buyer.MCNumber"></label>
+                    <input id="mcNum" data-bind="mcNumber" type="text" />
+                </div>
+                <div class="row subLabel fullWidth">
+                    <label for="resaleNum" label-content="Buyer.ResaleNumber"></label>
+                    <input id="resaleNum" data-bind="resaleNumber" type="text" />
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div id="contactInvoices">
+        <div id="invoiceList">
+            <div class="header"><h2>Invoices</h2></div>
+            <div><i>No Invoices</i></div>
         </div>
     </div>
 </div>
-<div id="contactView">
-    <form action="#" method="post" id="contactViewForm">
-        <fieldset id="cvEdit">
-            <h2>Personal</h2>
-            <div class="row">
-                <div class="cell subLabel halfWidth">
-                    <label for="firstName" label-content="Buyer.User.FirstName"></label>
-                    <input type="text" data-bind="firstName" id="firstName" />
-                </div>
-                <div class="cell subLabel halfWidth">
-                    <label for="lastName" label-content="Buyer.User.LastName"></label>
-                    <input type="text" data-bind="lastName" id="lastName" />
-                </div>
-            </div>
 
-            <div class="row subLabel fullWidth">
-                <label for="streetAddr" label-content="Buyer.Address.StreetAddress"></label>
-                <input id="streetAddr" data-bind="streetAddress" type="text" autocomplete="street-address" />
-            </div>
-            <div class="row">
-                <div class="cell subLabel">
-                    <label for="city" label-content="Buyer.Address.City"></label>
-                    <input id="city" data-bind="city" type="text" autocomplete="address-level2" />
-                </div>
-                <div class="cell subLabel">
-                    <label for="state" label-content="Buyer.Address.State"></label>
-                    <input id="state" data-bind="state" type="text" autocomplete="address-level1" />
-                </div>
-                <div class="cell subLabel">
-                    <label for="zip" label-content="Buyer.Address.ZipCode"></label>
-                    <input id="zip" data-bind="zipCode" type="text" autocomplete="postal-code" maxlength="5" />
-                </div>
-            </div>
-
-
-            <h2>Contact</h2>
-            <div class="row subLabel fullWidth">
-                <label for="email" label-content="Buyer.User.Email"></label>
-                <input id="email" type="email" data-bind="email" autocomplete="email" />
-            </div>
-            <div class="row subLabel fullWidth">
-                <label for="pPhone" label-content="Buyer.PrimaryPhone"></label>
-                <input id="pPhone" type="tel" data-bind="primaryPhone" autocomplete="tel" />
-            </div>
-            <div class="row subLabel fullWidth">
-                <label for="cPhone" label-content="Buyer.CellPhone"></label>
-                <input id="cPhone" type="tel" data-bind="cellPhone" autocomplete="cell tel" />
-            </div>
-            <div class="row subLabel fullWidth">
-                <label for="hPhone" label-content="Buyer.HomePhone"></label>
-                <input id="hPhone" type="tel" data-bind="homePhone" autocomplete="home tel" />
-            </div>
-            <div class="row subLabel fullWidth">
-                <label for="wPhone" label-content="Buyer.WorkPhone"></label>
-                <input id="wPhone" type="tel" data-bind="workPhone" autocomplete="work tel" />
-            </div>
-
-            <h2>Business Information</h2>
-            <div class="row subLabel fullWidth">
-                <label for="companyName" label-content="Buyer.CompanyName"></label>
-                <input id="companyName" data-bind="companyName" type="text" autocomplete="organization" />
-            </div>
-            <div class="row subLabel fullWidth">
-                <label for="licenseNum">Dealer License Num:</label>
-                <input id="licenseNum" data-bind="dealerLicenseNumber" type="text" />
-            </div>
-            <div class="row subLabel fullWidth">
-                <label for="mcNum" label-content="Buyer.MCNumber"></label>
-                <input id="mcNum" data-bind="mcNumber" type="text" />
-            </div>
-            <div class="row subLabel fullWidth">
-                <label for="resaleNum" label-content="Buyer.ResaleNumber"></label>
-                <input id="resaleNum" data-bind="resaleNumber" type="text" />
-            </div>
-        </fieldset>
-    </form>
-</div>
-<div id="contactInvoices">
-    <div id="invoiceList">
-        <div class="header"><h2>Invoices</h2></div>
-        <div><i>No Invoices</i></div>
-    </div>
-</div>
 <script type="text/javascript" src="~/js/Events/EventTypes/EventArgs.js"></script>
 <script type="text/javascript" src="~/js/Events/EventTypes/BaseEventType.js"></script>
 <script type="text/javascript" src="~/js/Events/EventTypes/PropertyChangedEventArgs.js"></script>
