@@ -19,23 +19,23 @@ namespace Seciovni.APIs.WebHelpers
         {
             // Valid user will not be null
             var u = request.GetUser(db);
-            user = u;            
+            user = u;
             return u != null;
         }
 
         public static bool CanAccess(this HttpRequestMessage request, SeciovniContext db, string neededPermission)
         {
             // EF 7 is weird, in that it doesn't do lazy loading, so we have to do this is an odd way
-            
+
             // Get the user
             var user = request.GetUser(db);
 
             // If the user has been disabled, then no-go
             if (user.Disabled) return false;
-            
+
             // Check if the permission has the user
             var permission = db.Permissions.Include(p => p.UserPermissions)
-                                .FirstOrDefault(p => p.PermissionType == neededPermission || 
+                                .FirstOrDefault(p => p.PermissionType == neededPermission ||
                                                 p.PermissionType == AccessPolicy.AdminPrivilege)
                                 .UserPermissions.FirstOrDefault(up => up.UserID == user?.UserID);
 

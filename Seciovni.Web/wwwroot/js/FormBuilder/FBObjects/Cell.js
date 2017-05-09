@@ -95,7 +95,7 @@ class Cell extends TextBlock {
 
     /**
      * Initializes the object from the provided JSON
-     * @param {json} json - The JSON to use
+     * @param {JSON} json - The JSON to use
      */
     initialize_json(json){
         super.initialize_json(json);

@@ -99,7 +99,7 @@ function invoice_keydown(e, parentRow, object) {
         if (e.keyCode >= 37 && e.keyCode <= 40) e.preventDefault();
 
         // Left
-        if (e.keyCode == 37 && e.currentTarget.parentNode.previousElementSibling) {
+        if (e.keyCode === 37 && e.currentTarget.parentNode.previousElementSibling) {
             let nodeToFocus = e.currentTarget.parentNode.previousElementSibling.firstElementChild;
 
             while (nodeToFocus && nodeToFocus.disabled) {
@@ -109,14 +109,14 @@ function invoice_keydown(e, parentRow, object) {
             if (nodeToFocus) nodeToFocus.focus();
         }
         // Up -- Need to check two up because of header row
-        else if (e.keyCode == 38 && parentRow.previousElementSibling.previousElementSibling) {
+        else if (e.keyCode === 38 && parentRow.previousElementSibling.previousElementSibling) {
             parentRow.previousElementSibling
                 .getElementsByClassName(e.currentTarget.parentNode.className)[0]
                 .firstElementChild
                 .focus();
         }
         // Right
-        else if (e.keyCode == 39 && e.currentTarget.parentNode.nextElementSibling) {
+        else if (e.keyCode === 39 && e.currentTarget.parentNode.nextElementSibling) {
             let nodeToFocus = e.currentTarget.parentNode.nextElementSibling.firstElementChild;
 
             while (nodeToFocus && nodeToFocus.disabled) {
@@ -126,7 +126,7 @@ function invoice_keydown(e, parentRow, object) {
             if (nodeToFocus) nodeToFocus.focus();
         }
         // Down
-        else if (e.keyCode == 40 && parentRow.nextElementSibling) {
+        else if (e.keyCode === 40 && parentRow.nextElementSibling) {
             parentRow.nextElementSibling
                 .getElementsByClassName(e.currentTarget.parentNode.className)[0]
                 .firstElementChild
@@ -134,7 +134,7 @@ function invoice_keydown(e, parentRow, object) {
         }
 
         // Delete -- Ensure not the last row
-        else if(e.keyCode == 46 && parentRow.nextElementSibling){
+        else if(e.keyCode === 46 && parentRow.nextElementSibling){
             object.destroy();
         }
     }
@@ -144,7 +144,7 @@ function invoice_keydown(e, parentRow, object) {
  * Posts a call to the API
  * @param {string} url - The relative URL to the API (after /api/)
  * @param {string} method - The type of method to use when sending to the server
- * @param {json} data - The JSON data to send to the server -- null for GET request
+ * @param {JSON} data - The JSON data to send to the server -- null for GET request
  * @param {xmlHttpCallback} callback - The callback when the ready state changes
  */
 function sendToApi(url, method, data, callback){
@@ -366,7 +366,7 @@ function showModalDialog(div, hideCallback){
 /**
  * Hides a dialog that was shown with showModalDialog
  * @param div - The DIV that is the dialog
- * @param hideCallback - The method that was passsed to showModalDialog
+ * @param hideCallback - The method that was passed to showModalDialog
  */
 function hideModalDialog(div, hideCallback){
     div.style.display = "none";

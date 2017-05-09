@@ -120,7 +120,7 @@ class InvoicePreview {
 
     /**
      * Initializes this object from JSON data
-     * @param {json} json
+     * @param {JSON} json
      */
     initialize_json(json){
         const parent = document.createElement("tr");

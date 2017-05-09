@@ -148,12 +148,12 @@ class Vehicle extends SubscribableProperty {
      * @return {boolean}
      */
     areInputsEmpty(){
-        return this._stockNum.value == "" &&
-            this._vin.value == "" &&
-            this._model.value == "" &&
-            this._miles.value == -1 &&
-            this._location.value == "" &&
-            this._price.value == -1;
+        return this._stockNum.value === "" &&
+            this._vin.value === "" &&
+            this._model.value === "" &&
+            this._miles.value === -1 &&
+            this._location.value === "" &&
+            this._price.value === -1;
     }
 
     /**
@@ -181,7 +181,7 @@ class Vehicle extends SubscribableProperty {
 
     /**
      * Initializes this class from a JSON object
-     * @param {json} json - The JSON data
+     * @param {JSON} json - The JSON data
      */
     initialize_json(json){
         this.StockNum.value = json[VehicleFields.stockNum];
@@ -262,7 +262,7 @@ class Vehicle extends SubscribableProperty {
      */
     _fieldUpdated(e) {
         // Ensure the VIN is valid, and update the year and make accordingly
-        if(e.propertyName == VehicleFields.vin){
+        if(e.propertyName === VehicleFields.vin){
             const value = this.VIN.value;
 
             if (value === ""){
@@ -296,7 +296,7 @@ class Vehicle extends SubscribableProperty {
 
         if (isNaN(year)) {
             year = year.toUpperCase().charCodeAt(0);
-            if (year == 84) {
+            if (year === 84) {
                 year = 1996; //If T then 1996
             }
             else if (year >= 86 && year < 90) {
@@ -308,7 +308,7 @@ class Vehicle extends SubscribableProperty {
             else if (year >= 74 && year < 79) {
                 year = year - 74 + 2018; // If J (74) then subtract that and add 2018 (Value of J) for proper year
             }
-            else if (year == 80) {
+            else if (year === 80) {
                 year = 2023; // If P (80) then 2023
             }
             else if (year >= 82 && year < 84) {
@@ -394,11 +394,11 @@ class Vehicle extends SubscribableProperty {
         }
 
         let valid = vinProduct % 11;
-        if (valid == 10) {
+        if (valid === 10) {
             valid = "X";
         }
 
-        return !(vin.length < 17 || vin[8] != valid);
+        return !(vin.length < 17 || vin[8] !== valid);
 
     }
 

@@ -417,8 +417,6 @@ namespace Seciovni.APIs.Controllers
 
                 return new ApiResponse(false, message);
             }
-
-            return new ApiResponse(false, "Failed to save invoice");
         }
 
         [HttpDelete(nameof(Delete) + "/{id}")]
@@ -598,7 +596,7 @@ namespace Seciovni.APIs.Controllers
         {
             var retVal = new HashSet<string>();
 
-            if(!Request.HasValidLogin(db) || !Request.CanAccess(db, AccessPolicy.ViewInvoicePrivilege))
+            if (!Request.HasValidLogin(db) || !Request.CanAccess(db, AccessPolicy.ViewInvoicePrivilege))
             {
                 return null;
             }
@@ -608,9 +606,9 @@ namespace Seciovni.APIs.Controllers
 
             var forms = db.InvoiceTemplates.Where(t => t.States.HasFlag(invoice.State));
 
-            foreach(var form in forms)
+            foreach (var form in forms)
             {
-                if(invoice.IIPT.FirstOrDefault(i => i.TemplateID == form.TemplateID) != null)
+                if (invoice.IIPT.FirstOrDefault(i => i.TemplateID == form.TemplateID) != null)
                 {
                     // Just remove it since it has to have the * added, the, add the new one
                     retVal.Remove(form.TemplateTitle);
@@ -636,7 +634,7 @@ namespace Seciovni.APIs.Controllers
             {
                 return new ApiResponse(false, "Permission Denied");
             }
-            
+
 
             var invoice = db.Invoices.Include(i => i.IIPT).ThenInclude(ii => ii.InvoicePageTempate)
                                      .Include(i => i.Buyer).ThenInclude(b => b.Address)
@@ -658,12 +656,12 @@ namespace Seciovni.APIs.Controllers
             }
 
             // Ensure everything is locked in
-            foreach(var page in pages)
+            foreach (var page in pages)
             {
                 if (invoice.IIPT.FirstOrDefault(ii => ii.InvoicePageTempate.TemplateTitle == page) == null)
                 {
                     var template = db.InvoiceTemplates.LastOrDefault(t => t.TemplateTitle == page);
-                    if(template == null)
+                    if (template == null)
                     {
                         return new ApiResponse(false, $"{page} is not a valid page to print");
                     }
@@ -684,7 +682,7 @@ namespace Seciovni.APIs.Controllers
             // Convert all the forms to be printed
             var settings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto };
             List<FormBuilder> forms = new List<FormBuilder>();
-            foreach(var iipt in invoice.IIPT)
+            foreach (var iipt in invoice.IIPT)
             {
                 if (pages.Contains(iipt.InvoicePageTempate.TemplateTitle))
                 {

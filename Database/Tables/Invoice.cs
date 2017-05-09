@@ -34,7 +34,7 @@ namespace Database.Tables
         public InvoiceState State { get; set; }
 
         public IList<MiscellaneousFee> Fees { get; set; }
-        
+
         public Employee SalesPerson { get; set; }
 
         [Required]
@@ -55,7 +55,7 @@ namespace Database.Tables
         public LienHolder LienHolder { get; set; }
 
         public IList<Payment> Payments { get; set; }
-        
+
         [JsonIgnore]
         public IList<InvoiceInvoicePageTemplate> IIPT { get; set; }
 

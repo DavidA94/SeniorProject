@@ -48,7 +48,7 @@ namespace Seciovni.APIs.Controllers
                 var currentCustId = contact.CustomerID;
                 List<Invoice> invoices = new List<Invoice>();
 
-                while(currentCustId > 0)
+                while (currentCustId > 0)
                 {
                     invoices.AddRange(dbInvoices.Where(i => i.Buyer.CustomerID == currentCustId));
                     currentCustId = db.Customers.FirstOrDefault(c => c.CustomerID == currentCustId)?.PreviousCustomerID ?? 0;
@@ -90,7 +90,7 @@ namespace Seciovni.APIs.Controllers
         public ApiResponse SaveContact([FromBody]Customer contact, int contactID)
         {
             var employee = validateUser(Request, AccessPolicy.EditInvoicePrivilege);
-            if(employee == null)
+            if (employee == null)
             {
                 return new ApiResponse(false, "Access Denied");
             }

@@ -277,11 +277,11 @@ class Canvas extends EventPropagator {
     set orientation(value) {
         this._orientation = value;
 
-        if(value == Orientation.Portrait){
+        if(value === Orientation.Portrait){
             this.height = WYSIWYG_PAGE_HEIGHT * this.scale * this.numPages;
             this.width = WYSIWYG_PAGE_WIDTH * this.scale;
         }
-        else if(value == Orientation.Landscape){
+        else if(value === Orientation.Landscape){
             this.height = WYSIWYG_PAGE_WIDTH * this.scale * this.numPages;
             this.width = WYSIWYG_PAGE_HEIGHT * this.scale;
         }
@@ -312,10 +312,10 @@ class Canvas extends EventPropagator {
      * @param {Number} value
      */
     set numPages(value) {
-        if(this._numPages != value){
+        if(this._numPages !== value){
             this._numPages = value;
 
-            this.height = (this.orientation == Orientation.Landscape ? WYSIWYG_PAGE_WIDTH : WYSIWYG_PAGE_HEIGHT) *
+            this.height = (this.orientation === Orientation.Landscape ? WYSIWYG_PAGE_WIDTH : WYSIWYG_PAGE_HEIGHT) *
                 this.scale * this.numPages;
         }
     }
@@ -558,7 +558,7 @@ class Canvas extends EventPropagator {
 
     /**
      * Initializes this class from a JSON object
-     * @param {json} json - The JSON data
+     * @param {JSON} json - The JSON data
      */
     initialize_json(json) {
         this.gridSize = json[CanvasFields.gridSize];
@@ -731,7 +731,7 @@ class Canvas extends EventPropagator {
         this._context.strokeStyle = "#777";
 
         for(let i = 0; i < this.numPages; ++i) {
-            const singlePageHeight = (this.orientation == Orientation.Portrait ? WYSIWYG_PAGE_HEIGHT : WYSIWYG_PAGE_WIDTH) * this.scale;
+            const singlePageHeight = (this.orientation === Orientation.Portrait ? WYSIWYG_PAGE_HEIGHT : WYSIWYG_PAGE_WIDTH) * this.scale;
             const height = singlePageHeight - (2 * margin);
 
             const x = margin;
@@ -773,7 +773,7 @@ class Canvas extends EventPropagator {
 
             // First run draws black ants, second run draws white space between the ants
             for(let i = 0; i < 2; ++i){
-                if(i == 0){
+                if(i === 0){
                     // 8 black, 6 transparent
                     c.setLineDash([8, 6]);
                     c.lineDashOffset = -space;
@@ -791,7 +791,7 @@ class Canvas extends EventPropagator {
                     Math.ceil(Keyboard.focusedElement.visualWidth * this.scale), Math.ceil(Keyboard.focusedElement.visualHeight * this.scale));
 
                 // Stroke color depends which run we're on
-                c.strokeStyle = i == 0 ? "#000" : "#FFF";
+                c.strokeStyle = i === 0 ? "#000" : "#FFF";
                 c.stroke();
                 c.closePath();
             }
@@ -1037,7 +1037,7 @@ class Canvas extends EventPropagator {
 
     // region Event Handlers
 
-    _mouseDown(e){
+    _mouseDown(){
         // Ensure nothing is focused, since we must have clicked somewhere on the canvas' "whitespace"
         Keyboard.focusedElement = this._objectToDrag = null;
         this.__dispatchEvent(EVENT_OBJECT_CHANGE, new ObjectChangedEventArgs(this, null));
@@ -1056,7 +1056,7 @@ class Canvas extends EventPropagator {
         }
     }
 
-    _mouseUp(e){
+    _mouseUp(){
         // Ensure the context menu is hidden, and that we're not capturing the mouse
         this.hideContextMenu();
         this.releaseCapture();
@@ -1102,13 +1102,13 @@ class Canvas extends EventPropagator {
         e.sender.setCapture();
     }
 
-    _shapeMouseEnter(e){
+    _shapeMouseEnter(){
         Mouse.setCursor(Cursor.Pointer);
     }
 
     _shapeMouseLeave(e){
         // If we're still dragging, them call the move event to keep things caught up
-        if(this._objectToDrag && this._objectToDrag == e.sender){
+        if(this._objectToDrag && this._objectToDrag === e.sender){
             this._shapeMouseMove(e);
         }
         // Otherwise, we actually left
@@ -1118,7 +1118,7 @@ class Canvas extends EventPropagator {
     }
 
     _shapeMouseMove(e){
-        if(this._objectToDrag && this._objectToDrag == e.sender) {
+        if(this._objectToDrag && this._objectToDrag === e.sender) {
             // Figure out how far we've moved
             let x = e.x - this._dragStartX;
             let y = e.y - this._dragStartY;
@@ -1147,10 +1147,10 @@ class Canvas extends EventPropagator {
                 else {
                     // Otherwise, keep them even
                     if (absX > absY) {
-                        y = absX * (absY == y ? 1 : -1);
+                        y = absX * (absY === y ? 1 : -1);
                     }
                     else {
-                        x = absY * (absX == x ? 1 : -1);
+                        x = absY * (absX === x ? 1 : -1);
                     }
                 }
             }
@@ -1160,7 +1160,7 @@ class Canvas extends EventPropagator {
         }
     }
 
-    _shapeMouseUp(e){
+    _shapeMouseUp(){
         if(this._objectToDrag){
             this._objectToDrag.commitResize();
             this._objectToDrag = null;
@@ -1194,12 +1194,12 @@ class Canvas extends EventPropagator {
         else if(e.sender === this.anchors[Anchor.BottomRight]) Mouse.setCursor(Cursor.BottomRight);
     }
 
-    _anchor_MouseLeave(e){
+    _anchor_MouseLeave(){
         Mouse.setCursor(Cursor.Default);
     }
 
     _anchor_MouseMove(e){
-        if(this._resizeAnchor == e.sender){
+        if(this._resizeAnchor === e.sender){
             const x = e.x - this._dragStartX;
             const y = e.y - this._dragStartY;
 
@@ -1213,7 +1213,7 @@ class Canvas extends EventPropagator {
         }
     }
 
-    _anchor_MouseUp(e){
+    _anchor_MouseUp(){
         if(!Keyboard.focusedElement) return;
         Keyboard.focusedElement.commitResize();
         this._resizeAnchor = null;

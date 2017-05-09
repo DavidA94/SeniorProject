@@ -77,13 +77,12 @@ class CheckBox extends FBObject {
      * @return {Object<string, *>}
      */
     toJSON() {
-        const properties = this.__toJSON();
-        return properties;
+        return this.__toJSON();
     }
 
     /**
      * Creates a new object from the provided JSON
-     * @param {json} json - The JSON to use
+     * @param {JSON} json - The JSON to use
      * @return {FBImage}
      */
     static from_json(json){

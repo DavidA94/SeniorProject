@@ -103,7 +103,7 @@ class FormBuilder{
                         alert(response.message);
 
                         const title = location.pathname.split("/").splice(-1)[0];
-                        if(title.replace(/ /g, "") != this._title.value.replace(/ /g, "")) {
+                        if(title.replace(/ /g, "") !== this._title.value.replace(/ /g, "")) {
                             location.replace("/FormEditor/Edit/" + this._title.value.replace(/ /g, ""));
                         }
                     }
@@ -116,7 +116,7 @@ class FormBuilder{
 
         // Check if we need to load
         const pageName = location.pathname.split("/").splice(-1)[0].toLowerCase();
-        if(pageName && pageName != "" && pageName != "edit"){
+        if(pageName && pageName !== "" && pageName !== "edit"){
             sendToApi("FormBuilder/Get/" + pageName, "GET", null, (xmlhttp) => {
                 if(!xmlhttp){
                     alert("Failed to contact the server");
@@ -124,7 +124,7 @@ class FormBuilder{
                 }
                 if (xmlhttp.readyState === XMLHttpRequest.DONE && xmlhttp.status === 200) {
 
-                    if (!xmlhttp.response || xmlhttp.response == "") {
+                    if (!xmlhttp.response || xmlhttp.response === "") {
                         return;
                     }
 
@@ -315,7 +315,7 @@ class FormBuilder{
     _zoomIn(){
         // Go up by 10%, or to the nearest 10%, depending what the current level is.
         // E.g. 105% => 110%; and 120% => 130%
-        if(Math.ceil(this._canvas.scale / .1) * .1 == this._canvas.scale){
+        if(Math.ceil(this._canvas.scale / .1) * .1 === this._canvas.scale){
             this._canvas.scale += .1;
         }
         else{
@@ -332,7 +332,7 @@ class FormBuilder{
     _zoomOut(){
         // Go down by 10%, or to the nearest 10%, depending what the current level is.
         // E.g. 105% => 100%; and 120% => 110%
-        if(Math.floor(this._canvas.scale / .1) * .1 == this._canvas.scale){
+        if(Math.floor(this._canvas.scale / .1) * .1 === this._canvas.scale){
             this._canvas.scale = Math.max(0.1, this._canvas.scale - 0.1);
         }
         else{
@@ -351,9 +351,9 @@ class FormBuilder{
         this._zoomAmt.innerHTML = (this._canvas.scale * 100).toFixed(2) + "%";
 
         // And change the physical size of the canvas so it still is the size of one page
-        this._canvas.width = (this._canvas.orientation == Orientation.Portrait ? WYSIWYG_PAGE_WIDTH : WYSIWYG_PAGE_HEIGHT)
+        this._canvas.width = (this._canvas.orientation === Orientation.Portrait ? WYSIWYG_PAGE_WIDTH : WYSIWYG_PAGE_HEIGHT)
             * this._canvas.scale;
-        this._canvas.height = (this._canvas.orientation == Orientation.Landscape ? WYSIWYG_PAGE_WIDTH : WYSIWYG_PAGE_HEIGHT) *
+        this._canvas.height = (this._canvas.orientation === Orientation.Landscape ? WYSIWYG_PAGE_WIDTH : WYSIWYG_PAGE_HEIGHT) *
                                 this._canvas.scale * this._canvas.numPages;
     }
 
@@ -402,7 +402,7 @@ class FormBuilder{
      * @private
      */
     _canvas_propertychange(e){
-        if(e.originalTarget == Keyboard.focusedElement){
+        if(e.originalTarget === Keyboard.focusedElement){
             document.getElementById(e.propertyName).value = this._htmlObjDict[e.propertyName].get();
         }
     }

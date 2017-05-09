@@ -64,7 +64,7 @@ class Table extends FBObject {
         horizontalSep.subscribe(MouseEventType.MouseUp, this.__getBoundFunc(this._separator_MouseUp));
 
         /**
-         * The spearators between the columns
+         * The separators between the columns
          * @type {Box[]}
          * @private
          */
@@ -82,20 +82,20 @@ class Table extends FBObject {
 
         // Keep things in sync when we're resized
         this.layout.subscribe(EVENT_PROPERTY_CHANGE, (e) => {
-            if(e.propertyName == "width"){
+            if(e.propertyName === "width"){
                 for(let separator of this._separators){
                     // horizontal bar
-                    if(separator.layout.height == 2 * WYSIWYG_TABLE_BORDER_SIZE){
+                    if(separator.layout.height === 2 * WYSIWYG_TABLE_BORDER_SIZE){
                         separator.layout.width = this.layout.width;
                     }
                 }
 
                 this._columnWidths[this._columnWidths.length - 1] += this.width - this._columnWidths.reduce((a, b) => a + b);
             }
-            else if(e.propertyName == "height"){
+            else if(e.propertyName === "height"){
                 for(let separator of this._separators){
                     // vertical bar
-                    if(separator.layout.width == 2 * WYSIWYG_TABLE_BORDER_SIZE){
+                    if(separator.layout.width === 2 * WYSIWYG_TABLE_BORDER_SIZE){
                         separator.layout.height = this.layout.height;
                     }
                 }
@@ -106,7 +106,7 @@ class Table extends FBObject {
         });
 
         // If this is clicked on, update the focused element, since it may change what cell is focused
-        this.subscribe(MouseEventType.MouseDown, (e) => {
+        this.subscribe(MouseEventType.MouseDown, () => {
             //e.handled = true;
             Keyboard.focusedElement = this;
         });
@@ -158,7 +158,7 @@ class Table extends FBObject {
      * @param {number} value
      */
     set contentHeight(value) {
-        if(this._contentHeight != value) {
+        if(this._contentHeight !== value) {
             this.layout.height -= (this._contentHeight - value);
             //this._contentHeight = value;
             this.__sendPropChangeEvent("contentHeight");
@@ -189,7 +189,7 @@ class Table extends FBObject {
         contentCell.layout.height = this.contentHeight;
         contentCell.borderColor = this.border.color;
 
-        if(this._cells.length == 0){
+        if(this._cells.length === 0){
             // No-op
         }
         else{
@@ -371,7 +371,7 @@ class Table extends FBObject {
 
     /**
      * Creates a new object from the provided JSON
-     * @param {json} json - The JSON to use
+     * @param {JSON} json - The JSON to use
      * @return {Table}
      */
     static from_json(json){
@@ -522,7 +522,7 @@ class Table extends FBObject {
         }
     }
 
-    _separator_MouseLeave(e){
+    _separator_MouseLeave(){
         Mouse.setCursor(Cursor.Default);
     }
 
@@ -554,7 +554,7 @@ class Table extends FBObject {
         }
     }
 
-    _separator_MouseUp(e){
+    _separator_MouseUp(){
         this._dragStartX = this._dragStartY = 0;
         // this.commitResize();
     }

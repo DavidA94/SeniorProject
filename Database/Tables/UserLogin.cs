@@ -11,7 +11,7 @@ namespace Database.Tables
         public int LoginID { get; set; }
 
         public User User { get; set; }
-        
+
         public DateTime InitialLoginTime { get; set; }
 
         public DateTime LastPingTime { get; set; }

@@ -33,7 +33,7 @@ class Invoice {
                     alert("Failed to contact server");
                     return;
                 }
-                if(xmlhttp.readyState == XMLHttpRequest.DONE){
+                if(xmlhttp.readyState === XMLHttpRequest.DONE){
                     if(xmlhttp.status === 200){
                         const response = /** @type {ApiResponse} */JSON.parse(xmlhttp.response.toString());
 
@@ -42,12 +42,12 @@ class Invoice {
                                 let problemAreas = [];
 
                                 for(let error of response.errors){
-                                    if(error.element == InvoiceFields.state){
+                                    if(error.element === InvoiceFields.state){
                                         this._state.error = error.errorMsg;
                                     }
-                                    else if(error.element == InvoiceFields.buyer){
+                                    else if(error.element === InvoiceFields.buyer){
                                         // Corner case: Address is invalid
-                                        if(error.subFields.length == 1 && error.subFields[0] == InvoiceFields.address){
+                                        if(error.subFields.length === 1 && error.subFields[0] === InvoiceFields.address){
                                             alert("The Buyer's address is invalid");
                                             return;
                                         }
@@ -62,9 +62,9 @@ class Invoice {
                                         element.error = error.errorMsg;
                                         problemAreas.push(InvoiceFields.buyer);
                                     }
-                                    else if(error.element == InvoiceFields.lienHolder){
+                                    else if(error.element === InvoiceFields.lienHolder){
                                         // Corner case: Address is invalid
-                                        if(error.subFields.length == 1 && error.subFields[0] == InvoiceFields.address){
+                                        if(error.subFields.length === 1 && error.subFields[0] === InvoiceFields.address){
                                             alert("The Buyer's address is invalid");
                                             return;
                                         }
@@ -116,7 +116,7 @@ class Invoice {
                         alert("Failed to contact server");
                         return;
                     }
-                    if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                    if (xmlhttp.readyState === XMLHttpRequest.DONE) {
                         if (xmlhttp.status === 200) {
                             const response = /** @type {ApiResponse} */JSON.parse(xmlhttp.response.toString());
 
@@ -326,7 +326,7 @@ class Invoice {
         if(!isNaN(invoiceNum) && invoiceNum > 0){
             // Loading logic....
             sendToApi("Invoice/Get/" + invoiceNum, "GET", null, (xmlhttp) => {
-                if(xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200) {
+                if(xmlhttp.readyState === XMLHttpRequest.DONE && xmlhttp.status === 200) {
                     this.reset();
                     this.initialize_json(JSON.parse(xmlhttp.response.toString()));
 
@@ -388,7 +388,7 @@ class Invoice {
 
     /**
      * Initializes this class from a JSON object
-     * @param {json} json - The JSON data
+     * @param {JSON} json - The JSON data
      */
     initialize_json(json){
 
@@ -534,7 +534,7 @@ class Invoice {
         // If it has areInputsEmpty and destroy methods, and the inputs are empty, destroy it.
         if (typeof(target.areInputsEmpty) === 'function' &&
             typeof(target.destroy) === 'function' &&
-            e.propertyName != "" &&     // Ignore 'input' events, which do not have a property name, and are used for duplication
+            e.propertyName !== "" &&     // Ignore 'input' events, which do not have a property name, and are used for duplication
             target.areInputsEmpty())
         {
             target.destroy();

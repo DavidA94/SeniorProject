@@ -43,7 +43,7 @@ class Management {
 
                     const initialRow = makeHtmlElem({ tag: "tr" });
                     const newEmployee = new Employee(initialRow, true, false);
-                    newEmployee.subscribe(EVENT_DATA_SAVED, reloadUsers)
+                    newEmployee.subscribe(EVENT_DATA_SAVED, reloadUsers);
                     this._tableBody.appendChild(initialRow);
 
                     hideFullScreenLoading();

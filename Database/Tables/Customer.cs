@@ -1,12 +1,8 @@
-﻿using Database.Tables;
-using System.Collections.Generic;
+﻿using Shared;
+using Shared.Extensions;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System;
-using System.Linq;
-using Shared;
 using System.Text.RegularExpressions;
-using Shared.Extensions;
 
 namespace Database.Tables
 {
@@ -15,9 +11,9 @@ namespace Database.Tables
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CustomerID { get; set; }
-        
+
         public int PreviousCustomerID { get; set; }
-        
+
         public User User { get; set; }
 
         public Address Address { get; set; }
@@ -50,8 +46,8 @@ namespace Database.Tables
 
         [Phone]
         [Display(Name = "Work Phone")]
-        public string WorkPhone { get; set; } 
-        
+        public string WorkPhone { get; set; }
+
         /// <summary>
         /// Foreign key to be able to access who owns a customer
         /// </summary>

@@ -52,7 +52,7 @@ class NumericInput extends TextInput{
         input.addEventListener("blur", this.__getBoundFunc(this._makeInputPretty));
     }
 
-    get value() { return this.htmlObj.value == "" ? -1 : this.numberVal; }
+    get value() { return this.htmlObj.value === "" ? -1 : this.numberVal; }
     set value(value) {
 
         if(isNaN(value)) throw TypeError("Value must be a number");
@@ -83,7 +83,7 @@ class NumericInput extends TextInput{
             this.numberVal = 0;
         }
 
-        const prettyVal = makeNumberPretty(this.numberVal, this._prettyPrefix, this._fixedPlaces)
+        const prettyVal = makeNumberPretty(this.numberVal, this._prettyPrefix, this._fixedPlaces);
 
         input.value = this._makePretty ? prettyVal : this.numberVal;
         this._isPretty = true;

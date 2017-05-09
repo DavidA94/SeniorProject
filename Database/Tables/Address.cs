@@ -1,13 +1,10 @@
-﻿using Database.Tables;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
 using Shared;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Net.Http;
 using System.Xml.Linq;
-using System.Linq;
-using Newtonsoft.Json;
 
 namespace Database.Tables
 {
@@ -51,18 +48,18 @@ namespace Database.Tables
             int outZip;
 
             // USA and Mexico zips but be 5 digits long
-            if(Country != Country.Canada && (!int.TryParse(ZipCode, out outZip) || ZipCode.Length != 5))
+            if (Country != Country.Canada && (!int.TryParse(ZipCode, out outZip) || ZipCode.Length != 5))
             {
                 yield return new ValidationResult("Zip code must be a 5 digit number");
             }
-            else if(Country == Country.Canada && ZipCode.Length != 6)
+            else if (Country == Country.Canada && ZipCode.Length != 6)
             {
                 yield return new ValidationResult("Zip code must be 6 characters");
             }
-            
+
 
             // Validate the address if it's USA
-            if(Country == Country.USA && !validUsaAdress())
+            if (Country == Country.USA && !validUsaAdress())
             {
                 yield return new ValidationResult("The given address is not valid");
             }
@@ -99,7 +96,7 @@ namespace Database.Tables
                         var xmlResponse = XElement.Parse(result);
 
                         // <Error> in the XML indicates an invalid address
-                        if(xmlResponse.Descendants().Any(n => n.Name.LocalName.ToLower() == "error"))
+                        if (xmlResponse.Descendants().Any(n => n.Name.LocalName.ToLower() == "error"))
                         {
                             return false;
                         }

@@ -124,9 +124,9 @@ class Payment extends SubscribableProperty {
      * @return {boolean}
      */
     areInputsEmpty() {
-        return this._date.value == "" &&
-            this._description.value == "" &&
-            this._amount.value == -1;
+        return this._date.value === "" &&
+            this._description.value === "" &&
+            this._amount.value === -1;
     }
 
     /**
@@ -150,7 +150,7 @@ class Payment extends SubscribableProperty {
 
     /**
      * Initializes this class from a JSON object
-     * @param {json} json - The JSON data
+     * @param {JSON} json - The JSON data
      */
     initialize_json(json) {
         this.Date.value = json[PaymentFields.date];

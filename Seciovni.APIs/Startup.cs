@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,18 +35,19 @@ namespace Seciovni.APIs
         public void ConfigureServices(IServiceCollection services)
         {
             // Add database
-            services.AddDbContext<SeciovniContext>(options => {
+            services.AddDbContext<SeciovniContext>(options =>
+            {
                 options.UseSqlServer(Configuration.GetConnectionString("SeciovniDb"));
                 options.EnableSensitiveDataLogging();
             });
-            
+
             // Add framework services.
             services.AddMvc()
                     .AddJsonOptions(opt =>
                     {
                         opt.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
                     });
-            
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,8 +64,7 @@ namespace Seciovni.APIs
                     {
                         serviceScope.ServiceProvider.GetService<SeciovniContext>().Database.Migrate();
                     }
-                    catch (SqlException ex) {
-                    }
+                    catch (SqlException) { }
                     serviceScope.ServiceProvider.GetService<SeciovniContext>().EnsureSeedData();
                 }
             }

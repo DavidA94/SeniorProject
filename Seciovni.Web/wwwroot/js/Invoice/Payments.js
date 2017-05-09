@@ -25,7 +25,7 @@ class Payments extends Subscribable {
         /**
          * The actual dialog
          * @private
-         * @type {HTMLDialogElement}
+         * @type {HTMLDivElement}
          */
         this._dialog = paymentDialog;
 
@@ -121,7 +121,7 @@ class Payments extends Subscribable {
 
     /**
      * Initializes this class from JSON data
-     * @param {json} payments - The array of JSON payments
+     * @param {JSON} payments - The array of JSON payments
      */
     initialize_json(payments){
         // Inject all of the payments
@@ -208,7 +208,7 @@ class Payments extends Subscribable {
         // If it has areInputsEmpty and destroy methods, and the inputs are empty, destroy it.
         if (typeof(target.areInputsEmpty) === 'function' &&
             typeof(target.destroy) === 'function' &&
-            e.propertyName != "" &&     // Ignore 'input' events, which do not have a property name, and are used for duplication
+            e.propertyName !== "" &&     // Ignore 'input' events, which do not have a property name, and are used for duplication
             target.areInputsEmpty())
         {
             target.destroy();

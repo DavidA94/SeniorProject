@@ -33,7 +33,7 @@ function getLikeliness(targetStr, searchStr){
     // If the searchStr is bigger than the targetStr,
     // or there is no searchStr (inverse is caught in the first one),
     // then it's not a match
-    if(targetStr.length < searchStr.length || searchStr.length == 0) return 0;
+    if(targetStr.length < searchStr.length || searchStr.length === 0) return 0;
     else if(targetStr === searchStr) return 1;
 
     // Get the if the search string is in the target string
@@ -97,7 +97,7 @@ function dlDistance(original, modified){
 
     for(let i = 1; i <= origLen; ++i){
         for(let j = 1; j <= modiLen; ++j){
-            const cost = modified[j - 1] == original[i - 1] ? 0 : 1;
+            const cost = modified[j - 1] === original[i - 1] ? 0 : 1;
             const values = [
                 matrix[i - 1][j] + 1,
                 matrix[i][j - 1] + 1,
@@ -106,7 +106,7 @@ function dlDistance(original, modified){
 
             matrix[i][j] = Math.min.apply(Math, values);
 
-            if(i > 1 && j > 1 && original[i - 1] == modified[j - 2] && original[i - 2] == modified[j - 1]) {
+            if(i > 1 && j > 1 && original[i - 1] === modified[j - 2] && original[i - 2] === modified[j - 1]) {
                 matrix[i][j] = Math.min(matrix[i][j], matrix[i - 2][j - 2] + cost);
             }
         }

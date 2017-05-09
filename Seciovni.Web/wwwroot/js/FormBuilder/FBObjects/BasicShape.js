@@ -78,7 +78,7 @@ class BasicShape extends FBObject {
 
     /**
      * Creates a new object from the provided JSON
-     * @param {json} json - The JSON to use
+     * @param {JSON} json - The JSON to use
      * @return {BasicShape}
      */
     static from_json(json){

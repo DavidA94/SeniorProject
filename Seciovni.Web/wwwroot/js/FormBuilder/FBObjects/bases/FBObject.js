@@ -283,7 +283,7 @@ class FBObject extends EventPropagator {
         const margin = this.layout.margin.left;
         let caption = 0;
 
-        if(this.caption.location == Location.Left) {
+        if(this.caption.location === Location.Left) {
             caption = (this.caption.reserve === WYSIWYG_CAPTION_AUTO ? this.caption.width : this.caption.reserve) + WYSIWYG_CAPTION_PADDING;
         }
 
@@ -309,7 +309,7 @@ class FBObject extends EventPropagator {
         const margin = this.layout.margin.top;
         let caption = 0;
 
-        if(this.caption.location == Location.Top) {
+        if(this.caption.location === Location.Top) {
             caption = (this.caption.reserve === WYSIWYG_CAPTION_AUTO ? this.caption.height : this.caption.reserve) + WYSIWYG_CAPTION_PADDING;
         }
 
@@ -335,7 +335,7 @@ class FBObject extends EventPropagator {
         const margin = this._layout.margin.left + this._layout.margin.right;
         let caption = 0;
 
-        if(this.caption.location == Location.Left || this.caption.location == Location.Right) {
+        if(this.caption.location === Location.Left || this.caption.location === Location.Right) {
             caption = (this.caption.reserve === WYSIWYG_CAPTION_AUTO ? this.caption.width : this.caption.reserve) + WYSIWYG_CAPTION_PADDING;
         }
 
@@ -660,7 +660,7 @@ class FBObject extends EventPropagator {
 
     /**
      * Initializes from JSON
-     * @param {json} json
+     * @param {JSON} json
      * @protected
      */
     __init_json(json){
@@ -953,7 +953,7 @@ class FBObject extends EventPropagator {
 
     }
 
-    _captionResize_MouseLeave(e){
+    _captionResize_MouseLeave(){
         Mouse.setCursor(Cursor.Default);
     }
 
@@ -988,13 +988,13 @@ class FBObject extends EventPropagator {
                 this.layout.y = newY;
                 this.caption.reserve = upperBound - this.layout.height;
             }
-            else if(capLoc == Location.Right){
+            else if(capLoc === Location.Right){
                 upperBound = this._backupLayout.width + this._backupCaptionReserve - WYSIWYG_CAPTION_PADDING;
 
                 this.layout.width = Math.clip(this._backupLayout.width + moveDist, lowerBound, upperBound);
                 this.caption.reserve = upperBound - this.layout.width;
             }
-            else if(capLoc == Location.Bottom){
+            else if(capLoc === Location.Bottom){
                 upperBound = this._backupLayout.height + this._backupCaptionReserve - WYSIWYG_CAPTION_PADDING;
 
                 this.layout.height = Math.clip(this._backupLayout.height + moveDist, lowerBound, upperBound);
@@ -1013,7 +1013,7 @@ class FBObject extends EventPropagator {
         }
     }
 
-    _captionResize_MouseUp(e){
+    _captionResize_MouseUp(){
         // this.__dispatchEvent(EVENT_END_CAPTION_RESIZE, null);
         this._dragStartX = this._dragStartY = 0;
         this.commitResize();

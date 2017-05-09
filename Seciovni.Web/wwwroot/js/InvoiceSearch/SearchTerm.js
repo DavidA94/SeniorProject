@@ -133,7 +133,7 @@ class SearchTerm extends SubscribableProperty {
     }
 
     /**
-     * The HTML object that olds all the information this object stores
+     * The HTML object that holds all the information this object stores
      * @return {HTMLDivElement}
      */
     get htmlObj() {
@@ -326,7 +326,7 @@ class SearchTerm extends SubscribableProperty {
             '<option value="WA">Washington</option>' +
             '<option value="WV">West Virginia</option>' +
             '<option value="WI">Wisconsin</option>' +
-            '<option value="WY">Wyoming</option>'
+            '<option value="WY">Wyoming</option>';
 
         return select;
     }
@@ -346,7 +346,7 @@ class SearchTerm extends SubscribableProperty {
     }
 
     /**
-     * Kills all the search terms so nothing is left on the page, and unsubscribes from everythihng
+     * Kills all the search terms so nothing is left on the page, and unsubscribes from everything
      * @private
      */
     _destroySearchTerms() {

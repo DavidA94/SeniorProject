@@ -78,7 +78,7 @@ class Contact {
     get previewElement() { return this._previewElement; }
 
     /**
-     * The invocies for this customer
+     * The invoices for this customer
      * @return {Array}
      */
     get invoices() { return this._invoices; }
@@ -305,7 +305,7 @@ class Contact {
             callback(xmlhttp);
 
             if (xmlhttp.readyState === XMLHttpRequest.DONE && xmlhttp.status === 200) {
-                this.initialize_json(/** @type {json} */xmlhttp.response);
+                this.initialize_json(/** @type {JSON} */xmlhttp.response);
             }
         });
     }
@@ -338,7 +338,7 @@ class Contact {
 
     /**
      * Initializes this class from a JSON object
-     * @param {json} json - The JSON data
+     * @param {JSON} json - The JSON data
      */
     initialize_json(json){
         this._invoices = json.invoices;

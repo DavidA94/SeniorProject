@@ -143,7 +143,7 @@ class TRBL {
 
     /**
      * Initializes the object from the provided JSON
-     * @param {json} json - The JSON to use
+     * @param {JSON} json - The JSON to use
      */
     initialize_json(json){
         this.top = json[TRBLFields.top];

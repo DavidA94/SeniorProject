@@ -113,7 +113,7 @@ const BindingContext = {
     Both: 0,
     Repeating: 1,
     Single: 2
-}
+};
 
 /**
  * Represents the types of cursors that can be returned

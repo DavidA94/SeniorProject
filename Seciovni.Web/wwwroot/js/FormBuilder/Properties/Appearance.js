@@ -132,7 +132,7 @@ class Appearance extends SubscribableProperty {
 
     /**
      * Initializes the object from the provided JSON
-     * @param {json} json - The JSON to use
+     * @param {JSON} json - The JSON to use
      */
     initialize_json(json){
         this.background = json[AppearanceFields.background];

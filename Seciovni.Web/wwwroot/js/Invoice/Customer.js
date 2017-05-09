@@ -62,7 +62,7 @@ class Customer {
         /**
          * The actual dialog
          * @private
-         * @type {HTMLDialogElement}
+         * @type {HTMLDivElement}
          */
         this._dialog = customerDialog;
 
@@ -253,7 +253,7 @@ class Customer {
 
     /**
      * Initializes this class from a JSON object
-     * @param {json} json - The JSON data
+     * @param {JSON} json - The JSON data
      */
     initialize_json(json){
 
@@ -403,14 +403,14 @@ class Customer {
              */
             let phone;
 
-            if(e.propertyName == CustomerFields.primaryPhone) phone = this._primaryPhone;
-            else if(e.propertyName == CustomerFields.cellPhone) phone = this._cellPhone;
-            else if(e.propertyName == CustomerFields.homePhone) phone = this._homePhone;
-            else if(e.propertyName == CustomerFields.workPhone) phone = this._workPhone;
+            if(e.propertyName === CustomerFields.primaryPhone) phone = this._primaryPhone;
+            else if(e.propertyName === CustomerFields.cellPhone) phone = this._cellPhone;
+            else if(e.propertyName === CustomerFields.homePhone) phone = this._homePhone;
+            else if(e.propertyName === CustomerFields.workPhone) phone = this._workPhone;
 
             const phoneRegEx = new RegExp(/^(1[.\-])?[0-9]{3}[.\-]?[0-9]{3}[.\-]?[0-9]{4}$/);
 
-            if(phone && phone.value != "" && !phone.value.match(phoneRegEx)){
+            if(phone && phone.value !== "" && !phone.value.match(phoneRegEx)){
                 phone.error = "Invalid Phone Number. Expecting format 1-111-111-1111";
             }
             else if(phone){
@@ -421,7 +421,7 @@ class Customer {
             const email = this._user.Email.value;
 
             // This is weak, but should work well enough
-            if(email != "" && !email.match(/^.+@.+\..{2,}$/)) {
+            if(email !== "" && !email.match(/^.+@.+\..{2,}$/)) {
                 this._user.Email.error = "Invalid Email Address";
             }
             else{
@@ -430,7 +430,7 @@ class Customer {
         }
         else if(e.propertyName === AddressFields.zip){
             const zip = this._address.Zip.htmlObj.value;
-            if(zip.length != 5 && zip.length != 0){
+            if(zip.length !== 5 && zip.length !== 0){
                 this._address.Zip.error = "Invalid ZIP code";
             }
             else{
@@ -456,8 +456,8 @@ class Customer {
             const xmlhttp = new XMLHttpRequest();
 
             xmlhttp.onreadystatechange = () => {
-                if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-                    if (xmlhttp.status == 200) {
+                if (xmlhttp.readyState === XMLHttpRequest.DONE) {
+                    if (xmlhttp.status === 200) {
                         this._loadContacts(JSON.parse(xmlhttp.response.toString()));
                     }
                     // Because we don't get cookies, this happens for every request
@@ -466,7 +466,7 @@ class Customer {
                         this._loadContacts([]);
                     }
                 }
-                else if(xmlhttp.readyState == XMLHttpRequest.OPENED){
+                else if(xmlhttp.readyState === XMLHttpRequest.OPENED){
                     this._loadContacts(null);
                 }
             };
@@ -495,7 +495,7 @@ class Customer {
             return;
         }
 
-        if (contacts.length == 0) {
+        if (contacts.length === 0) {
             const noContacts = document.createElement("p");
             noContacts.innerHTML = "No Contacts";
             noContacts.className = "row";
@@ -525,7 +525,7 @@ class Customer {
             cp.parentElement.addEvent('click', selectCustomer);
             cp.parentElement.addEvent('keypress', selectCustomer);
 
-            if(cp.customerID == this._chosenContactID){
+            if(cp.customerID === this._chosenContactID){
                 this._chosenContact = cp;
                 this._chosenContact.parentElement.htmlObj.id = INVOICE_CHOSEN_CONTACT_ID;
                 this._updatePreviewField();
@@ -543,7 +543,7 @@ class Customer {
      * @private
      */
     _updatePreviewField(){
-        if(this._showingContacts && this._chosenContact != null){
+        if(this._showingContacts && this._chosenContact !== null){
             // Meh
             this._displayName.value = this._chosenContact.firstName + " " + this._chosenContact.lastName;
         }

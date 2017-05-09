@@ -6,7 +6,6 @@
       "version": "1.0.0-preview2-final",
       "type": "build"
     },
-    "Newtonsoft.Json": "9.0.1",
     "System.Security.Claims": "4.3.0",
     "System.Diagnostics.Debug": "4.3.0",
     "System.Net.Http": "4.3.0",
@@ -34,11 +33,12 @@
     "Shared": "1.0.0-*",
     "Microsoft.IdentityModel.Clients.ActiveDirectory": "3.13.8",
     "Database": "1.0.0-*",
-    "Microsoft.AspNetCore.Mvc": "1.1.1"
+    "Microsoft.AspNetCore.Mvc": "1.1.1",
+    "Newtonsoft.Json": "10.0.2"
   },
 
     "tools": {
-        "BundlerMinifier.Core": "2.3.327",
+        "BundlerMinifier.Core": "2.4.337",
         "Microsoft.AspNetCore.Razor.Tools": "1.0.0-preview2-final",
         "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview2-final",
         "Microsoft.Extensions.SecretManager.Tools": "1.0.0-preview2-final"

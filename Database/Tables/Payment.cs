@@ -23,7 +23,7 @@ namespace Database.Tables
 
         public override bool Equals(object obj)
         {
-            if(obj != null && obj is Payment)
+            if (obj != null && obj is Payment)
             {
                 var rhs = obj as Payment;
 

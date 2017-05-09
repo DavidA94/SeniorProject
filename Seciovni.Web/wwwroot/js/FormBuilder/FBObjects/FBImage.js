@@ -111,7 +111,7 @@ class FBImage extends FBObject {
 
     /**
      * Creates a new object from the provided JSON
-     * @param {json} json - The JSON to use
+     * @param {JSON} json - The JSON to use
      * @return {FBImage}
      */
     static from_json(json){
@@ -154,7 +154,7 @@ class FBImage extends FBObject {
         context.drawImage(this._image, this.x, this.y, this._image.width, this._image.height);
     }
 
-    _image_onerror(e){
+    _image_onerror(){
         console.log("failed to find image");
         this._image.src = WYSIWYG_DEFAULT_IMG;
     }

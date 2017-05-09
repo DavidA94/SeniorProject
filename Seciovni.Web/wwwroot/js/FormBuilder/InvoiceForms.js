@@ -41,7 +41,7 @@ class InvoiceForms {
                 return;
             }
 
-            if(xmlhttp.readyState == XMLHttpRequest.DONE){
+            if(xmlhttp.readyState === XMLHttpRequest.DONE){
                 if(xmlhttp.status === 200){
                     for(const formName of JSON.parse(xmlhttp.response.toString())){
                         const tr = /** @type HTMLTableRowElement */document.createElement("tr");

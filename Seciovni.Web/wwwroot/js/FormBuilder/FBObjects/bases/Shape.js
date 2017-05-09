@@ -132,7 +132,7 @@ class Shape extends EventPropagator {
 
     /**
      * Initializes the object from the provided JSON
-     * @param {json} json - The JSON to use
+     * @param {JSON} json - The JSON to use
      */
     initialize_json(json){
         this.appearance.initialize_json(json[ShapeFields.appearance]);

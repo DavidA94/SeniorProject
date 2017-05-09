@@ -1,6 +1,7 @@
 ﻿using Database.Tables;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Seciovni.APIs.Contexts;
 using Seciovni.APIs.WebHelpers;
@@ -11,8 +12,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Cors;
 
 namespace Seciovni.APIs.Controllers
 {
@@ -77,8 +76,6 @@ namespace Seciovni.APIs.Controllers
         [Authorize]
         private async Task<string> getAuthorizedUserEmail(string userId)
         {
-            const string GRPAH_USER_URL = "https://graph.windows.net/{0}/users/{1}?api-version=1.6";
-
             try
             {
                 string tenantId = "84fa7f0f-39b8-4d35-894a-b2b8cc5741a9";

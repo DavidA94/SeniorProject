@@ -624,7 +624,7 @@ namespace Seciovni.PdfBuilder
                 TextLines = outputText
             };
         }
-        
+
         private string ProcessBindings(string text, IEnumerable<Binding> bindingValues)
         {
             foreach (var binding in bindingValues)
@@ -763,7 +763,7 @@ namespace Seciovni.PdfBuilder
                 }
             }
 
-            return obj.ToString();
+            return obj?.ToString() ?? "";
         }
     }
 

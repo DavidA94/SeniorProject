@@ -77,7 +77,7 @@ class User {
 
     /**
      * Initializes this class from a JSON object
-     * @param {json} json - The JSON data
+     * @param {JSON} json - The JSON data
      */
     initialize_json(json) {
         this._firstName.value = json[UserFields.firstName];

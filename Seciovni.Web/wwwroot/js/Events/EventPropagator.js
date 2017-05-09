@@ -76,12 +76,12 @@ class EventPropagator extends SubscribableProperty {
                 }
 
                 // If we have a move event
-                if (eventType.event == MouseEventType.MouseMove) {
+                if (eventType.event === MouseEventType.MouseMove) {
                     // Check if the last mouse element is different from the child we're over.
                     // If it is, then we need to send a leave (if not null) and enter event,
                     // Assuming we found a child
 
-                    if (this.__lastMouseElement != childTarget) {
+                    if (this.__lastMouseElement !== childTarget) {
 
                         // Send the leave event to the old element, if necessary
                         if (this.__lastMouseElement) {
@@ -106,7 +106,7 @@ class EventPropagator extends SubscribableProperty {
                         this.__lastMouseElement = childTarget;
                     }
                 }
-                else if (eventType.event == MouseEventType.MouseDown) {
+                else if (eventType.event === MouseEventType.MouseDown) {
                     const kbEventData = new KeyboardEventArgs(eventData.originalTarget, null);
 
                     if(this._focusedElement && this._focusedElement !== childTarget){
@@ -187,11 +187,11 @@ class EventPropagator extends SubscribableProperty {
      * @protected
      */
     __addChild(child, addToBack = false, pos = -1){
-        if(child.parent  && child.parent != this){
+        if(child.parent  && child.parent !== this){
             throw Error(child.toString() + " is already a child of " + child.parent.toString())
         }
 
-        if(child.parent != this){
+        if(child.parent !== this){
             child._parent = this;
             if(addToBack){
                 if(pos > 0) {

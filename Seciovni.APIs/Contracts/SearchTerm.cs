@@ -1,6 +1,4 @@
-﻿using Shared;
-
-namespace Seciovni.APIs.Contracts
+﻿namespace Seciovni.APIs.Contracts
 {
     public class SearchTerm
     {

@@ -92,8 +92,8 @@ class MiscCharge extends SubscribableProperty {
      * @return {boolean}
      */
     areInputsEmpty() {
-        return this._description.value == "" &&
-            this._price.value == -1;
+        return this._description.value === "" &&
+            this._price.value === -1;
     }
 
     /**
@@ -116,7 +116,7 @@ class MiscCharge extends SubscribableProperty {
 
     /**
      * Initializes this class from a JSON object
-     * @param {json} json - The JSON data
+     * @param {JSON} json - The JSON data
      */
     initialize_json(json) {
         this.Description.value = json[MiscChargeFields.description];

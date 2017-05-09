@@ -15,7 +15,8 @@ namespace Database.Tables
 
         [VIN]
         // TODO: [Index(IsUnique = true)]
-        public string VIN {
+        public string VIN
+        {
             get { return m_vin; }
             set { m_vin = value?.ToUpper(); }
         }
@@ -50,7 +51,7 @@ namespace Database.Tables
 
         public override bool Equals(object obj)
         {
-            if(obj != null && obj is VehicleInfo)
+            if (obj != null && obj is VehicleInfo)
             {
                 var rhs = obj as VehicleInfo;
 

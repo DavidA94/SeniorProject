@@ -341,7 +341,7 @@ class TextBlock extends EventPropagator {
 
     /**
      * Initializes the object from the provided JSON
-     * @param {json} json - The JSON to use
+     * @param {JSON} json - The JSON to use
      */
     initialize_json(json){
         this._autoWidth = json[TextBlockFields.autoWidth];
@@ -570,7 +570,7 @@ class TextBlock extends EventPropagator {
         const matches = [];
 
         let match;
-        while((match = re.exec(this.text)) != null) matches.push(match[1]);
+        while((match = re.exec(this.text)) !== null) matches.push(match[1]);
 
         for(const m of matches) {
             if(!this._bindings[m]) this._bindings[m] = null;

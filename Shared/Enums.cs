@@ -3,7 +3,8 @@
 namespace Shared
 {
     [Flags]
-    public enum InvoiceState {
+    public enum InvoiceState
+    {
         Arizona = 1,
         California = 2,
         Georgia = 4,

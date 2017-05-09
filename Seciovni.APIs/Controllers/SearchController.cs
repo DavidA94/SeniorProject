@@ -1,6 +1,7 @@
 ﻿using Database.Tables;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Seciovni.APIs.Contexts;
 using Seciovni.APIs.Contracts;
 using Seciovni.APIs.Shared;
@@ -14,8 +15,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web.Http;
-using Newtonsoft.Json;
-using System.Text.RegularExpressions;
 
 namespace Seciovni.APIs.Controllers
 {
@@ -82,7 +81,7 @@ namespace Seciovni.APIs.Controllers
                         if (arrayPart == nameof(MiscellaneousFee)) numItems = invoice.Fees.Count;
                         else if (arrayPart == nameof(Payment)) numItems = invoice.Payments.Count;
                         else if (arrayPart == nameof(VehicleInfo)) numItems = invoice.Vehicles.Count;
-                        else  arrayPart = null;
+                        else arrayPart = null;
 
                         // If this is a range search
                         if (term.TermRange != null)
@@ -147,7 +146,7 @@ namespace Seciovni.APIs.Controllers
                         else
                         {
                             // Convert the state if is is the state
-                            if(term.InvoiceField == nameof(Invoice.State))
+                            if (term.InvoiceField == nameof(Invoice.State))
                             {
                                 switch (term.Term)
                                 {

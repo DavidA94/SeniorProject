@@ -184,7 +184,7 @@ class Font extends SubscribableProperty {
 
     /**
      * Initializes the object from the provided JSON
-     * @param {json} json - The JSON to use
+     * @param {JSON} json - The JSON to use
      */
     initialize_json(json){
         this.alignment = json[FontFields.alignment];

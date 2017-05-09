@@ -122,7 +122,7 @@ class Border {
      * @returns {boolean}
      */
     equals(rhs){
-        return this._thickness.equals(rhs._thickness) && this._color == rhs._color;
+        return this._thickness.equals(rhs._thickness) && this._color === rhs._color;
     }
 
     // endregion
@@ -142,7 +142,7 @@ class Border {
 
     /**
      * Initializes the object from the provided JSON
-     * @param {json} json - The JSON to use
+     * @param {JSON} json - The JSON to use
      */
     initialize_json(json){
         this.color = json[BorderFields.color];

@@ -42,13 +42,7 @@
             </svg>
             </div>
         </div>
-        <div id="contactsList">
-            <div class="contactPreviewItem">
-                <p><span>Lance</span> <span>Glover</span></p>
-                <p>1-234-567-8900</p>
-                <p><span>LanceMGillespie@jourrapide.com</span></p>
-            </div>
-        </div>
+        <div id="contactsList"></div>
     </div>
     <div id="contactView">
         <form action="#" method="post" id="contactViewForm">
@@ -135,25 +129,31 @@
     </div>
 </div>
 
-<script type="text/javascript" src="~/js/Events/EventTypes/EventArgs.js"></script>
-<script type="text/javascript" src="~/js/Events/EventTypes/BaseEventType.js"></script>
-<script type="text/javascript" src="~/js/Events/EventTypes/PropertyChangedEventArgs.js"></script>
-<script type="text/javascript" src="~/js/Events/EventTypes/DataSavedEventArgs.js"></script>
-<script type="text/javascript" src="~/js/Events/EventTypes/ObjectDestroyedEventArgs.js"></script>
-<script type="text/javascript" src="~/js/Events/EventTypes/MouseEvent.js"></script>
-<script type="text/javascript" src="~/js/Events/EventTypes/KeyboardEvent.js"></script>
+<environment names="Development">
+    <script type="text/javascript" src="~/js/Events/EventTypes/EventArgs.js"></script>
+    <script type="text/javascript" src="~/js/Events/EventTypes/BaseEventType.js"></script>
+    <script type="text/javascript" src="~/js/Events/EventTypes/PropertyChangedEventArgs.js"></script>
+    <script type="text/javascript" src="~/js/Events/EventTypes/DataSavedEventArgs.js"></script>
+    <script type="text/javascript" src="~/js/Events/EventTypes/ObjectDestroyedEventArgs.js"></script>
+    <script type="text/javascript" src="~/js/Events/EventTypes/MouseEvent.js"></script>
+    <script type="text/javascript" src="~/js/Events/EventTypes/KeyboardEvent.js"></script>
 
-<script type="text/javascript" src="~/js/prototypes.js"></script>
-<script type="text/javascript" src="~/js/search.js"></script>
-<script type="text/javascript" src="~/js/Constants.js"></script>
-<script type="text/javascript" src="~/js/Events/Subscribable.js"></script>
-<script type="text/javascript" src="~/js/Events/SubscribableProperty.js"></script>
-<script type="text/javascript" src="~/js/helpers.js"></script>
-<script type="text/javascript" src="~/js/HelperTypes/HTMLElements/BaseHtmlElement.js"></script>
-<script type="text/javascript" src="~/js/HelperTypes/HTMLElements/SpanElement.js"></script>
-<script type="text/javascript" src="~/js/HelperTypes/HTMLElements/TextInput.js"></script>
-<script type="text/javascript" src="~/js/HelperTypes/HTMLElements/NumericInput.js"></script>
-<script type="text/javascript" src="~/js/Shared/User.js"></script>
-<script type="text/javascript" src="~/js/Shared/Address.js"></script>
-<script type="text/javascript" src="~/js/Contacts/Contact.js"></script>
-<script type="text/javascript" src="~/js/Contacts/Contacts.js"></script>
+    <script type="text/javascript" src="~/js/prototypes.js"></script>
+    <script type="text/javascript" src="~/js/search.js"></script>
+    <script type="text/javascript" src="~/js/Constants.js"></script>
+    <script type="text/javascript" src="~/js/Events/Subscribable.js"></script>
+    <script type="text/javascript" src="~/js/Events/SubscribableProperty.js"></script>
+    <script type="text/javascript" src="~/js/helpers.js"></script>
+    <script type="text/javascript" src="~/js/HelperTypes/HTMLElements/BaseHtmlElement.js"></script>
+    <script type="text/javascript" src="~/js/HelperTypes/HTMLElements/SpanElement.js"></script>
+    <script type="text/javascript" src="~/js/HelperTypes/HTMLElements/TextInput.js"></script>
+    <script type="text/javascript" src="~/js/HelperTypes/HTMLElements/NumericInput.js"></script>
+    <script type="text/javascript" src="~/js/Shared/User.js"></script>
+    <script type="text/javascript" src="~/js/Shared/Address.js"></script>
+    <script type="text/javascript" src="~/js/Contacts/Contact.js"></script>
+    <script type="text/javascript" src="~/js/Contacts/Contacts.js"></script>
+</environment>
+<environment names="Staging,Production">
+    <script type="text/javascript" src="~/js/min/base.js"></script>
+    <script type="text/javascript" src="~/js/min/contacts.js"></script>
+</environment>

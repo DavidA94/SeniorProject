@@ -6,7 +6,7 @@ body {
     font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size:14px;
     line-height:1.5;
-    color:#333;
+    color:#2a3e51;
     box-sizing:border-box;
 }
 
@@ -313,9 +313,9 @@ input[type=date]:focus::-webkit-calendar-picker-indicator, input[type=date]:hove
 #employeeTable .permissionCheck {text-align:center;}
 #employeeTable .wide {width:300px;}
 
-#navbar {position:fixed;top:0;left:0;right:0;background:#222;border-bottom:1px solid #080808;z-index:99;height:50px;line-height:50px;padding:0 1em;}
-#navbar #brand {margin-right:1em;font-size:18px;float:left;}
-#navbar a {display:block;height:50px;color:#9d9d9d;}
+#navbar {position:fixed;top:0;left:0;right:0;background:#2c3e50;border-bottom:1px solid #131a20;z-index:99;height:50px;line-height:50px;padding:0 1em;}
+#navbar #brand {margin-right:1em;font-size:18px;float:left;text-decoration:none!important;}
+#navbar a {display:block;height:50px;color:#d0d0d0;}
 #navbar ul {margin:0;padding:0;list-style:none;}
 #navbar ul li {float:left;padding:0 1em;}
 #navbar ul#navRight li {float:right;}

@@ -37,7 +37,7 @@
                 return;
             }
 
-            if(xmlhttp.readyState == XMLHttpRequest.DONE){
+            if(xmlhttp.readyState === XMLHttpRequest.DONE){
                 if(xmlhttp.status === 200){
                     for(const invoice_json of JSON.parse(xmlhttp.response.toString())){
                         const ip = new InvoicePreview();

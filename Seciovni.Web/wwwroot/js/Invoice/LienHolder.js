@@ -28,7 +28,7 @@ class LienHolder {
         /**
          * The actual dialog
          * @private
-         * @type {HTMLDialogElement}
+         * @type {HTMLDivElement}
          */
         this._dialog = lienDialog;
 
@@ -118,7 +118,7 @@ class LienHolder {
 
     /**
      * Initializes this class from a JSON object
-     * @param {json} json - The JSON data
+     * @param {JSON} json - The JSON data
      */
     initialize_json(json){
         if(json) {

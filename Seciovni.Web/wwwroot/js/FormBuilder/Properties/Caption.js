@@ -93,7 +93,7 @@ class Caption extends SubscribableProperty {
         this._location = value;
 
         // Set the reserve to zero if we're not on one of the sides
-        if(value === Location.Center || value == Location.None) this.reserve = 0;
+        if(value === Location.Center || value === Location.None) this.reserve = 0;
 
         this._needToRecalc = true;
         this.__sendPropChangeEvent("location");
@@ -220,7 +220,7 @@ class Caption extends SubscribableProperty {
 
     /**
      * Initializes the object from the provided JSON
-     * @param {json} json - The JSON to use
+     * @param {JSON} json - The JSON to use
      */
     initialize_json(json){
         this.location = json[CaptionFields.location];

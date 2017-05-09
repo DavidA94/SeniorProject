@@ -19,7 +19,7 @@ namespace Database.Tables
 
         public override bool Equals(object obj)
         {
-            if(obj != null && obj is MiscellaneousFee)
+            if (obj != null && obj is MiscellaneousFee)
             {
                 var rhs = obj as MiscellaneousFee;
 

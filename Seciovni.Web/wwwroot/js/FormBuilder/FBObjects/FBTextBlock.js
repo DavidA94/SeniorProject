@@ -129,7 +129,7 @@ class FBTextBlock extends FBObject {
 
         for(const id of Object.keys(bindings)){
             if(bindings[id] === null){
-                const currentContext = this.parent.documentType == DOC_ONE_PER_INV ? BindingContext.Single :
+                const currentContext = this.parent.documentType === DOC_ONE_PER_INV ? BindingContext.Single :
                         BindingContext.Both;
                 bindings[id] = new Binding(id, currentContext);
                 bindings[id].options.addEvent('change', () => this._textBlock.processBindings());
@@ -203,8 +203,8 @@ class FBTextBlock extends FBObject {
 
     /**
      * Creates a new object from the provided JSON
-     * @param {json} json - The JSON to use
-     * @return {FBImage}
+     * @param {JSON} json - The JSON to use
+     * @return {FBTextBlock}
      */
     static from_json(json){
         const textBlock = new FBTextBlock(null, null, null, null);

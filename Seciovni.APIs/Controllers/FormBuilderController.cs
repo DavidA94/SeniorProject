@@ -36,7 +36,7 @@ namespace Seciovni.APIs.Controllers
         [HttpGet(nameof(BindingOptions) + "/{option}")]
         public IEnumerable<BindingOptionData> BindingOptions(BindingOption option)
         {
-            if(Request.HasValidLogin(db) && Request.CanAccess(db, AccessPolicy.FormEditorPrivilege))
+            if (Request.HasValidLogin(db) && Request.CanAccess(db, AccessPolicy.FormEditorPrivilege))
             {
                 return SharedData.GetBindingOptions(option);
             }
@@ -63,7 +63,7 @@ namespace Seciovni.APIs.Controllers
             // If we don't have a valid request, then no-go
             if (!Request.HasValidLogin(db) || !Request.CanAccess(db, AccessPolicy.FormEditorPrivilege)) return null;
 
-            return db.InvoiceTemplates.LastOrDefault(t => t.TemplateTitle.ToLower().Replace(" ", "") == 
+            return db.InvoiceTemplates.LastOrDefault(t => t.TemplateTitle.ToLower().Replace(" ", "") ==
                                                                  pageName.ToLower().Replace(" ", ""))?.TemplateJSON;
         }
 
@@ -87,7 +87,7 @@ namespace Seciovni.APIs.Controllers
             {
                 return new ApiResponse(false, "Permission Denied");
             }
-            
+
             InvoicePageTemplate template = null;
             bool overwrite = false;
 

@@ -55,7 +55,7 @@ namespace Seciovni.APIs.Contexts
 
                 var otherUser = new Employee
                 {
-                    User = User.MakeNewUser("John", "Doe", "JohnDoe@dra151994hotmail.onmicrosoft.com", 
+                    User = User.MakeNewUser("John", "Doe", "JohnDoe@dra151994hotmail.onmicrosoft.com",
                         new List<Permission> { permissions[1], permissions[3] }),
                     Job = JobType.Sales
                 };

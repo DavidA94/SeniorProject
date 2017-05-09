@@ -7,9 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Seciovni.Web.WebHelpers;
 using Shared;
@@ -17,8 +15,6 @@ using Shared.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -109,7 +105,7 @@ namespace Seciovni.Web
                     OnAuthorizationCodeReceived = OnAuthorizationCodeReceived
                 }
             });
-            
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -139,7 +135,7 @@ namespace Seciovni.Web
             initAuthCode(context.Principal, context.HttpContext.Session, context.HttpContext);
             return Task.FromResult(0);
         }
-        
+
         private void initAuthCode(ClaimsPrincipal user, ISession session, HttpContext context)
         {
             if (!session.Keys.Contains(Constants.AUTH_TOKEN))

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Seciovni.Web.WebHelpers;
 using Shared;
 using Shared.SecurityTypes;
@@ -52,17 +51,17 @@ namespace Seciovni.Web.Controllers
         [HttpGet]
         public IActionResult GetAuthToken()
         {
-            if (HttpContext.Session.Keys.Contains(Constants.AUTH_TOKEN) && 
+            if (HttpContext.Session.Keys.Contains(Constants.AUTH_TOKEN) &&
                 HttpContext.Session.Keys.Contains(Constants.AUTH_TOKEN_TIME))
             {
                 byte[] ticks;
-                
+
                 HttpContext.Session.TryGetValue(Constants.AUTH_TOKEN_TIME, out ticks);
 
                 DateTime expires = DateTime.FromBinary(BitConverter.ToInt64(ticks, 0));
 
                 // If we've expired
-                if(DateTime.Now - expires < TimeSpan.Zero)
+                if (DateTime.Now - expires < TimeSpan.Zero)
                 {
                     string token = ApiLogin.GetToken(User);
 
@@ -82,7 +81,7 @@ namespace Seciovni.Web.Controllers
                     byte[] tokenBytes;
                     string token;
 
-                    if(HttpContext.Session.TryGetValue(Constants.AUTH_TOKEN, out tokenBytes))
+                    if (HttpContext.Session.TryGetValue(Constants.AUTH_TOKEN, out tokenBytes))
                     {
                         token = Encoding.ASCII.GetString(tokenBytes);
 

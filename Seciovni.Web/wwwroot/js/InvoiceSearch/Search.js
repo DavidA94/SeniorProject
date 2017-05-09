@@ -111,7 +111,7 @@ class Search {
 
                         for (const result of responses) {
 
-                            const hasExapnder = result.fees.length > 0 || result.payments.length > 0 || result.vehicles.length > 0;
+                            const hasExpander = result.fees.length > 0 || result.payments.length > 0 || result.vehicles.length > 0;
 
                             // Start with the core things
                             const headerData = [
@@ -121,7 +121,7 @@ class Search {
                                     children: [
                                         {
                                             tag: "div",
-                                            class: (hasExapnder ? SEARCH_EXPANDER_SHOW_CLASS : SEARCH_EXPANDER_CLASS)
+                                            class: (hasExpander ? SEARCH_EXPANDER_SHOW_CLASS : SEARCH_EXPANDER_CLASS)
                                         },
                                         {
                                             tag: "div",
@@ -348,7 +348,6 @@ class Search {
                                 const elems = stagingArea.querySelectorAll("." + className);
                                 if(elems.length === 0) continue;
                                 let width = 0;
-                                let height = 0;
                                 for(const elem of elems) width = Math.max(width, Math.ceil(elem.getBoundingClientRect().width));
                                 for(const elem of elems) elem.style.width = width + "px";
                             }
@@ -385,7 +384,7 @@ class Search {
     }
 
     /**
-     * Trys to get the search fields, and if it can't calls itself in a setTimeout to try again in the specified time
+     * Tries to get the search fields, and if it can't calls itself in a setTimeout to try again in the specified time
      * @param {number} waitTime - The number of ms to wait before seeing if the fields have arrived yet
      * @private
      */
@@ -426,7 +425,7 @@ class Search {
     }
 
     /**
-     * Fires when a search term is destoryed
+     * Fires when a search term is destroyed
      * @param {ObjectDestroyedEventArgs} e - The event data
      * @private
      */

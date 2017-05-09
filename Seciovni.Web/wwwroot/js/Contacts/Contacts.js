@@ -120,6 +120,10 @@ class Contacts {
         this._fieldset = document.getElementById(CONTACTS_EDIT_CONTAINER_ID).getElementsByTagName("fieldset")[0];
         this._invoiceList = document.getElementById(CONTACTS_INVOICES_LIST_ID);
 
+        this._fieldset.disabled = "disabled";
+        this._fieldset.style.display = "none";
+        this._invoiceList.style.display = "none";
+
         this._saveButton = document.getElementById("saveButton");
         this._editButton = document.getElementById("editButton");
         this._deleteButton = document.getElementById("deleteButton");
@@ -195,6 +199,7 @@ class Contacts {
     // region Public Methods
 
     initialize(){
+
         const container = document.getElementById(CONTACTS_EDIT_CONTAINER_ID);
         const elements = container.querySelectorAll(BIND_QUERY);
 
@@ -267,10 +272,6 @@ class Contacts {
         this._saveButton.style.display = "none";
         this._editButton.style.display = "none";
         this._deleteButton.style.display = "none";
-
-        this._fieldset.disabled = "disabled";
-        this._fieldset.style.display = "none";
-        this._invoiceList.style.display = "none";
 
         document.getElementById(INVOICE_CONTACTS_SEARCH_INPUT_ID).addEventListener('input', this._searchBound);
     }
@@ -387,7 +388,7 @@ class Contacts {
                         this._showContact(loadedContact);
                     });
 
-                    if(loadedContact.contactID == currentContact) this._showContact(loadedContact);
+                    if(loadedContact.contactID === currentContact) this._showContact(loadedContact);
                 }
 
                 this._orderBy(this._contactsOrder);
@@ -439,7 +440,7 @@ class Contacts {
      * @private
      */
     _showContact(contact){
-        if(contact == this._selectedContact) return;
+        if(contact === this._selectedContact) return;
 
         this._fieldset.disabled = "disabled";
 
@@ -495,14 +496,14 @@ class Contacts {
              */
             let phone;
 
-            if(e.propertyName == ContactsFields.primaryPhone) phone = this._primaryPhone;
-            else if(e.propertyName == ContactsFields.cellPhone) phone = this._cellPhone;
-            else if(e.propertyName == ContactsFields.homePhone) phone = this._homePhone;
-            else if(e.propertyName == ContactsFields.workPhone) phone = this._workPhone;
+            if(e.propertyName === ContactsFields.primaryPhone) phone = this._primaryPhone;
+            else if(e.propertyName === ContactsFields.cellPhone) phone = this._cellPhone;
+            else if(e.propertyName === ContactsFields.homePhone) phone = this._homePhone;
+            else if(e.propertyName === ContactsFields.workPhone) phone = this._workPhone;
 
             const phoneRegEx = new RegExp(/^(1[.\-]?)?[0-9]{3}[.\-]?[0-9]{3}[.\-]?[0-9]{4}$/);
 
-            if(phone && phone.value != "" && !phone.value.match(phoneRegEx)){
+            if(phone && phone.value !== "" && !phone.value.match(phoneRegEx)){
                 phone.error = "Invalid Phone Number. Expecting format 1-111-111-1111";
             }
             else if(phone){
@@ -513,7 +514,7 @@ class Contacts {
             const email = this._user.Email.value;
 
             // This is weak, but should work well enough
-            if(email != "" && !email.match(/^.+@.+\..{2,}$/)) {
+            if(email !== "" && !email.match(/^.+@.+\..{2,}$/)) {
                 this._user.Email.error = "Invalid Email Address";
             }
             else{
@@ -522,7 +523,7 @@ class Contacts {
         }
         else if(e.propertyName === AddressFields.zip){
             const zip = this._address.Zip.htmlObj.value;
-            if(zip.length != 5){
+            if(zip.length !== 5){
                 this._address.Zip.error = "Invalid ZIP code";
             }
             else{
@@ -652,7 +653,7 @@ class Contacts {
 
     _newContactClick(){
         this._selectedContact = new Contact();
-        var selectedContact = document.getElementById(INVOICE_CHOSEN_CONTACT_ID);
+        const selectedContact = document.getElementById(INVOICE_CHOSEN_CONTACT_ID);
         if(selectedContact) selectedContact.removeAttribute("id");
 
         this._fieldset.removeAttribute("disabled");
