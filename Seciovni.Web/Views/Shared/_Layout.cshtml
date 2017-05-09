@@ -11,28 +11,16 @@
 </head>
 <body>
     <div id="navbar">
-        <a asp-area="" asp-controller="Home" asp-action="Index" id="brand">Seciovni</a>
-        <ul>
-            <li><a asp-area="" asp-controller="Home" asp-action="Index">Dashboard</a></li>
-            @if (User.HasClaim(c => c.Type == AccessPolicy.ViewInvoicePrivilege || c.Type == AccessPolicy.AdminPrivilege))
-            {
-                <li><a asp-controller="Invoice" asp-action="View">Invoices</a></li>
-            }
-            @if (User.HasClaim(c => c.Type == AccessPolicy.FormEditorPrivilege || c.Type == AccessPolicy.AdminPrivilege))
-            {
-                <li><a asp-controller="FormEditor" asp-action="Index">Form Editor</a></li>
-            }
-        </ul>
-        <ul id="navRight">
-            @if (User.Identity.IsAuthenticated)
-            {
-                <li><a asp-controller="Account" asp-action="SignOut">Sign Out</a></li>
-            }
-            else
-            {
-                <li><a asp-controller="Account" asp-action="SignIn">Sign in</a></li>
-            }
-        </ul>
+        @if (!ViewData.Keys.Contains("NoContent"))
+        {
+            <div class="content">
+                @Html.Partial("_Menu")
+            </div>
+        }
+        else
+        {
+            @Html.Partial("_Menu")
+        }
     </div>
 
     @if (!ViewData.Keys.Contains("NoContent"))

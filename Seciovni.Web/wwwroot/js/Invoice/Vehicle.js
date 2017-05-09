@@ -398,7 +398,7 @@ class Vehicle extends SubscribableProperty {
             valid = "X";
         }
 
-        return !(vin.length < 17 || vin[8] !== valid);
+        return !(vin.length < 17 || vin[8] !== valid.toString());
 
     }
 
