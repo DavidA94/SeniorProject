@@ -175,12 +175,20 @@ class Search {
                             for (const key of Object.keys(result.otherFields)) {
                                 const header = getSearchFields().find((f) => f.value === key).display;
 
+                                let formatter = (value) => value;
+
+                                // If we need to format the values
+                                if(["TaxAmount", "DocFee", "DownPayment", "Total", "Due"].indexOf(key) >= 0)
+                                {
+                                    formatter = (value) => makeNumberPretty(parseFloat(value), "$ ", 2);
+                                }
+
                                 headerData[0].children.push({
                                     tag: "div",
                                     class: SEARCH_PREVIEW_DATA_CLASS,
                                     children: [
                                         makeSpanData(header, "other " + SEARCH_DATA_DESCRIPTION_CLASS),
-                                        makeSpanData(result.otherFields[key])
+                                        makeSpanData(formatter(result.otherFields[key]))
                                     ]
                                 });
                             }

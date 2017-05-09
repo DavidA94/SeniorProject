@@ -162,17 +162,17 @@
       <file leaf-file-name="Search.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/InvoiceSearch/Search.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="241">
-              <caret line="42" column="15" lean-forward="true" selection-start-line="42" selection-start-column="15" selection-end-line="42" selection-end-column="15" />
+            <state relative-caret-position="238">
+              <caret line="182" column="93" lean-forward="false" selection-start-line="182" selection-start-column="93" selection-end-line="182" selection-end-column="93" />
               <folding>
                 <element signature="n#!!doc;n#Search#0" expanded="false" />
                 <element signature="e#590#700#0" expanded="false" />
-                <element signature="e#11221#11893#0" expanded="false" />
-                <element signature="e#11269#11861#0" expanded="false" />
-                <element signature="e#11947#12906#0" expanded="false" />
-                <element signature="e#13024#14166#0" expanded="false" />
-                <element signature="e#14220#15645#0" expanded="false" />
-                <element signature="e#16615#17424#0" expanded="false" />
+                <element signature="e#11649#12321#0" expanded="false" />
+                <element signature="e#11697#12289#0" expanded="false" />
+                <element signature="e#12375#13334#0" expanded="false" />
+                <element signature="e#13452#14594#0" expanded="false" />
+                <element signature="e#14648#16073#0" expanded="false" />
+                <element signature="e#17043#17852#0" expanded="false" />
                 <element signature="n#!!doc;n#_waitForSearchFields#0;n#Search#0" expanded="false" />
                 <element signature="n#!!doc;n#_extraUpdated#0;n#Search#0" expanded="false" />
                 <element signature="n#!!block;n#_extraUpdated#0;n#Search#0" expanded="false" />
@@ -331,7 +331,7 @@
         <entry file="file://$PROJECT_DIR$/js/Invoice/Customer.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="332">
-              <caret line="339" column="27" lean-forward="true" selection-start-line="339" selection-start-column="27" selection-end-line="339" selection-end-column="27" />
+              <caret line="339" column="27" lean-forward="false" selection-start-line="339" selection-start-column="27" selection-end-line="339" selection-end-column="27" />
               <folding />
             </state>
           </provider>
@@ -351,7 +351,7 @@
         <entry file="file://$PROJECT_DIR$/js/FormBuilder/FormBuilder.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="240">
-              <caret line="49" column="87" lean-forward="true" selection-start-line="49" selection-start-column="87" selection-end-line="49" selection-end-column="87" />
+              <caret line="49" column="87" lean-forward="false" selection-start-line="49" selection-start-column="87" selection-end-line="49" selection-end-column="87" />
               <folding />
             </state>
           </provider>
@@ -361,7 +361,7 @@
         <entry file="file://$PROJECT_DIR$/js/Invoice/LienHolder.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="308">
-              <caret line="145" column="7" lean-forward="true" selection-start-line="145" selection-start-column="7" selection-end-line="145" selection-end-column="7" />
+              <caret line="145" column="7" lean-forward="false" selection-start-line="145" selection-start-column="7" selection-end-line="145" selection-end-column="7" />
               <folding />
             </state>
           </provider>
@@ -371,7 +371,7 @@
         <entry file="file://$PROJECT_DIR$/js/Invoice/Print.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="119">
-              <caret line="7" column="18" lean-forward="true" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
+              <caret line="7" column="18" lean-forward="false" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
               <folding />
             </state>
           </provider>
@@ -530,8 +530,8 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="-8" />
     <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1056" />
+    <option name="width" value="1552" />
+    <option name="height" value="840" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -793,12 +793,12 @@
       <workItem from="1492734059329" duration="1036000" />
       <workItem from="1493413400908" duration="3246000" />
       <workItem from="1494092563202" duration="245000" />
-      <workItem from="1494092963817" duration="24467000" />
+      <workItem from="1494092963817" duration="25345000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="501307000" />
+    <option name="totallyTimeSpent" value="502185000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -810,13 +810,13 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="-8" width="1552" height="840" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10115912" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12681638" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.248104" sideWeight="0.516333" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.248104" sideWeight="0.48366702" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32390383" sideWeight="0.5165126" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32390383" sideWeight="0.48348746" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1199,7 +1199,7 @@
     <entry file="file://$PROJECT_DIR$/js/Invoice/Customer.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="332">
-          <caret line="339" column="27" lean-forward="true" selection-start-line="339" selection-start-column="27" selection-end-line="339" selection-end-column="27" />
+          <caret line="339" column="27" lean-forward="false" selection-start-line="339" selection-start-column="27" selection-end-line="339" selection-end-column="27" />
           <folding />
         </state>
       </provider>
@@ -1215,7 +1215,7 @@
     <entry file="file://$PROJECT_DIR$/js/FormBuilder/FormBuilder.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
-          <caret line="49" column="87" lean-forward="true" selection-start-line="49" selection-start-column="87" selection-end-line="49" selection-end-column="87" />
+          <caret line="49" column="87" lean-forward="false" selection-start-line="49" selection-start-column="87" selection-end-line="49" selection-end-column="87" />
           <folding />
         </state>
       </provider>
@@ -1223,7 +1223,7 @@
     <entry file="file://$PROJECT_DIR$/js/Invoice/LienHolder.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="308">
-          <caret line="145" column="7" lean-forward="true" selection-start-line="145" selection-start-column="7" selection-end-line="145" selection-end-column="7" />
+          <caret line="145" column="7" lean-forward="false" selection-start-line="145" selection-start-column="7" selection-end-line="145" selection-end-column="7" />
           <folding />
         </state>
       </provider>
@@ -1231,7 +1231,7 @@
     <entry file="file://$PROJECT_DIR$/js/Invoice/Print.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
-          <caret line="7" column="18" lean-forward="true" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
+          <caret line="7" column="18" lean-forward="false" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
           <folding />
         </state>
       </provider>
@@ -1483,17 +1483,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/InvoiceSearch/Search.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="241">
-          <caret line="42" column="15" lean-forward="true" selection-start-line="42" selection-start-column="15" selection-end-line="42" selection-end-column="15" />
+        <state relative-caret-position="238">
+          <caret line="182" column="93" lean-forward="false" selection-start-line="182" selection-start-column="93" selection-end-line="182" selection-end-column="93" />
           <folding>
             <element signature="n#!!doc;n#Search#0" expanded="false" />
             <element signature="e#590#700#0" expanded="false" />
-            <element signature="e#11221#11893#0" expanded="false" />
-            <element signature="e#11269#11861#0" expanded="false" />
-            <element signature="e#11947#12906#0" expanded="false" />
-            <element signature="e#13024#14166#0" expanded="false" />
-            <element signature="e#14220#15645#0" expanded="false" />
-            <element signature="e#16615#17424#0" expanded="false" />
+            <element signature="e#11649#12321#0" expanded="false" />
+            <element signature="e#11697#12289#0" expanded="false" />
+            <element signature="e#12375#13334#0" expanded="false" />
+            <element signature="e#13452#14594#0" expanded="false" />
+            <element signature="e#14648#16073#0" expanded="false" />
+            <element signature="e#17043#17852#0" expanded="false" />
             <element signature="n#!!doc;n#_waitForSearchFields#0;n#Search#0" expanded="false" />
             <element signature="n#!!doc;n#_extraUpdated#0;n#Search#0" expanded="false" />
             <element signature="n#!!block;n#_extraUpdated#0;n#Search#0" expanded="false" />

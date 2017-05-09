@@ -23,7 +23,7 @@ namespace Seciovni.APIs.Controllers
     public class SearchController : ApiController
     {
         private SeciovniContext db;
-        private Dictionary<string, string> m_invoiceValues = new Dictionary<string, string>();
+        private Dictionary<int, Tuple<string, string>> m_invoiceValues = new Dictionary<int, Tuple<string, string>>();
 
         public SearchController(SeciovniContext context)
         {
@@ -146,12 +146,34 @@ namespace Seciovni.APIs.Controllers
                         // Non-range search
                         else
                         {
+                            // Convert the state if is is the state
+                            if(term.InvoiceField == nameof(Invoice.State))
+                            {
+                                switch (term.Term)
+                                {
+                                    case "AZ":
+                                        term.Term = InvoiceState.Arizona.ToString();
+                                        break;
+                                    case "CA":
+                                        term.Term = InvoiceState.California.ToString();
+                                        break;
+                                    case "GA":
+                                        term.Term = InvoiceState.Georgia.ToString();
+                                        break;
+                                    case "IL":
+                                        term.Term = InvoiceState.Georgia.ToString();
+                                        break;
+                                }
+                            }
                             var valueAndLikeliness = arrayPart != null ?
                                 getValueAndLikelieness(invoice, term.InvoiceField, term.Term, arrayPart, numItems) :
                                 getValueAndLikelieness(invoice, term.InvoiceField, term.Term);
 
                             chances.Add(valueAndLikeliness.Item2);
-                            if(arrayPart == null) m_invoiceValues[term.InvoiceField] = valueAndLikeliness.Item1;
+                            if (arrayPart == null)
+                            {
+                                m_invoiceValues[invoice.InvoiceID] = Tuple.Create(term.InvoiceField, valueAndLikeliness.Item1);
+                            }
                         }
                     }
 
@@ -162,14 +184,14 @@ namespace Seciovni.APIs.Controllers
                     }
                 }
 
-                m_invoiceValues = m_invoiceValues.Where(kv => !kv.Key.StartsWith(nameof(MiscellaneousFee)) &&
-                                                              !kv.Key.StartsWith(nameof(Payment)) &&
-                                                              !kv.Key.StartsWith(nameof(VehicleInfo)) &&
-                                                              !kv.Key.Contains(nameof(Invoice.InvoiceDate)) &&
-                                                              !kv.Key.Contains(nameof(Invoice.InvoiceID)) &&
-                                                              !kv.Key.Contains(nameof(Database.Tables.User.FirstName)) &&
-                                                              !kv.Key.Contains(nameof(Database.Tables.User.LastName)) &&
-                                                              !kv.Key.Contains("SalesPerson"))
+                m_invoiceValues = m_invoiceValues.Where(kv => !kv.Value.Item1.StartsWith(nameof(MiscellaneousFee)) &&
+                                                              !kv.Value.Item1.StartsWith(nameof(Payment)) &&
+                                                              !kv.Value.Item1.StartsWith(nameof(VehicleInfo)) &&
+                                                              !kv.Value.Item1.Contains(nameof(Invoice.InvoiceDate)) &&
+                                                              !kv.Value.Item1.Contains(nameof(Invoice.InvoiceID)) &&
+                                                              !kv.Value.Item1.Contains(nameof(Database.Tables.User.FirstName)) &&
+                                                              !kv.Value.Item1.Contains(nameof(Database.Tables.User.LastName)) &&
+                                                              !kv.Value.Item1.Contains("SalesPerson"))
                                                  .ToDictionary(pair => pair.Key, pair => pair.Value);
 
                 return results.OrderByDescending(r => r.Item1.InvoiceDate)
@@ -180,7 +202,7 @@ namespace Seciovni.APIs.Controllers
                                   CreatedDate = r.Item1.InvoiceDate,
                                   Fees = searchTerms.Any(t => t.InvoiceField.StartsWith(nameof(MiscellaneousFee))) ? r.Item1.Fees : new List<MiscellaneousFee>(),
                                   InvoiceNumber = r.Item1.InvoiceID,
-                                  OtherFields = m_invoiceValues,
+                                  OtherFields = m_invoiceValues.Where(v => v.Key == r.Item1.InvoiceID).ToDictionary(k => k.Value.Item1, v => v.Value.Item2),
                                   Payments = searchTerms.Any(t => t.InvoiceField.StartsWith(nameof(Payment))) ? r.Item1.Payments : new List<Payment>(),
                                   SalesPerson = r.Item1.SalesPerson.User.FullName(),
                                   Vehicles = searchTerms.Any(t => t.InvoiceField.StartsWith(nameof(VehicleInfo))) ? r.Item1.Vehicles : new List<VehicleInfo>()
@@ -199,7 +221,7 @@ namespace Seciovni.APIs.Controllers
                 // If it matches, then we're done here
                 if (invValue >= low && invValue <= high)
                 {
-                    m_invoiceValues[invoiceField] = rawValue;
+                    m_invoiceValues[invoice.InvoiceID] = Tuple.Create(invoiceField, rawValue);
                     return true;
                 }
                 return false;
@@ -227,12 +249,12 @@ namespace Seciovni.APIs.Controllers
         {
             Func<string, bool> checkValue = (rawValue) =>
             {
-                DateTime invValue = DateTime.ParseExact(rawValue, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                DateTime invValue = DateTime.Parse(rawValue);
 
                 // If it matches, then we're done here
                 if (invValue >= low && invValue <= high)
                 {
-                    m_invoiceValues[invoiceField] = rawValue;
+                    m_invoiceValues[invoice.InvoiceID] = Tuple.Create(invoiceField, rawValue);
                     return true;
                 }
                 return false;
